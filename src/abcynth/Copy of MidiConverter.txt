@@ -1,0 +1,308 @@
+package abc.player;
+
+import abc.notation.*;
+import java.util.Vector;
+import javax.sound.midi.*;
+
+import java.io.File;
+import java.io.IOException;
+
+/** MidiConverter class defines various static methods to convert abc related stuff
+ * to midi : notes, tunes etc... */
+public class MidiConverter implements MidiConverterInterface
+{
+  /** The resolution of the sequence : this will correspond to a quarter note. */
+  private static final int SEQUENCE_RESOLUTION = 96;
+
+  /** Converts the given tune to a midi sequence.
+   * @param tune The tune to be converted.
+   * @return The midi sequence of the tune. */
+  public Sequence toMidiSequence(Tune tune)
+  {
+    Sequence sequence = null;
+    try
+    {
+      Tune.AbcScore score = tune.getAbcScore();
+      sequence = new Sequence (Sequence.PPQ, SEQUENCE_RESOLUTION, 1);
+      Track track = sequence.createTrack();
+      int lastRepeatOpen = -1;
+      int repeatNumber = 1;
+      boolean inWrongEnding = false;
+      int i = 0;// StaffItem iterator
+      KeySignature tuneKey = null;
+      KeySignature currentKey = null;
+      DefaultNoteLength defaultLength = new DefaultNoteLength(Note.EIGHTH);
+
+      long elapsedTime = 0;
+      Tune.AbcScore staff = tune.getAbcScore();
+      while (i < staff.size())
+      {
+        if (staff.elementAt(i) instanceof abc.notation.DefaultNoteLength)
+          defaultLength = (DefaultNoteLength)staff.elementAt(i);
+        else
+        if (staff.elementAt(i) instanceof abc.notation.RepeatBarLine)
+        {
+          RepeatBarLine bar = (RepeatBarLine)staff.elementAt(i);
+          if (repeatNumber<bar.getRepeatNumber() && lastRepeatOpen!=-1)
+          {
+            repeatNumber++; i=lastRepeatOpen;
+          }
+          else
+          if (repeatNumber>bar.getRepeatNumber())
+            inWrongEnding = true;
+          else
+            inWrongEnding = false;
+        }
+        else
+        if (staff.elementAt(i) instanceof abc.notation.BarLine)
+        {
+          currentKey = new KeySignature(tuneKey.getAccidentals());
+          switch ( ((BarLine)(staff.elementAt(i))).getType())
+          {
+            case BarLine.SIMPLE : break;
+            case BarLine.REPEAT_OPEN : lastRepeatOpen=i; repeatNumber=1; break;
+            case BarLine.REPEAT_CLOSE :
+              if (repeatNumber<2 && lastRepeatOpen!=-1)
+              { repeatNumber++; i=lastRepeatOpen; }
+              else
+              {repeatNumber=1; lastRepeatOpen=-1; }
+              break;
+          }
+        }
+        else
+        if (staff.elementAt(i) instanceof abc.notation.KeySignature)
+        {
+          tuneKey = (KeySignature)(staff.elementAt(i));
+          currentKey = new KeySignature(tuneKey.getAccidentals());
+        }
+        else
+        if (staff.elementAt(i) instanceof abc.notation.Tuplet)
+        {
+          Tuplet tuplet = (Tuplet)(staff.elementAt(i));
+          float totalTupletLength = tuplet.getTotalRelativeLength(defaultLength);
+          int notesNb = tuplet.countNotes();
+          Vector tupletAsVector = tuplet.getNotesAsVector();
+          for (int j=0; j<tupletAsVector.size(); j++)
+          {
+            Note note = (Note)(tupletAsVector.elementAt(j));
+            float noteLength = getNoteLength(note, defaultLength);
+            noteLength = noteLength * totalTupletLength / tuplet.countNotes();
+            if (!note.isRest())
+            {
+              ShortMessage myNoteOn = new ShortMessage();
+              myNoteOn.setMessage(ShortMessage.NOTE_ON, getMidiNoteNumber(note, currentKey), 50);
+              track.add(new MidiEvent(myNoteOn,elapsedTime));
+              ShortMessage myNoteOff = new ShortMessage();
+              myNoteOff.setMessage(ShortMessage.NOTE_OFF , getMidiNoteNumber(note, currentKey), 50);
+              elapsedTime += noteLength;
+              track.add(new MidiEvent(myNoteOff,elapsedTime));
+              if (note.getAccidental()!=Note.NATURAL)
+                currentKey.setAccidental(note.toRootOctaveHeigth(), note.getAccidental());
+            }
+          }
+        }
+        else
+        if (staff.elementAt(i) instanceof abc.notation.Note && !inWrongEnding)
+        {
+          Note note = (Note)(staff.elementAt(i));
+          float noteLength = getNoteLength(note, defaultLength);
+          if (!note.isRest())
+          {
+            ShortMessage myNoteOn = new ShortMessage();
+            myNoteOn.setMessage(ShortMessage.NOTE_ON, getMidiNoteNumber(note, currentKey), 50);
+            track.add(new MidiEvent(myNoteOn,elapsedTime));
+            ShortMessage myNoteOff = new ShortMessage();
+            myNoteOff.setMessage(ShortMessage.NOTE_OFF , getMidiNoteNumber(note, currentKey), 50);
+            elapsedTime += noteLength;
+            track.add(new MidiEvent(myNoteOff,elapsedTime));
+            if (note.getAccidental()!=Note.NATURAL)
+              currentKey.setAccidental(
+                  note.toRootOctaveHeigth(), note.getAccidental());
+          }
+          else
+            elapsedTime += noteLength;
+        }
+        else
+        if ((staff.elementAt(i) instanceof abc.notation.MultiNote) && !inWrongEnding)
+        {
+          MultiNote notes = (MultiNote)(staff.elementAt(i));
+          Vector notesVector = notes.getNotesAsVector();
+          for (int j=0; j<notesVector.size(); j++)
+          {
+            Note note = (Note)(notesVector.elementAt(j));
+            float noteLength = getNoteLength(note, defaultLength);
+            if (!note.isRest())
+            {
+              ShortMessage myNoteOn = new ShortMessage();
+              myNoteOn.setMessage(ShortMessage.NOTE_ON, getMidiNoteNumber(note, currentKey), 50);
+              track.add(new MidiEvent(myNoteOn,elapsedTime));
+//              ShortMessage myNoteOff = new ShortMessage();
+//              myNoteOff.setMessage(ShortMessage.NOTE_OFF , getMidiNoteNumber(note, currentKey), 50);
+//              track.add(new MidiEvent(myNoteOff,elapsedTime));
+              if (note.getAccidental()!=Note.NATURAL)
+                currentKey.setAccidental(note.toRootOctaveHeigth(), note.getAccidental());
+            }
+          }
+          for (int j=0; j<notesVector.size(); j++)
+          {
+            Note note = (Note)(notesVector.elementAt(j));
+            float noteLength = getNoteLength(note, defaultLength);
+            if (!note.isRest())
+            {
+              ShortMessage myNoteOff = new ShortMessage();
+              myNoteOff.setMessage(ShortMessage.NOTE_OFF , getMidiNoteNumber(note, currentKey), 50);
+              track.add(new MidiEvent(myNoteOff,(long)(elapsedTime+noteLength)));
+            }
+          }
+          float maxMength = getNoteLength(notes, defaultLength);
+          elapsedTime += maxMength;
+        }
+        i++;
+      }
+    }
+    catch (InvalidMidiDataException e)
+    {
+      e.printStackTrace();
+    }
+    return sequence;
+  }
+
+  protected static void addNoteToTrack(Track track, Note note, DefaultNoteLength defaultLength, KeySignature key) throws InvalidMidiDataException
+  {
+    float noteLength = getNoteLength(note, defaultLength);
+    long elapsedTime = track.ticks();
+    if (!note.isRest())
+    {
+      ShortMessage myNoteOn = new ShortMessage();
+      myNoteOn.setMessage(ShortMessage.NOTE_ON, getMidiNoteNumber(note, key), 50);
+      track.add(new MidiEvent(myNoteOn,elapsedTime));
+      ShortMessage myNoteOff = new ShortMessage();
+      myNoteOff.setMessage(ShortMessage.NOTE_OFF , getMidiNoteNumber(note, key), 50);
+      track.add(new MidiEvent(myNoteOff,elapsedTime));
+    }
+  }
+
+  protected static void addTupletToTrack(Track track, Tuplet tuplet, DefaultNoteLength defaultLength, KeySignature key) throws InvalidMidiDataException
+  {
+    float totalTupletLength = tuplet.getTotalRelativeLength(defaultLength);
+    long elapsedTime = track.ticks();
+    int notesNb = tuplet.countNotes();
+    Vector tupletAsVector = tuplet.getNotesAsVector();
+    for (int j=0; j<tupletAsVector.size(); j++)
+    {
+      Note note = (Note)(tupletAsVector.elementAt(j));
+      float noteLength = getNoteLength(note, defaultLength);
+      noteLength = noteLength * totalTupletLength / tuplet.countNotes();
+      if (!note.isRest())
+      {
+        ShortMessage myNoteOn = new ShortMessage();
+        myNoteOn.setMessage(ShortMessage.NOTE_ON, getMidiNoteNumber(note, key), 50);
+        track.add(new MidiEvent(myNoteOn,elapsedTime));
+        ShortMessage myNoteOff = new ShortMessage();
+        myNoteOff.setMessage(ShortMessage.NOTE_OFF , getMidiNoteNumber(note, key), 50);
+        track.add(new MidiEvent(myNoteOff,elapsedTime));
+      }
+    }
+  }
+
+  protected static void addMultiNoteToTrack(Track track, MultiNote notes, DefaultNoteLength defaultLength, KeySignature key) throws InvalidMidiDataException
+  {
+    Vector notesVector = notes.getNotesAsVector();
+    long elapsedTime = track.ticks();
+    for (int j=0; j<notesVector.size(); j++)
+    {
+      Note note = (Note)(notesVector.elementAt(j));
+      float noteLength = getNoteLength(note, defaultLength);
+      if (!note.isRest())
+      {
+        ShortMessage myNoteOn = new ShortMessage();
+        myNoteOn.setMessage(ShortMessage.NOTE_ON, getMidiNoteNumber(note, key), 50);
+        track.add(new MidiEvent(myNoteOn,elapsedTime));
+      }
+    }
+    for (int j=0; j<notesVector.size(); j++)
+    {
+      Note note = (Note)(notesVector.elementAt(j));
+      float noteLength = getNoteLength(note, defaultLength);
+      if (!note.isRest())
+      {
+        ShortMessage myNoteOff = new ShortMessage();
+        myNoteOff.setMessage(ShortMessage.NOTE_OFF , getMidiNoteNumber(note, currentKey), 50);
+        track.add(new MidiEvent(myNoteOff,(long)(elapsedTime+noteLength)));
+      }
+    }
+    float maxMength = getNoteLength(notes, defaultLength);
+    elapsedTime += maxMength;
+  }
+  /** Writes a midi file for the given tune.
+   * @param tune The tune to be written as midi file
+   * @param file The file to be used to write midi data.
+   * @exception IOException */
+/*  public static void toMidiFile(Tune tune, File file) throws IOException
+  {
+    Sequence seq = convertToMidiSequence(tune);
+    int fileType = MidiSystem.getMidiFileTypes(seq)[0];
+    MidiSystem.write(seq, fileType, file);
+  }*/
+
+  /** Returns the absolute note length of a note, thanks to the sequence
+   * resolution and the default note length. */
+  private static float getNoteLength(Note note, DefaultNoteLength defaultNoteLength)
+  {
+    //float defaultNoteLengthInQuarterNotes = (defaultNoteLength.floatValue()) / (new Fraction(1,4).floatValue());
+    //float defaultNoteLengthInQuarterNotes = (defaultNoteLength.getDefaultNoteLength()) / (Note.QUARTER);
+    short noteLength = note.getLength(defaultNoteLength.getDefaultNoteLength());
+    float numberOfQuarterNotesInThisNote = (float)noteLength / Note.QUARTER;
+    float lengthInTicks = (float)SEQUENCE_RESOLUTION * numberOfQuarterNotesInThisNote;
+    return lengthInTicks;
+  }
+
+  private static float getNoteLength(MultiNote note, DefaultNoteLength defaultNoteLength)
+  {
+    //float defaultNoteLengthInQuarterNotes = (defaultNoteLength.floatValue()) / (new Fraction(1,4).floatValue());
+    //float defaultNoteLengthInQuarterNotes = (defaultNoteLength.getDefaultNoteLength()) / (Note.QUARTER);
+    //float numberOfQuarterNotesInThisNote = note.getLongestNote().getRelativeLength().floatValue() * defaultNoteLengthInQuarterNotes;
+    short longestLength = note.getLongestNote().getLength(defaultNoteLength.getDefaultNoteLength());
+    float numberOfQuarterNotesInThisNote =  (float)longestLength / Note.QUARTER;
+    float lengthInTicks = (float)SEQUENCE_RESOLUTION * numberOfQuarterNotesInThisNote;
+    return lengthInTicks;
+  }
+
+  /** Returns the midi note number corresponding a note in the given key.
+   * @param note The note.
+   * @param key The key.
+   * @return The midi heigth of the note in the given key. */
+  public static byte getMidiNoteNumber (Note note, KeySignature key)
+  {
+    byte heigth = note.getHeigth();
+    byte accidental = note.getAccidental();
+    byte midiNoteNumber = (byte)(heigth+(69-Note.A));
+    midiNoteNumber = (byte)(midiNoteNumber + note.getOctaveTransposition()*12);
+    if (accidental == Note.NATURAL)
+    {
+      byte absoluteAccidental = Note.NATURAL;
+      byte heightOnOneOctave = (byte)(heigth % 12);
+      absoluteAccidental = key.getAccidentalFor(heightOnOneOctave);
+      switch (absoluteAccidental)
+      {
+          case Note.FLAT :
+            midiNoteNumber --; break;
+          case Note.NATURAL	:
+            break;
+          case Note.SHARP :
+            midiNoteNumber ++; break;
+      }
+    }
+    else
+    {
+      switch (accidental)
+      {
+          case Note.FLAT : midiNoteNumber --; break;
+          case Note.NATURAL	: break;
+          case Note.SHARP : midiNoteNumber ++; break;
+      }
+    }
+    return midiNoteNumber;
+  }
+}
+

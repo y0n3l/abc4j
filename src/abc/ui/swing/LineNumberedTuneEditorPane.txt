@@ -1,0 +1,418 @@
+package abc.ui.swing;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.datatransfer.*;
+import javax.swing.event.*;
+import javax.swing.*;
+import javax.swing.text.*;
+import javax.swing.text.rtf.*;
+import javax.swing.text.*;
+import java.awt.SystemColor;
+import scanner.*;
+import abc.notation.*;
+import abc.parser.*;
+import java.util.*;
+import java.io.*;
+
+/** A pane for displaying and editing tunes. This pane handles copy/paste
+ * actions. */
+public class TuneEditorPane extends JTextPane implements ActionListener
+{
+  private int nbApply =0;
+  private Style m_barAtt = null;
+  private Style m_errorAtt = null;
+  private Style m_fieldAtt = null;
+  private Style m_rhythmAtt = null;
+  private Style m_defaultAtt = null;
+  private static final int IDLE_TIME_BEFORE_REFRESH = 200;
+  /** The thread in charge of refreshing the tune representation of this editor pane. */
+  private ParsingRefresh m_refresher = null;
+  /** The tune currently represented in this editor pane. */
+  private Tune m_tune = null;
+
+  private EditorKit m_editorKit = null;
+
+  public TuneEditorPane()
+  {
+    this(new TuneParser());
+    m_editorKit = new MyRTFEditorKit();
+    //setEditorKit(m_editorKit);
+  }
+
+  public TuneEditorPane(TuneParser parser)
+  {
+    setFont(new Font("Courier", Font.PLAIN, 12));
+    m_refresher = new ParsingRefresh((DefaultStyledDocument)getDocument(), parser);
+    //SwingUtilities.invokeLater(m_refresher);
+    KeyStroke copy = KeyStroke.getKeyStroke(KeyEvent.VK_C,ActionEvent.CTRL_MASK,false);
+    // Identifying the copy KeyStroke user can modify this
+    // to copy on some other Key combination.
+    KeyStroke paste = KeyStroke.getKeyStroke(KeyEvent.VK_V,ActionEvent.CTRL_MASK,false);
+    // Identifying the Paste KeyStroke user can modify this
+    //to copy on some other Key combination.
+    registerKeyboardAction(this,"Copy",copy,JComponent.WHEN_FOCUSED);
+    registerKeyboardAction(this,"Paste",paste,JComponent.WHEN_FOCUSED);
+    createStyles();
+    setCharacterAttributes(m_defaultAtt, true);
+  }
+
+  public boolean getScrollableTracksViewportWidth()
+  { return false;  }
+
+  public TuneParser getParser()
+  { return m_refresher.getParser(); }
+
+  public void setSize(Dimension d)
+  {
+    if(d.width < getParent().getSize().width)
+      d.width = getParent().getSize().width;
+    super.setSize(d);
+  }
+
+  public Tune getTune()
+  { return m_tune; }
+
+  public void setDocument(Document doc)
+  {
+    super.setDocument(doc);
+    if (m_refresher!=null)
+    {
+      setCharacterAttributes(m_defaultAtt, true);
+      m_refresher.setDocument((DefaultStyledDocument)doc);
+    }
+  }
+
+/*  public void setText(final String text)
+  {
+    super.setText(text);
+  }*/
+
+  private void createStyles()
+  {
+    Style root = addStyle("default", null);
+    StyleConstants.setFontFamily(root, "Courier");
+    Style errorStyle = addStyle("error", root);
+    StyleConstants.setBackground(errorStyle, Color.red);
+    Style barsStyle = addStyle("bars", root);
+    StyleConstants.setForeground(barsStyle, Color.magenta);
+    Style fieldStyle = addStyle("field", root);
+    StyleConstants.setBold(fieldStyle, true);
+    Style rhythmStyle = addStyle("rhythm", root);
+    StyleConstants.setForeground(rhythmStyle, Color.green);
+
+    m_defaultAtt = root;
+    m_fieldAtt = fieldStyle;
+    m_barAtt = barsStyle;
+    m_errorAtt = errorStyle;
+    m_rhythmAtt = rhythmStyle;
+  }
+
+  /** This method is activated on the Keystrokes we are listening to
+   * in this implementation. Here it listens for Copy and Paste ActionCommands. */
+  public void actionPerformed(ActionEvent e)
+  {
+    if (e.getActionCommand().compareTo("Copy")==0)
+    {
+      StringBuffer sbf=new StringBuffer();
+      //System.out.println("COPY ! : " + getSelectedText());
+      StringSelection stsel  = new StringSelection(getSelectedText());
+      Clipboard system = Toolkit.getDefaultToolkit().getSystemClipboard();
+      system.setContents(stsel,stsel);
+    }
+    if (e.getActionCommand().compareTo("Paste")==0)
+    {
+      Clipboard system = Toolkit.getDefaultToolkit().getSystemClipboard();
+      try
+      {
+        String selectedText = getSelectedText();
+        String trstring= (String)(system.getContents(this).getTransferData(DataFlavor.stringFlavor));
+        //System.out.println("PASTE ! : " + trstring);
+        if (selectedText!=null)
+          getDocument().remove(getCaretPosition(), selectedText.length());
+        getDocument().insertString(getCaretPosition(), trstring, m_defaultAtt);
+      }
+      catch(Exception ex)
+      {ex.printStackTrace();}
+    }
+  }
+
+  private class ParsingRefresh extends Thread implements DocumentListener, TuneParserListenerInterface
+  {
+    private int m_elapsedTimeSinceLastParsing = 0;
+    private DefaultStyledDocument m_document = null;
+    private TuneParser m_parser = null;
+    private int m_idleTime = 0;
+    private Object m_mutex = new Object();
+    private Vector m_parsingEvents = null;
+
+    public ParsingRefresh(DefaultStyledDocument document, TuneParser parser)
+    {
+      super("ABC-TunePaneRefresh");
+      start();
+      m_parser = parser;
+      m_parsingEvents = new Vector();
+      m_parser.addListener(this);
+      m_document = document;
+      m_document.addDocumentListener(this);
+    }
+
+    public TuneParser getParser()
+    { return m_parser; }
+
+    public void setDocument(DefaultStyledDocument doc)
+    {
+      m_document.removeDocumentListener(this);
+      m_document = doc;
+      m_document.addDocumentListener(this);
+    }
+
+    public void run()
+    {
+      while (true)
+      {
+        try
+        {
+          synchronized(m_mutex)
+          {
+            System.out.println("Area - wait()");
+            m_mutex.wait();
+            do
+            {
+              //System.out.println("Area - compting before parsing : " + m_idleTime);
+              m_mutex.wait(10);
+              m_idleTime+=10;
+            }
+            while (m_idleTime<=IDLE_TIME_BEFORE_REFRESH);
+            try
+            {
+              System.out.println("Area - parsing()");
+              String tuneNotation = TuneEditorPane.this.getDocument().getText(0, TuneEditorPane.this.getDocument().getLength());
+              m_tune = m_parser.parse(tuneNotation);
+            }
+            catch (Exception e)
+            { e.printStackTrace(); }
+          }
+        }
+        catch (InterruptedException e)
+        { e.printStackTrace(); }
+      }
+    }
+
+    public void changedUpdate(DocumentEvent e)
+    { }
+
+    public void insertUpdate(DocumentEvent e)
+    {
+      //System.out.println("insert qque chose");
+      //m_notationChanged = true;
+      synchronized(m_mutex)
+      {
+        m_mutex.notify();
+        m_idleTime=0;
+      }
+    }
+
+    public void removeUpdate(DocumentEvent e)
+    {
+      //System.out.println("remove qque chose");
+      //m_notationChanged = true;
+      synchronized(m_mutex)
+      {
+        m_mutex.notify();
+        m_idleTime=0;
+      }
+    }
+//===========================================================THOSE CALLBACK CREATE A DEADLOCK WHEN SETTING TEXT ATTRIBUTES.
+    public void tuneBegin()
+    { m_parsingEvents.removeAllElements(); }
+
+    public void tuneEnd(Tune tune)
+    {
+      try
+      {
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+          public void run() {
+            redrawTune();
+          }
+        });
+      }
+      catch (Exception e)
+      { e.printStackTrace(); }
+    }
+
+    public void validToken(final TokenEvent evt)
+    {
+      m_parsingEvents.addElement(evt);
+    }
+
+    private void redrawTune()
+    {
+      //System.out.println("redrawing tune for tokens : " + m_tokens);
+      EventObject event = null;
+      for (int i=0; i<m_parsingEvents.size(); i++)
+      {
+        event = (EventObject)m_parsingEvents.elementAt(i);
+        if (event instanceof TokenEvent)
+        {
+          Token token = ((TokenEvent)event).getToken();
+          try
+          {
+            Style att = m_defaultAtt;
+            if (token.getType().equals(AbcTokenType.FIELD_NUMBER) ||
+                token.getType().equals(AbcTokenType.FIELD_BOOK) ||
+                token.getType().equals(AbcTokenType.FIELD_COMPOSER) ||
+                token.getType().equals(AbcTokenType.FIELD_DISCOGRAPHY) ||
+                token.getType().equals(AbcTokenType.FIELD_GROUP) ||
+                token.getType().equals(AbcTokenType.FIELD_METER) ||
+                token.getType().equals(AbcTokenType.FIELD_ORIGIN) ||
+                token.getType().equals(AbcTokenType.FIELD_RHYTHM) ||
+                token.getType().equals(AbcTokenType.FIELD_DEFAULT_LENGTH) ||
+                token.getType().equals(AbcTokenType.FIELD_TITLE) ||
+                token.getType().equals(AbcTokenType.FIELD_TEMPO) ||
+                token.getType().equals(AbcTokenType.FIELD_TRANSCRNOTES) ||
+                token.getType().equals(AbcTokenType.FIELD_KEY)
+                ) att = m_fieldAtt;
+            else
+            if (token.getType().equals(AbcTokenType.TUPLET_SPEC) ||
+                token.getType().equals(AbcTokenType.BROKEN_RHYTHM)
+                ) att = m_rhythmAtt;
+            else if (token.getType().equals(AbcTokenType.BARLINE) ||
+                     token.getType().equals(AbcTokenType.REPEAT_OPEN) ||
+                     token.getType().equals(AbcTokenType.REPEAT_CLOSE) ||
+                     token.getType().equals(AbcTokenType.NTH_REPEAT)
+                     )
+              att = m_barAtt;
+            m_document.setCharacterAttributes(token.getPosition().getCharactersOffset(),
+                                              token.getValue().length(), att, true);
+          }
+          catch (Exception e)
+          { e.printStackTrace(); }
+        }
+        else
+          if (event instanceof InvalidCharacterEvent)
+          {
+            InvalidCharacterEvent evt = (InvalidCharacterEvent)event;
+            m_document.setCharacterAttributes(evt.getPosition().getCharactersOffset(), 1, m_errorAtt, true);
+          }
+      }
+    }
+
+    public void invalidToken(InvalidTokenEvent evt)
+    {
+      /*if (!m_notationChanged)
+      try
+      {
+        if (evt.getToken()!=null)
+          m_document.setCharacterAttributes(evt.getToken().getPosition().getCharactersOffset(),
+                                          evt.getToken().getValue().length(),
+                                          m_errorAtt, true);
+        else
+          m_document.setCharacterAttributes(evt.getToken().getPosition().getCharactersOffset(),
+                                          1,
+                                          m_errorAtt, true);
+      }
+      catch (Exception e)
+      {
+        e.printStackTrace();
+        System.err.println("the document is equal to : " + m_document);
+
+      }*/
+    }
+
+    public void invalidCharacter(InvalidCharacterEvent evt)
+    {
+      m_parsingEvents.addElement(evt);
+      /*try
+      { m_document.setCharacterAttributes(evt.getPosition().getCharactersOffset(), 1, m_errorAtt, true); }
+      catch (Exception e)
+      { e.printStackTrace(); }*/
+    }
+  }
+
+
+  class MyRTFEditorKit
+      extends StyledEditorKit {
+    public ViewFactory getViewFactory() {
+      return new MyRTFViewFactory();
+    }
+  }
+
+  class MyRTFViewFactory
+      implements ViewFactory {
+    public View create(Element elem) {
+
+      String kind = elem.getName();
+      if (kind != null)
+        if (kind.equals(AbstractDocument.ContentElementName)) {
+          return new LabelView(elem);
+        }
+        else if (kind.equals(AbstractDocument.ParagraphElementName)) {
+// return new ParagraphView(elem);
+          return new MyParagraphView(elem);
+        }
+        else if (kind.equals(AbstractDocument.SectionElementName)) {
+// return new BoxView(elem, View.Y_AXIS);
+          return new MySectionView(elem, View.Y_AXIS);
+        }
+        else if (kind.equals(StyleConstants.ComponentElementName)) {
+          return new ComponentView(elem);
+        }
+        else if (kind.equals(StyleConstants.IconElementName)) {
+          return new IconView(elem);
+        }
+// default to text display
+      return new LabelView(elem);
+    }
+    public String toString()
+    { return "MyRTFViewFactory@" + hashCode(); }
+  }
+
+  class MySectionView extends BoxView
+  {
+    public MySectionView(Element e, int axis)
+    { super(e, axis); }
+
+    public void paintChild(Graphics g, Rectangle r, int n)
+    {
+      if (n > 0)
+      {
+        MyParagraphView child = (MyParagraphView)this.getView(n - 1);
+        int shift = child.shift + child.childCount;
+
+        MyParagraphView current = (MyParagraphView)this.getView(n);
+        current.shift = shift;
+      }
+      super.paintChild(g, r, n);
+    }
+  }
+
+  class MyParagraphView extends javax.swing.text.ParagraphView
+  {
+    public int childCount;
+    public int shift = 0;
+    public MyParagraphView(Element e)
+    {
+      super(e);
+      short top = 0;
+      short left = 20;
+      short bottom = 0;
+      short right = 0;
+      this.setInsets(top, left, bottom, right);
+    }
+
+    public void paint(Graphics g, Shape a) {
+      childCount = this.getViewCount();
+      super.paint(g, a);
+      int rowCountInThisParagraph = this.getViewCount(); //<----- YOU HAVE REAL ROW COUNT FOR ONE PARAGRAPH}
+      //System.err.println(rowCountInThisParagraph);
+    }
+
+    public void paintChild(Graphics g, Rectangle r, int n) {
+      super.paintChild(g, r, n);
+      g.drawString(Integer.toString(shift + n + 1)+".", r.x - 20, r.y + r.height - 3);
+    }
+
+  }
+
+}

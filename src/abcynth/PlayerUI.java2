@@ -1,0 +1,198 @@
+package abc.player;
+
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.event.*;
+import javax.swing.*;
+import javax.swing.table.*;
+import java.awt.SystemColor;
+import abc.notation.*;
+import abc.parser.*;
+import java.util.*;
+import java.io.*;
+
+public class PlayerUI extends JFrame implements WindowListener
+{
+  private AbcFile m_file = null;
+  private JTable table = null;
+  private JTextArea tuneTextArea = new JTextArea();
+  private Vector tunes = new Vector();
+  private TunePlayer player = null;
+  private File lastDirectory = new File("c:/temp");
+
+  public PlayerUI()
+  {
+    super("abc4J");
+    JMenuBar menuBar = new JMenuBar();
+    JMenu menu = new JMenu("File");
+    menuBar.add(menu);
+    final JMenuItem chooseFile = new JMenuItem("Select File...");
+    menu.add(chooseFile);
+    ActionListener act = new ActionListener(){
+      public void actionPerformed(ActionEvent e)
+      {
+        System.out.println(e);
+        JFileChooser chooser = new JFileChooser(lastDirectory);
+        int returnVal = chooser.showOpenDialog(chooseFile);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = chooser.getSelectedFile();
+            lastDirectory=file;
+            AbcFile abcFile = new AbcFile(file.getPath());
+            setFile(abcFile);
+        }
+        chooser.setVisible(true);
+        //System.out.println(chooser.);
+
+      }
+    };
+    chooseFile.addActionListener(act);
+    setJMenuBar(menuBar);
+
+    addWindowListener(this);
+    player = new TunePlayer();
+    player.start();
+    table = new JTable(tunes.size(), 5);
+    TableModel dataModel = new AbstractTableModel()
+    {
+      public int getColumnCount() { return 5; }
+      public int getRowCount() { return tunes.size();}
+      public Object getValueAt(int row, int col)
+      {
+        AbcTune tune = (AbcTune)tunes.elementAt(row);
+        if (col==0) return new Integer(tune.getReferenceNumber());
+        else
+        if (col==1)
+        {
+          if (tune.getTitles()!=null) return tune.getTitles()[0];
+          else return "";
+        }
+        else
+        if (col==2)
+        {
+          if (tune.getRhythm()!=null) return tune.getRhythm();
+          else return "";
+        }
+        else
+        if (col==3)
+        {
+          if (tune.getKey()!=null )return tune.getKey().toLitteralNotation();
+          else return "";
+        }
+        else
+        if (col==4)
+        {
+          if (tune.getTranscriptionNotes()!=null) return tune.getTranscriptionNotes();
+          else return "";
+        }
+        else
+          return "";
+      }
+    };
+
+      table.setModel(dataModel);
+
+      ListSelectionListener sel = new ListSelectionListener()
+      {
+        public void valueChanged(ListSelectionEvent e)
+        {
+          if (!e.getValueIsAdjusting())
+          {
+            int first = e.getFirstIndex();
+            int last = e.getLastIndex();
+            int selectedRow = -1;
+            if (table.getSelectionModel().isSelectedIndex(first))
+              selectedRow = first;
+            else
+            if (table.getSelectionModel().isSelectedIndex(last))
+              selectedRow = last;
+
+            System.out.println(selectedRow);
+            int index = table.getSelectionModel().getMinSelectionIndex();
+            int tuneIndex = ( (Integer) table.getValueAt(index, 0)).intValue();
+            try {
+              String tu = m_file.getTune(tuneIndex);
+              System.out.println("tune : " + tu);
+            tuneTextArea.setText(tu);
+            }catch(Exception excpt)
+            {
+              excpt.printStackTrace();
+            }
+          }
+        }
+      };
+
+      table.getSelectionModel().addListSelectionListener(sel);
+
+      //frame.getContentPane().setLayout(new FlowLayout(FlowLayout.CENTER));
+
+      JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+      splitPane.setDividerSize(15);
+      splitPane.setOneTouchExpandable(true);
+      JScrollPane tablePane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+      JButton playButton = new JButton("START / STOP");
+      JPanel upperPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
+      upperPanel.add(tablePane);
+
+      upperPanel.add(playButton);
+
+      splitPane.setTopComponent(upperPanel);
+
+      splitPane.setBottomComponent(tuneTextArea);
+      getContentPane().add(splitPane);
+
+      ActionListener actionList = new ActionListener()
+      {
+        public void actionPerformed(ActionEvent e)
+        {
+          if (!player.isPlaying())
+          {
+            int index = table.getSelectionModel().getMinSelectionIndex();
+            int tuneIndex = ( (Integer) table.getValueAt(index, 0)).intValue();
+            try {
+              AbcTuneParser parser = new AbcTuneParser(m_file.getTune(tuneIndex));
+              player.play(parser.parse());
+            }
+            catch (Exception excpt) {
+            }
+          }
+          else
+            player.stopPlaying();
+        }
+      };
+      playButton.addActionListener(actionList);
+
+      pack();
+  }
+
+
+  public void setFile(AbcFile file)
+  {
+    m_file = file;
+    tunes = new Vector();
+    try
+    {
+      int[] numbers = file.getReferenceNumbers();
+      for (int i=0; i<numbers.length; i++)
+      {
+        AbcTuneParser parser = new AbcTuneParser(file.getTune(numbers[i]));
+        System.out.println("===================== PARSING TUNE n°" + numbers[i]);
+        tunes.addElement(parser.parseHeader());
+      }
+      table.updateUI();
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+  }
+
+  public void windowActivated(WindowEvent e) {}
+
+  public void windowClosed(WindowEvent e) {}
+public void windowClosing(WindowEvent e) { player.stop();}
+public void windowDeactivated(WindowEvent e) {}
+public void windowDeiconified(WindowEvent e) {}
+public void windowIconified(WindowEvent e) {}
+public void windowOpened(WindowEvent e) {}
+
+}

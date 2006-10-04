@@ -1,0 +1,27 @@
+[PropertyInfo]
+file,File,false,false, , ,true,<default>
+lastDirectory,File,false,false, , ,false,<default>
+m_addTuneAction,TuneBookActionAbstract,false,false, , ,false,<default>
+m_file,File,false,false, , ,false,<default>
+m_fileMenu,JMenu,false,false, , ,false,<default>
+m_lastOpenedFiles,CircularBuffer,false,false, , ,false,<default>
+m_lastOpenedFilesMenu,JMenu,false,false, , ,false,<default>
+m_logFrame,LogFrame,false,false, , ,false,<default>
+m_player,TunePlayer,false,false, , ,false,<default>
+m_playerToolBar,PlayerToolBar,false,false, , ,false,<default>
+m_saveAction,TuneBookActionAbstract,false,false, , ,false,<default>
+m_saveAsAction,TuneBookActionAbstract,false,false, , ,false,<default>
+m_showHideLogAction,Action,false,false, , ,false,<default>
+m_tune2MidiExport,Action,false,false, , ,false,<default>
+m_tuneBook,TuneBook,false,false, , ,false,<default>
+m_tuneBookEditorPanel,TuneBookEditorPanel,false,false, , ,false,<default>
+m_tunebookMenu,JMenu,false,false, , ,false,<default>
+m_tunePopMenu,JPopupMenu,false,false, , ,false,<default>
+m_windowsMenu,JMenu,false,false, , ,false,<default>
+tuneBook,TuneBook,false,false, , ,true,<default>
+tunesNb,int,false,false, , ,false,<default>
+[IconNames]
+
+
+
+

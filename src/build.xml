@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="abc4j" default="all" basedir=".">
+
+	<!-- Properties for this project. -->
+	<property name="classesdir" value="${basedir}/classes" />
+	<property name="srcdir" value="${basedir}/src" />
+	<property name="libdir" value="${basedir}/lib" />
+	<property name="apidir" value="${basedir}/docs" />
+	<property name="junitdir" value="${basedir}/junit3.8.1" />
+    
+	<!-- Defines the set of java sources to compile. -->
+	<patternset id="source.patternset">
+		<include name="${srcdir}/**" />
+	</patternset>
+
+	<!-- Makes all -->
+	<target name="all" depends="clean, sources.compile, libs, javadoc" />
+
+	<!--===================================== COMPILATION PART ======================================-->
+	<!-- Compiles the java sources. -->
+	<target name="sources.compile">
+		<mkdir dir="${classesdir}" />
+		<echo>Compiling files from ${srcdir} to ${classesdir}</echo>
+		<javac srcdir="${srcdir}" destdir="${classesdir}"
+			includes="abc/**,abcynth/**,check/**,scanner/**"
+			excludes="abc/ui/jmusic/**">
+		</javac>
+	</target>
+	
+	<!--===================================== LIB ======================================-->
+	<target name="libs">
+			<mkdir dir="${libdir}" />
+			<echo>Generating jars to ${libdir}</echo>
+			<jar destfile="${libdir}/abc4j.jar" basedir="${classesdir}"
+				includes="abc/**,abcynth/**,check/**,scanner/**"
+				manifest="${srcdir}/manifest.mf">
+			</jar>
+	</target>
+	
+	<!-- Instrument code -->
+	<target name="jcoverage.instrument" description="Instrument classes with JCoverage">
+		<instrument todir="${classesdir}/optimize">
+			<fileset dir="${classesdir}/${mode}">
+				<include name="**/*.class" />
+			</fileset>
+		</instrument>
+		<move file="${basedir}/jcoverage.ser" tofile="${libdir}/optimize/jcoverage.ser" />
+	</target>
+
+	<!-- This target generates a report between the .ser in RUMBA and the one in ... -->
+	<target name="jcoverage.report" description="Run the JCoverage merge/report">
+		<!-- merging coverage results and instrumentation results -->
+		<echo>Merging from reference ${libdir}/optimize/jcoverage.ser and ${libdir}</echo>
+		<merge>
+			<classpath refid="jcoverage.classpath" />
+			<fileset dir="${basedir}">
+				<include name="lib/optimize/jcoverage.ser" />
+				<include name="lib/jcoverage.ser" />
+			</fileset>
+		</merge>
+
+		<!-- generating report results -->
+		<echo>Generating from ${basedir} to ${logdir}/coverage</echo>
+		<report srcdir="${srcdir}" destdir="${logdir}/coverage">
+			<classpath refid="jcoverage.classpath" />
+		</report>
+		<report srcdir="${srcdir}" destdir="${logdir}/coverage" format="xml">
+			<classpath refid="jcoverage.classpath" />
+		</report>
+	</target>
+	
+	<!-- ================================== END OF COVERAGE ==================================== -->
+	<target name="javadoc">
+		<mkdir dir="${apidir}"/>
+		<javadoc destdir="${apidir}" author="true" version="true" use="true" 
+			windowtitle="abc4j API Documentation" 
+			doctitle="abc4j doctitle>"
+			header="abc4j header"
+			footer="abc4j footer"
+			overview="${srcdir}/overview.html"
+			sourcepath="${srcdir}">
+			<bottom>&lt;a href=&quot;mailto:lionel.gueganton@libertysurf.fr&quot;&gt;Submit a bug of feature&lt;a&#47;&gt;</bottom>
+			<classpath path="${classesdir}" />
+			<group title="Core packages" packages="abc*"/>
+      		<group title="Scanner foundation packages" packages="scanner*"/>
+      		<packageset dir="${srcdir}" defaultexcludes="yes">
+				<include name="abc/**" />
+      			<include name="scanner/**" />
+				<!--<exclude name="**/vdo/app/mediaplayer/wrp/**" />
+				<exclude name="**/vdo/app/mm/playlist/test/**" />
+				<exclude name="**/vdo/app/mm/vol/cads" />
+				<exclude name="**/vdo/app/mm/vol" />
+				<exclude name="**/vdo/app/mm/vcdcdc/**" />
+				<exclude name="**/vdo/app/mmp/ext/e60/diag/**" />
+				<exclude name="**/vdo/app/voicememo/test/rem/**" />
+				<exclude name="**/vdo/svc/voicememo/**" />-->
+			</packageset>
+		</javadoc>
+		<zip destfile="${basedir}/abc4jApiDoc.zip" basedir="${apidir}" />
+	</target>
+	
+	<!-- Removes the compiled files -->
+	<target name="clean" description="Removes the compiled files">
+		<delete dir="${classesdir}" />
+		<delete dir="${apidir}" />
+		<delete dir="${libdir}" />
+	</target>
+
+</project>

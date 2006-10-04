@@ -1,0 +1,113 @@
+package abc.player;
+
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.event.*;
+import javax.swing.*;
+import javax.swing.table.*;
+import java.awt.SystemColor;
+import abc.notation.*;
+import abc.parser.*;
+import abc.midi.*;
+import scanner.*;
+import java.util.*;
+import java.io.*;
+
+/** A simple user interface to display abc files content and play
+ * tunes. */
+public class PlayerUI extends JFrame implements WindowListener
+{
+  private File m_file = null;
+  private TuneBook m_book = null;
+  private PlayerPanel m_playerPanel = null;
+  private Vector tunes = new Vector();
+  private File lastDirectory = new File("c:/temp");
+
+  public PlayerUI()
+  {
+    super("abc4J");
+
+    //==========================================================================MENU BARS
+    JMenuBar menuBar = new JMenuBar();
+    JMenu menu = new JMenu("File");
+    menuBar.add(menu);
+    final JMenuItem chooseFile = new JMenuItem("Select File...");
+    menu.add(chooseFile);
+    ActionListener act = new ActionListener(){
+      public void actionPerformed(ActionEvent e)
+      {
+        JFileChooser chooser = new JFileChooser(lastDirectory);
+        int returnVal = chooser.showOpenDialog(chooseFile);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = chooser.getSelectedFile();
+            lastDirectory=file;
+            File abcFile = new File(file.getPath());
+            setFile(abcFile);
+        }
+        chooser.setVisible(true);
+        try
+        {
+          ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("essai.dat"));
+          oos.writeObject(lastDirectory);
+          oos.close();
+        }
+        catch (Exception ex)
+        {
+          ex.printStackTrace();
+        }
+
+      }
+    };
+    chooseFile.addActionListener(act);
+
+    JMenu helpMenu = new JMenu("Help");
+    menuBar.add(helpMenu);
+    JMenuItem aboutItem = new JMenuItem("About abc4J...");
+    helpMenu.add(aboutItem);
+    act = new ActionListener(){
+      public void actionPerformed(ActionEvent e)
+      { JOptionPane.showMessageDialog(PlayerUI.this, "abc4j\n2003 - Lionel GUEGANTON\n"); }
+    };
+    aboutItem.addActionListener(act);
+
+    setJMenuBar(menuBar);
+
+    m_playerPanel = new PlayerPanel();
+    JPanel p = new JPanel();
+    p.setLayout(new BorderLayout());
+    p.add(m_playerPanel);
+    getContentPane().add(p);
+    addWindowListener(this);
+    pack();
+
+  }
+
+
+  public void setFile(File file)
+  {
+    m_file = file;
+    m_book = new TuneBook(file);
+    m_playerPanel.setTuneBook(m_book);
+    setTitle("abc4J : " + file.getAbsolutePath() + "\\" + file.getName());
+  }
+
+  public void windowActivated(WindowEvent e) {}
+  public void windowClosed(WindowEvent e)  {}
+  public void windowClosing(WindowEvent e)
+  {
+    System.exit(0);
+    //player.stop();
+  }
+
+  public void windowDeactivated(WindowEvent e) {}
+  public void windowDeiconified(WindowEvent e) {}
+  public void windowIconified(WindowEvent e) {}
+  public void windowOpened(WindowEvent e) {}
+
+  public static void main (String[] arg)
+  {
+    PlayerUI ui = new PlayerUI();
+    ui.setVisible(true);
+  }
+
+}

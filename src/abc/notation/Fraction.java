@@ -1,0 +1,76 @@
+package abc.notation;
+
+/** This class enables the representation of a fraction. */
+public class Fraction
+{
+  private float numerator = 0;
+  private int denominator = 1;
+
+  /** Creates a new fraction with the specified numerator and denominator values.
+   * @param numeratorValue The value of the numerator.
+   * @param denominatorValue The value of the denominator.
+   * @exception IllegalArgumentException Thrown if the denominator is equal
+   * to 0. */
+  public Fraction(int numeratorValue, int denominatorValue) throws IllegalArgumentException
+  {
+    setNumerator(numeratorValue);
+    setDenominator(denominatorValue);
+  }
+
+  /** Sets the numerator of this fraction.
+   * @param numeratorValue The numerator of this fraction. */
+  public void setNumerator(int numeratorValue)
+  { numerator = numeratorValue; }
+
+  /** Returns the numerator of this fraction.
+   * @return The numerator value of this fraction. */
+    public int getNumerator()
+  { return (int)numerator; }
+
+  /**
+   * @param denominatorValue The denominator of this fraction.
+   * @exception IllegalArgumentException Thrown if the denominator is equal
+   * to 0. */
+  public void setDenominator(int denominatorValue) throws IllegalArgumentException
+  {
+    if (denominator!=0)
+      denominator = denominatorValue;
+    else
+      throw new IllegalArgumentException("Denominator can't be equal to 0 !");
+  }
+
+  public int getDenominator()
+  { return denominator; }
+
+  /** Returns the float value represented by this fraction
+   * @return The fload value represented by this fraction. */
+  public float floatValue()
+  { return (numerator/denominator); }
+
+  /** Multiplies this fraction by the specified fraction and returns
+   * the result as a float. This fraction remains unchanged.
+   * @param fraction A Fraction.
+   * @return The result of the multiplication of this fraction by the specified
+   * one. */
+  public float multipliedBy (Fraction fraction)
+  {
+    float newNumerator = numerator * fraction.getNumerator();
+    float newDenominator = denominator * fraction.getDenominator();
+    return (newNumerator/newDenominator);
+  }
+
+  /** Returns a String representation of this fraction.
+   * @return a String representation of this fraction. */
+
+  public String toString()
+  {
+    if (denominator==1)
+      return (new Integer((int)numerator)).toString();
+    else
+      return (
+          (new Integer((int)numerator)).toString() + "/" +
+          (new Integer(denominator)).toString()
+          );
+  }
+}
+
