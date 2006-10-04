@@ -1,29 +1,16 @@
 <HTML>
 	<BODY>
-		This document is the API specification for the TLA platform layer RUMBA.<BR>
-		Documentation for controls provided by Rumba Applications can be found here : <BR>
-		- <A HREF="./ctrls/MMP.xml">MMP</A><BR>
-		- <A HREF="./ctrls/Audio.xml">Audio</A><BR>
-		- <A HREF="./ctrls/VoiceMemo.xml">VoiceMemo(based on new devices abstractions)</A>.
-		<BR><BR>RUMBA is also known as "EBL" : Entertainment Business Logic. <BR>
-		The purpose of this layer is
-		to provide high level interfaces to ease the manipulation of multimedia devices.<BR>
-		As those components should be reusable for several customization projects, those interfaces
-		should be flexible enough to support very different clients needs.<BR>
-		We can distinguish several parts inside RUMBA:
-		<UL>
-			<LI>Audio Application:
-			</LI>
-			<LI>MMP Application:
-			</LI>
-			<LI>VoiceMemo Application:
-			</LI>
-			<LI>Attributes Providers:
-			</LI>
-			<LI>Content DB:
-			</LI>
-			<LI>MediaPlayer and Media Sources Factories:
-			</LI>
-		</UL>
+		This document is the API specification for the abc4j musical library dedicated 
+		to the abc musical notation.<BR>
+		The abc4j java library provides API to handle ABC musical notation using java 
+		(1.2 but core classes only use 1.1.8).<BR>
+		It provides a parser to parse tunes written in ABC notation, 
+		and basic other helper classes in order to play them using midi etc etc.<BR>
+		It only supports ABC v1.6.<BR>
+		The purpose is also to define interfaces that can be implemented in order to
+		extend basic capabilities of the library (for instance : improved midi player, 
+		musical score display...)<BR>
+		The library also includes a Java Application that demonstrates some of the 
+		features of the library : ABCynth.<BR>
 	</BODY>
 </HTML>
