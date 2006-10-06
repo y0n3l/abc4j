@@ -87,14 +87,6 @@
       		<packageset dir="${srcdir}" defaultexcludes="yes">
 				<include name="abc/**" />
       			<include name="scanner/**" />
-				<!--<exclude name="**/vdo/app/mediaplayer/wrp/**" />
-				<exclude name="**/vdo/app/mm/playlist/test/**" />
-				<exclude name="**/vdo/app/mm/vol/cads" />
-				<exclude name="**/vdo/app/mm/vol" />
-				<exclude name="**/vdo/app/mm/vcdcdc/**" />
-				<exclude name="**/vdo/app/mmp/ext/e60/diag/**" />
-				<exclude name="**/vdo/app/voicememo/test/rem/**" />
-				<exclude name="**/vdo/svc/voicememo/**" />-->
 			</packageset>
 		</javadoc>
 		<zip destfile="${basedir}/abc4jApiDoc.zip" basedir="${apidir}" />
