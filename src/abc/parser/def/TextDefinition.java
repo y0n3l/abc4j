@@ -14,10 +14,11 @@ public class TextDefinition extends AutomataDefinition {
     '\t','"','!','#','$','&','\'','(',')','*','+',',','-','.','/',':',';','<','=','>','?','@','[','\\',']','^','_',
     '`','{','|','}','~',
     'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
-    'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'
+    'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z', 
     //==== not really part of v1.6
-    , 'á', 'â', 'ã', 'é', 'ê', 'í', 'ó', 'ô', 'õ', 'ú'		// as requiered by Hugo
-    , 'è', 'à', 'ù'											// french characters
+    'á', 'â', 'ã', 'é', 'ê', 'í', 'ó', 'ô', 'õ', 'ú', 		// as requiered by Hugo
+    'ç', 'É',												// as requiered by Hugo
+    'è', 'à', 'ù'											// french characters
     };
 
     public TextDefinition() {   
