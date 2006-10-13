@@ -376,7 +376,7 @@ public class TuneBook {
 
     public void fileEnd()
     {
-      System.out.println("file End");
+      //System.out.println("file End");
     }
 
     public void lineProcessed(String line)
