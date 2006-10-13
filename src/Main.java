@@ -50,7 +50,7 @@ public class Main //implements TunePlayerListenerInterface
     });
     try
     {
-      System.out.println("Parsing....");
+      /*System.out.println("Parsing....");
       long ref = System.currentTimeMillis();
       long intermediateRef = ref;
       System.out.println("Ref : " + ref);
@@ -69,7 +69,7 @@ public class Main //implements TunePlayerListenerInterface
 
       TuneBook tb = new TuneBook(new File("D:/Perso/abc/crash.ABC"));
       System.out.println("tunes nb " + tb.getReferenceNumbers().length);
-      System.out.println(tb.getTuneNotation(3));
+      System.out.println(tb.getTuneNotation(3));*/
     }
     catch (Exception e)
     {
@@ -77,8 +77,14 @@ public class Main //implements TunePlayerListenerInterface
     }
     try
     {
+    	System.out.println('\u00E0');
+    	System.out.println('\340');
       TuneBook t = new TuneBook(new File("D:/Perso/abc/crash.ABC"));
-
+      System.out.println(t.getReferenceNumbers().length);
+      for (int i=0; i<t.getReferenceNumbers().length; i++) {
+    	  System.out.println("=============tune X:"+ t.getReferenceNumbers()[i]);
+    	  System.out.println(t.getTuneHeader(t.getReferenceNumbers()[i]));
+      }
     }
     catch (Exception e)
     {e.printStackTrace(); }
