@@ -1,23 +1,38 @@
 package abc.parser;
-import java.io.*;
-import java.util.Vector;
-import java.util.TreeMap;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Iterator;
-import abc.notation.*;
-import scanner.*;
+import java.util.TreeMap;
+import java.util.Vector;
+
+import scanner.InvalidCharacterEvent;
+import scanner.ScannerListenerInterface;
+import scanner.TokenEvent;
+import abc.notation.NoSuchTuneException;
+import abc.notation.Tune;
 
 /** This class provides an object representation of a tunebook. It enables you
  * to store tunes ordered by reference number. */
-public class TuneBook
-{
+public class TuneBook {
+
   /** The file parser used to initialize the tunebook. */
   private AbcFileParser m_fileParser = null;
   /** The tune parser used to parse tunes notation. */
   private TuneParser m_parser = null;
-
+  /** The structure used to store the tunes.
+   * Key = Integer(ReferenceNumber)
+   * Value = TranscribedTune instance */ 
   private TreeMap m_tunes = null;
   /** Listeners of this tunebook. */
   private Vector m_listeners = null;
+  /** A structure that stores the same instances  as the ones in 
+   * m_tunes but that follows the same ordering of tunes
+   * as the ones in the ABC file. */
   private Vector m_originalTunesOrder = null;
   private File m_file = null;
 
@@ -30,8 +45,12 @@ public class TuneBook
     m_file = abcFile;
   }
 
-  public TuneBook(File abcFile, AbcFileParserListenerInterface listener) throws FileNotFoundException
-  {
+  /** Creates a new tune book from the specified file and gets feedback 
+   * from the parsing phasis via the specified listener.
+   * @param abcFile The file that contains tunes in abc notation.
+   * @param listener Listener to be informed of the parsing phasis.
+   * @throws FileNotFoundException Thrown if the specified file doesn't exist. */
+  public TuneBook(File abcFile, AbcFileParserListenerInterface listener) throws FileNotFoundException {
     this(new BufferedReader(new InputStreamReader(new FileInputStream (abcFile))),listener);
     m_file = abcFile;
   }
@@ -44,8 +63,11 @@ public class TuneBook
     buildTunesTreeMap(stream, null);
   }
 
-  public TuneBook(BufferedReader stream, AbcFileParserListenerInterface listener)
-  {
+  /** Creates a new tune book from the specified stream and gets feedback 
+   * from the parsing phasis via the specified listener.
+   * @param stream The stream in abc notation.
+   * @param listener Listener to be informed of the parsing phasis. */
+  public TuneBook(BufferedReader stream, AbcFileParserListenerInterface listener) {
     this();
     buildTunesTreeMap(stream, listener);
   }
@@ -69,6 +91,10 @@ public class TuneBook
     save();
   }
 
+  /** Returns the file associated to this TuneBook if any.
+   * @return Returns the file associated to this TuneBook if any.
+   * <TT>null</TT> is returned if this TuneBook has been created from 
+   * scratch for instance. */
   public File getFile()
   { return m_file; }
 
@@ -90,11 +116,11 @@ public class TuneBook
     System.out.println("Saving to " + m_file.toString());
   }
 
-  /** Puts the specified notation in this tunebook.
+  /** Puts the specified tune notation in this tunebook.
    * If a tune with the same reference number was already existing, it updates
    * it. If it's a new tune, it adds it.
    * @param tuneNotation A string that describes a tune using ABC notation.
-   * @return Header information of the added tune. */
+   * @return The Tune representation of the tuneNotation parameter. */
   public Tune putTune(String tuneNotation)
   {
     Tune parsedTune = m_parser.parseHeader(tuneNotation);
@@ -104,7 +130,7 @@ public class TuneBook
     {
       tune.notation = tuneNotation;
       tune.tune = parsedTune;
-      tune.m_isHeader = true;
+      tune.m_onlyHeader = true;
       notifyListenersForTuneChange(new TuneChangeEvent(this, TuneChangeEvent.TUNE_UPDATED, tune.tune, tuneNotation));
     }
     else
@@ -112,7 +138,7 @@ public class TuneBook
       tune = new TranscribedTune();
       tune.notation = tuneNotation;
       tune.tune = parsedTune;
-      tune.m_isHeader = true;
+      tune.m_onlyHeader = true;
       tune.header = "";
       m_tunes.put(key, tune);
       m_originalTunesOrder.addElement(tune);
@@ -155,16 +181,29 @@ public class TuneBook
     TranscribedTune tune = (TranscribedTune)m_tunes.get(key);
     if (tune!=null)
     {
-      if (tune.m_isHeader==true)
+      if (tune.m_onlyHeader==true)
       {
         tune.tune = m_parser.parse(tune.notation);
-        tune.m_isHeader = false;
+        tune.m_onlyHeader = false;
       }
       return tune.tune;
     }
     return null;
   }
 
+  /** Returns the text put just before a tune in an ABC file.
+   * For instance, with a file such as : 
+   * <PRE>
+   * %text 1 before the first tune
+   * X:5
+   * T:xxxx
+   * K:D
+   * ...
+   * </PRE>
+   * the invokation <PRE>getTuneHeader(5)</PRE> would return the string
+   * <PRE>"%text 1 before the first tune\n"</PRE>
+   * @return The text put just before a tune in an ABC file.
+   */
   public String getTuneHeader(int referenceNumber)
   {
     Integer key = new Integer(referenceNumber);
@@ -203,7 +242,7 @@ public class TuneBook
     int index=0;
     while (it.hasNext())
     {
-      tunes[index] = (Tune)m_tunes.get(it.next());
+      tunes[index] = ((TranscribedTune)m_tunes.get(it.next())).tune;
       index++;
     }
     return tunes;
@@ -225,6 +264,11 @@ public class TuneBook
     return refNb;
   }
 
+  /** Returns the highest reference number from all the reference
+   * numbers this tunebook contains.
+   * @return The highest reference number from all the reference
+   * numbers this tunebook contains. -1 is returned if no tune is 
+   * stored in this tunebook */
   public int getHighestReferenceNumber()
   {
     int[] refNumbers = getReferenceNumbers();
@@ -266,6 +310,7 @@ public class TuneBook
     ((TuneBookListenerInterface)m_listeners.elementAt(i)).tuneChanged(e);
   }
 
+  //============================= fills up the tunebook structure
   private void buildTunesTreeMap(BufferedReader readerStram, AbcFileParserListenerInterface clientListener)
   {
     m_tunes = new TreeMap();
@@ -283,7 +328,7 @@ public class TuneBook
     public String header = null;
     public Tune tune = null;
     public String notation = null;
-    public boolean m_isHeader = true;
+    public boolean m_onlyHeader = true;
   }
 
   private class ParserListener implements ScannerListenerInterface, AbcFileParserListenerInterface
@@ -331,7 +376,7 @@ public class TuneBook
 
     public void fileEnd()
     {
-      //System.out.println("file End");
+      System.out.println("file End");
     }
 
     public void lineProcessed(String line)
