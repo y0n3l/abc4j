@@ -16,9 +16,17 @@ public class TextDefinition extends AutomataDefinition {
     'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
     'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z', 
     //==== not really part of v1.6
-    'á', 'â', 'ã', 'é', 'ê', 'í', 'ó', 'ô', 'õ', 'ú', 		// as requiered by Hugo
-    'ç', 'É',												// as requiered by Hugo
-    'è', 'à', 'ù'											// french characters
+    //check http://en.wikipedia.org/wiki/Basic_Latin for values.
+    //'á',    'â',      'ã',     'é',      'ê',      'í',      'ó',      'ô', 
+    '\u00E0', '\u00E2', '\u00E3', '\u00E9', '\u00EA', '\u00ED', '\u00F3', '\u00F4', // as requiered by Hugo
+    //'õ',    'ú',      'ç',
+    '\u00F5', '\u00FA', '\u00E7',													// as requiered by Hugo 
+    //'À',     'Â',     'Ã',      'É',      'Ê',      'Í',      'Ó',      'Ô', 
+    '\u00C0', '\u00C2', '\u00C3', '\u00C9', '\u00CA', '\u00CD', '\u00D3', '\u00D4',	// as requiered by Hugo
+    //'Õ',    'Ú',      'Ç',
+    '\u00D5', '\u00DA', '\u00C7',													// as requiered by Hugo
+    //'è',    'à',      'ù'
+    '\u00E8', '\u00E0', '\u00F9',													// French characters
     };
 
     public TextDefinition() {   
