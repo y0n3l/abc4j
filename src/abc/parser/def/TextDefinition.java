@@ -17,8 +17,8 @@ public class TextDefinition extends AutomataDefinition {
     'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z', 
     //==== not really part of v1.6
     //check http://en.wikipedia.org/wiki/Basic_Latin for values.
-    //'á',    'â',      'ã',     'é',      'ê',      'í',      'ó',      'ô', 
-    '\u00E0', '\u00E2', '\u00E3', '\u00E9', '\u00EA', '\u00ED', '\u00F3', '\u00F4', // as requiered by Hugo
+    //'á',    'â',      'ã',      'é',      'ê',      'í',      'ó',      'ô', 
+    '\u00E1', '\u00E2', '\u00E3', '\u00E9', '\u00EA', '\u00ED', '\u00F3', '\u00F4', // as requiered by Hugo
     //'õ',    'ú',      'ç',
     '\u00F5', '\u00FA', '\u00E7',													// as requiered by Hugo 
     //'À',     'Â',     'Ã',      'É',      'Ê',      'Í',      'Ó',      'Ô', 
