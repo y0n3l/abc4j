@@ -27,7 +27,7 @@ public class FinaleStateAutomata
 
   /** Sets the definition of this automata. Changing the definition of this
    * automata will reinitialize it.
-   * @param def The definition of states and transitions of this automata.
+   * @param definition The definition of states and transitions of this automata.
    * @see #initialize() */
   public void setDefinition(AutomataDefinition definition)
   {
