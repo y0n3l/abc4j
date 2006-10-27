@@ -18,22 +18,22 @@ public class durationConversion extends TestCase {
 	
 	public void test1(){
 		Fraction relativeDuration = new Fraction(1,1);
-		assertEquals(Note.QUARTER, AbcToolkit.getAbsoluteDurationFor(relativeDuration, Note.QUARTER).getDuration());
-		assertEquals(0, AbcToolkit.getAbsoluteDurationFor(relativeDuration, Note.QUARTER).getDotsNumber());
+		assertEquals(Note.QUARTER, AbcToolkit.getAbsoluteDurationFor(relativeDuration, Note.QUARTER).getStrictDuration());
+		assertEquals(0, AbcToolkit.getAbsoluteDurationFor(relativeDuration, Note.QUARTER).countDots());
 		relativeDuration = new Fraction(2,1);
-		assertEquals(Note.HALF, AbcToolkit.getAbsoluteDurationFor(relativeDuration, Note.QUARTER).getDuration());
-		assertEquals(0, AbcToolkit.getAbsoluteDurationFor(relativeDuration, Note.QUARTER).getDotsNumber());
+		assertEquals(Note.HALF, AbcToolkit.getAbsoluteDurationFor(relativeDuration, Note.QUARTER).getStrictDuration());
+		assertEquals(0, AbcToolkit.getAbsoluteDurationFor(relativeDuration, Note.QUARTER).countDots());
 		relativeDuration = new Fraction(3,1);
-		assertEquals(Note.HALF, AbcToolkit.getAbsoluteDurationFor(relativeDuration, Note.QUARTER).getDuration());
-		assertEquals(1, AbcToolkit.getAbsoluteDurationFor(relativeDuration, Note.QUARTER).getDotsNumber());
+		assertEquals(Note.HALF, AbcToolkit.getAbsoluteDurationFor(relativeDuration, Note.QUARTER).getStrictDuration());
+		assertEquals(1, AbcToolkit.getAbsoluteDurationFor(relativeDuration, Note.QUARTER).countDots());
 		relativeDuration = new Fraction(4,1);
-		assertEquals(Note.WHOLE, AbcToolkit.getAbsoluteDurationFor(relativeDuration, Note.QUARTER).getDuration());
-		assertEquals(0, AbcToolkit.getAbsoluteDurationFor(relativeDuration, Note.QUARTER).getDotsNumber());
+		assertEquals(Note.WHOLE, AbcToolkit.getAbsoluteDurationFor(relativeDuration, Note.QUARTER).getStrictDuration());
+		assertEquals(0, AbcToolkit.getAbsoluteDurationFor(relativeDuration, Note.QUARTER).countDots());
 		//relativeDuration = new Fraction(5,1);
 		//assertEquals(Note.WHOLE, AbcToolkit.getAbsoluteDurationFor(relativeDuration, Note.QUARTER));
 		
 		relativeDuration = new Fraction(1,2);
-		assertEquals(Note.EIGHTH, AbcToolkit.getAbsoluteDurationFor(relativeDuration, Note.QUARTER).getDuration());
+		assertEquals(Note.EIGHTH, AbcToolkit.getAbsoluteDurationFor(relativeDuration, Note.QUARTER).getStrictDuration());
 		boolean exceptionThrown = false;
 		try{
 			relativeDuration = new Fraction(1,3);
@@ -44,7 +44,7 @@ public class durationConversion extends TestCase {
 		}
 		assertTrue(exceptionThrown);
 		relativeDuration = new Fraction(1,4);
-		assertEquals(Note.SIXTEENTH, AbcToolkit.getAbsoluteDurationFor(relativeDuration, Note.QUARTER).getDuration());
+		assertEquals(Note.SIXTEENTH, AbcToolkit.getAbsoluteDurationFor(relativeDuration, Note.QUARTER).getStrictDuration());
 		
 	}
 	
