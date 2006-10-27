@@ -1,13 +1,12 @@
 package abc.midi;
 
 import java.util.Vector;
+
 import javax.sound.midi.MetaEventListener;
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiSystem;
-import javax.sound.midi.MidiChannel;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
-import javax.sound.midi.Synthesizer;
 
 import abc.notation.NoteAbstract;
 import abc.notation.Tune;
@@ -15,8 +14,8 @@ import abc.notation.Tune;
 /** TunePlayer objects enable you to play tunes using default MIDI sequencer. */
 public class TunePlayer implements MetaEventListener
 {
-  private static final int SEQUENCE_RESOLUTION = 96;
-  private static final boolean DEBUG = true;
+  //private static final int SEQUENCE_RESOLUTION = 96;
+  //private static final boolean DEBUG = true;
   private Tune m_tune = null;
   private Sequencer seq = null;
   //private Synthesizer synth = null;
@@ -25,7 +24,7 @@ public class TunePlayer implements MetaEventListener
   private int m_tempo = 180;
   private MidiConverterInterface m_converter = null;
 
-  private static final int VOLUME_CONTROLLER_NUMBER = 7;
+  //private static final int VOLUME_CONTROLLER_NUMBER = 7;
 
   /** Constructs a tune player with default midi converter.
    * @see BasicMidiConverter */
