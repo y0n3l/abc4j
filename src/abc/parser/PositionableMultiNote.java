@@ -5,6 +5,10 @@ import scanner.CharStreamPosition;
 import scanner.PositionableInCharStream;
 import abc.notation.MultiNote;
 
+/**
+ * A multinote that encapsulates the information needed to locate where the abc 
+ * information describing this multinote was positioned in the parsed stream.
+ */
 public class PositionableMultiNote extends MultiNote implements PositionableInCharStream
 {
   private CharStreamPosition m_position = null;

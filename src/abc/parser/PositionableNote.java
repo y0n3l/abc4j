@@ -4,6 +4,10 @@ import abc.notation.Note;
 import scanner.CharStreamPosition;
 import scanner.PositionableInCharStream;
 
+/**
+ * A note that encapsulates the information needed to locate where the abc 
+ * information describing this note was positioned in the parsed stream.
+ */
 public class PositionableNote extends Note implements PositionableInCharStream
 {
   private CharStreamPosition m_position = null;
