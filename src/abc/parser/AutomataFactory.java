@@ -5,7 +5,7 @@ import scanner.TokenType;
 import scanner.FinaleStateAutomata;
 import abc.parser.def.DefinitionFactory;
 
-public class AutomataFactory
+class AutomataFactory
 {
 
   public static Vector m_allPreviouslyCreatedAutomatas = new Vector();
