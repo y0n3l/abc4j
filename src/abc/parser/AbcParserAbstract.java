@@ -4,6 +4,16 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.Vector;
 
+import scanner.CharStreamPosition;
+import scanner.FinaleStateAutomata;
+import scanner.InvalidCharacterEvent;
+import scanner.NoSuchTokenException;
+import scanner.Scanner;
+import scanner.ScannerListenerInterface;
+import scanner.Set;
+import scanner.Token;
+import scanner.TokenEvent;
+import scanner.TokenType;
 import abc.notation.AccidentalType;
 import abc.notation.BarLine;
 import abc.notation.Fraction;
@@ -19,17 +29,8 @@ import abc.notation.TimeSignature;
 import abc.notation.Tune;
 import abc.notation.Tuplet;
 import abc.notation.Words;
+import abc.parser.AbcToolkit.DurationDescription;
 import abc.parser.def.DefinitionFactory;
-import scanner.CharStreamPosition;
-import scanner.FinaleStateAutomata;
-import scanner.InvalidCharacterEvent;
-import scanner.NoSuchTokenException;
-import scanner.Scanner;
-import scanner.ScannerListenerInterface;
-import scanner.Set;
-import scanner.Token;
-import scanner.TokenEvent;
-import scanner.TokenType;
 
 /** Abstract class from which all abc notation parsers inherit.
  * Known limitations:
@@ -154,7 +155,8 @@ public class AbcParserAbstract
     protected Vector m_listeners;
     /** the current token used by this parser. */
     protected Token m_token = null;
-    /** */
+    /** The type of the current token 
+     * @see #m_token */
     protected TokenType m_tokenType = TokenType.UNKNOWN;
     /** The broken rhythm inherited from the previous note. */
     private byte brokenRhythm = 0;
@@ -233,7 +235,7 @@ public class AbcParserAbstract
         //m_scanner.setFinaleStateAutomata(getAutomataFor(current.getTypes()));
         m_automata.setDefinition(DefinitionFactory.getDefinition(current.getTypes()));
         m_scanner.setFinaleStateAutomata(m_automata);
-        notifyListenersForBegin();
+        notifyListenersForTuneBegin();
         try
         {
           m_token = m_scanner.nextToken();
@@ -252,7 +254,7 @@ public class AbcParserAbstract
         //e.printStackTrace();
         //Occurs when the last parts of the tune is just invalid characters.
       }
-      notifyListenersForEnd(m_tune);
+      notifyListenersForTuneEnd(m_tune);
       return m_tune;
     }
 
@@ -270,7 +272,7 @@ public class AbcParserAbstract
      * string. */
     public Tune parseHeader(Reader charStream)
     {
-      notifyListenersForBegin();
+      notifyListenersForTuneBegin();
       try
       {
         m_scanner.init(charStream);
@@ -296,11 +298,11 @@ public class AbcParserAbstract
         //Occurs when the last parts of the tune is just invalid characters.
         //System.out.println("CATCHING NO SUCH ELEMENT EXCEPTION");
       }
-      notifyListenersForEnd(m_tune);
+      notifyListenersForTuneEnd(m_tune);
       return m_tune;
     }
 
-
+    /** abc-tune ::= abc-header abc-music */
     protected Tune parseAbcTune(Set follow)
     {
       Set current = new Set().union(FIRST_ABCHEADER).union(FIRST_FIELD_KEY);
@@ -316,6 +318,10 @@ public class AbcParserAbstract
       return m_tune;
     }
 
+    /** other-fields ::= field-area / field-book / field-composer / field-discography /
+     * field-elemskip / field-group / field-history / field-information / 
+     * field-default-length / field-meter / field-notes / field-origin / field-parts / 
+     * field-tempo / field-rhythm / field-source / field-transcrnotes / comment */
     private void parseOtherFields(Set follow) //throws TuneNotationException
     {
         //System.out.println("AbcScoreParser - parse()");
@@ -437,6 +443,7 @@ public class AbcParserAbstract
           return null;
     }
 
+    /** field-default-length ::= "L:" note-length-strict end-of-line */
     private short parseFieldDefaultLength(Set follow)
     {
         //System.out.println("TuneParser - parseFieldArea(" + token + ")");
@@ -453,6 +460,7 @@ public class AbcParserAbstract
         return noteLength;
     }
 
+    /** note-length ::= [1*DIGIT] ["/" [1*DIGIT]] */
     private Fraction parseNoteLength(Set follow)
     {
       Set current = new Set(AbcTokenType.NUMBER).union(AbcTokenType.FRACTION);
@@ -481,6 +489,7 @@ public class AbcParserAbstract
        return new Fraction(num, denom);
     }
 
+    /** note-length-strict ::= 1*DIGIT "/" 1*DIGIT */
     private short parseNoteLengthStrict(Set follow)
     {
         Set current = new Set(AbcTokenType.NUMBER).union(AbcTokenType.FRACTION);
@@ -501,6 +510,7 @@ public class AbcParserAbstract
         return noteLength;
     }
 
+    /** field-meter ::= "M:" meter end-of-line */
     private TimeSignature parseFieldMeter(Set follow)
     {
         Set current = new Set().union(FIRST_METER).union(FIRST_END_OF_LINE);
@@ -517,6 +527,7 @@ public class AbcParserAbstract
         return meter;
     }
 
+    /** meter ::= "C" / "C|" / meter-fraction */
     private TimeSignature parseMeter(Set follow)
     {
       //Set current = new Set();
@@ -534,6 +545,7 @@ public class AbcParserAbstract
       return meter;
     }
 
+    /** meter-fraction ::= 1*DIGIT "/" 1*DIGIT */
     private TimeSignature parseMeterFraction(Set follow)
     {
         Set current = new Set(AbcTokenType.NUMBER).union(AbcTokenType.FRACTION);
@@ -554,6 +566,7 @@ public class AbcParserAbstract
         return fraction;
     }
 
+    /** field-parts ::= "P:" parts end-of-line */
     private MultiPartsDefinition parseFieldParts(Set follow)
     {
         Set current = new Set().union(FIRST_PARTS).union(FIRST_END_OF_LINE);
@@ -568,6 +581,7 @@ public class AbcParserAbstract
         return parts;
     }
 
+    /** field-part ::= "P:" part end-of-line */
     private char parseFieldPart(Set follow)
     {
         Set current = new Set().union(FIRST_END_OF_LINE).union(AbcTokenType.PART);
@@ -583,6 +597,7 @@ public class AbcParserAbstract
         return partLabel;
     }
 
+    /** parts ::= 1*part-spec */
     private MultiPartsDefinition parseParts(Set follow)
     {
       Set current = new Set().union(FIRST_PART_SPEC);
@@ -597,6 +612,7 @@ public class AbcParserAbstract
       return parts;
     }
 
+    /** part-spec ::= (part / ( "(" 1*part-spec ")" ) ) *DIGIT */
     private RepeatedPartAbstract parsePartSpec(Set follow)
     {
       Set current = new Set().union(FIRST_PART_SPEC).union(AbcTokenType.PART).union(AbcTokenType.PARENTHESIS_OPEN)
@@ -659,6 +675,7 @@ public class AbcParserAbstract
       return tempo;
     }
 
+    /** field-tempo ::= "Q:" tempo end-of-line */
     private Tempo parseTempo(Set follow)
     {
       Set current = null;
@@ -717,7 +734,7 @@ public class AbcParserAbstract
       return tempo;
     }
 
-
+    /** field-history ::= "H:" 1*(text end-of-line) */
     private AbcTextField parseFieldHistory(Set follow)
     {
         //System.out.println("TuneParser - parseFieldArea(" + token + ")");
@@ -745,8 +762,7 @@ public class AbcParserAbstract
         return history;
     }
 
-
-
+    /** field-key ::= "K:" key end-of-line */
     private KeySignature parseFieldKey(Set follow)
     {
       KeySignature key = null;
@@ -762,6 +778,7 @@ public class AbcParserAbstract
       return key;
     }
 
+    /** key ::= key-spec / "HP" / "Hp" */
     private KeySignature parseKey(Set follow)
     {
       //Set current = new Set();
@@ -774,6 +791,7 @@ public class AbcParserAbstract
         return parseKeySpec(follow);
     }
 
+    /** key-spec ::= keynote [mode-spec] *(" " global-accidental) */
     private KeySignature parseKeySpec(Set follow)
     {
         Set current = new Set().union(FIRST_MODE_SPEC).union(AbcTokenType.SPACE).union(FIRST_GLOBAL_ACCIDENTAL);
@@ -788,7 +806,7 @@ public class AbcParserAbstract
           modeSpec = parseModeSpec(current.createUnion(follow));
         }
         if (note!=null && modeSpec!=-1)
-          key = new KeySignature(note.getHeigth(), note.getAccidental(), modeSpec);
+          key = new KeySignature(note.getHeight(), note.getAccidental(), modeSpec);
 
         while(m_tokenType.equals(AbcTokenType.SPACE))
         {
@@ -803,6 +821,7 @@ public class AbcParserAbstract
         return key;
     }
 
+    /** keynote ::= basenote [key-accidental] */
     private Note parseKeyNote(Set follow)
     {
         Set current= new Set(AbcTokenType.KEY_ACCIDENTAL);
@@ -823,6 +842,7 @@ public class AbcParserAbstract
         return keyNote;
     }
 
+    /** mode-spec ::= [" "] mode [extratext] */
     private byte parseModeSpec(Set follow)
     {
         Set current = new Set().union(FIRST_MODE).union(AbcTokenType.TEXT);
@@ -841,6 +861,7 @@ public class AbcParserAbstract
         return modeType;
     }
 
+    /** end-of-line ::= *(" " / HTAB) ["%" text] linefeed */
     private void parseEndOfLine(Set follow)
     {
         Set current = new Set(AbcTokenType.SPACE).union(AbcTokenType.COMMENT).union(AbcTokenType.TEXT).union(AbcTokenType.LINE_FEED);
@@ -863,6 +884,9 @@ public class AbcParserAbstract
         accept(AbcTokenType.LINE_FEED, current, follow);
     }
 
+    /** abc-header ::= field-number *comment 1*field-title *other-fields field-key
+     * In practice, many tunes are e-mailed without field-number, 
+     * so those wishing to implement an abc parser should treat this ; field as optional. */
     protected Tune parseAbcHeader(Set follow)
     {
       m_tune = new Tune();
@@ -901,6 +925,7 @@ public class AbcParserAbstract
       return m_tune;
     }
 
+    /** field-number ::= "X:" 1*DIGIT end-of-line */
     private Integer parseFieldNumber(Set follow)
     {
         Set current= new Set(AbcTokenType.NUMBER).union(FIRST_END_OF_LINE);
@@ -918,6 +943,7 @@ public class AbcParserAbstract
         return number;
     }
 
+    /** global-accidental ::= accidental basenote */
     private byte[] parseGlobalAccidental(Set follow)
     {
       Set current= new Set(AbcTokenType.BASE_NOTE);
@@ -936,6 +962,7 @@ public class AbcParserAbstract
       return globalAccidental;
     }
 
+    /** comment ::= "%" text (linefeed / no-line-break / line-break) */
     protected void parseComment(Set follow)
     {
       Set current = new Set(AbcTokenType.TEXT).union(AbcTokenType.LINE_FEED)
@@ -955,7 +982,7 @@ public class AbcParserAbstract
     }
 
     //==================================================================================
-
+    /** abc-music ::= 1*abc-line linefeed */
     private void parseAbcMusic(Set follow)
     {
       Set current = new Set().union(FIRST_ABC_LINE).union(AbcTokenType.LINE_FEED);
@@ -966,6 +993,7 @@ public class AbcParserAbstract
       //accept(AbcTokenType.LINE_FEED, current, follow);
     }
 
+    /** abc-line ::= (1*element line-ender) / mid-tune-field / tex-command */
     private void parseAbcLine(Set follow)
     {
       //Set current = new Set();
@@ -987,6 +1015,7 @@ public class AbcParserAbstract
 //          parseTexCommand(current.createUnion(follow));
     }
 
+    /** mid-tune-field ::= tune-field */
     private void parseMidTuneField(Set follow)
     {
       //Set current = new Set();//.union(FIRST_END_OF_LINE);
@@ -995,6 +1024,9 @@ public class AbcParserAbstract
       //parseEndOfLine(current.createUnion(follow));
     }
 
+    /** tune-field ::= field-elemskip / field-key / field-default-length / field-meter / 
+     * field-part / field-tempo / field-title / field-words
+     * field-rhythm may not be in tune (?) field-voice not defined yet */
     private void parseTuneField(Set follow)
     {
       //Set current = new Set();
@@ -1051,9 +1083,10 @@ public class AbcParserAbstract
         parseField(AbcTokenType.FIELD_TITLE, follow);
     }
 
+    /** element ::= note-element / tuplet-element / barline / nth-repeat /
+     * begin-slur / end-slur / space / user-defined */
     private void parseElement(Set follow)
     {
-
       //Set current = new Set();
       if (FIRST_NOTE_ELEMENT.contains(m_tokenType))
       {
@@ -1103,13 +1136,8 @@ public class AbcParserAbstract
         accept(AbcTokenType.SPACE, null, follow);
     }
 
-    /**
-     * p = the number of notes to be put into time q
-     * q = the time that p notes will be played in
-     * r = the number of notes to continue to do this action for.
-     * If q is not specified, it defaults to 3 in compound time
-     * signatures and 2 in simple time signatures. If r is not specified, it is taken to be the same as p.
-     */
+    /** tuplet-element ::= tuplet-spec 1*note-element
+     * */
     private Tuplet parseTupletElement(Set follow)
     {
       Set current = new Set().union(FIRST_NOTE_ELEMENT);
@@ -1136,12 +1164,17 @@ public class AbcParserAbstract
         notesNumber--;
       }
       while(FIRST_NOTE_ELEMENT.contains(m_tokenType) && notesNumber>0);
-      return new Tuplet(notes, tupletSpec[1]);
+      return new Tuplet(notes, tupletSpec[1], m_defaultNoteLength);
     }
 
-    /**
-     * ([0]:[1]:[2]  == (p:q:r
-     */
+    /** tuplet-spec ::= "(" DIGIT [":" [DIGIT] [":" [DIGIT]]]
+     * ([0]:[1]:[2]  == (p:q:r 
+     * p = the number of notes to be put into time q
+     * q = the time that p notes will be played in
+     * r = the number of notes to continue to do this action for.
+     * If q is not specified, it defaults to 3 in compound time
+     * signatures and 2 in simple time signatures. If r is not specified, 
+     * it is taken to be the same as p. */
     private int[] parseTupletSpec(Set follow)
     {
       Set current = new Set(AbcTokenType.COMA).union(AbcTokenType.DIGIT);
@@ -1175,7 +1208,7 @@ public class AbcParserAbstract
       return tupletDesc;
     }
 
-
+    /** note-element ::= note-stem [broken-rhythm] */
     private NoteAbstract parseNoteElement(Set follow)
     {
       Set current = new Set().union(FIRST_BROKEN_RHYTHM);
@@ -1213,6 +1246,7 @@ public class AbcParserAbstract
       return note;
     }
 
+    /** note-stem ::= [guitar-chord] [grace-notes] *gracings (note / multi-note) */
     private NoteAbstract parseNoteStem(Set follow)
     {
       Set current = new Set().union(FIRST_GUITAR_CHORD).union(FIRST_GRACE_NOTES).union(FIRST_GRACINGS)
@@ -1272,7 +1306,8 @@ public class AbcParserAbstract
       return note;
     }
 
-    /** @return a Vector containing Note objects */
+    /** multi-note ::= "[" 1*note "]" 
+     * @return a Vector containing Note objects */
     private Vector parseMultiNote(Set follow)
     {
       Set current = new Set().union(FIRST_NOTE).union(AbcTokenType.MULTI_NOTE_END);
@@ -1289,6 +1324,7 @@ public class AbcParserAbstract
       return notes;
     }
 
+    /** grace-notes ::= "{" 1*pitch "}" */
     private Note[] parseGraceNotes(Set follow)
     {
       Set current = new Set().union(FIRST_PITCH).union(AbcTokenType.GRACING_END);
@@ -1315,6 +1351,7 @@ public class AbcParserAbstract
       }
     }
 
+    /** guitar-chord ::= <"> (text <"> / formal-chord */
     private String parseGuitarChord(Set follow)
     {
       Set current = new Set().union(AbcTokenType.GUITAR_CHORD).union(AbcTokenType.CHORD_NAME);
@@ -1327,6 +1364,7 @@ public class AbcParserAbstract
       return chordName;
     }
 
+    /** note ::= note-or-rest [note-length] [tie] */
     private Note parseNote(Set follow)
     {
       Set current = new Set().union(FIRST_NOTE_LENGTH).union(FIRST_TIE);
@@ -1334,13 +1372,26 @@ public class AbcParserAbstract
       CharStreamPosition startPosition = m_token.getPosition();
       note = (PositionableNote)parseNoteOrRest(current.createUnion(follow));
       current.remove(FIRST_NOTE_LENGTH);
-      if (FIRST_NOTE_LENGTH.contains(m_tokenType))
-      {
+      if (FIRST_NOTE_LENGTH.contains(m_tokenType)) {
         Fraction length = parseNoteLength(current.createUnion(follow));
-        if (note!=null) ((Note)note).setLength((short)(m_defaultNoteLength*length.floatValue()));
+        if (note!=null) {
+        	try {
+        		//Try to convert the abc duration into standard note duration
+        		DurationDescription d = AbcToolkit.getAbsoluteDurationFor(length, m_defaultNoteLength);
+        		note.setStrictDuration(d.getStrictDuration());
+        		note.setDotted(d.countDots());
+        	} catch (IllegalArgumentException e) {
+        		//The duration cannot be converted into standard duration
+        		//So use the absolute duration instead.
+        		note.setDuration((short)(m_defaultNoteLength*length.floatValue()));
+        	}
+        }
+        
       }
       else
-        if (note!=null) ((Note)note).setLength(m_defaultNoteLength);
+        if (note!=null)
+        	//The note duration is equal to the default note duration.
+        	note.setStrictDuration(m_defaultNoteLength);
       current.remove(FIRST_TIE);
       if (m_tokenType.equals(AbcTokenType.TIE))
       {
@@ -1358,7 +1409,7 @@ public class AbcParserAbstract
       return note;
     }
 
-
+    /** note-or-rest ::= pitch / rest */
     private Note parseNoteOrRest(Set follow)
     {
       //Set current = new Set();
@@ -1374,6 +1425,7 @@ public class AbcParserAbstract
         return parsePitch(follow);
     }
 
+    /** pitch ::= [accidental] basenote [octave] */
     private Note parsePitch(Set follow)
     {
       Set current = new Set().union(FIRST_BASE_NOTE).union(FIRST_OCTAVE);
@@ -1401,6 +1453,7 @@ public class AbcParserAbstract
       return note;
     }
 
+    /** line-ender ::= comment / linefeed / line-break / no-line-break */
     private void parseLineEnder(Set follow)
     {
       //Set current = new Set();
@@ -1582,13 +1635,13 @@ public class AbcParserAbstract
     private FinaleStateAutomata getAutomataFor(TokenType tokenType)
     { return AutomataFactory.getAutomata(tokenType); }*/
 
-    protected void notifyListenersForBegin()
+    protected void notifyListenersForTuneBegin()
     {
       for (int i=0; i<m_listeners.size();i++)
         ((TuneParserListenerInterface)m_listeners.elementAt(i)).tuneBegin();
     }
 
-    protected void notifyListenersForEnd(Tune tune)
+    protected void notifyListenersForTuneEnd(Tune tune)
     {
       for (int i=0; i<m_listeners.size();i++)
         ((TuneParserListenerInterface)m_listeners.elementAt(i)).tuneEnd(tune);
