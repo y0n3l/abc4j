@@ -3,7 +3,6 @@ package abc.midi;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Track;
 import javax.sound.midi.MidiEvent;
-import scanner.PositionableInCharStream;
 import abc.notation.KeySignature;
 import abc.notation.Note;
 import abc.notation.MultiNote;

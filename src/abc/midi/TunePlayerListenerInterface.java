@@ -18,7 +18,7 @@ public interface TunePlayerListenerInterface extends EventListener
   public void tempoChanged(TempoChangeEvent e);
 
   /** Invoked when a part of the tune notation is played.
-   * @deprecated use notPlayed() instead. */
+   * @deprecated use notePlayed() instead. */
   public void partPlayed(int begin, int end);
 
   public void notePlayed(NoteAbstract note);
