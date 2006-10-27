@@ -16,8 +16,11 @@ public class NoteAbstract implements ScoreElementInterface
   private boolean generalGracing		= false;
   private boolean staccato			= false;
   private byte bow				= NONE;
+  /** The number of dots for this note. */
   private byte m_dotted = 0;
   private boolean m_isPartOfSlur = false;
+  /** The tuplet this note may belongs to. <TT>null</TT>
+   * if this note does not belong to any tuplet. */
   private Tuplet m_tuplet = null;
 
   /** Sets the name of the chord.
@@ -58,13 +61,23 @@ public class NoteAbstract implements ScoreElementInterface
   public boolean hasGracingNotes()
   { return (m_gracingNotes!=null);}
 
-  public void setDotted(byte dotted)
-  { m_dotted = dotted; }
+  /** Sets the number of dots for this note. 
+   * @param dotsNumber The number of dots for this note. */
+  public void setDotted(byte dotsNumber)
+  { m_dotted = dotsNumber; }
 
   /** Returns the dotted value of this note.
-   * @return The dotted value of this note. Default is 0. */
+   * @return The dotted value of this note. Default is 0.
+   * @deprecated replaced by countDots() 
+   * @see #countDots() */
   public byte getDotted()
   { return m_dotted; }
+  
+  /** Returns the number of dots for this note.
+   * @return The number of dots for this note. Default is 0. */
+  public byte countDots() { 
+	  return m_dotted;
+  }
 
   /** Returns <TT>true</TT> if this note has a general gracing, <TT>false</TT> otherwise.
    * @return <TT>true</TT> if this note has a general gracing, <TT>false</TT> otherwise. */
@@ -77,9 +90,17 @@ public class NoteAbstract implements ScoreElementInterface
   public void setGeneralGracing(boolean hasGeneralGracing)
   { generalGracing = hasGeneralGracing; }
 
+  /** Returns <TT>true</TT> if this note should be played with staccato.
+   * @return <TT>true</TT> if this note should be played with staccato,
+   * <TT>false</TT> otherwise. 
+   * @see #setStaccato(boolean) */
   public boolean hasStaccato()
   { return staccato; }
 
+  /** Sets the staccato playing style of this note.
+   * @param staccatoValue <TT>true</TT> if this note should be played with staccato,
+   * <TT>false</TT> otherwise.
+   * @see #hasStaccato() */
   public void setStaccato (boolean staccatoValue)
   { staccato = staccatoValue; }
 
@@ -95,16 +116,20 @@ public class NoteAbstract implements ScoreElementInterface
   public boolean isPartOfTuplet()
   { return m_tuplet!=null; }
 
-  /** Returns the tupelt this note is part of.
-   * @return The tupelt this note is part of. <TT>null</TT> is returned if
+  /** Returns the tuplet this note is part of.
+   * @return The tuplet this note is part of. <TT>null</TT> is returned if
    * this note isn't part of a tuplet.
    * @see #isPartOfTuplet() */
   public Tuplet getTuplet()
   { return m_tuplet; }
 
+  /** Sets if this note is part of a slur or not.
+   * @param isPartOfSlur <TT>true</TT> if this note is part of a slur,
+   * <TT>false</TT> otherwise. */
   public void setPartOfSlur(boolean isPartOfSlur)
   { m_isPartOfSlur = isPartOfSlur; }
 
+  /** Needs to be reworked !! */
   public int getGracingNotesLength(short defaultNoteLength)
   {
     int totalLength=0;

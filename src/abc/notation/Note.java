@@ -1,76 +1,121 @@
 package abc.notation;
 
 /**
- * This class defines a (single) Note : heigth, rhythm, part of tuplet, rest etc...
+ * This class defines a (single) Note : height, rhythm, part of tuplet, rest etc...
+ * There can be some tricky representation of a duration for a note.
+ * For instance :<BR/>
+ * <B>Tuplets</B><BR/>
+ * <IMG src="../../images/tuplets.gif"/><BR/>
+ * The first tuplet describes 3 quarter notes in the time of 2. So in that case, 
+ * the representation of each note of tuplet as a <TT>Note</TT> object is :
+ * <UL>
+ * <LI><TT>getStrictDuration()</TT> returns <TT>Note.QUARTER</TT></LI>
+ * <LI><TT>isPartOfTuplet()</TT> returns <TT>true</TT></LI>
+ * <LI><TT>getTuplet()</TT> returns a <TT>Tuplet</TT> instance that enacapsulates
+ * the three instances of notes that are part of the tuplet.</LI>
+ * </UL>
+ * The same applies to the second tuplet except that the strict duration of the
+ * notes composing the tuplet is <TT>Note.EIGHTH</TT>. Same for the third tuplet
+ * with a strict duration equals to <TT>Note.SIXTEENTH</TT>.
+ * <B>Dots</B><BR/>
+ * <IMG src="../../images/multiDots.jpg"/><BR/>
+ * When a note is dotted, its strict duration remains unchanged. The only difference
+ * between a non-dotted note and a dotted one can be retrieved from the method 
+ * <TT>countDots()</TT> that returns the number of dots for a given <TT>Note</TT> instance.
+ * So in the example above :
+ * <UL>
+ * <LI>For the first example</LI>
+ * 		<UL>
+ * 			<LI><TT>getStrictDuration()</TT> returns <TT>Note.WHOLE</TT></LI>
+ * 			<LI><TT>countDots()</TT> returns <TT>2</TT></LI>
+ *		</UL>
+ * <LI>For the second example</LI>
+ * 		<UL>
+ * 			<LI><TT>getStrictDuration()</TT> returns <TT>Note.HALF</TT></LI>
+ * 			<LI><TT>countDots()</TT> returns <TT>2</TT></LI>
+ *		</UL>
+ * <LI>For the third example</LI>
+ * 		<UL>
+ * 			<LI><TT>getStrictDuration()</TT> returns <TT>Note.HALF</TT></LI>
+ * 			<LI><TT>countDots()</TT> returns <TT>3</TT></LI>
+ *		</UL>
+ * </UL>
  */
 public class Note extends NoteAbstract
 {
-  /** The <TT>C</TT> note heigth type. */
+  /** The <TT>C</TT> note height type. */
   public static final byte C		= 0;
-  /** The <TT>D</TT> note heigth type. */
+  /** The <TT>D</TT> note height type. */
   public static final byte D		= 2;
-  /** The <TT>E</TT> note heigth type. */
+  /** The <TT>E</TT> note height type. */
   public static final byte E		= 4;
-  /** The <TT>F</TT> note heigth type. */
+  /** The <TT>F</TT> note height type. */
   public static final byte F		= 5;
-  /** The <TT>G</TT> note heigth type. */
+  /** The <TT>G</TT> note height type. */
   public static final byte G		= 7;
-  /** The <TT>A</TT> note heigth type : A404 */
+  /** The <TT>A</TT> note height type : A404 */
   public static final byte A		= 9;
-  /** The <TT>B</TT> note heigth type. */
+  /** The <TT>B</TT> note height type. */
   public static final byte B		= 11;
-  /** The <TT>c</TT> note heigth type. */
+  /** The <TT>c</TT> note height type. */
   public static final byte c		= 12;
-  /** The <TT>d</TT> note heigth type. */
+  /** The <TT>d</TT> note height type. */
   public static final byte d		= 14;
-  /** The <TT>e</TT> note heigth type. */
+  /** The <TT>e</TT> note height type. */
   public static final byte e		= 16;
-  /** The <TT>f</TT> note heigth type. */
+  /** The <TT>f</TT> note height type. */
   public static final byte f		= 17;
-  /** The <TT>g</TT> note heigth type. */
+  /** The <TT>g</TT> note height type. */
   public static final byte g		= 19;
-  /** The <TT>a</TT> note heigth type. */
+  /** The <TT>a</TT> note height type. */
   public static final byte a		= 21;
-  /** The <TT>b</TT> note heigth type. */
+  /** The <TT>b</TT> note height type. */
   public static final byte b		= 23;
 
-  /** The <TT>REST</TT> heigth type. */
+  /** The <TT>REST</TT> height type. */
   public static final byte REST		= -128;
 
-  private static final short LENGTH_RESOLUTION = 2;
+  private static final short LENGTH_RESOLUTION = 3;
   /** The <TT>DOTTED_WHOLE</TT> length type. */
   public static final short DOTTED_WHOLE	= LENGTH_RESOLUTION * 96;
-  /** The <TT>WHOLE</TT> length type. */
+  /** The <TT>WHOLE</TT> length type. <IMG src="../../images/whole.jpg"/>*/
   public static final short WHOLE		= LENGTH_RESOLUTION * 64; //ronde
   /** The <TT>DOTTED_HALF</TT> length type. */
   public static final short DOTTED_HALF	 	= LENGTH_RESOLUTION * 48;
-  /** The <TT>HALF</TT> length type. */
+  /** The <TT>HALF</TT> length type. <IMG src="../../images/half.jpg"/>*/
   public static final short HALF		= LENGTH_RESOLUTION * 32; //blanche
   /** The <TT>DOTTED_QUARTER</TT> length type. */
   public static final short DOTTED_QUARTER    	= LENGTH_RESOLUTION * 24;
-  /** The <TT>QUARTER</TT> length type. */
+  /** The <TT>QUARTER</TT> length type. <IMG src="../../images/quarter.jpg"/>*/
   public static final short QUARTER	    	= LENGTH_RESOLUTION * 16; // noire
   /** The <TT>DOTTED_EIGHTH</TT> length type. */
   public static final short DOTTED_EIGHTH	= LENGTH_RESOLUTION * 12;
-  /** The <TT>EIGHTH</TT> length type. */
+  /** The <TT>EIGHTH</TT> length type. <IMG src="../../images/eighth.jpg"/>*/
   public static final short EIGHTH		= LENGTH_RESOLUTION * 8;  // croche
   /** The <TT>DOTTED_SIXTEENTH</TT> length type. */
   public static final short DOTTED_SIXTEENTH    = LENGTH_RESOLUTION * 6;
-  /** The <TT>SIXTEENTH</TT> length type. */
+  /** The <TT>SIXTEENTH</TT> length type. <IMG src="../../images/sixteenth.jpg"/>*/
   public static final short SIXTEENTH	    	= LENGTH_RESOLUTION * 4;  // double croche
   /** The <TT>DOTTED_THIRTY_SECOND</TT> length type. */
   public static final short DOTTED_THIRTY_SECOND= LENGTH_RESOLUTION * 3 ;
-  /** The <TT>THIRTY_SECOND</TT> length type. */
+  /** The <TT>THIRTY_SECOND</TT> length type. <IMG src="../../images/thirtySecond.jpg"/>*/
   public static final short THIRTY_SECOND 	= LENGTH_RESOLUTION * 2 ; // triple croche
   /** The <TT>DOTTED_SIXTY_FOURTH</TT> length type. */
   public static final short DOTTED_SIXTY_FOURTH	= (short)(LENGTH_RESOLUTION * 1.5);
   /** The <TT>SIXTY_FOURTH</TT> length type. */
   public static final short SIXTY_FOURTH	= LENGTH_RESOLUTION;      // quadruple croche
 
-  private byte heigth = REST;
+  private byte height = REST;
   private byte octaveTransposition = 0;
+  /** Accidental for this note. */
   private byte accidental = AccidentalType.NONE;
-  private short m_length = QUARTER;
+  /** The full whole duration that takes into account the dots. (why not
+   * the tuplet stuff ? :/ ) */
+  private short m_duration = -1;
+  /** The strict duration (that does not take into account the dots, 
+   * the tuplet or whatever : this is the pure note type definition. */
+  private short m_strictDuration = -1;
+  /** <TT>true</TT> if this note is tied, <TT>false</TT> otherwise. */
   private boolean m_isTied = false;
 
   /** Creates an abc note with the specified heigth and accidental.
@@ -79,7 +124,7 @@ public class Note extends NoteAbstract
   public Note (byte heigthValue, byte accidentalValue)
   {
     super();
-    heigth = heigthValue;
+    height = heigthValue;
     accidental = accidentalValue;
   }
 
@@ -90,7 +135,7 @@ public class Note extends NoteAbstract
   public Note (byte heigthValue, byte accidentalValue, byte octaveTranspositionValue)
   {
     super();
-    heigth = heigthValue;
+    height = heigthValue;
     accidental = accidentalValue;
     octaveTransposition = octaveTranspositionValue;
   }
@@ -98,25 +143,44 @@ public class Note extends NoteAbstract
   /** Sets the heigth of this note.
    * @param heigthValue The heigth of this note. The heigth is <TT>REST</TT> if
    * this note is a rest.
-   * @see #setHeigth(byte) */
+   * @deprecated use setHeight(byte heigthValue) instead. sorry for the typo... 
+   * @see #setHeight(byte) */
   public void setHeigth(byte heigthValue)
-  { heigth = heigthValue; }
+  { height = heigthValue; }
+  
+  /** Sets the heigth of this note.
+   * @param heigthValue The heigth of this note. The heigth is <TT>REST</TT> if
+   * this note is a rest. */
+  public void setHeight(byte heigthValue)
+  { height = heigthValue; }
 
   /** Returns this note absolute height. This height doesn't take in account
    * octave transposition.
    * @return This note height. <TT>REST</TT> is returned if this note is a rest.
    * Possible other values are <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>,
    * <TT>A</TT>, <TT>B</TT>, <TT>c</TT>, <TT>d</TT>, <TT>e</TT>, <TT>f</TT>, <TT>g</TT>,
-   * <TT>a</TT> or <TT>b</TT>. */
+   * <TT>a</TT> or <TT>b</TT>. 
+   * @deprecated use getHeight() instead. Sorry for the typo.... 
+   * @see #getHeight() */
   public byte getHeigth ()
-  { return heigth; }
+  { return height; }
+  
+  /** Returns this note absolute height. This height doesn't take in account
+   * octave transposition.
+   * @return This note height. <TT>REST</TT> is returned if this note is a rest.
+   * Possible other values are <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>,
+   * <TT>A</TT>, <TT>B</TT>, <TT>c</TT>, <TT>d</TT>, <TT>e</TT>, <TT>f</TT>, <TT>g</TT>,
+   * <TT>a</TT> or <TT>b</TT>. */
+  public byte getHeight() {
+	  return height;
+  }
 
   /** Returns the heigth of this note on the first octave.
    * @return the heigth of this note on the first octave. Possible values are
    * <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>, <TT>A</TT>(404)
    * or <TT>B</TT>. */
   public byte toRootOctaveHeigth()
-  { return (byte)Math.abs(heigth%12); }
+  { return (byte)Math.abs(height%12); }
 
   /** Sets the octave transposition for this note.
    * @param octaveTranspositionValue The octave transposition for this note :
@@ -130,25 +194,76 @@ public class Note extends NoteAbstract
   public byte getOctaveTransposition()
   { return octaveTransposition; }
 
-  public void setLength(short length)
-  { m_length = length; }
-
-  /**Returns the relative length of this note.
-   * @return The relative length of this note. The relative length can be
-   * converted into absolute length (the real length of the note) by using
-   * the default note length value defines in the score this note belongs to. */
-  public short getDuration()
-  {
-    int length = m_length;
-    if (getDotted()!=0)
-    {
-      //int dot = getDotted();
-      int dottedLength = length / (getDotted()*2);
-      length = length + dottedLength;
-    }
-    return (short)length;
+  /** Sets the length of this note. 
+   * @deprecated use setDuration(short duration) instead.
+   * @param length The length of this note as a value adjusted to 
+   * the scale of constants such as <TT>Note.WHOLE</TT>, <TT>Note.HALF</TT> etc etc ... 
+   * @see #setDuration(short)*/
+  public void setLength(short length) { 
+	  m_duration = length;
+  }
+  
+  /** Sets the length of this note. However, it is recommanded to represent
+   * the note duration using methods such as setStrictDuration(short strictDuration), 
+   * setDotted(byte dotted) etc etc as explained at the begining of this class description.
+   * @param duration The length of this note as a value adjusted to 
+   * the scale of constants such as <TT>Note.WHOLE</TT>, <TT>Note.HALF</TT> etc etc ... 
+   * @see #getDuration()*/
+  public void setDuration(short duration) { 
+	  m_duration = duration;
+  }
+  
+  /** Sets the strict duration of this note.
+   * @param strictDuration This note strict duration. Possible values are ONLY 
+   * <TT>Note.WHOLE</TT>, <TT>Note.HALF</TT>,
+   * <TT>Note.QUARTER</TT>, <TT>Note.EIGHTH</TT>, <TT>Note.SIXTEENTH</TT>, 
+   * <TT>Note.THIRTY_SECOND</TT>, <TT>Note.SIXTY_FOURTH</TT>.
+   * @exception IllegalArgumentException Thrown if the given duration does not 
+   * match the excepted ones. */
+  public void setStrictDuration(short strictDuration) throws IllegalArgumentException {
+	  if (isStrictDuration(strictDuration))
+		  m_strictDuration = strictDuration;
+	  else
+		  throw new IllegalArgumentException("The note duration " + strictDuration + " is not equals to " +
+				  "Note.WHOLE, Note.HALF, Note.QUARTER, Note.EIGHTH, Note.SIXTEENTH, " + 
+				  "Note.THIRTY_SECOND or Note.SIXTY_FOURTH");
+	  // Re init the whole duration => will be computed later on request only.
+	  m_duration = -1;
+  }
+  
+  /** Returns the strict duration of this note. 
+   * @return The strict duration of this note. The dot, tuplet whatever... 
+   * are taken NOT into account for the duration returned by this function.
+   * The possible returned values are :
+   * <TT>Note.WHOLE</TT>, <TT>Note.HALF</TT>,
+   * <TT>Note.QUARTER</TT>, <TT>Note.EIGHTH</TT>, <TT>Note.SIXTEENTH</TT>, 
+   * <TT>Note.THIRTY_SECOND</TT>, <TT>Note.SIXTY_FOURTH</TT> or -1 if this
+   * note duration is not expressed using (strict duration + dots + tuplet)
+   * but with an exotic duration (that can be retrieved using getDuration()
+   * in that case).
+   * @see #getDuration() */
+  public short getStrictDuration() {
+    return m_strictDuration;
   }
 
+  /** Returns the length of this note. However, it is recommanded to retrieve
+   * the note duration using methods such as getStrictDuration(short strictDuration), 
+   * countDots() etc etc as explained at the begining of this class description. 
+   * @return The length of this note as a value adjusted to 
+   * the scale of constants such as <TT>Note.WHOLE</TT>, <TT>Note.HALF</TT> etc etc ...
+   * @see #setLength(short) */
+  public short getDuration() {
+	  if (m_duration!=-1)
+		  //The duration has been set in an absolute manner (not recommanded, but 
+		  //can be usefull
+		  return m_duration;
+	  else {
+		  //Compute the absolute duration from the strict duration and dots
+		  //Store it and return it.
+		  return m_duration = computeDuration(m_strictDuration, countDots());
+	  }
+  }
+  
   /** Sets the accidental for this note.
    * @param accidentalValue Accidental for this note. Possible values are
    * <TT>NATURAL</TT>, <TT>SHARP</TT> (#) or <TT>FLAT</TT> (b). */
@@ -175,7 +290,13 @@ public class Note extends NoteAbstract
   /** Returns <TT>true</TT> if this note is a rest
    * @return <TT>true</TT> if this note is a rest, <TT>false</TT> otherwise. */
   public boolean isRest()
-  { return (heigth == REST); }
+  { return (height == REST); }
+  
+  	public void setDotted(byte dotted) { 
+  		super.setDotted(dotted);
+  		// Re init the whole duration => will be computed later on request only.
+  		m_duration = -1; 
+  	}
 
   public static byte convertToNoteType(String note)
   {
@@ -223,21 +344,21 @@ public class Note extends NoteAbstract
   public String toString()
   {
     String string2Return = super.toString();
-    if (heigth == REST) 	string2Return = string2Return.concat("z"); else
-    if (heigth == C) 	string2Return = string2Return.concat("C"); else
-    if (heigth == D) 	string2Return = string2Return.concat("D"); else
-    if (heigth == E) 	string2Return = string2Return.concat("E"); else
-    if (heigth == F) 	string2Return = string2Return.concat("F"); else
-    if (heigth == G) 	string2Return = string2Return.concat("G"); else
-    if (heigth == A) 	string2Return = string2Return.concat("A"); else
-    if (heigth == B) 	string2Return = string2Return.concat("B"); else
-    if (heigth == c) 	string2Return = string2Return.concat("c"); else
-    if (heigth == d) 	string2Return = string2Return.concat("d"); else
-    if (heigth == e) 	string2Return = string2Return.concat("e"); else
-    if (heigth == f) 	string2Return = string2Return.concat("f"); else
-    if (heigth == g) 	string2Return = string2Return.concat("g"); else
-    if (heigth == a) 	string2Return = string2Return.concat("a"); else
-    if (heigth == b) 	string2Return = string2Return.concat("b");
+    if (height == REST) 	string2Return = string2Return.concat("z"); else
+    if (height == C) 	string2Return = string2Return.concat("C"); else
+    if (height == D) 	string2Return = string2Return.concat("D"); else
+    if (height == E) 	string2Return = string2Return.concat("E"); else
+    if (height == F) 	string2Return = string2Return.concat("F"); else
+    if (height == G) 	string2Return = string2Return.concat("G"); else
+    if (height == A) 	string2Return = string2Return.concat("A"); else
+    if (height == B) 	string2Return = string2Return.concat("B"); else
+    if (height == c) 	string2Return = string2Return.concat("c"); else
+    if (height == d) 	string2Return = string2Return.concat("d"); else
+    if (height == e) 	string2Return = string2Return.concat("e"); else
+    if (height == f) 	string2Return = string2Return.concat("f"); else
+    if (height == g) 	string2Return = string2Return.concat("g"); else
+    if (height == a) 	string2Return = string2Return.concat("a"); else
+    if (height == b) 	string2Return = string2Return.concat("b");
     if (octaveTransposition == 1) 	string2Return = string2Return.concat("'"); else
     if (octaveTransposition == -1) 	string2Return = string2Return.concat(",");
     if (accidental == AccidentalType.FLAT)	string2Return = string2Return.concat("b");
@@ -245,5 +366,47 @@ public class Note extends NoteAbstract
     //string2Return = string2Return.concat(relativeLength.toString());
     return string2Return;
   }
+  
+  /** Returns <TT>true</TT> if the duration of the note is one of the 
+   * following : <TT>Note.WHOLE</TT>, <TT>Note.HALF</TT>,
+   * <TT>Note.QUARTER</TT>, <TT>Note.EIGHTH</TT>, <TT>Note.SIXTEENTH</TT>, 
+   * <TT>Note.THIRTY_SECOND</TT>, <TT>Note.SIXTY_FOURTH</TT>.
+   * @param noteDuration The note duration to be checked
+   * @return <TT>true</TT> if the duration of the note is one of the 
+   * following : <TT>Note.WHOLE</TT>, <TT>Note.HALF</TT>,
+   * <TT>Note.QUARTER</TT>, <TT>Note.EIGHTH</TT>, <TT>Note.SIXTEENTH</TT>, 
+   * <TT>Note.THIRTY_SECOND</TT>, <TT>Note.SIXTY_FOURTH</TT>.
+   * <TT>false</TT> otherwise. */
+  private boolean isStrictDuration(short noteDuration) {
+	  return (
+			  (noteDuration==Note.WHOLE)|| (noteDuration==Note.HALF) ||
+			  (noteDuration==Note.QUARTER) || (noteDuration==Note.EIGHTH) ||
+			  (noteDuration==Note.SIXTEENTH) || (noteDuration==Note.THIRTY_SECOND) ||
+			  (noteDuration==Note.SIXTY_FOURTH));
+  }
+
+  	/** Compute a duration that takes strict duration as a reference plus
+  	 * the duration of the optional dots and the tuplet if any. */ 
+  	private short computeDuration(short strictDuration, int dotsNumber){
+  		short duration = strictDuration;
+  	    if (isPartOfTuplet()) {
+  	    	//if the note is part of tuplet then, for now,
+  	    	//ignore the strict duration of the note. => more simple
+  	    	//but may need to ne improved.
+  	    	Tuplet tuplet = getTuplet();
+  	    	int notesNb = tuplet.getNotesAsVector().size();
+  	    	float totalTupletDuration = tuplet.getTotalDuration();
+  	    	//The correction for the note duration because that's a tuplet.
+  	    	duration = (short)(totalTupletDuration / notesNb);
+  	    }
+  	    else {
+  	  		int dotsNb = countDots();
+  	  		for (int i=0; i<dotsNb; i++) {
+  	  			short dottedDuration = (short)(strictDuration / (i+1));
+  	  			duration = (short)(duration + dottedDuration);
+  	  		}
+  	    }
+  	    return duration;
+  	}
 }
 
