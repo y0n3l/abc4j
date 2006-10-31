@@ -53,7 +53,7 @@ public class Note extends NoteAbstract
   public static final byte F		= 5;
   /** The <TT>G</TT> note height type. */
   public static final byte G		= 7;
-  /** The <TT>A</TT> note height type : A404 */
+  /** The <TT>A</TT> note height type : A440 */
   public static final byte A		= 9;
   /** The <TT>B</TT> note height type. */
   public static final byte B		= 11;
@@ -211,6 +211,9 @@ public class Note extends NoteAbstract
    * @see #getDuration()*/
   public void setDuration(short duration) { 
 	  m_duration = duration;
+	  System.err.println("[warning]duration of " + this + 
+			  " set in an absolute manner with " + duration + "(not recommanded but supported)");
+	  //Thread.dumpStack();
   }
   
   /** Sets the strict duration of this note.
@@ -377,7 +380,7 @@ public class Note extends NoteAbstract
    * <TT>Note.QUARTER</TT>, <TT>Note.EIGHTH</TT>, <TT>Note.SIXTEENTH</TT>, 
    * <TT>Note.THIRTY_SECOND</TT>, <TT>Note.SIXTY_FOURTH</TT>.
    * <TT>false</TT> otherwise. */
-  private boolean isStrictDuration(short noteDuration) {
+  public static boolean isStrictDuration(short noteDuration) {
 	  return (
 			  (noteDuration==Note.WHOLE)|| (noteDuration==Note.HALF) ||
 			  (noteDuration==Note.QUARTER) || (noteDuration==Note.EIGHTH) ||
@@ -401,8 +404,8 @@ public class Note extends NoteAbstract
   	    }
   	    else {
   	  		int dotsNb = countDots();
-  	  		for (int i=0; i<dotsNb; i++) {
-  	  			short dottedDuration = (short)(strictDuration / (i+1));
+  	  		for (int i=1; i<=dotsNb; i++) {
+  	  			short dottedDuration = (short)(strictDuration / (i+1)); //at the first dot (i=1), we should divide by 2
   	  			duration = (short)(duration + dottedDuration);
   	  		}
   	    }

@@ -34,10 +34,10 @@ import abc.parser.def.DefinitionFactory;
 
 /** Abstract class from which all abc notation parsers inherit.
  * Known limitations:
- * ELEMSKIP is not supported.
- *
- * The context to switch from abc header parsing to abc music parsing
- * is done in <PRE>private KeySignature parseFieldKey(Set follow)</PRE>.*/
+ * ELEMSKIP is not supported. */
+ //
+ // The context to switch from abc header parsing to abc music parsing
+ // is done in <PRE>private KeySignature parseFieldKey(Set follow)</PRE>.*/
 public class AbcParserAbstract
 {
   protected static final Set FIRST_END_OF_LINE = new Set(AbcTokenType.LINE_FEED).union(AbcTokenType.SPACE)
@@ -158,8 +158,10 @@ public class AbcParserAbstract
     /** The type of the current token 
      * @see #m_token */
     protected TokenType m_tokenType = TokenType.UNKNOWN;
-    /** The broken rhythm inherited from the previous note. */
-    private byte brokenRhythm = 0;
+    /** The number of dots inherited from the previous note broken rythm.
+     * 
+     * */
+    private byte brknRthmDotsCorrection = 0;
     /** */
     private boolean m_isPartOfSlur = false;
     /** The current default note length. */
@@ -1214,19 +1216,45 @@ public class AbcParserAbstract
       Set current = new Set().union(FIRST_BROKEN_RHYTHM);
       //CharStreamPosition beginPosition = m_token.getPosition();
       NoteAbstract note = parseNoteStem(current.createUnion(follow));
-      if (brokenRhythm!=0) //broken rhtythm herited from previous note
-      {
-        if (note!=null)
-          note.setDotted((byte)(-brokenRhythm));
-        brokenRhythm = 0;
+      if (note!=null) {
+    	  if (brknRthmDotsCorrection!=0) {
+    		  if (brknRthmDotsCorrection>0)
+    			  note.setDotted(brknRthmDotsCorrection);
+    		  else
+    			  if (brknRthmDotsCorrection<0) {
+    				  short correctedDuration = (short)(((Note)note).getStrictDuration() / (Math.pow(2,-brknRthmDotsCorrection)));
+    				  try {
+    					  ((Note)note).setStrictDuration(correctedDuration);
+    				  } catch (IllegalArgumentException e) {
+    					  ((Note)note).setDuration(correctedDuration);
+    				  }
+    			  }
+    	  }
       }
-      if (m_tokenType.equals(AbcTokenType.BROKEN_RHYTHM))
-      {
-        current.remove(FIRST_BROKEN_RHYTHM);
-        String brokenRhythmString = accept(AbcTokenType.BROKEN_RHYTHM, current, follow);
-        brokenRhythm = convertBrokenRhythm(brokenRhythmString);
-        if (note!=null)
-          note.setDotted(brokenRhythm);
+      if (m_tokenType.equals(AbcTokenType.BROKEN_RHYTHM)) {
+    	  current.remove(FIRST_BROKEN_RHYTHM);
+    	  String brokenRhythmString = accept(AbcTokenType.BROKEN_RHYTHM, current, follow);
+    	  byte brokenRhythm = convertBrokenRhythm(brokenRhythmString);
+    	  if (note!=null) {
+    		  if (brokenRhythm>0) {
+    			  note.setDotted(brokenRhythm);
+    			  // The difference between the whole note duration and its strict
+    			  // duration gives the duration corresponding to the dots.
+    			  brknRthmDotsCorrection = (byte)-brokenRhythm; 
+    			  //brknRthmLengthCorrection = (short)(((Note)note).getStrictDuration() / (Math.pow(2,brokenRhythm)));
+    		  }
+    		  else
+    			  if (brokenRhythm<0) {
+    				  short correctedDuration = (short)(((Note)note).getStrictDuration() / (Math.pow(2,-brokenRhythm)));
+            		  try {
+            			  ((Note)note).setStrictDuration(correctedDuration);
+            		  } catch (IllegalArgumentException e) {
+            			  ((Note)note).setDuration(correctedDuration);
+            		  }
+        			  //brknRthmDotsCorrection = (byte)-brokenRhythm;
+            		  brknRthmDotsCorrection = (byte)-brokenRhythm;
+        		  }
+    	  }
       }
       /*if (note!=null)
       {
@@ -1684,8 +1712,8 @@ public class AbcParserAbstract
     protected static byte convertBrokenRhythm(String brokenRhythm)
     {
       byte br = (byte)brokenRhythm.length();
-      if (brokenRhythm.equals("<")) return (byte)-br;
-      else if (brokenRhythm.equals(">")) return (byte)br;
+      if (brokenRhythm.charAt(0)=='<') return (byte)-br;
+      else if (brokenRhythm.charAt(0)=='>') return (byte)br;
       else return 0;
     }
 
