@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="abc4j" default="all" basedir=".">
+
+	<!-- Properties for this project. -->
+	<property name="classesdir" value="./../classes" />
+	<property name="srcdir" value="." />
+	<property name="testsdir" value="./../test" />
+	<property name="libdir" value="./../lib" />
+	<property name="imagesdir" value="./../images" />
+	<property name="apidir" value="./../docs" />
+	<property name="junitdir" value="${basedir}/junit3.8.1" />
+    
+	<!-- Defines the set of java sources to compile. -->
+	<patternset id="source.patternset">
+		<include name="${srcdir}/**" />
+	</patternset>
+
+	<!-- Makes all -->
+	<target name="all" depends="clean, sources.compile, libs, javadoc" />
+
+	<!--===================================== COMPILATION PART ======================================-->
+	<!-- Compiles the java sources. -->
+	<target name="sources.compile">
+		<mkdir dir="${classesdir}" />
+		<echo>Compiling files from ${srcdir} to ${classesdir}</echo>
+		<javac debug="true" srcdir="${srcdir}" destdir="${classesdir}">
+		</javac>
+	</target>
+	
+	<!--===================================== LIB ======================================-->
+	<target name="libs">
+			<mkdir dir="${libdir}" />
+			<echo>Generating jars to ${libdir}</echo>
+			<jar destfile="${libdir}/abc4j.jar" basedir="${classesdir}"
+				includes="abc/**,abcynth/**,check/**,scanner/**"
+				manifest="${srcdir}/manifest.mf">
+			</jar>
+	</target>
+	
+	<!--===================================== JUNIT ======================================-->
+	<target name="junit" description="Compile and run the whole JUnit campaign">
+		<antcall target="unittests.clean" inheritall="true" inheritrefs="true"/>
+	  
+		<!-- Compile sources if needed -->
+		 <antcall target="sources.compile" inheritall="true" inheritrefs="true"/>
+		<!--	<param name="trace_mode" value="debug" />
+	   <param name="mode" value="temp" />
+	   <param name="debuglevel" value="lines,source,vars" />
+	  </antcall>-->
+	 
+	  	<!-- Instrument compiled code -->
+		<antcall target="unittests.instrument" inheritall="true" inheritrefs="true">
+			<param name="mode" value="temp" />
+		</antcall>
+	 
+	  <!-- clean up temporary files -->
+	  <!--<delete dir="${classesdir}/temp"/>-->
+	  
+	  	<!-- Compile tests if needed -->
+		<antcall target="unittests.compile" inheritall="true" inheritrefs="true">
+			<param name="trace_mode" value="debug" />
+			<param name="mode" value="instrumented" />
+			<param name="debuglevel" value="lines,source,vars" />
+		</antcall>
+	 
+		<!-- Launch JUnit tests -->
+		<antcall target="unittests.run" inheritall="true" inheritrefs="true">
+			<param name="trace_mode" value="debug" />   
+			<param name="mode" value="instrumented" />
+		</antcall>
+	 
+		<!-- Launch JCoverage results merge -->
+		<antcall target="unittests.coverage" inheritall="true" inheritrefs="true">
+			<param name="mode" value="instrumented" />
+		</antcall>
+	  
+		<!-- Clean up (a little) -->
+		<delete file="jcoverage.ser"/>
+		<delete dir="${classesdir}/instrumented"/>
+		<delete dir="${logdir}/junit"/>
+		<delete dir="${logdir}/junit_coverage"/>
+		<move file="${logdir}/junit-noframes.html" tofile="${logdir}/unit_report.html"/>
+		<move file="${logdir}/junit_coverage.zip" tofile="${logdir}/unit_coverage.zip"/> 
+	</target>
+	 
+	 <target name="unittests.clean">
+	  <delete dir="${classesdir}/instrumented"/>
+	  <delete dir="${logdir}/junit"/>
+	 </target>
+	 
+		<!-- Compiles the unit tests. -->
+		<target name="unittests.compile">
+			<javac srcdir="${testsdir}" destdir="${classesdir}/${mode}" debug="on" deprecation="on">
+				<patternset refid="source.patternset" />
+				<classpath path="${classesdir}/${mode}" />
+				<classpath refid="project.classpath" />
+				<classpath refid="junit" />
+				<classpath refid="jcoverage" />
+			</javac>
+			<copy todir="${classesdir}/${mode}">
+				<fileset dir="${unittestsdir}">
+					<exclude name="**/*.java"/>
+				</fileset>
+			</copy>  
+		</target>
+	 
+	 <!-- Run JUnit and generate report -->
+	 <target name="unittests.run" description="Run the whole JUnit campaign">
+	  <!-- Run JUnit -->
+	  <mkdir dir="${logdir}/junit" />
+	  <junit showoutput="yes" printsummary="yes" fork="yes" haltonfailure="no" dir="${classesdir}/${mode}">
+	   <formatter type="xml" />
+	   <formatter type="brief" />
+	   <classpath refid="junit" />
+	   <classpath refid="jcoverage" />
+	   <classpath refid="project.classpath" />
+	   <classpath path="${classesdir}/${mode}" />
+	   <batchtest fork="yes" todir="${logdir}/junit">
+	    <fileset dir="${unittestsdir}">
+	     <include name="${only_package}/**/*AllTests.java" />
+	    </fileset>
+	   </batchtest>
+	  </junit>
+	 
+	  <junitreport>
+	   <fileset dir="${logdir}/junit">
+	    <include name="TEST-*.xml" />
+	   </fileset>
+	   <report format="noframes" todir="${logdir}" />
+	  </junitreport>
+	 
+	  <!-- clean up temporary files -->
+	  <delete file="${basedir}/TESTS-TestSuites.xml"/>  
+	 </target>
+	 
+	 <!-- Instrument code -->
+	 <target name="unittests.instrument" description="Add JCoverage instrumentation">
+	  <instrument todir="${classesdir}/instrumented">
+	   <fileset dir="${classesdir}/${mode}">
+	    <include name="**/*.class" />
+	   </fileset>
+	  </instrument> 
+	 </target>
+	 
+	 <target name="unittests.coverage" description="Run the JCoverage merge/report">
+	  <!-- merging coverage results and instrumentation results -->
+	  <echo>Merging from ${classesdir}/${mode}/jcoverage.ser to ${basedir}</echo>
+	  <merge>
+	   <classpath refid="jcoverage" />
+	   <fileset dir="${basedir}">
+	    <include name="lib/classes/${mode}/jcoverage.ser" />
+	    <include name="jcoverage.ser" />
+	   </fileset>
+	  </merge>
+	 
+	  <!-- generating report results -->
+	  <echo>Generating from ${basedir} to ${logdir}/junit_coverage</echo>
+	  <report srcdir="${srcdir}" destdir="${logdir}/junit_coverage">
+	   <classpath refid="jcoverage" />
+	  </report>
+	  <report srcdir="${srcdir}" destdir="${logdir}/junit_coverage" format="xml">
+	   <classpath refid="jcoverage" />
+	  </report> 
+	  <zip destfile="${logdir}/junit_coverage.zip" basedir="${logdir}/junit_coverage" />
+	 </target>
+
+	
+	<!-- Instrument code -->
+	<!--<target name="jcoverage.instrument" description="Instrument classes with JCoverage">
+		<instrument todir="${classesdir}/optimize">
+			<fileset dir="${classesdir}/${mode}">
+				<include name="**/*.class" />
+			</fileset>
+		</instrument>
+		<move file="${basedir}/jcoverage.ser" tofile="${libdir}/optimize/jcoverage.ser" />
+	</target>-->
+
+	<!-- This target generates a report between the .ser in and the one in ... -->
+	<!--<target name="jcoverage.report" description="Run the JCoverage merge/report">-->
+		<!-- merging coverage results and instrumentation results -->
+		<!--<echo>Merging from reference ${libdir}/optimize/jcoverage.ser and ${libdir}</echo>
+		<merge>
+			<classpath refid="jcoverage.classpath" />
+			<fileset dir="${basedir}">
+				<include name="lib/optimize/jcoverage.ser" />
+				<include name="lib/jcoverage.ser" />
+			</fileset>
+		</merge>-->
+
+		<!-- generating report results -->
+		<!--<echo>Generating from ${basedir} to ${logdir}/coverage</echo>
+		<report srcdir="${srcdir}" destdir="${logdir}/coverage">
+			<classpath refid="jcoverage.classpath" />
+		</report>
+		<report srcdir="${srcdir}" destdir="${logdir}/coverage" format="xml">
+			<classpath refid="jcoverage.classpath" />
+		</report>
+	</target>-->
+	
+	<!-- ================================== END OF COVERAGE ==================================== -->
+	<target name="javadoc">
+		<mkdir dir="${apidir}"/>
+		<javadoc destdir="${apidir}" author="true" version="true" use="true" 
+			windowtitle="abc4j API Documentation" 
+			doctitle="abc4j API Specification"
+			header="abc4j API Specification"
+			footer="abc4j API Specification"
+			overview="${srcdir}/overview.html"
+			sourcepath="${srcdir}">
+			<bottom>&lt;a href=&quot;mailto:lionel.gueganton@libertysurf.fr&quot;&gt;Submit a bug or feature&lt;a&#47;&gt;</bottom>
+			<classpath path="${classesdir}" />
+			<group title="abc Representation / Parsing Packages" packages="abc.notation*, abc.parser*"/>
+			<group title="Midi Playback Packages" packages="abc.midi*"/>
+      		<group title="Scanner Engine Packages" packages="scanner*"/>
+			<group title="UI Packages" packages="abc.ui*"/>
+      		<packageset dir="${srcdir}" defaultexcludes="yes">
+				<include name="abc/**" />
+      			<include name="scanner/**" />
+				<exclude name="abc/parser/def**" />
+			</packageset>
+		</javadoc>
+		<mkdir dir="${apidir}/images"/>
+		<copy todir="${apidir}/images">
+			<fileset dir="${imagesdir}">
+				<include name="**/*.gif"/>
+				<include name="**/*.jpg"/>
+			</fileset>
+		</copy>
+		<zip destfile="${basedir}/abc4jApiDoc.zip" basedir="${apidir}" />
+	</target>
+	
+	<!-- Removes the compiled files -->
+	<target name="clean" description="Removes the compiled files">
+		<delete dir="${classesdir}" />
+		<delete dir="${apidir}" />
+		<delete dir="${libdir}" />
+	</target>
+
+</project>
