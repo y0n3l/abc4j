@@ -249,12 +249,13 @@ public class Note extends NoteAbstract
     return m_strictDuration;
   }
 
-  /** Returns the length of this note. However, it is recommanded to retrieve
-   * the note duration using methods such as getStrictDuration(short strictDuration), 
-   * countDots() etc etc as explained at the begining of this class description. 
-   * @return The length of this note as a value adjusted to 
+  /** Returns the duration of this note. The duration returned here takes into 
+   * account if the note is dotted, part of a tuplet and so on ... (as opposed
+   * to <TT>getStrictDuration()</TT> that only refers to the "pure" note) 
+   * @return The duration of this note as a value adjusted to 
    * the scale of constants such as <TT>Note.WHOLE</TT>, <TT>Note.HALF</TT> etc etc ...
-   * @see #setLength(short) */
+   * @see #setLength(short)
+   * @see #getStrictDuration() */
   public short getDuration() {
 	  if (m_duration!=-1)
 		  //The duration has been set in an absolute manner (not recommanded, but 
