@@ -6,7 +6,7 @@ import abc.notation.Note;
 /** A class that provides convenience methods to manipulate abc related 
  * strings and their representation using objects from the <TT>abc.notation</TT>
  * package. */
-class AbcToolkit {
+public class AbcToolkit {
 	public static byte convertToRepeatBarLine(String barLine) {
       if (barLine.equals("[1")) return 1;
       else if (barLine.equals("[2")) return 2;
