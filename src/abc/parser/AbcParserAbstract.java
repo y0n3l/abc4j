@@ -985,7 +985,7 @@ public class AbcParserAbstract
 
     //==================================================================================
     /** abc-music ::= 1*abc-line linefeed */
-    private void parseAbcMusic(Set follow)
+    protected void parseAbcMusic(Set follow)
     {
       Set current = new Set().union(FIRST_ABC_LINE).union(AbcTokenType.LINE_FEED);
       do
@@ -1217,6 +1217,7 @@ public class AbcParserAbstract
       //CharStreamPosition beginPosition = m_token.getPosition();
       NoteAbstract note = parseNoteStem(current.createUnion(follow));
       if (note!=null) {
+    	  //Apply the previously inherited broken rythm if any.
     	  if (brknRthmDotsCorrection!=0) {
     		  if (brknRthmDotsCorrection>0)
     			  note.setDotted(brknRthmDotsCorrection);
@@ -1229,6 +1230,9 @@ public class AbcParserAbstract
     					  ((Note)note).setDuration(correctedDuration);
     				  }
     			  }
+    		  //Once the inherited broken rythm has been applied, no broken 
+    		  //should be applied further.
+    		  brknRthmDotsCorrection = 0;
     	  }
       }
       if (m_tokenType.equals(AbcTokenType.BROKEN_RHYTHM)) {
@@ -1238,10 +1242,7 @@ public class AbcParserAbstract
     	  if (note!=null) {
     		  if (brokenRhythm>0) {
     			  note.setDotted(brokenRhythm);
-    			  // The difference between the whole note duration and its strict
-    			  // duration gives the duration corresponding to the dots.
     			  brknRthmDotsCorrection = (byte)-brokenRhythm; 
-    			  //brknRthmLengthCorrection = (short)(((Note)note).getStrictDuration() / (Math.pow(2,brokenRhythm)));
     		  }
     		  else
     			  if (brokenRhythm<0) {
@@ -1251,7 +1252,6 @@ public class AbcParserAbstract
             		  } catch (IllegalArgumentException e) {
             			  ((Note)note).setDuration(correctedDuration);
             		  }
-        			  //brknRthmDotsCorrection = (byte)-brokenRhythm;
             		  brknRthmDotsCorrection = (byte)-brokenRhythm;
         		  }
     	  }

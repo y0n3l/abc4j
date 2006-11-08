@@ -15,6 +15,16 @@
 	<patternset id="source.patternset">
 		<include name="${srcdir}/**" />
 	</patternset>
+	
+	<taskdef classpathref="jcoverage" resource="tasks.properties" />
+	<path id="jcoverage">
+		<pathelement location="${externaltools}/jcoverage.jar" />
+		<pathelement location="${externaltools}/log4j_1.2.8.jar" />
+		<pathelement location="${externaltools}/bcel.jar" />
+		<pathelement location="${externaltools}/jakarta_oro_2.0.7.jar" />
+		<pathelement location="${externaltools}/java_getopt_1.0.9.jar" />
+	</path>
+
 
 	<!-- Makes all -->
 	<target name="all" depends="clean, sources.compile, libs, javadoc" />
