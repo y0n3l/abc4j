@@ -1,7 +1,6 @@
 import junit.framework.TestCase;
 import abc.notation.Note;
 import abc.notation.Tune;
-import abc.parser.AbcHeadersParser;
 import abc.parser.TuneParser;
 
 public class VariousTests extends TestCase {
@@ -12,6 +11,7 @@ public class VariousTests extends TestCase {
 	private static final String line03 = "L:1/8\n"; //default length is the "crotchet"
 	private static final String line04 = "K:D\n";
 	private static final String line05 = "d>A FA/d/\n";
+	private static final String line051 = "C2->Aa\n";
 	
 	public VariousTests(String name) {
 		super(name);
@@ -24,12 +24,6 @@ public class VariousTests extends TestCase {
 	/**
 	 * L:1/8
 	 * d>A FA/d/
-	 * 
-I get the durations (with the last constants update): 36 12 12 6 6
-(DOTTED_EIGTH, SIXTEENTH, SIXTEENTH, THIRTY_SECOND, THIRTY_SECOND)
-I have used some other abc software, where I get DOTTED_EIGTH,
-SIXTEENTH, EIGTH, SIXTEENTH, SIXTEENTH.
-
 	 *
 	 */
 	public void test1(){
@@ -59,6 +53,39 @@ SIXTEENTH, EIGTH, SIXTEENTH, SIXTEENTH.
 		assertEquals(0, fifthNote.countDots());
 		assertEquals(Note.SIXTEENTH, fifthNote.getStrictDuration());
 		assertEquals(Note.SIXTEENTH, fifthNote.getDuration());
+	}
+	
+	/**
+	 * X:0
+	 * T:test
+	 * L:1/8
+	 * K:D
+	 * C2->A a
+	 * Not really recommanded because 
+	 * Warning: This dotted-note notation is only defined between two 
+	 * notes of equal length. If you use it between notes with different 
+	 * lengths, the result is not defined, and ABC programs may misinterpret your intent.
+	 */
+	public void test2(){
+		String abcTune = line01.concat(line02).concat(line03).concat(line04).concat(line051);
+		TuneParser tparser = new TuneParser();
+		Tune tuneResult = tparser.parse(abcTune);
+		Note firstNote = (Note)tuneResult.getScore().elementAt(1);
+		assertEquals(Note.QUARTER, firstNote.getStrictDuration());
+		assertEquals(Note.DOTTED_QUARTER, firstNote.getDuration());
+		assertEquals(1, firstNote.countDots());
+		assertEquals(true, firstNote.isTied());
+		
+		Note secondNote = (Note)tuneResult.getScore().elementAt(2);
+		assertEquals(Note.SIXTEENTH, secondNote.getStrictDuration());
+		assertEquals(0, secondNote.countDots());
+		assertEquals(true, firstNote.isTied());
+		
+		Note thirdNote = (Note)tuneResult.getScore().elementAt(3);
+		assertEquals(Note.EIGHTH, thirdNote.getStrictDuration());
+		assertEquals(0, thirdNote.countDots());
+		assertEquals(false, thirdNote.isTied());
+		
 	}
 	
 	protected void tearDown() throws Exception {
