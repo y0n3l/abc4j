@@ -2,11 +2,11 @@ package abc.notation;
 
 public class Elemskip implements ScoreElementInterface
 {
-  private int elemskip;
+  //private int elemskip;
 
   public Elemskip (int elemskipValue)
   {
-    elemskip = elemskipValue;
+    //elemskip = elemskipValue;
   }
 
   public String toString ()

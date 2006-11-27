@@ -12,7 +12,7 @@ public class Tune
   private String m_book = null;           //yes         yes       archive B:O'Neills
   private String m_composer = null;       //yes                           C:Trad.
   private String m_discography = null;    //yes                   archive D:Chieftans IV
-  private String m_fileName = null;       //            yes               see index.tex
+  //private String m_fileName = null;       //            yes               see index.tex
   private String m_group = null;          //yes         yes       archive G:flute
   private String m_history = null;        //yes         yes       archive H:This this said to ...
   private String m_information = null;    //yes         yes       playabc

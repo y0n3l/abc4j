@@ -4,12 +4,12 @@ package abc.notation;
 public class Part
 {
   private char m_label;
-  private Tune m_tune = null;
+  //private Tune m_tune = null;
   private Tune.Score m_score = null;
 
   Part (Tune tune, char labelValue)
   {
-    m_tune = tune;
+    //m_tune = tune;
     m_label = labelValue;
     m_score = tune.createScore();
   }
