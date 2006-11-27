@@ -1,14 +1,9 @@
 package abc.parser.def;
 
-import scanner.Transition;
 import scanner.AutomataDefinition;
 import scanner.State;
+import scanner.Transition;
 import abc.parser.AbcTokenType;
-/*
-// header - edit "Data/yourJavaHeader" to customize
-// contents - edit "EventHandlers/Java file/onCreate" to customize
-//
-*/
 
 public class UserDefinedDefinition extends AutomataDefinition
 {

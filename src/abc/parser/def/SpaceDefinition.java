@@ -1,9 +1,9 @@
 package abc.parser.def;
 
-import abc.parser.AbcTokenType;
 import scanner.AutomataDefinition;
 import scanner.State;
 import scanner.Transition;
+import abc.parser.AbcTokenType;
 
 /** **/
 public class SpaceDefinition extends AutomataDefinition
