@@ -5,7 +5,6 @@ import java.io.StringReader;
 import junit.framework.TestCase;
 import abc.notation.Tune;
 import abc.parser.AbcFileParser;
-import abc.parser.AbcFileParserAdapter;
 import abc.parser.AbcHeadersParser;
 import abc.parser.TuneParser;
 

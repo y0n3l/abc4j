@@ -3,7 +3,6 @@ import java.io.StringReader;
 import junit.framework.TestCase;
 import abc.notation.Note;
 import abc.notation.Tune;
-import abc.parser.AbcFileParserAdapter;
 import abc.parser.AbcHeadersParser;
 import abc.parser.TuneParser;
 
