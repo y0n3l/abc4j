@@ -6,9 +6,9 @@
 	<property name="classesdir" value="./../classes" />
 	<property name="srcdir" value="." />
 	<property name="testsdir" value="./../test" />
-	<property name="libdir" value="./../lib" />
+	<property name="libdir" value="./../libTmp" />
 	<property name="imagesdir" value="./../images" />
-	<property name="apidir" value="./../docs" />
+	<property name="apidir" value="./../docsTmp" />
 	<property name="junitdir" value="${basedir}/junit3.8.1" />
     
 	<!-- Defines the set of java sources to compile. -->

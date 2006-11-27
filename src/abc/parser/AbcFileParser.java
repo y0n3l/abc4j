@@ -64,7 +64,7 @@ public class AbcFileParser extends AbcParserAbstract {
 	 * @param abcFile The file to be parsed.
 	 * @exception FileNotFoundException Thrown if the specified file isn't found. */
 	public void parseFile(File abcFile) throws FileNotFoundException { 
-		parseFile(new InputStreamReader(new FileInputStream (abcFile)));
+		parseFile(new BufferedReader(new InputStreamReader(new FileInputStream (abcFile))));
 	}
 	
 	/** Notifies listeners that the parsing of the file has begun. */
