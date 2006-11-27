@@ -1,6 +1,10 @@
+import java.io.StringReader;
+
 import junit.framework.TestCase;
 import abc.notation.Note;
 import abc.notation.Tune;
+import abc.parser.AbcFileParserAdapter;
+import abc.parser.AbcHeadersParser;
 import abc.parser.TuneParser;
 
 public class VariousTests extends TestCase {
@@ -12,6 +16,9 @@ public class VariousTests extends TestCase {
 	private static final String line04 = "K:D\n";
 	private static final String line05 = "d>A FA/d/\n";
 	private static final String line051 = "C2->Aa\n";
+	private static final String line052 = "abcd\n";
+	private static final String line06 = "efg\n";
+	private static final String line07 = "edcba\n";
 	
 	public VariousTests(String name) {
 		super(name);
@@ -86,6 +93,26 @@ public class VariousTests extends TestCase {
 		assertEquals(0, thirdNote.countDots());
 		assertEquals(false, thirdNote.isTied());
 		
+	}
+	
+	public void test3(){
+		String abcTune = line01.concat(line02).concat(line03).concat(line04)
+			.concat(line052).concat(line06).concat(line07);
+		AbcHeadersParser tparser = new AbcHeadersParser();
+		/*tparser.addListener(new AbcFileParserAdapter(){
+			public void lineProcessed(String line) {
+				System.out.println(line);
+			}
+			
+			public void tuneBegin() {
+				System.out.println("==begin");
+			}
+			public void tuneEnd(Tune t) {
+				System.out.println("==end");
+			}
+		}
+		);*/
+		tparser.parseFile(new StringReader(abcTune));
 	}
 	
 	protected void tearDown() throws Exception {

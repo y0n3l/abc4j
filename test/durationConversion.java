@@ -48,10 +48,6 @@ public class durationConversion extends TestCase {
 		
 	}
 	
-	public void test2(){
-		
-	}
-
 	protected void tearDown() throws Exception {
 		super.tearDown();
 	}
