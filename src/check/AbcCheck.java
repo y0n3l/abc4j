@@ -1,22 +1,26 @@
 package check;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.SystemColor;
 import java.applet.Applet;
-import abc.notation.*;
-import abc.parser.*;
-import abc.midi.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.EventObject;
+import java.util.Vector;
+
+import scanner.InvalidCharacterEvent;
+import scanner.TokenEvent;
+import abc.notation.Tune;
+import abc.parser.InvalidTokenEvent;
+import abc.parser.TuneParserListenerInterface;
 import abc.ui.awt.TuneEditorArea;
-import scanner.*;
-import java.util.*;
-import java.io.*;
 
 /** */
 public class AbcCheck extends Applet implements TuneParserListenerInterface
 {
   private TuneEditorArea m_textArea = null;
-  private Button m_checkButton = null;
+  //private Button m_checkButton = null;
   private java.awt.List m_errorList = null;
   //private TuneParser m_parser = null;
   private Vector m_errors = null;
