@@ -4,7 +4,10 @@ import java.io.Reader;
 
 import abc.notation.Tune;
 
-/** This class provides String parsing for tunes in abc notation. */
+/** A convenient class to ease the parsing of ONE tune.
+ * The result of the parsing is directly returned as a Tune object
+ * synchronously. You don't have to attach yourself as a listener or 
+ * whatever to get the parsing result. */
 public class TuneParser extends AbcParserAbstract
 {
   /** Constructs a new tune parser. */

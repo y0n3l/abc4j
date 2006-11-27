@@ -4,7 +4,25 @@ This package contains classes for parsing tunes in abc notation. It needs both <
 <TT>abc.notation</TT> packages to work.
 The purpose of classes from this package is to extract from the abc notation all the necessary information needed 
 to represent the music with objects belonging to the <TT>abc.notation</TT>.<BR/>
-Some specific points should be pointed out during the translation from abc notation to <TT>Note</TT>:
+<BR/>
+abc4j propose several classes to instantiate abc parsers :
+<UL>
+	<LI>{@link  abc.parser.AbcFileParser AbcFileParser} :  This class parses the abc stream and 
+		provides you {@link  abc.notation.Tune Tune} instances with header information 
+		(such as title, key etc...) and music part. 
+	</LI>
+	<LI>{@link  abc.parser.AbcHeadersParser AbcHeadersParser} : This class restricts the 
+		parsing to abc headers. This enables a faster parsing compared to the one 
+		done using <TT>AbcFileParser</TT>.
+	</LI>
+	<LI>{@link  abc.parser.TuneParser TuneParser} : This class is usefull when you 
+		want to parse only one tune : you get the {@link  abc.notation.Tune Tune} result in a 
+		synchronous manner without any listener mechanism. Quite convenient in some cases...
+	</LI>
+</UL>
+<HR/>
+Some specific points should be pointed out during the translation from abc music notation to "standard"
+music notation :
 <OL>
 <LI><B>Several different ways to express music using abc can lead to the same music.</B><BR/>
 For instance, the two following tunes :

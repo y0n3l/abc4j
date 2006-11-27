@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.Vector;
@@ -21,7 +22,7 @@ import abc.notation.Tune;
 public class TuneBook {
 
   /** The file parser used to initialize the tunebook. */
-  private AbcFileParser m_fileParser = null;
+  private AbcHeadersParser m_fileParser = null;
   /** The tune parser used to parse tunes notation. */
   private TuneParser m_parser = null;
   /** The structure used to store the tunes.
@@ -39,10 +40,10 @@ public class TuneBook {
   /** Creates a new tune book from the specified file.
    * @param abcFile The file that contains tunes in abc notation.
    * @exception FileNotFoundException Thrown if the specified file doesn't exist. */
-  public TuneBook(File abcFile) throws FileNotFoundException
-  {
-    this(new BufferedReader(new InputStreamReader(new FileInputStream (abcFile))));
-    m_file = abcFile;
+  public TuneBook(File abcFile) throws FileNotFoundException {
+	  this();
+	  m_file = abcFile;
+	  buildTunesTreeMap(new BufferedReader(new InputStreamReader(new FileInputStream (abcFile))), null);
   }
 
   /** Creates a new tune book from the specified file and gets feedback 
@@ -51,14 +52,16 @@ public class TuneBook {
    * @param listener Listener to be informed of the parsing phasis.
    * @throws FileNotFoundException Thrown if the specified file doesn't exist. */
   public TuneBook(File abcFile, AbcFileParserListenerInterface listener) throws FileNotFoundException {
-    this(new BufferedReader(new InputStreamReader(new FileInputStream (abcFile))),listener);
-    m_file = abcFile;
+	  this();
+	  m_file = abcFile;
+	  buildTunesTreeMap(new BufferedReader(new InputStreamReader(new FileInputStream (abcFile))), listener);
   }
 
   /** Creates a new tune book from the specified stream.
-   * @param stream The stream in abc notation. */
-  public TuneBook(BufferedReader stream)
-  {
+   * @param stream The stream in abc notation.
+   * @exception IOException If the stream does not support {@link Reader#mark(int)}, 
+   * or if some other I/O error occurs*/
+  public TuneBook(Reader stream) throws IOException {
     this();
     buildTunesTreeMap(stream, null);
   }
@@ -66,8 +69,10 @@ public class TuneBook {
   /** Creates a new tune book from the specified stream and gets feedback 
    * from the parsing phasis via the specified listener.
    * @param stream The stream in abc notation.
-   * @param listener Listener to be informed of the parsing phasis. */
-  public TuneBook(BufferedReader stream, AbcFileParserListenerInterface listener) {
+   * @param listener Listener to be informed of the parsing phasis.
+   * @exception IOException If the stream does not support {@link Reader#mark(int)}, 
+   * or if some other I/O error occurs*/
+  public TuneBook(Reader stream, AbcFileParserListenerInterface listener) throws IOException {
     this();
     buildTunesTreeMap(stream, listener);
   }
@@ -75,11 +80,29 @@ public class TuneBook {
   /** Creates an empty tunebook. */
   public TuneBook()
   {
-    m_fileParser = new AbcFileParser();
+    m_fileParser = new AbcHeadersParser();
     m_parser = new TuneParser();
     m_tunes = new TreeMap();
     m_originalTunesOrder = new Vector();
     m_listeners = new Vector();
+  }
+  
+  /** Creates a new tune book from the specified stream.
+   * @deprecated use TuneBook(Reader) instead.
+   * @param stream The stream in abc notation. */
+  public TuneBook(BufferedReader stream) {
+    this();
+    buildTunesTreeMap(stream, null);
+  }
+
+  /** Creates a new tune book from the specified stream and gets feedback 
+   * from the parsing phasis via the specified listener.
+   * @param stream The stream in abc notation.
+   * @param listener Listener to be informed of the parsing phasis. 
+   * @deprecated use TuneBook(Reader, AbcFileParserListenerInterface) instead. */
+  public TuneBook(BufferedReader stream, AbcFileParserListenerInterface listener) {
+    this();
+    buildTunesTreeMap(stream, listener);
   }
 
   /** Saves this tunebook to the specified file.
@@ -311,14 +334,14 @@ public class TuneBook {
   }
 
   //============================= fills up the tunebook structure
-  private void buildTunesTreeMap(BufferedReader readerStram, AbcFileParserListenerInterface clientListener)
+  private void buildTunesTreeMap(Reader readerStram, AbcFileParserListenerInterface clientListener)
   {
     m_tunes = new TreeMap();
     ParserListener listener = new ParserListener();
     m_fileParser.addListener(listener);
     if (clientListener!=null)
       m_fileParser.addListener(clientListener);
-    m_fileParser.parseFileHeaders(readerStram);
+    m_fileParser.parseFile(readerStram);
     m_fileParser.removeListener(listener);
     m_fileParser.removeListener(clientListener);
   }
@@ -381,7 +404,7 @@ public class TuneBook {
 
     public void lineProcessed(String line)
     {
-      //System.out.print(this.getClass().getName() + " line :"  + line);
+    	//System.out.println(this.getClass().getName() + " : " + line);
       if (isInTune)
         m_currentTuneNotation.append(line);
       else

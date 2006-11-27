@@ -16,7 +16,7 @@
 		<include name="${srcdir}/**" />
 	</patternset>
 	
-	<taskdef classpathref="jcoverage" resource="tasks.properties" />
+	<!--<taskdef classpathref="jcoverage" resource="tasks.properties" />-->
 	<path id="jcoverage">
 		<pathelement location="${externaltools}/jcoverage.jar" />
 		<pathelement location="${externaltools}/log4j_1.2.8.jar" />
@@ -211,7 +211,7 @@
 	<!-- ================================== END OF COVERAGE ==================================== -->
 	<target name="javadoc">
 		<mkdir dir="${apidir}"/>
-		<javadoc destdir="${apidir}" author="true" version="true" use="true" 
+		<javadoc destdir="${apidir}" author="true" version="true" use="true" access="public"
 			windowtitle="abc4j API Documentation" 
 			doctitle="abc4j API Specification"
 			header="abc4j API Specification"

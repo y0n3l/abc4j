@@ -1,12 +1,10 @@
 import java.io.File;
-import java.util.Vector;
 
+import scanner.TokenEvent;
 import abc.notation.Tune;
 import abc.parser.AbcFileParser;
 import abc.parser.AbcFileParserAdapter;
 import abc.parser.TuneBook;
-import abc.parser.*;
-import scanner.*;
 
 //import jm.music.data.*;
 //import jm.gui.show.*;

@@ -140,8 +140,8 @@ public class AbcParserAbstract
     protected static Set FIRST_ELEMENT = new Set(FIRST_NOTE_ELEMENT).union(FIRST_TUPLET_ELEMENT).union(AbcTokenType.BARLINE)
         .union(AbcTokenType.NTH_REPEAT).union(AbcTokenType.BEGIN_SLUR).union(AbcTokenType.END_SLUR).union(AbcTokenType.SPACE)
         /*.union(AbcTokenType.USER_DEFINED)*/;
-    protected static Set FIRST_ABC_LINE = new Set(FIRST_ELEMENT).union(FIRST_MID_TUNE_FIELD)/*.union(FIRST_COMMENT).union(FIRST_TEX_COMMAND)*/;
-    protected static Set FIRST_ABC_MUSIC = new Set(FIRST_ABC_LINE);
+    protected Set FIRST_ABC_LINE = new Set(FIRST_ELEMENT).union(FIRST_MID_TUNE_FIELD)/*.union(FIRST_COMMENT).union(FIRST_TEX_COMMAND)*/;
+    protected Set FIRST_ABC_MUSIC = new Set(FIRST_ABC_LINE);
 
     //==========================================================================
     protected static Set FIRST_ABCTUNE = new Set(FIRST_ABCHEADER);
@@ -221,13 +221,13 @@ public class AbcParserAbstract
     /** Parse the given string and creates a <TT>Tune</TT> object as parsing result.
      * @param tune The abc tune, as a String, to be parsed.
      * @return An object representation of the abc notation string. */
-    public Tune parse(String tune)
+    protected Tune parse(String tune)
     { return parse(new StringReader(tune)); }
 
     /** Parses the specified stream in ABC notation.
      * @param charStream Tune stream in ABC notation.
      * @return A tune representing the ABC notation stream. */
-    public Tune parse(Reader charStream)
+    protected Tune parse(Reader charStream)
     {
       try
       {
@@ -263,7 +263,7 @@ public class AbcParserAbstract
     /** Parses the header of the specified tune notation.
      * @param tune A tune notation in ABC.
      * @return A tune representing the ABC notation with header values only. */
-    public Tune parseHeader(String tune)
+    protected Tune parseHeader(String tune)
     { return parseHeader(new StringReader(tune)); }
 
     /** Parse the given string and creates a <TT>Tune</TT> object with no score
@@ -272,7 +272,7 @@ public class AbcParserAbstract
      * @param charStream The stream to be parsed.
      * @return An object representation with no score of the abc notation
      * string. */
-    public Tune parseHeader(Reader charStream)
+    protected Tune parseHeader(Reader charStream)
     {
       notifyListenersForTuneBegin();
       try
@@ -303,16 +303,49 @@ public class AbcParserAbstract
       notifyListenersForTuneEnd(m_tune);
       return m_tune;
     }
+    
+    /** abc-file ::= *(abc-tune / comment / linefeed / tex-command / file-fields) */
+	protected void parseAbcFile(Set follow) {
+		Set current = initParsing();
+		while (m_token!=null) {
+			if (FIRST_ABCTUNE.contains(m_token.getType())) {
+				notifyListenersForTuneBegin();
+				Tune tune = parseAbcTune(current.createUnion(follow));
+				notifyListenersForTuneEnd(tune);
+			}
+			else if (FIRST_COMMENT.contains(m_token.getType()))
+				parseComment(current.createUnion(follow));
+			else if (FIRST_LINE_FEED.contains(m_token.getType()))
+				accept(AbcTokenType.LINE_FEED, current, (current.createUnion(follow)));
+        //else if (Syntax.FIRST_TEX_COMMAND.contains(token.getType())) parseAbcTune(current.createUnion(follow));
+        //else if (Syntax.FIRST_FILE_FIELDS.contains(token.getType())) parseAbcTune(current.createUnion(follow));
+		}
+	}
+	
+	/** Inits the parsing : sets the starting state of the current Set +
+	 * sets the finale state automata of the scanner + retrieves the first 
+	 * token and its type.
+	 * @return The starting state of the current Set as it should
+	 * be at the begining of the parsing. */
+	protected Set initParsing() {
+		Set startingSet = FIRST_ABCTUNE.createUnion(FIRST_COMMENT).createUnion(FIRST_LINE_FEED);
+		// are missing TEX COMMAND and FILE FIELDS
+		//.createUnion(FIRST_TEX_COMMAND);//.createUnion(FIRST_FILE_FIELDS);
+		m_scanner.setFinaleStateAutomata(AutomataFactory.getAutomata(startingSet.getTypes()));
+		m_token = m_scanner.nextToken();
+		m_tokenType = m_token.getType();
+		return startingSet;
+	}
 
     /** abc-tune ::= abc-header abc-music */
     protected Tune parseAbcTune(Set follow)
     {
-      Set current = new Set().union(FIRST_ABCHEADER).union(FIRST_FIELD_KEY);
+      Set current = new Set().union(FIRST_ABCHEADER).union(FIRST_ABC_MUSIC);
       m_automata.setDefinition(DefinitionFactory.getDefinition(current.getTypes()));
       m_scanner.setFinaleStateAutomata(m_automata);
       //m_scanner.setFinaleStateAutomata(getAutomataFor(current.getTypes()));
       parseAbcHeader(current.createUnion(follow));
-      //current.remove(FIRST_FIELD_KEY);
+      current.remove(FIRST_ABC_MUSIC);
       //current = current.createUnion(FIRST_ABC_MUSIC);
       //KeySignature key = parseFieldKey(current.createUnion(follow));
       //if (key!=null) m_score.addElement(key);
@@ -996,7 +1029,7 @@ public class AbcParserAbstract
     }
 
     /** abc-line ::= (1*element line-ender) / mid-tune-field / tex-command */
-    private void parseAbcLine(Set follow)
+    protected void parseAbcLine(Set follow)
     {
       //Set current = new Set();
       if (FIRST_ELEMENT.contains(m_tokenType))
