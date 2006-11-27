@@ -26,7 +26,8 @@ public class MetaMessageWA extends MetaMessage {
 	/** Checks the first byte of the data part of the message to check 
 	 * if it is a tempo message or not.
 	 * @param message
-	 * @return */
+	 * @return <TT>true</TT> if the given message is a tempo message, 
+	 * <TT>false</TT> otherwise. */
 	public static boolean isTempoMessage(MetaMessage message) {
 		return
         	(message.getType()==MidiMessageType.MARKER &&
@@ -36,7 +37,8 @@ public class MetaMessageWA extends MetaMessage {
 	/** Checks the first byte of the data part of the message to check 
 	 * if it is a notation marker message or not.
 	 * @param message
-	 * @return */
+	 * @return <TT>true</TT> if the given message is a marker notation message, 
+	 * <TT>false</TT> otherwise. */
 	public static boolean isNotationMarker(MetaMessage message) {
 		return
         	(message.getType()==MidiMessageType.MARKER &&
