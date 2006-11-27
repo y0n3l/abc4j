@@ -1,19 +1,14 @@
 package abcynth;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.event.*;
-import javax.swing.*;
-import javax.swing.table.*;
-import javax.sound.midi.*;
-import java.awt.SystemColor;
-import abc.notation.*;
-import abc.parser.*;
-import abc.midi.*;
-import scanner.*;
-import java.util.*;
-import java.io.*;
-import abc.ui.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
+import scanner.InvalidCharacterEvent;
+import scanner.TokenEvent;
+import abc.notation.Tune;
+import abc.parser.AbcFileParserListenerInterface;
+import abc.parser.InvalidTokenEvent;
 
 
 /** */

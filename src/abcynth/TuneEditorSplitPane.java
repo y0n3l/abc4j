@@ -1,17 +1,23 @@
 package abcynth;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.event.*;
-import javax.swing.*;
-import javax.swing.text.*;
-import java.awt.SystemColor;
-import scanner.*;
-import abc.notation.*;
-import abc.parser.*;
-import abc.ui.swing.*;
-import java.util.*;
-import java.io.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.util.EventObject;
+
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import scanner.PositionableInCharStream;
+import abc.ui.swing.ErrorsList;
+import abc.ui.swing.ParsingEventsList;
+import abc.ui.swing.TuneEditorPane;
 
 /** A pane for displaying tunes. */
 public class TuneEditorSplitPane extends JSplitPane// implements TuneParserListenerInterface

@@ -1,16 +1,51 @@
 package abcynth;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.table.*;
-import javax.sound.midi.*;
-import abc.notation.*;
-import abc.parser.*;
-import abc.midi.*;
-import scanner.*;
-import java.io.*;
-import abc.ui.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Sequence;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
+import javax.swing.JTable;
+import javax.swing.KeyStroke;
+
+import scanner.PositionableInCharStream;
+import abc.midi.BasicMidiConverter;
+import abc.midi.MidiConverterAbstract;
+import abc.midi.PlayerStateChangeEvent;
+import abc.midi.TempoChangeEvent;
+import abc.midi.TunePlayer;
+import abc.midi.TunePlayerListenerInterface;
+import abc.notation.NoteAbstract;
+import abc.notation.Tune;
+import abc.parser.TuneBook;
+import abc.ui.swing.AddTuneAction;
+import abc.ui.swing.RemoveTuneAction;
+import abc.ui.swing.TuneBookActionAbstract;
 
 //import jm.music.data.*;
 //import jm.gui.show.*;
@@ -33,7 +68,7 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
   private PlayerToolBar m_playerToolBar = null;
   private JPopupMenu m_tunePopMenu = null;
   private LogFrame m_logFrame = null;
-  private int tunesNb = 0;
+  //private int tunesNb = 0;
 
   public PlayerApp()
   {

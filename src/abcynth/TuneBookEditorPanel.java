@@ -1,18 +1,20 @@
 package abcynth;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.event.*;
-import javax.swing.*;
-import javax.swing.table.*;
-import java.awt.SystemColor;
-import abc.notation.*;
-import abc.parser.*;
-import abc.midi.*;
-import abc.ui.swing.*;
-import scanner.*;
-import java.util.*;
-import java.io.*;
+import java.awt.BorderLayout;
+
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import abc.midi.TunePlayer;
+import abc.notation.Tune;
+import abc.parser.TuneBook;
+import abc.ui.swing.TuneBookTable;
+import abc.ui.swing.TuneEditorPane;
 
 /** A simple user interface to display abc files content and play
  * tunes. */
@@ -161,7 +163,7 @@ public class TuneBookEditorPanel extends JSplitPane
       m_tuneEditPane.getTuneEditorPane().getDocument().removeDocumentListener(m_documentListener);
       m_tuneEditPane.getTuneEditorPane().setText(m_tuneBookTable.getTuneBook().getTuneNotation(newSelectedTuneReferenceNumber));
       //m_scorePanel.setTune(m_tuneBookTable.getTuneBook().getTune(newSelectedTuneReferenceNumber));
-      String tuneheader = m_tuneBookTable.getTuneBook().getTuneHeader(newSelectedTuneReferenceNumber);
+      //String tuneheader = m_tuneBookTable.getTuneBook().getTuneHeader(newSelectedTuneReferenceNumber);
       /*if (tuneheader!=null)
       {
         m_tuneHeaderComments.setText(tuneheader);

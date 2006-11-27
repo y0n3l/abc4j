@@ -1,17 +1,20 @@
 package abcynth;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.event.*;
-import javax.swing.*;
-import javax.swing.table.*;
-import java.awt.SystemColor;
-import abc.notation.*;
-import abc.parser.*;
-import abc.midi.*;
-import scanner.*;
-import java.util.*;
-import java.io.*;
+import java.awt.BorderLayout;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JSlider;
+import javax.swing.JToolBar;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import abc.midi.PlayerStateChangeEvent;
+import abc.midi.TempoChangeEvent;
+import abc.midi.TunePlayer;
+import abc.midi.TunePlayerListenerInterface;
+import abc.notation.NoteAbstract;
+import abc.notation.Tune;
 
 /** A simple user interface to display abc files content and play
  * tunes. */

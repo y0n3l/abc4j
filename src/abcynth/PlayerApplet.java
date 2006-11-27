@@ -1,17 +1,18 @@
 package abcynth;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.event.*;
-import javax.swing.*;
-import javax.swing.table.*;
-import java.awt.SystemColor;
-import abc.notation.*;
-import abc.parser.*;
-import abc.midi.*;
-import scanner.*;
-import java.util.*;
-import java.io.*;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import javax.swing.JApplet;
+import javax.swing.JButton;
+
+import abc.midi.TunePlayer;
+import abc.parser.TuneBook;
 
 /** A simple user interface to display abc files content and play
  * tunes. */
@@ -19,7 +20,7 @@ public class PlayerApplet extends JApplet
 {
   private static final String DEMO_FILE_NAME = "LGtunes.abc";
   private PlayerApp m_app = null;
-  private TunePlayer m_player = null;
+  //private TunePlayer m_player = null;
 
   public PlayerApplet()
   {
