@@ -1,13 +1,6 @@
 package abc.ui.swing;
 
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.JToolBar;
-import javax.swing.JButton;
-import javax.swing.ImageIcon;
-import javax.swing.AbstractAction;
-import java.awt.event.KeyEvent;
-import abc.parser.TuneBook;
 
 public class AddTuneAction extends TuneBookActionAbstract
 {

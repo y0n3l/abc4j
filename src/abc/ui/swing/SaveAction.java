@@ -1,15 +1,8 @@
 package abc.ui.swing;
 
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
-import javax.swing.JToolBar;
-import javax.swing.JButton;
-import javax.swing.ImageIcon;
-import javax.swing.AbstractAction;
 import java.awt.event.KeyEvent;
-
-import abc.parser.TuneBook;
+import java.io.IOException;
 
 public class SaveAction extends TuneBookActionAbstract
 {

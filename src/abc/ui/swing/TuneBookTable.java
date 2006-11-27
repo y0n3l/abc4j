@@ -1,16 +1,21 @@
 package abc.ui.swing;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.event.*;
-import javax.swing.*;
-import javax.swing.table.*;
-import java.awt.SystemColor;
-import scanner.*;
-import abc.notation.*;
-import abc.parser.*;
-import java.util.*;
-import java.io.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Vector;
+
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableColumn;
+
+import abc.notation.Tune;
+import abc.parser.TuneBook;
+import abc.parser.TuneBookListenerInterface;
+import abc.parser.TuneChangeEvent;
 
 /** A scecial JTable that has integrated features for displaying tunebooks. */
 public class TuneBookTable extends JTable// implements TuneBookListenerInterface

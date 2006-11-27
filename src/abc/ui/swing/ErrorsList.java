@@ -1,17 +1,16 @@
 package abc.ui.swing;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.event.*;
-import javax.swing.*;
-import javax.swing.text.*;
-import java.awt.SystemColor;
-import scanner.*;
-import abc.notation.*;
-import abc.parser.*;
-import abc.ui.swing.*;
-import java.util.*;
-import java.io.*;
+import java.util.Vector;
+
+import javax.swing.AbstractListModel;
+import javax.swing.JList;
+
+import scanner.InvalidCharacterEvent;
+import scanner.TokenEvent;
+import abc.notation.Tune;
+import abc.parser.InvalidTokenEvent;
+import abc.parser.TuneParser;
+import abc.parser.TuneParserListenerInterface;
 
 /** */
 public class ErrorsList extends JList implements TuneParserListenerInterface

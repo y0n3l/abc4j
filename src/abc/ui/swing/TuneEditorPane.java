@@ -1,16 +1,38 @@
 package abc.ui.swing;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.datatransfer.*;
-import javax.swing.event.*;
-import javax.swing.*;
-import javax.swing.text.*;
-import javax.swing.text.*;
-import scanner.*;
-import abc.notation.*;
-import abc.parser.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.util.EventObject;
+import java.util.Vector;
+
+import javax.swing.JComponent;
+import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Document;
+import javax.swing.text.EditorKit;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+
+import scanner.InvalidCharacterEvent;
+import scanner.Token;
+import scanner.TokenEvent;
+import scanner.TokenType;
+import abc.notation.Tune;
+import abc.parser.AbcTokenType;
+import abc.parser.InvalidTokenEvent;
+import abc.parser.TuneParser;
+import abc.parser.TuneParserListenerInterface;
 
 /** A pane for displaying and editing tunes. This pane handles copy/paste
  * actions. */

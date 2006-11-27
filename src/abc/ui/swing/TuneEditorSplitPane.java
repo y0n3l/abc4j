@@ -1,17 +1,10 @@
 package abc.ui.swing;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.event.*;
-import javax.swing.*;
-import javax.swing.text.*;
-import java.awt.SystemColor;
-import scanner.*;
-import abc.notation.*;
-import abc.parser.*;
-import abc.ui.swing.*;
-import java.util.*;
-import java.io.*;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /** A pane for displaying tunes. */
 public class TuneEditorSplitPane extends JSplitPane// implements TuneParserListenerInterface

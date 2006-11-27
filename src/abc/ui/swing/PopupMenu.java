@@ -5,13 +5,14 @@ package abc.ui.swing;
  * a tutorial reader.
  */
 
-import java.awt.event.*;
-import java.awt.*;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.tree.*;
-import javax.swing.event.*;
-import javax.swing.table.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Vector;
+
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JTable;
+import javax.swing.table.TableColumn;
 
 public class PopupMenu extends JPopupMenu implements ActionListener
 {

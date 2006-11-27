@@ -1,18 +1,18 @@
 package abc.ui.swing;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.event.*;
-import javax.swing.*;
-import javax.swing.text.*;
-import javax.swing.table.*;
-import java.awt.SystemColor;
-import scanner.*;
-import abc.notation.*;
-import abc.parser.*;
-import abc.ui.swing.*;
-import java.util.*;
-import java.io.*;
+import java.util.EventObject;
+import java.util.Vector;
+
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.AbstractTableModel;
+
+import scanner.InvalidCharacterEvent;
+import scanner.TokenEvent;
+import abc.notation.Tune;
+import abc.parser.InvalidTokenEvent;
+import abc.parser.TuneParser;
+import abc.parser.TuneParserListenerInterface;
 
 /** */
 public class ParsingEventsList extends JTable implements TuneParserListenerInterface
