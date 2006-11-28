@@ -12,7 +12,7 @@
 	<property name="libdir" value="./../lib" />
 	<property name="imagesdir" value="./../images" />
 	<property name="docdir" value="./../docs" />
-	<property name="junitdir" value="${basedir}/junit3.8.1" />
+	<!--<property name="junitdir" value="${basedir}/junit3.8.1" />-->
     
 	<!-- Defines the set of java sources to compile. -->
 	<patternset id="source.patternset">
@@ -21,13 +21,13 @@
 	
 	<taskdef name="jdiff" classname="jdiff.JDiffAntTask" classpath="${JDIFF_HOME}/lib/antjdiff.jar"/>
 	<!--<taskdef classpathref="jcoverage" resource="tasks.properties" />-->
-	<path id="jcoverage">
+	<!--<path id="jcoverage">
 		<pathelement location="${externaltools}/jcoverage.jar" />
 		<pathelement location="${externaltools}/log4j_1.2.8.jar" />
 		<pathelement location="${externaltools}/bcel.jar" />
 		<pathelement location="${externaltools}/jakarta_oro_2.0.7.jar" />
 		<pathelement location="${externaltools}/java_getopt_1.0.9.jar" />
-	</path>
+	</path>-->
 
 	<!-- Makes all -->
 	<target name="all" depends="clean, sources.compile, libs, javadoc, jdiff" />
@@ -41,8 +41,23 @@
 		</javac>
 	</target>
 	
+	<!-- Compiles the unit tests. -->
+	<target name="unittests.compile">
+		<javac srcdir="${testsdir}" destdir="${classesdir}/${mode}" debug="on" deprecation="on">
+			<patternset refid="source.patternset" />
+				<classpath path="${classesdir}/${mode}" />
+				<classpath refid="project.classpath" />
+				<classpath refid="junit" />
+			</javac>
+		<copy todir="${classesdir}/${mode}">
+			<fileset dir="${unittestsdir}">
+						<exclude name="**/*.java"/>
+					</fileset>
+				</copy>  
+			</target>
+	
 	<!--===================================== LIB ======================================-->
-	<target name="libs">
+	<target name="libs" description="Generates the jar for abc4j">
 			<mkdir dir="${libdir}" />
 			<echo>Generating jars to ${libdir}</echo>
 			<jar destfile="${libdir}/abc4j.jar" basedir="${classesdir}"
@@ -102,24 +117,8 @@
 	  <delete dir="${logdir}/junit"/>
 	 </target>
 	 
-		<!-- Compiles the unit tests. -->
-		<target name="unittests.compile">
-			<javac srcdir="${testsdir}" destdir="${classesdir}/${mode}" debug="on" deprecation="on">
-				<patternset refid="source.patternset" />
-				<classpath path="${classesdir}/${mode}" />
-				<classpath refid="project.classpath" />
-				<classpath refid="junit" />
-				<classpath refid="jcoverage" />
-			</javac>
-			<copy todir="${classesdir}/${mode}">
-				<fileset dir="${unittestsdir}">
-					<exclude name="**/*.java"/>
-				</fileset>
-			</copy>  
-		</target>
-	 
 	 <!-- Run JUnit and generate report -->
-	 <target name="unittests.run" description="Run the whole JUnit campaign">
+	 <target name="unittests.run">
 	  <!-- Run JUnit -->
 	  <mkdir dir="${logdir}/junit" />
 	  <junit showoutput="yes" printsummary="yes" fork="yes" haltonfailure="no" dir="${classesdir}/${mode}">
@@ -148,16 +147,15 @@
 	 </target>
 	 
 	 <!-- Instrument code -->
-	 <target name="unittests.instrument" description="Add JCoverage instrumentation">
+	 <!--<target name="unittests.instrument">
 	  <instrument todir="${classesdir}/instrumented">
 	   <fileset dir="${classesdir}/${mode}">
 	    <include name="**/*.class" />
 	   </fileset>
 	  </instrument> 
-	 </target>
+	 </target>-->
 	 
-	 <target name="unittests.coverage" description="Run the JCoverage merge/report">
-	  <!-- merging coverage results and instrumentation results -->
+	 <!--<target name="unittests.coverage">
 	  <echo>Merging from ${classesdir}/${mode}/jcoverage.ser to ${basedir}</echo>
 	  <merge>
 	   <classpath refid="jcoverage" />
@@ -165,10 +163,10 @@
 	    <include name="lib/classes/${mode}/jcoverage.ser" />
 	    <include name="jcoverage.ser" />
 	   </fileset>
-	  </merge>
+	  </merge>-->
 	 
 	  <!-- generating report results -->
-	  <echo>Generating from ${basedir} to ${logdir}/junit_coverage</echo>
+	  <!--<echo>Generating from ${basedir} to ${logdir}/junit_coverage</echo>
 	  <report srcdir="${srcdir}" destdir="${logdir}/junit_coverage">
 	   <classpath refid="jcoverage" />
 	  </report>
@@ -176,7 +174,7 @@
 	   <classpath refid="jcoverage" />
 	  </report> 
 	  <zip destfile="${logdir}/junit_coverage.zip" basedir="${logdir}/junit_coverage" />
-	 </target>
+	 </target>-->
 
 	
 	<!-- Instrument code -->
@@ -212,7 +210,7 @@
 	</target>-->
 	
 	<!-- ================================== END OF COVERAGE ==================================== -->
-	<target name="javadoc">
+	<target name="javadoc" description="Generates the javadoc for abc4j">
 		<mkdir dir="${docdir}/api"/>
 		<javadoc destdir="${docdir}/api" author="true" version="true" use="true" access="public"
 			windowtitle="abc4j API Documentation" 
@@ -240,7 +238,7 @@
 				<include name="**/*.jpg"/>
 			</fileset>
 		</copy>
-		<zip destfile="${docdir}/abc4jApiDoc.zip" basedir="${docdir}" />
+		<zip destfile="${docdir}/abc4jApiDoc.zip" basedir="${docdir}/api" />
 	</target>
 	
 	<target name="jdiff" description="Generates changes diff between 2 abc4j versions">
