@@ -11,7 +11,7 @@
 	<property name="testsdir" value="./../test" />
 	<property name="libdir" value="./../lib" />
 	<property name="imagesdir" value="./../images" />
-	<property name="apidir" value="./../docs/api" />
+	<property name="docdir" value="./../docs" />
 	<property name="junitdir" value="${basedir}/junit3.8.1" />
     
 	<!-- Defines the set of java sources to compile. -->
@@ -30,7 +30,7 @@
 	</path>
 
 	<!-- Makes all -->
-	<target name="all" depends="clean, sources.compile, libs, javadoc" />
+	<target name="all" depends="clean, sources.compile, libs, javadoc, jdiff" />
 
 	<!--===================================== COMPILATION PART ======================================-->
 	<!-- Compiles the java sources. -->
@@ -213,8 +213,8 @@
 	
 	<!-- ================================== END OF COVERAGE ==================================== -->
 	<target name="javadoc">
-		<mkdir dir="${apidir}"/>
-		<javadoc destdir="${apidir}" author="true" version="true" use="true" access="public"
+		<mkdir dir="${docdir}/api"/>
+		<javadoc destdir="${docdir}/api" author="true" version="true" use="true" access="public"
 			windowtitle="abc4j API Documentation" 
 			doctitle="abc4j API Specification"
 			header="abc4j API Specification"
@@ -233,23 +233,23 @@
 				<exclude name="abc/parser/def**" />
 			</packageset>
 		</javadoc>
-		<mkdir dir="${apidir}/images"/>
-		<copy todir="${apidir}/images">
+		<mkdir dir="${docdir}/api/images"/>
+		<copy todir="${docdir}/api/images">
 			<fileset dir="${imagesdir}">
 				<include name="**/*.gif"/>
 				<include name="**/*.jpg"/>
 			</fileset>
 		</copy>
-		<zip destfile="${basedir}/abc4jApiDoc.zip" basedir="${apidir}" />
+		<zip destfile="${docdir}/abc4jApiDoc.zip" basedir="${docdir}" />
 	</target>
 	
-	<target name="jdiff">
-		<jdiff>
-			<old name="Version 1">
-				<dirset dir="D:\Perso\abc4jOld\src"/>
+	<target name="jdiff" description="Generates changes diff between 2 abc4j versions">
+		<jdiff stats="on" destdir="${docdir}/diff">
+			<old name="v0.1" javadoc="${OLD_VERSION_DIR}/docs/api">
+				<dirset dir="${OLD_VERSION_DIR}/src/"/>
 			</old>
-			<new name="Version 2">
-				<dirset dir="D:\Perso\abc4j\src"/>
+			<new name="v0.2" javadoc="${docdir}/api">
+				<dirset dir="${srcdir}"/>
 			</new>
 		</jdiff>
 	</target>
@@ -258,10 +258,16 @@
 	<!-- Removes the compiled files -->
 	<target name="clean" description="Removes the compiled files">
 		<delete dir="${classesdir}" />
-		<mkdir dir="${apidir}" />
+		<mkdir dir="${docdir}/api" />
 		<delete includeemptydirs="true">
-		    <fileset dir="${apidir}" includes="**/*"/>
+		    <fileset dir="${docdir}/api" includes="**/*"/>
 		</delete>
+		
+		<mkdir dir="${docdir}/diff" />
+		<delete includeemptydirs="true">
+			<fileset dir="${docdir}/diff" includes="**/*"/>
+		</delete>
+		
 		<mkdir dir="${libdir}" />
 		<delete includeemptydirs="true">
 			<fileset dir="${libdir}" includes="**/*"/>
