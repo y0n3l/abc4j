@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="abc4j" default="all" basedir=".">
+	
+	<property name="JDIFF_HOME" value="D:/installs/jdiff"/>
+	<property name="OLD_VERSION_DIR" value="D:/Perso/abc4jOld"/>
 
 	<!-- Properties for this project. -->
 	<property name="classesdir" value="./../classes" />
@@ -8,7 +11,7 @@
 	<property name="testsdir" value="./../test" />
 	<property name="libdir" value="./../lib" />
 	<property name="imagesdir" value="./../images" />
-	<property name="apidir" value="./../docs" />
+	<property name="apidir" value="./../docs/api" />
 	<property name="junitdir" value="${basedir}/junit3.8.1" />
     
 	<!-- Defines the set of java sources to compile. -->
@@ -16,6 +19,7 @@
 		<include name="${srcdir}/**" />
 	</patternset>
 	
+	<taskdef name="jdiff" classname="jdiff.JDiffAntTask" classpath="${JDIFF_HOME}/lib/antjdiff.jar"/>
 	<!--<taskdef classpathref="jcoverage" resource="tasks.properties" />-->
 	<path id="jcoverage">
 		<pathelement location="${externaltools}/jcoverage.jar" />
@@ -24,7 +28,6 @@
 		<pathelement location="${externaltools}/jakarta_oro_2.0.7.jar" />
 		<pathelement location="${externaltools}/java_getopt_1.0.9.jar" />
 	</path>
-
 
 	<!-- Makes all -->
 	<target name="all" depends="clean, sources.compile, libs, javadoc" />
@@ -240,12 +243,26 @@
 		<zip destfile="${basedir}/abc4jApiDoc.zip" basedir="${apidir}" />
 	</target>
 	
+	<target name="jdiff">
+		<jdiff>
+			<old name="Version 1">
+				<dirset dir="D:\Perso\abc4jOld\src"/>
+			</old>
+			<new name="Version 2">
+				<dirset dir="D:\Perso\abc4j\src"/>
+			</new>
+		</jdiff>
+	</target>
+
+	
 	<!-- Removes the compiled files -->
 	<target name="clean" description="Removes the compiled files">
 		<delete dir="${classesdir}" />
+		<mkdir dir="${apidir}" />
 		<delete includeemptydirs="true">
 		    <fileset dir="${apidir}" includes="**/*"/>
 		</delete>
+		<mkdir dir="${libdir}" />
 		<delete includeemptydirs="true">
 			<fileset dir="${libdir}" includes="**/*"/>
 		</delete>
