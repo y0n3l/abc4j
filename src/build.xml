@@ -8,7 +8,7 @@
 	<property name="testsdir" value="./../test" />
 	<property name="libdir" value="./../lib" />
 	<property name="imagesdir" value="./../images" />
-	<property name="apidir" value="./../docsTmp" />
+	<property name="apidir" value="./../docs" />
 	<property name="junitdir" value="${basedir}/junit3.8.1" />
     
 	<!-- Defines the set of java sources to compile. -->
@@ -40,7 +40,7 @@
 	
 	<!--===================================== LIB ======================================-->
 	<target name="libs">
-			<!--<mkdir dir="${libdir}" />-->
+			<mkdir dir="${libdir}" />
 			<echo>Generating jars to ${libdir}</echo>
 			<jar destfile="${libdir}/abc4j.jar" basedir="${classesdir}"
 				includes="abc/**,abcynth/**,check/**,scanner/**"
@@ -243,7 +243,12 @@
 	<!-- Removes the compiled files -->
 	<target name="clean" description="Removes the compiled files">
 		<delete dir="${classesdir}" />
-		<delete dir="${apidir}" />
+		<delete includeemptydirs="true">
+		    <fileset dir="${apidir}" includes="**/*"/>
+		</delete>
+		<delete includeemptydirs="true">
+			<fileset dir="${libdir}" includes="**/*"/>
+		</delete>
 		<!--<delete dir="${libdir}" />-->
 	</target>
 
