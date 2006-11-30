@@ -1,0 +1,502 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites>
+  <testsuite name="DurationConversion" tests="1" failures="0" errors="0" time="0.031" package="" id="0">
+  
+    <properties>
+    
+      <property name="java.vendor" value="Sun Microsystems Inc."></property>
+
+          <property name="OLD_VERSION_DIR" value="D:/Perso/abc4jOld"></property>
+
+          <property name="eclipse.pdebuild.templates" value="/D:/eclipse/plugins/org.eclipse.pde.build_3.2.1.r321_v20060823/templates/"></property>
+
+          <property name="imagesdir" value="./../images"></property>
+
+          <property name="os.name" value="Windows XP"></property>
+
+          <property name="sun.boot.class.path" value="C:\Program Files\Java\j2re1.4.2_05\lib\rt.jar;C:\Program Files\Java\j2re1.4.2_05\lib\i18n.jar;C:\Program Files\Java\j2re1.4.2_05\lib\sunrsasign.jar;C:\Program Files\Java\j2re1.4.2_05\lib\jsse.jar;C:\Program Files\Java\j2re1.4.2_05\lib\jce.jar;C:\Program Files\Java\j2re1.4.2_05\lib\charsets.jar;C:\Program Files\Java\j2re1.4.2_05\classes"></property>
+
+          <property name="sun.java2d.fontpath" value=""></property>
+
+          <property name="java.vm.specification.vendor" value="Sun Microsystems Inc."></property>
+
+          <property name="net.sourceforge.cobertura.datafile" value="D:\Perso\abc4j\log\cobertura.ser"></property>
+
+          <property name="ant.home" value="D:\eclipse\plugins\org.apache.ant_1.6.5"></property>
+
+          <property name="instclassesdir" value="./../instclasses"></property>
+
+          <property name="java.runtime.version" value="1.4.2_05-b04"></property>
+
+          <property name="JDIFF_HOME" value="D:/installs/jdiff"></property>
+
+          <property name="user.name" value="uidd0558"></property>
+
+          <property name="ant.file.abc4j" value="D:\Perso\abc4j\src\build.xml"></property>
+
+          <property name="user.language" value="en"></property>
+
+          <property name="COBERTURA_DIR" value="D:/installs/cobertura-1.8"></property>
+
+          <property name="sun.boot.library.path" value="C:\Program Files\Java\j2re1.4.2_05\bin"></property>
+
+          <property name="srcdir" value="."></property>
+
+          <property name="ant.project.name" value="abc4j"></property>
+
+          <property name="java.version" value="1.4.2_05"></property>
+
+          <property name="user.timezone" value=""></property>
+
+          <property name="logdir.test" value="./../log/test"></property>
+
+          <property name="sun.arch.data.model" value="32"></property>
+
+          <property name="java.endorsed.dirs" value="C:\Program Files\Java\j2re1.4.2_05\lib\endorsed"></property>
+
+          <property name="sun.cpu.isalist" value="pentium i486 i386"></property>
+
+          <property name="file.encoding.pkg" value="sun.io"></property>
+
+          <property name="file.separator" value="\"></property>
+
+          <property name="java.specification.name" value="Java Platform API Specification"></property>
+
+          <property name="java.class.version" value="48.0"></property>
+
+          <property name="user.country" value="US"></property>
+
+          <property name="java.home" value="C:\Program Files\Java\j2re1.4.2_05"></property>
+
+          <property name="java.vm.info" value="mixed mode"></property>
+
+          <property name="ant.file" value="D:\Perso\abc4j\src\build.xml"></property>
+
+          <property name="os.version" value="5.1"></property>
+
+          <property name="testsdir" value="./../test"></property>
+
+          <property name="path.separator" value=";"></property>
+
+          <property name="java.vm.version" value="1.4.2_05-b04"></property>
+
+          <property name="java.util.prefs.PreferencesFactory" value="java.util.prefs.WindowsPreferencesFactory"></property>
+
+          <property name="user.variant" value=""></property>
+
+          <property name="docdir" value="./../docs"></property>
+
+          <property name="ant.library.dir" value="D:\eclipse\plugins\org.apache.ant_1.6.5\lib"></property>
+
+          <property name="java.awt.printerjob" value="sun.awt.windows.WPrinterJob"></property>
+
+          <property name="sun.io.unicode.encoding" value="UnicodeLittle"></property>
+
+          <property name="awt.toolkit" value="sun.awt.windows.WToolkit"></property>
+
+          <property name="eclipse.pdebuild.scripts" value="/D:/eclipse/plugins/org.eclipse.pde.build_3.2.1.r321_v20060823/scripts/"></property>
+
+          <property name="user.home" value="C:\Documents and Settings\uidd0558"></property>
+
+          <property name="java.specification.vendor" value="Sun Microsystems Inc."></property>
+
+          <property name="java.library.path" value="C:\Program Files\Java\j2re1.4.2_05\bin;.;C:\WINDOWS\system32;C:\WINDOWS;C:\Program Files\CatPC\Bin;C:\Program Files\CatPC\Windows\System32;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\Program Files\Rational\common;D:\Program Files\IDM Computer Solutions\UltraEdit-32;C:\j2sdk1.4.2_06\bin"></property>
+
+          <property name="java.vendor.url" value="http://java.sun.com/"></property>
+
+          <property name="java.vm.vendor" value="Sun Microsystems Inc."></property>
+
+          <property name="java.runtime.name" value="Java(TM) 2 Runtime Environment, Standard Edition"></property>
+
+          <property name="java.class.path" value="D:\Perso\abc4j\instclasses;D:\Perso\abc4j\classes;D:\installs\cobertura-1.8\cobertura.jar;D:\installs\cobertura-1.8\lib\asm-2.2.1.jar;D:\installs\cobertura-1.8\lib\jakarta-oro-2.0.8.jar;D:\installs\cobertura-1.8\lib\log4j-1.2.9.jar;D:\eclipse\plugins\org.junit_3.8.1\junit.jar;D:\eclipse\plugins\org.apache.ant_1.6.5\lib\ant-launcher.jar;D:\eclipse\plugins\org.apache.ant_1.6.5\lib\ant.jar;D:\eclipse\plugins\org.apache.ant_1.6.5\lib\ant-junit.jar"></property>
+
+          <property name="ant.version" value="Apache Ant version 1.6.5 compiled on June 2 2005"></property>
+
+          <property name="logdir.cov" value="./../log/cov"></property>
+
+          <property name="java.vm.specification.name" value="Java Virtual Machine Specification"></property>
+
+          <property name="java.vm.specification.version" value="1.0"></property>
+
+          <property name="sun.cpu.endian" value="little"></property>
+
+          <property name="sun.os.patch.level" value="Service Pack 2"></property>
+
+          <property name="eclipse.pdebuild.home" value="/D:/eclipse/plugins/org.eclipse.pde.build_3.2.1.r321_v20060823/./"></property>
+
+          <property name="java.io.tmpdir" value="C:\DOCUME~1\uidd0558\LOCALS~1\Temp\"></property>
+
+          <property name="java.vendor.url.bug" value="http://java.sun.com/cgi-bin/bugreport.cgi"></property>
+
+          <property name="os.arch" value="x86"></property>
+
+          <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment"></property>
+
+          <property name="java.ext.dirs" value="C:\Program Files\Java\j2re1.4.2_05\lib\ext"></property>
+
+          <property name="user.dir" value="D:\Perso\abc4j\log\test"></property>
+
+          <property name="logdir" value="./../log"></property>
+
+          <property name="libdir" value="./../lib"></property>
+
+          <property name="line.separator" value=" "></property>
+
+          <property name="java.vm.name" value="Java HotSpot(TM) Client VM"></property>
+
+          <property name="basedir" value="D:\Perso\abc4j\src"></property>
+
+          <property name="ant.java.version" value="1.4"></property>
+
+          <property name="classesdir" value="./../classes"></property>
+
+          <property name="file.encoding" value="Cp1252"></property>
+
+          <property name="java.specification.version" value="1.4"></property>
+
+      </properties>
+
+      <testcase name="test1" classname="DurationConversion" time="0.016"></testcase>
+
+      <system-out><![CDATA[]]></system-out>
+
+      <system-err><![CDATA[]]></system-err>
+
+  </testsuite>
+  <testsuite name="Tuplets" tests="4" failures="0" errors="0" time="0.437" package="" id="1">
+  
+    <properties>
+    
+      <property name="java.vendor" value="Sun Microsystems Inc."></property>
+
+          <property name="OLD_VERSION_DIR" value="D:/Perso/abc4jOld"></property>
+
+          <property name="eclipse.pdebuild.templates" value="/D:/eclipse/plugins/org.eclipse.pde.build_3.2.1.r321_v20060823/templates/"></property>
+
+          <property name="imagesdir" value="./../images"></property>
+
+          <property name="os.name" value="Windows XP"></property>
+
+          <property name="sun.boot.class.path" value="C:\Program Files\Java\j2re1.4.2_05\lib\rt.jar;C:\Program Files\Java\j2re1.4.2_05\lib\i18n.jar;C:\Program Files\Java\j2re1.4.2_05\lib\sunrsasign.jar;C:\Program Files\Java\j2re1.4.2_05\lib\jsse.jar;C:\Program Files\Java\j2re1.4.2_05\lib\jce.jar;C:\Program Files\Java\j2re1.4.2_05\lib\charsets.jar;C:\Program Files\Java\j2re1.4.2_05\classes"></property>
+
+          <property name="sun.java2d.fontpath" value=""></property>
+
+          <property name="java.vm.specification.vendor" value="Sun Microsystems Inc."></property>
+
+          <property name="net.sourceforge.cobertura.datafile" value="D:\Perso\abc4j\log\cobertura.ser"></property>
+
+          <property name="ant.home" value="D:\eclipse\plugins\org.apache.ant_1.6.5"></property>
+
+          <property name="instclassesdir" value="./../instclasses"></property>
+
+          <property name="java.runtime.version" value="1.4.2_05-b04"></property>
+
+          <property name="JDIFF_HOME" value="D:/installs/jdiff"></property>
+
+          <property name="user.name" value="uidd0558"></property>
+
+          <property name="ant.file.abc4j" value="D:\Perso\abc4j\src\build.xml"></property>
+
+          <property name="user.language" value="en"></property>
+
+          <property name="COBERTURA_DIR" value="D:/installs/cobertura-1.8"></property>
+
+          <property name="sun.boot.library.path" value="C:\Program Files\Java\j2re1.4.2_05\bin"></property>
+
+          <property name="srcdir" value="."></property>
+
+          <property name="ant.project.name" value="abc4j"></property>
+
+          <property name="java.version" value="1.4.2_05"></property>
+
+          <property name="user.timezone" value=""></property>
+
+          <property name="logdir.test" value="./../log/test"></property>
+
+          <property name="sun.arch.data.model" value="32"></property>
+
+          <property name="java.endorsed.dirs" value="C:\Program Files\Java\j2re1.4.2_05\lib\endorsed"></property>
+
+          <property name="sun.cpu.isalist" value="pentium i486 i386"></property>
+
+          <property name="file.encoding.pkg" value="sun.io"></property>
+
+          <property name="file.separator" value="\"></property>
+
+          <property name="java.specification.name" value="Java Platform API Specification"></property>
+
+          <property name="java.class.version" value="48.0"></property>
+
+          <property name="user.country" value="US"></property>
+
+          <property name="java.home" value="C:\Program Files\Java\j2re1.4.2_05"></property>
+
+          <property name="java.vm.info" value="mixed mode"></property>
+
+          <property name="ant.file" value="D:\Perso\abc4j\src\build.xml"></property>
+
+          <property name="os.version" value="5.1"></property>
+
+          <property name="testsdir" value="./../test"></property>
+
+          <property name="path.separator" value=";"></property>
+
+          <property name="java.vm.version" value="1.4.2_05-b04"></property>
+
+          <property name="java.util.prefs.PreferencesFactory" value="java.util.prefs.WindowsPreferencesFactory"></property>
+
+          <property name="user.variant" value=""></property>
+
+          <property name="docdir" value="./../docs"></property>
+
+          <property name="ant.library.dir" value="D:\eclipse\plugins\org.apache.ant_1.6.5\lib"></property>
+
+          <property name="java.awt.printerjob" value="sun.awt.windows.WPrinterJob"></property>
+
+          <property name="sun.io.unicode.encoding" value="UnicodeLittle"></property>
+
+          <property name="awt.toolkit" value="sun.awt.windows.WToolkit"></property>
+
+          <property name="eclipse.pdebuild.scripts" value="/D:/eclipse/plugins/org.eclipse.pde.build_3.2.1.r321_v20060823/scripts/"></property>
+
+          <property name="user.home" value="C:\Documents and Settings\uidd0558"></property>
+
+          <property name="java.specification.vendor" value="Sun Microsystems Inc."></property>
+
+          <property name="java.library.path" value="C:\Program Files\Java\j2re1.4.2_05\bin;.;C:\WINDOWS\system32;C:\WINDOWS;C:\Program Files\CatPC\Bin;C:\Program Files\CatPC\Windows\System32;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\Program Files\Rational\common;D:\Program Files\IDM Computer Solutions\UltraEdit-32;C:\j2sdk1.4.2_06\bin"></property>
+
+          <property name="java.vendor.url" value="http://java.sun.com/"></property>
+
+          <property name="java.vm.vendor" value="Sun Microsystems Inc."></property>
+
+          <property name="java.runtime.name" value="Java(TM) 2 Runtime Environment, Standard Edition"></property>
+
+          <property name="java.class.path" value="D:\Perso\abc4j\instclasses;D:\Perso\abc4j\classes;D:\installs\cobertura-1.8\cobertura.jar;D:\installs\cobertura-1.8\lib\asm-2.2.1.jar;D:\installs\cobertura-1.8\lib\jakarta-oro-2.0.8.jar;D:\installs\cobertura-1.8\lib\log4j-1.2.9.jar;D:\eclipse\plugins\org.junit_3.8.1\junit.jar;D:\eclipse\plugins\org.apache.ant_1.6.5\lib\ant-launcher.jar;D:\eclipse\plugins\org.apache.ant_1.6.5\lib\ant.jar;D:\eclipse\plugins\org.apache.ant_1.6.5\lib\ant-junit.jar"></property>
+
+          <property name="ant.version" value="Apache Ant version 1.6.5 compiled on June 2 2005"></property>
+
+          <property name="logdir.cov" value="./../log/cov"></property>
+
+          <property name="java.vm.specification.name" value="Java Virtual Machine Specification"></property>
+
+          <property name="java.vm.specification.version" value="1.0"></property>
+
+          <property name="sun.cpu.endian" value="little"></property>
+
+          <property name="sun.os.patch.level" value="Service Pack 2"></property>
+
+          <property name="eclipse.pdebuild.home" value="/D:/eclipse/plugins/org.eclipse.pde.build_3.2.1.r321_v20060823/./"></property>
+
+          <property name="java.io.tmpdir" value="C:\DOCUME~1\uidd0558\LOCALS~1\Temp\"></property>
+
+          <property name="java.vendor.url.bug" value="http://java.sun.com/cgi-bin/bugreport.cgi"></property>
+
+          <property name="os.arch" value="x86"></property>
+
+          <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment"></property>
+
+          <property name="java.ext.dirs" value="C:\Program Files\Java\j2re1.4.2_05\lib\ext"></property>
+
+          <property name="user.dir" value="D:\Perso\abc4j\log\test"></property>
+
+          <property name="logdir" value="./../log"></property>
+
+          <property name="libdir" value="./../lib"></property>
+
+          <property name="line.separator" value=" "></property>
+
+          <property name="java.vm.name" value="Java HotSpot(TM) Client VM"></property>
+
+          <property name="basedir" value="D:\Perso\abc4j\src"></property>
+
+          <property name="ant.java.version" value="1.4"></property>
+
+          <property name="classesdir" value="./../classes"></property>
+
+          <property name="file.encoding" value="Cp1252"></property>
+
+          <property name="java.specification.version" value="1.4"></property>
+
+      </properties>
+
+      <testcase name="test1" classname="Tuplets" time="0.375"></testcase>
+
+      <testcase name="test2" classname="Tuplets" time="0.031"></testcase>
+
+      <testcase name="test3" classname="Tuplets" time="0.015"></testcase>
+
+      <testcase name="test4" classname="Tuplets" time="0.016"></testcase>
+
+      <system-out><![CDATA[]]></system-out>
+
+      <system-err><![CDATA[]]></system-err>
+
+  </testsuite>
+  <testsuite name="VariousTests" tests="3" failures="0" errors="0" time="0.531" package="" id="2">
+  
+    <properties>
+    
+      <property name="java.vendor" value="Sun Microsystems Inc."></property>
+
+          <property name="OLD_VERSION_DIR" value="D:/Perso/abc4jOld"></property>
+
+          <property name="eclipse.pdebuild.templates" value="/D:/eclipse/plugins/org.eclipse.pde.build_3.2.1.r321_v20060823/templates/"></property>
+
+          <property name="imagesdir" value="./../images"></property>
+
+          <property name="os.name" value="Windows XP"></property>
+
+          <property name="sun.boot.class.path" value="C:\Program Files\Java\j2re1.4.2_05\lib\rt.jar;C:\Program Files\Java\j2re1.4.2_05\lib\i18n.jar;C:\Program Files\Java\j2re1.4.2_05\lib\sunrsasign.jar;C:\Program Files\Java\j2re1.4.2_05\lib\jsse.jar;C:\Program Files\Java\j2re1.4.2_05\lib\jce.jar;C:\Program Files\Java\j2re1.4.2_05\lib\charsets.jar;C:\Program Files\Java\j2re1.4.2_05\classes"></property>
+
+          <property name="sun.java2d.fontpath" value=""></property>
+
+          <property name="java.vm.specification.vendor" value="Sun Microsystems Inc."></property>
+
+          <property name="net.sourceforge.cobertura.datafile" value="D:\Perso\abc4j\log\cobertura.ser"></property>
+
+          <property name="ant.home" value="D:\eclipse\plugins\org.apache.ant_1.6.5"></property>
+
+          <property name="instclassesdir" value="./../instclasses"></property>
+
+          <property name="java.runtime.version" value="1.4.2_05-b04"></property>
+
+          <property name="JDIFF_HOME" value="D:/installs/jdiff"></property>
+
+          <property name="user.name" value="uidd0558"></property>
+
+          <property name="ant.file.abc4j" value="D:\Perso\abc4j\src\build.xml"></property>
+
+          <property name="user.language" value="en"></property>
+
+          <property name="COBERTURA_DIR" value="D:/installs/cobertura-1.8"></property>
+
+          <property name="sun.boot.library.path" value="C:\Program Files\Java\j2re1.4.2_05\bin"></property>
+
+          <property name="srcdir" value="."></property>
+
+          <property name="ant.project.name" value="abc4j"></property>
+
+          <property name="java.version" value="1.4.2_05"></property>
+
+          <property name="user.timezone" value=""></property>
+
+          <property name="logdir.test" value="./../log/test"></property>
+
+          <property name="sun.arch.data.model" value="32"></property>
+
+          <property name="java.endorsed.dirs" value="C:\Program Files\Java\j2re1.4.2_05\lib\endorsed"></property>
+
+          <property name="sun.cpu.isalist" value="pentium i486 i386"></property>
+
+          <property name="file.encoding.pkg" value="sun.io"></property>
+
+          <property name="file.separator" value="\"></property>
+
+          <property name="java.specification.name" value="Java Platform API Specification"></property>
+
+          <property name="java.class.version" value="48.0"></property>
+
+          <property name="user.country" value="US"></property>
+
+          <property name="java.home" value="C:\Program Files\Java\j2re1.4.2_05"></property>
+
+          <property name="java.vm.info" value="mixed mode"></property>
+
+          <property name="ant.file" value="D:\Perso\abc4j\src\build.xml"></property>
+
+          <property name="os.version" value="5.1"></property>
+
+          <property name="testsdir" value="./../test"></property>
+
+          <property name="path.separator" value=";"></property>
+
+          <property name="java.vm.version" value="1.4.2_05-b04"></property>
+
+          <property name="java.util.prefs.PreferencesFactory" value="java.util.prefs.WindowsPreferencesFactory"></property>
+
+          <property name="user.variant" value=""></property>
+
+          <property name="docdir" value="./../docs"></property>
+
+          <property name="ant.library.dir" value="D:\eclipse\plugins\org.apache.ant_1.6.5\lib"></property>
+
+          <property name="java.awt.printerjob" value="sun.awt.windows.WPrinterJob"></property>
+
+          <property name="sun.io.unicode.encoding" value="UnicodeLittle"></property>
+
+          <property name="awt.toolkit" value="sun.awt.windows.WToolkit"></property>
+
+          <property name="eclipse.pdebuild.scripts" value="/D:/eclipse/plugins/org.eclipse.pde.build_3.2.1.r321_v20060823/scripts/"></property>
+
+          <property name="user.home" value="C:\Documents and Settings\uidd0558"></property>
+
+          <property name="java.specification.vendor" value="Sun Microsystems Inc."></property>
+
+          <property name="java.library.path" value="C:\Program Files\Java\j2re1.4.2_05\bin;.;C:\WINDOWS\system32;C:\WINDOWS;C:\Program Files\CatPC\Bin;C:\Program Files\CatPC\Windows\System32;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\Program Files\Rational\common;D:\Program Files\IDM Computer Solutions\UltraEdit-32;C:\j2sdk1.4.2_06\bin"></property>
+
+          <property name="java.vendor.url" value="http://java.sun.com/"></property>
+
+          <property name="java.vm.vendor" value="Sun Microsystems Inc."></property>
+
+          <property name="java.runtime.name" value="Java(TM) 2 Runtime Environment, Standard Edition"></property>
+
+          <property name="java.class.path" value="D:\Perso\abc4j\instclasses;D:\Perso\abc4j\classes;D:\installs\cobertura-1.8\cobertura.jar;D:\installs\cobertura-1.8\lib\asm-2.2.1.jar;D:\installs\cobertura-1.8\lib\jakarta-oro-2.0.8.jar;D:\installs\cobertura-1.8\lib\log4j-1.2.9.jar;D:\eclipse\plugins\org.junit_3.8.1\junit.jar;D:\eclipse\plugins\org.apache.ant_1.6.5\lib\ant-launcher.jar;D:\eclipse\plugins\org.apache.ant_1.6.5\lib\ant.jar;D:\eclipse\plugins\org.apache.ant_1.6.5\lib\ant-junit.jar"></property>
+
+          <property name="ant.version" value="Apache Ant version 1.6.5 compiled on June 2 2005"></property>
+
+          <property name="logdir.cov" value="./../log/cov"></property>
+
+          <property name="java.vm.specification.name" value="Java Virtual Machine Specification"></property>
+
+          <property name="java.vm.specification.version" value="1.0"></property>
+
+          <property name="sun.cpu.endian" value="little"></property>
+
+          <property name="sun.os.patch.level" value="Service Pack 2"></property>
+
+          <property name="eclipse.pdebuild.home" value="/D:/eclipse/plugins/org.eclipse.pde.build_3.2.1.r321_v20060823/./"></property>
+
+          <property name="java.io.tmpdir" value="C:\DOCUME~1\uidd0558\LOCALS~1\Temp\"></property>
+
+          <property name="java.vendor.url.bug" value="http://java.sun.com/cgi-bin/bugreport.cgi"></property>
+
+          <property name="os.arch" value="x86"></property>
+
+          <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment"></property>
+
+          <property name="java.ext.dirs" value="C:\Program Files\Java\j2re1.4.2_05\lib\ext"></property>
+
+          <property name="user.dir" value="D:\Perso\abc4j\log\test"></property>
+
+          <property name="logdir" value="./../log"></property>
+
+          <property name="libdir" value="./../lib"></property>
+
+          <property name="line.separator" value=" "></property>
+
+          <property name="java.vm.name" value="Java HotSpot(TM) Client VM"></property>
+
+          <property name="basedir" value="D:\Perso\abc4j\src"></property>
+
+          <property name="ant.java.version" value="1.4"></property>
+
+          <property name="classesdir" value="./../classes"></property>
+
+          <property name="file.encoding" value="Cp1252"></property>
+
+          <property name="java.specification.version" value="1.4"></property>
+
+      </properties>
+
+      <testcase name="test1" classname="VariousTests" time="0.438"></testcase>
+
+      <testcase name="test2" classname="VariousTests" time="0.047"></testcase>
+
+      <testcase name="test3" classname="VariousTests" time="0.031"></testcase>
+
+      <system-out><![CDATA[]]></system-out>
+
+      <system-err><![CDATA[]]></system-err>
+
+  </testsuite>
+</testsuites>
