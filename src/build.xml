@@ -2,61 +2,68 @@
 
 <project name="abc4j" default="all" basedir=".">
 	
+	<!-- Environment variables -->
 	<property name="JDIFF_HOME" value="D:/installs/jdiff"/>
 	<property name="OLD_VERSION_DIR" value="D:/Perso/abc4jOld"/>
+	<property name="COBERTURA_DIR" value="D:/installs/cobertura-1.8"/>
 
 	<!-- Properties for this project. -->
 	<property name="classesdir" value="./../classes" />
+	<property name="instclassesdir" value="./../instclasses" />
 	<property name="srcdir" value="." />
 	<property name="testsdir" value="./../test" />
 	<property name="libdir" value="./../lib" />
 	<property name="imagesdir" value="./../images" />
 	<property name="docdir" value="./../docs" />
-	<!--<property name="junitdir" value="${basedir}/junit3.8.1" />-->
+	<property name="logdir" value="./../log" />
+	<property name="logdir.cov" value="${logdir}/cov" />
+	<property name="logdir.test" value="${logdir}/test" />
     
 	<!-- Defines the set of java sources to compile. -->
 	<patternset id="source.patternset">
 		<include name="${srcdir}/**" />
 	</patternset>
 	
-	<taskdef name="jdiff" classname="jdiff.JDiffAntTask" classpath="${JDIFF_HOME}/lib/antjdiff.jar"/>
-	<!--<taskdef classpathref="jcoverage" resource="tasks.properties" />-->
-	<!--<path id="jcoverage">
-		<pathelement location="${externaltools}/jcoverage.jar" />
-		<pathelement location="${externaltools}/log4j_1.2.8.jar" />
-		<pathelement location="${externaltools}/bcel.jar" />
-		<pathelement location="${externaltools}/jakarta_oro_2.0.7.jar" />
-		<pathelement location="${externaltools}/java_getopt_1.0.9.jar" />
-	</path>-->
+	<!-- Emma tool for coverage 
+	<path id="emma.libs" >
+	    <pathelement location="${emma.dir}/emma.jar" />
+	    <pathelement location="${emma.dir}/emma_ant.jar" />
+	</path>
+	<taskdef resource="emma_ant.properties" classpathref="emma.libs" />
+	<taskdef name="emma" classname="com.vladium.emma.emmaTask" classpathref="emma.libs"/>
+	<path id="emma">
+		<pathelement location="D:/installs/emma/emma.jar"/>
+	</path> -->
+	
+	<path id="cobertura.classpath">
+		<fileset dir="${COBERTURA_DIR}">
+			<include name="cobertura.jar" />
+		    <include name="lib/**/*.jar" />
+		</fileset>
+	</path>
 
+	<taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
+	<taskdef name="jdiff" classname="jdiff.JDiffAntTask" classpath="${JDIFF_HOME}/lib/antjdiff.jar"/>
+	
 	<!-- Makes all -->
-	<target name="all" depends="clean, sources.compile, libs, javadoc, jdiff" />
+	<target name="all" depends="clean, sources.compile, libs, javadoc, jdiff, unittests" />
+	<!-- Makes unit tests -->
+	<target name="unittests" depends="sources.compile, unittests.compile, instrument, unittests.run, unittests.report" description="unit tests" />
 
 	<!--===================================== COMPILATION PART ======================================-->
 	<!-- Compiles the java sources. -->
 	<target name="sources.compile">
 		<mkdir dir="${classesdir}" />
 		<echo>Compiling files from ${srcdir} to ${classesdir}</echo>
-		<javac debug="true" srcdir="${srcdir}" destdir="${classesdir}">
-		</javac>
+		<javac srcdir="${srcdir}" destdir="${classesdir}" debuglevel="source,vars,lines" debug="true"/>
 	</target>
 	
 	<!-- Compiles the unit tests. -->
 	<target name="unittests.compile">
-		<javac srcdir="${testsdir}" destdir="${classesdir}/${mode}" debug="on" deprecation="on">
-			<patternset refid="source.patternset" />
-				<classpath path="${classesdir}/${mode}" />
-				<classpath refid="project.classpath" />
-				<classpath refid="junit" />
-			</javac>
-		<copy todir="${classesdir}/${mode}">
-			<fileset dir="${unittestsdir}">
-						<exclude name="**/*.java"/>
-					</fileset>
-				</copy>  
-			</target>
+		<javac srcdir="${testsdir}" destdir="${classesdir}" debuglevel="source,vars,lines" debug="true"/>
+	</target>
 	
-	<!--===================================== LIB ======================================-->
+	<!-- generates jar -->
 	<target name="libs" description="Generates the jar for abc4j">
 			<mkdir dir="${libdir}" />
 			<echo>Generating jars to ${libdir}</echo>
@@ -66,148 +73,70 @@
 			</jar>
 	</target>
 	
-	<!--===================================== JUNIT ======================================-->
-	<target name="junit" description="Compile and run the whole JUnit campaign">
-		<antcall target="unittests.clean" inheritall="true" inheritrefs="true"/>
-	  
-		<!-- Compile sources if needed -->
-		 <antcall target="sources.compile" inheritall="true" inheritrefs="true"/>
-		<!--	<param name="trace_mode" value="debug" />
-	   <param name="mode" value="temp" />
-	   <param name="debuglevel" value="lines,source,vars" />
-	  </antcall>-->
-	 
-	  	<!-- Instrument compiled code -->
-		<antcall target="unittests.instrument" inheritall="true" inheritrefs="true">
-			<param name="mode" value="temp" />
-		</antcall>
-	 
-	  <!-- clean up temporary files -->
-	  <!--<delete dir="${classesdir}/temp"/>-->
-	  
-	  	<!-- Compile tests if needed -->
-		<antcall target="unittests.compile" inheritall="true" inheritrefs="true">
-			<param name="trace_mode" value="debug" />
-			<param name="mode" value="instrumented" />
-			<param name="debuglevel" value="lines,source,vars" />
-		</antcall>
-	 
-		<!-- Launch JUnit tests -->
-		<antcall target="unittests.run" inheritall="true" inheritrefs="true">
-			<param name="trace_mode" value="debug" />   
-			<param name="mode" value="instrumented" />
-		</antcall>
-	 
-		<!-- Launch JCoverage results merge -->
-		<antcall target="unittests.coverage" inheritall="true" inheritrefs="true">
-			<param name="mode" value="instrumented" />
-		</antcall>
-	  
-		<!-- Clean up (a little) -->
-		<delete file="jcoverage.ser"/>
-		<delete dir="${classesdir}/instrumented"/>
-		<delete dir="${logdir}/junit"/>
-		<delete dir="${logdir}/junit_coverage"/>
-		<move file="${logdir}/junit-noframes.html" tofile="${logdir}/unit_report.html"/>
-		<move file="${logdir}/junit_coverage.zip" tofile="${logdir}/unit_coverage.zip"/> 
+	<!-- instruments classes -->
+	<target name="instrument">
+		<mkdir dir="${logdir.test}" />
+		<!--<emma>
+			<instr instrpath="${classesdir}" destdir="${instclassesdir}"
+				metadatafile="${logdir}/metadata.em">
+			</instr>
+		</emma>-->
+		<delete file="${logdir}/cobertura.ser" />
+		<cobertura-instrument todir="${instclassesdir}" datafile="${logdir}/cobertura.ser">
+		    <fileset dir="${classesdir}">
+		        <include name="**/*.class" />
+		    </fileset>
+		</cobertura-instrument>
 	</target>
-	 
-	 <target name="unittests.clean">
-	  <delete dir="${classesdir}/instrumented"/>
-	  <delete dir="${logdir}/junit"/>
-	 </target>
-	 
-	 <!-- Run JUnit and generate report -->
-	 <target name="unittests.run">
-	  <!-- Run JUnit -->
-	  <mkdir dir="${logdir}/junit" />
-	  <junit showoutput="yes" printsummary="yes" fork="yes" haltonfailure="no" dir="${classesdir}/${mode}">
-	   <formatter type="xml" />
-	   <formatter type="brief" />
-	   <classpath refid="junit" />
-	   <classpath refid="jcoverage" />
-	   <classpath refid="project.classpath" />
-	   <classpath path="${classesdir}/${mode}" />
-	   <batchtest fork="yes" todir="${logdir}/junit">
-	    <fileset dir="${unittestsdir}">
-	     <include name="${only_package}/**/*AllTests.java" />
-	    </fileset>
-	   </batchtest>
-	  </junit>
-	 
-	  <junitreport>
-	   <fileset dir="${logdir}/junit">
-	    <include name="TEST-*.xml" />
-	   </fileset>
-	   <report format="noframes" todir="${logdir}" />
-	  </junitreport>
-	 
-	  <!-- clean up temporary files -->
-	  <delete file="${basedir}/TESTS-TestSuites.xml"/>  
-	 </target>
-	 
-	 <!-- Instrument code -->
-	 <!--<target name="unittests.instrument">
-	  <instrument todir="${classesdir}/instrumented">
-	   <fileset dir="${classesdir}/${mode}">
-	    <include name="**/*.class" />
-	   </fileset>
-	  </instrument> 
-	 </target>-->
-	 
-	 <!--<target name="unittests.coverage">
-	  <echo>Merging from ${classesdir}/${mode}/jcoverage.ser to ${basedir}</echo>
-	  <merge>
-	   <classpath refid="jcoverage" />
-	   <fileset dir="${basedir}">
-	    <include name="lib/classes/${mode}/jcoverage.ser" />
-	    <include name="jcoverage.ser" />
-	   </fileset>
-	  </merge>-->
-	 
-	  <!-- generating report results -->
-	  <!--<echo>Generating from ${basedir} to ${logdir}/junit_coverage</echo>
-	  <report srcdir="${srcdir}" destdir="${logdir}/junit_coverage">
-	   <classpath refid="jcoverage" />
-	  </report>
-	  <report srcdir="${srcdir}" destdir="${logdir}/junit_coverage" format="xml">
-	   <classpath refid="jcoverage" />
-	  </report> 
-	  <zip destfile="${logdir}/junit_coverage.zip" basedir="${logdir}/junit_coverage" />
-	 </target>-->
-
 	
-	<!-- Instrument code -->
-	<!--<target name="jcoverage.instrument" description="Instrument classes with JCoverage">
-		<instrument todir="${classesdir}/optimize">
-			<fileset dir="${classesdir}/${mode}">
-				<include name="**/*.class" />
+	<!-- Run JUnit and generate report -->
+	<target name="unittests.run">
+		<!-- Run JUnit -->
+		<mkdir dir="${logdir.test}" />
+		<junit filtertrace="false" showoutput="true" 
+			printsummary="yes" fork="yes" haltonfailure="no" dir="${logdir.test}">
+			<formatter type="xml" />
+			<sysproperty key="net.sourceforge.cobertura.datafile" file="${logdir}/cobertura.ser" />
+			 <classpath>
+			    <pathelement location="${instclassesdir}"/>
+			 	<pathelement location="${classesdir}"/>
+			 	<!--<pathelement location="${emma.dir}/emma.jar" />
+				<pathelement location="${emma.dir}/emma_ant.jar" />-->
+			  </classpath>
+			
+			<classpath refid="cobertura.classpath" />
+				
+			<test name="DurationConversion" todir="${logdir.test}"/>
+			<!--<test name="HeadersTest" todir="${logdir}"/>-->
+			<test name="Tuplets" todir="${logdir.test}"/>
+			<test name="VariousTests" todir="${logdir.test}"/>
+	  	</junit>
+	</target>
+	
+	<!-- Generates junit and cobertura reports -->
+	<target name="unittests.report">
+		<mkdir dir="${logdir.test}"/>
+		<junitreport tofile="${logdir.test}/TESTS-TestSuites.xml">
+			<fileset dir="${logdir.test}">
+				<include name="TEST-*.xml" />
 			</fileset>
-		</instrument>
-		<move file="${basedir}/jcoverage.ser" tofile="${libdir}/optimize/jcoverage.ser" />
-	</target>-->
+			<report format="noframes" todir="${logdir.test}" />
+		</junitreport>
 
-	<!-- This target generates a report between the .ser in and the one in ... -->
-	<!--<target name="jcoverage.report" description="Run the JCoverage merge/report">-->
-		<!-- merging coverage results and instrumentation results -->
-		<!--<echo>Merging from reference ${libdir}/optimize/jcoverage.ser and ${libdir}</echo>
-		<merge>
-			<classpath refid="jcoverage.classpath" />
-			<fileset dir="${basedir}">
-				<include name="lib/optimize/jcoverage.ser" />
-				<include name="lib/jcoverage.ser" />
+		<cobertura-report format="html" destdir="${logdir.cov}" datafile="${logdir}/cobertura.ser">
+			<fileset dir="${srcdir}">
+				<include name="**/*.java" />
 			</fileset>
-		</merge>-->
-
-		<!-- generating report results -->
-		<!--<echo>Generating from ${basedir} to ${logdir}/coverage</echo>
-		<report srcdir="${srcdir}" destdir="${logdir}/coverage">
-			<classpath refid="jcoverage.classpath" />
-		</report>
-		<report srcdir="${srcdir}" destdir="${logdir}/coverage" format="xml">
-			<classpath refid="jcoverage.classpath" />
-		</report>
-	</target>-->
+		</cobertura-report>
+		<!--<emma>
+			<report sourcepath="${srcdir}">
+				<infileset dir="${logdir}" includes="*.em, *.ec" />
+					<html outfile="${logdir}/coverage.html" 
+						depth="source"
+						columns="name, method, line"/>
+			</report>
+		</emma>-->
+	</target>
 	
 	<!-- ================================== END OF COVERAGE ==================================== -->
 	<target name="javadoc" description="Generates the javadoc for abc4j">
@@ -241,6 +170,7 @@
 		<zip destfile="${docdir}/abc4jApiDoc.zip" basedir="${docdir}/api" />
 	</target>
 	
+	<!-- Generates the diff between the current api and the previous version -->
 	<target name="jdiff" description="Generates changes diff between 2 abc4j versions">
 		<jdiff stats="on" destdir="${docdir}/diff">
 			<old name="v0.1" javadoc="${OLD_VERSION_DIR}/docs/api">
@@ -251,11 +181,12 @@
 			</new>
 		</jdiff>
 	</target>
-
 	
-	<!-- Removes the compiled files -->
+	<!-- Removes the files but keeps the directory structure. -->
 	<target name="clean" description="Removes the compiled files">
 		<delete dir="${classesdir}" />
+		<delete dir="${instclassesdir}" />
+		<delete dir="${logdir}" />
 		<mkdir dir="${docdir}/api" />
 		<delete includeemptydirs="true">
 		    <fileset dir="${docdir}/api" includes="**/*"/>
@@ -270,7 +201,6 @@
 		<delete includeemptydirs="true">
 			<fileset dir="${libdir}" includes="**/*"/>
 		</delete>
-		<!--<delete dir="${libdir}" />-->
 	</target>
 
 </project>
