@@ -186,10 +186,25 @@
 	<target name="clean" description="Removes the compiled files">
 		<delete dir="${classesdir}" />
 		<delete dir="${instclassesdir}" />
-		<delete dir="${logdir}" />
+		
 		<mkdir dir="${docdir}/api" />
 		<delete includeemptydirs="true">
 		    <fileset dir="${docdir}/api" includes="**/*"/>
+		</delete>
+		
+		<mkdir dir="${logdir}" />
+		<delete includeemptydirs="true">
+		    <fileset dir="${logdir}" includes="**/*"/>
+		</delete>
+		
+		<mkdir dir="${logdir.cov}" />
+		<delete includeemptydirs="true">
+		    <fileset dir="${logdir.cov}" includes="**/*"/>
+		</delete>
+		
+		<mkdir dir="${logdir.test}" />
+		<delete includeemptydirs="true">
+		    <fileset dir="${logdir.test}" includes="**/*"/>
 		</delete>
 		
 		<mkdir dir="${docdir}/diff" />

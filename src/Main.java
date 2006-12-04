@@ -1,10 +1,10 @@
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.InputStreamReader;
 
-import scanner.TokenEvent;
-import abc.notation.Tune;
-import abc.parser.AbcFileParser;
-import abc.parser.AbcFileParserAdapter;
-import abc.parser.TuneBook;
+import scanner.Scanner2;
 
 //import jm.music.data.*;
 //import jm.gui.show.*;
@@ -15,82 +15,99 @@ import abc.parser.TuneBook;
  * tunes.  
  * Main entry point to execute some perf tests or any other 
  * operation. */
-public class Main //implements TunePlayerListenerInterface
-{
+public class Main  {
 
-  static int PARSING_TIMES_NB = 1;
-  static int tunesNb = 0;
-  public static void main (String[] arg)
-  {
-    // ==================================================== PERF MESUREMENTS
-    AbcFileParser parser = new AbcFileParser();
-    parser.addListener(new AbcFileParserAdapter()
-    {
-      public void validToken(TokenEvent evt)
-      {
-        //System.out.print(evt.getToken().getType() + " | ");
-      }
+  //static int PARSING_TIMES_NB = 1;
+  //static int tunesNb = 0;
+  public static void main (String[] arg) {
+	  boolean endOfStreamReached = false;
+	  char[] currentChar = new char[1];
+	  long start  = 0;
+	  long end = 0;
+  	  try {
+  		  
+  		  
+  		  File f = new File("D:/Perso/abc/LGTunes.abc");
+  		  BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream (f)));
+  		  
+  		  int k=1;
+  		  Scanner2 s = new Scanner2(r);
+  		  while (k<1000) {
+  		  	System.out.print(s.nextChar());
+  		  	s.nextChar();
+  		  	s.previousChar();
+  		  }
+  		  
+  		  System.out.println(r);
+  		  start = System.currentTimeMillis();
+  		  while (!endOfStreamReached) {
+  			  r.mark(1);
+  			  if (r.read(currentChar)==-1)
+  				  endOfStreamReached = true;
+  		  }
+  		  end = System.currentTimeMillis();
+  		  r.close();
+  		  System.out.println("Done in " + (end-start));
+  		  
+  		  endOfStreamReached = false;
+		  r = new BufferedReader(new InputStreamReader(new FileInputStream (f)));
+		  System.out.println(r);
+		  String line ="";
+		  start = System.currentTimeMillis();
+		  while (!endOfStreamReached) {
+			  line = r.readLine();
+			  if (line==null)
+				  endOfStreamReached = true;
+			  else {
+				  int i = 0;
+				  while (i<line.length()) {
+					  char c = line.charAt(i);
+					  i++;
+				  }
+			  }
+		  }
+		  end = System.currentTimeMillis();
+		  r.close();
+		  System.out.println("Done in " + (end-start));
+		  
+		  endOfStreamReached = false;
+		  r = new BufferedReader(new FileReader(f));
+		  System.out.println(r);
+  		  start = System.currentTimeMillis();
+  		  while (!endOfStreamReached) {
+  			  r.mark(1);
+  			  if (r.read(currentChar)==-1)
+  				  endOfStreamReached = true;
+  		  }
+  		  end = System.currentTimeMillis();
+  		  r.close();
+  		  System.out.println("Done in " + (end-start));
+  		  
+  		  endOfStreamReached = false;
+		  r = new BufferedReader(new FileReader(f));
+		  System.out.println(r);
+		  line ="";
+		  start = System.currentTimeMillis();
+		  while (!endOfStreamReached) {
+			  line = r.readLine();
+			  if (line==null)
+				  endOfStreamReached = true;
+		  }
+		  end = System.currentTimeMillis();
+		  r.close();
+		  System.out.println("Done in " + (end-start));
+  		  
+  		  
+  	  }	catch (Exception e) {
+  		  e.printStackTrace();
+  	  }
+  
 
-      public void tuneBegin()
-      {
-        //System.out.println("==================================== tune begin ");
-      }
-
-      public void tuneEnd(Tune tune)
-      {
-        //System.out.println("==================================== tune end ");
-      }
-
-      public void lineProcessed(String line)
-      {
-        //System.out.print("\nline processed : " + line);
-      }
-    });
-    try
-    {
-      /*System.out.println("Parsing....");
-      long ref = System.currentTimeMillis();
-      long intermediateRef = ref;
-      System.out.println("Ref : " + ref);
-      for (int i=0; i<PARSING_TIMES_NB; i++)
-      {
-        parser.parseFile(new File("D:/Perso/abc/reels.ABC"));
-        long newRef = System.currentTimeMillis();
-        System.out.println((i+1) + " time(s) in " + (newRef-intermediateRef) + " millisecs");
-        intermediateRef = newRef;
-      }
-      long end = System.currentTimeMillis();
-      System.out.println("end : " + end);
-      System.out.println(tunesNb + " tunes parsed in " + (end-ref)/PARSING_TIMES_NB + " millisecs");
-      Vector v = abc.parser.def.DefinitionFactory.m_allPreviouslyCreatedDefinitions;
-      System.out.println("Cache size  : " + v.size());
-
-      TuneBook tb = new TuneBook(new File("D:/Perso/abc/crash.ABC"));
-      System.out.println("tunes nb " + tb.getReferenceNumbers().length);
-      System.out.println(tb.getTuneNotation(3));*/
-    }
-    catch (Exception e)
-    {
-      e.printStackTrace();
-    }
-    try
-    {
-    	System.out.println('\u00E0');
-    	System.out.println('\340');
-      TuneBook t = new TuneBook(new File("D:/Perso/abc/crash.ABC"));
-      System.out.println(t.getReferenceNumbers().length);
-      for (int i=0; i<t.getReferenceNumbers().length; i++) {
-    	  System.out.println("=============tune X:"+ t.getReferenceNumbers()[i]);
-    	  System.out.println(t.getTuneHeader(t.getReferenceNumbers()[i]));
-      }
-    }
-    catch (Exception e)
-    {e.printStackTrace(); }
-    /*TuneEditorPane area = new TuneEditorPane(new TuneParser());
+	  
+	 /*TuneEditorPane area = new TuneEditorPane(new TuneParser());
     Frame frame = new Frame();
     frame.setSize(200,100);
     frame.add(area);
     frame.setVisible(true);*/
   }
-
 }
