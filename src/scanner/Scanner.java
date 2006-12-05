@@ -9,14 +9,14 @@ import java.util.Vector;
  * defined in a finale state automata. */
 public class Scanner
 {
-    private Reader charStream = null;
-    private FinaleStateAutomata FSA = null;
-    private Vector m_listeners = null;
-    private CharStreamPosition m_previousPosition = null;
-    private CharStreamPosition m_position = null;
-    private StringBuffer m_currentLine = null;
+    protected Reader m_charStream = null;
+    protected FinaleStateAutomata FSA = null;
+    protected Vector m_listeners = null;
+    protected CharStreamPosition m_previousPosition = null;
+    protected CharStreamPosition m_position = null;
+    protected StringBuffer m_currentLine = null;
     //private boolean m_lastTokenWasContainingEndOfLine = false;
-    private char[] m_currentChar = null;
+    protected char[] m_currentChar = null;
 
     /** Creates a new scanner to scan the specified string.
      * @param charStreamValue A string to be scanned. */
@@ -48,7 +48,7 @@ public class Scanner
      * @param readerStream The stream to be scanned. */
     public void init(Reader readerStream)
     {
-      charStream = readerStream;
+      m_charStream = readerStream;
       FSA =  null;
       m_currentLine = new StringBuffer();
       m_previousPosition = new CharStreamPosition();
@@ -79,8 +79,8 @@ public class Scanner
       {
         try
         {
-          charStream.mark(1);
-          if (charStream.read(m_currentChar)==-1)
+          m_charStream.mark(1);
+          if (m_charStream.read(m_currentChar)==-1)
             endOfStreamReached = true;
           else
           {
@@ -107,7 +107,7 @@ public class Scanner
                 try
                 {
                   //the last character will be reinjected => we go back from one character.
-                  charStream.reset();
+                  m_charStream.reset();
                   m_position.setPosition(m_previousPosition);
                 }
                 catch (IOException ex)
@@ -170,9 +170,9 @@ public class Scanner
       int hasNext = -1;
       try
       {
-        charStream.mark(0);
-        hasNext = charStream.read(new char[1]);
-        charStream.reset();
+        m_charStream.mark(0);
+        hasNext = m_charStream.read(new char[1]);
+        m_charStream.reset();
       }
       catch (IOException e)
       { e.printStackTrace(); }

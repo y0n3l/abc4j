@@ -9,7 +9,6 @@ import scanner.FinaleStateAutomata;
 import scanner.InvalidCharacterEvent;
 import scanner.NoSuchTokenException;
 import scanner.Scanner;
-import scanner.Scanner2;
 import scanner.ScannerListenerInterface;
 import scanner.Set;
 import scanner.Token;
@@ -147,7 +146,7 @@ public class AbcParserAbstract
     //==========================================================================
     protected static Set FIRST_ABCTUNE = new Set(FIRST_ABCHEADER);
     /** The scanner used for parsing. */
-    protected Scanner2 m_scanner;
+    protected Scanner m_scanner;
     /** */
     protected FinaleStateAutomata m_automata = null;
     /** */
@@ -184,7 +183,7 @@ public class AbcParserAbstract
     /** Constructs a new tune parser. */
     public AbcParserAbstract()
     {
-      m_scanner = new Scanner2();
+      m_scanner = new Scanner();
       m_automata = new FinaleStateAutomata();
       //m_scanner.setFinaleStateAutomata(m_automata);
       m_scannerListener = new ScannerListenerInterface()
@@ -206,7 +205,7 @@ public class AbcParserAbstract
 
     /** Returns the scanner internally used for parsing.
      * @return The scanner internally used for parsing. */
-    public Scanner2 getScanner()
+    public Scanner getScanner()
     { return m_scanner; }
 
     /** Adds a listener to catch events thrown by the parser durin tune parsing.
