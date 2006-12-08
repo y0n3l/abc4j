@@ -19,7 +19,8 @@ public class HelpAction extends AbstractAction
   }
 
   public void actionPerformed(ActionEvent e)
-  { JOptionPane.showMessageDialog(m_parent, "ABCynth - The abc4j demonstrator\n2003-2005 by Lionel GUEGANTON\nFor feedback, "
+  { JOptionPane.showMessageDialog(m_parent, "ABCynth - The abc4j demonstrator\n2003-2006 by Lionel GUEGANTON\nFor feedback, "
                                   + "help or whatever...\nlionel.gueganton@libertysurf.fr\n"
-                                  + "http://gueganton.chez.tiscali.fr/abc" , "About ABCynth", JOptionPane.INFORMATION_MESSAGE); }
+                                  + "http://gueganton.chez-alice.fr/abc\n" 
+                                  + "http://groups.google.com/group/abc4j" , "About ABCynth", JOptionPane.INFORMATION_MESSAGE); }
 }

@@ -118,7 +118,12 @@ public class AbcFileParser extends AbcParserAbstract {
 		try {
 			m_scanner.init(charStream);
 			notifyListenersForFileBegin();
-			Set current = initParsing();
+			Set current = FIRST_ABCTUNE.createUnion(FIRST_COMMENT).createUnion(FIRST_LINE_FEED);
+			// are missing TEX COMMAND and FILE FIELDS
+			//.createUnion(FIRST_TEX_COMMAND);//.createUnion(FIRST_FILE_FIELDS);
+			m_scanner.setFinaleStateAutomata(AutomataFactory.getAutomata(current.getTypes()));
+			m_token = m_scanner.nextToken();
+			m_tokenType = m_token.getType();
 			while (m_token!=null) {
 				if (FIRST_ABCTUNE.contains(m_token.getType())) {
 					notifyListenersForTuneBegin();

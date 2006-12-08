@@ -1,7 +1,5 @@
 package abc.parser;
 
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.Vector;
 
 import scanner.CharStreamPosition;
@@ -34,7 +32,8 @@ import abc.parser.def.DefinitionFactory;
 
 /** Abstract class from which all abc notation parsers inherit.
  * Known limitations:
- * ELEMSKIP is not supported. */
+ * ELEMSKIP is not supported. 
+ * Missing support for tex command and file fields. */
  //
  // The context to switch from abc header parsing to abc music parsing
  // is done in <PRE>private KeySignature parseFieldKey(Set follow)</PRE>.*/
@@ -158,9 +157,7 @@ public class AbcParserAbstract
     /** The type of the current token 
      * @see #m_token */
     protected TokenType m_tokenType = TokenType.UNKNOWN;
-    /** The number of dots inherited from the previous note broken rythm.
-     * 
-     * */
+    /** The number of dots inherited from the previous note broken rythm. */
     private byte brknRthmDotsCorrection = 0;
     /** */
     private boolean m_isPartOfSlur = false;
@@ -171,14 +168,7 @@ public class AbcParserAbstract
     /** The score of the current part. */
     private Tune.Score m_score = null;
     /** The tune resulting of the last parsing. */
-    private Tune m_tune = null;
-    /**
-    private boolean headerOnly = false;
-
-    private Set typesForAutomata = null;
-
-    private Vector m_setsForAccept = new Vector();
-    private int m_recreationNb= 0;*/
+    protected Tune m_tune = null;
 
     /** Constructs a new tune parser. */
     public AbcParserAbstract()
@@ -218,95 +208,14 @@ public class AbcParserAbstract
     public void removeListener (TuneParserListenerInterface listener)
     { m_listeners.removeElement(listener); }
 
-    /** Parse the given string and creates a <TT>Tune</TT> object as parsing result.
-     * @param tune The abc tune, as a String, to be parsed.
-     * @return An object representation of the abc notation string. */
-    protected Tune parse(String tune)
-    { return parse(new StringReader(tune)); }
-
-    /** Parses the specified stream in ABC notation.
-     * @param charStream Tune stream in ABC notation.
-     * @return A tune representing the ABC notation stream. */
-    protected Tune parse(Reader charStream)
-    {
-      try
-      {
-        Set current = null;
-        m_scanner.init(charStream);
-        current = new Set().union(FIRST_ABCHEADER).union(FIRST_FIELD_KEY);
-        //m_scanner.setFinaleStateAutomata(getAutomataFor(current.getTypes()));
-        m_automata.setDefinition(DefinitionFactory.getDefinition(current.getTypes()));
-        m_scanner.setFinaleStateAutomata(m_automata);
-        notifyListenersForTuneBegin();
-        try
-        {
-          m_token = m_scanner.nextToken();
-          m_tokenType = m_token.getType();
-        }
-        catch (NoSuchTokenException e)
-        {
-          //notifyListenersForInvalidToken(null, new CharStreamPosition(0,0,0), AbcTokenType.FIELD_NUMBER);
-          //return new Tune();
-        }
-        parseAbcTune(current);
-      }
-      catch (NoSuchTokenException e)
-      {
-        //System.out.println("CATCHING NO SUCH ELEMENT EXCEPTION");
-        //e.printStackTrace();
-        //Occurs when the last parts of the tune is just invalid characters.
-      }
-      notifyListenersForTuneEnd(m_tune);
-      return m_tune;
-    }
-
-    /** Parses the header of the specified tune notation.
-     * @param tune A tune notation in ABC.
-     * @return A tune representing the ABC notation with header values only. */
-    protected Tune parseHeader(String tune)
-    { return parseHeader(new StringReader(tune)); }
-
-    /** Parse the given string and creates a <TT>Tune</TT> object with no score
-     * as parsing result. This purpose of this method method is to provide a
-     * faster parsing when just abc header fields are needed.
-     * @param charStream The stream to be parsed.
-     * @return An object representation with no score of the abc notation
-     * string. */
-    protected Tune parseHeader(Reader charStream)
-    {
-      notifyListenersForTuneBegin();
-      try
-      {
-        m_scanner.init(charStream);
-        Set current = new Set().union(FIRST_ABCHEADER).union(FIRST_FIELD_KEY);
-        m_automata.setDefinition(DefinitionFactory.getDefinition(current.getTypes()));
-        m_scanner.setFinaleStateAutomata(m_automata);
-        //m_scanner.setFinaleStateAutomata(getAutomataFor(current.getTypes()));
-        try
-        {
-          m_token = m_scanner.nextToken();
-          m_tokenType = m_token.getType();
-
-        }
-        catch (NoSuchTokenException e)
-        {
-          //notifyListenersForInvalidToken(null, new CharStreamPosition(0,0,0), AbcTokenType.FIELD_NUMBER);
-          //return new Tune();
-        }
-        parseAbcHeader(current);
-      }
-      catch (NoSuchTokenException e)
-      {
-        //Occurs when the last parts of the tune is just invalid characters.
-        //System.out.println("CATCHING NO SUCH ELEMENT EXCEPTION");
-      }
-      notifyListenersForTuneEnd(m_tune);
-      return m_tune;
-    }
-    
     /** abc-file ::= *(abc-tune / comment / linefeed / tex-command / file-fields) */
 	protected void parseAbcFile(Set follow) {
-		Set current = initParsing();
+		Set current = FIRST_ABCTUNE.createUnion(FIRST_COMMENT).createUnion(FIRST_LINE_FEED);
+		// are missing TEX COMMAND and FILE FIELDS
+		//.createUnion(FIRST_TEX_COMMAND);//.createUnion(FIRST_FILE_FIELDS);
+		m_scanner.setFinaleStateAutomata(AutomataFactory.getAutomata(current.getTypes()));
+		m_token = m_scanner.nextToken();
+		m_tokenType = m_token.getType();
 		while (m_token!=null) {
 			if (FIRST_ABCTUNE.contains(m_token.getType())) {
 				notifyListenersForTuneBegin();
@@ -327,7 +236,7 @@ public class AbcParserAbstract
 	 * token and its type.
 	 * @return The starting state of the current Set as it should
 	 * be at the begining of the parsing. */
-	protected Set initParsing() {
+	/*protected Set initParsing() {
 		Set startingSet = FIRST_ABCTUNE.createUnion(FIRST_COMMENT).createUnion(FIRST_LINE_FEED);
 		// are missing TEX COMMAND and FILE FIELDS
 		//.createUnion(FIRST_TEX_COMMAND);//.createUnion(FIRST_FILE_FIELDS);
@@ -335,20 +244,13 @@ public class AbcParserAbstract
 		m_token = m_scanner.nextToken();
 		m_tokenType = m_token.getType();
 		return startingSet;
-	}
+	}*/
 
     /** abc-tune ::= abc-header abc-music */
-    protected Tune parseAbcTune(Set follow)
-    {
-      Set current = new Set().union(FIRST_ABCHEADER).union(FIRST_ABC_MUSIC);
-      m_automata.setDefinition(DefinitionFactory.getDefinition(current.getTypes()));
-      m_scanner.setFinaleStateAutomata(m_automata);
-      //m_scanner.setFinaleStateAutomata(getAutomataFor(current.getTypes()));
+    protected Tune parseAbcTune(Set follow) {
+      Set current = new Set()./*union(FIRST_ABCHEADER).*/union(FIRST_ABC_MUSIC);
       parseAbcHeader(current.createUnion(follow));
       current.remove(FIRST_ABC_MUSIC);
-      //current = current.createUnion(FIRST_ABC_MUSIC);
-      //KeySignature key = parseFieldKey(current.createUnion(follow));
-      //if (key!=null) m_score.addElement(key);
       parseAbcMusic(current.createUnion(follow));
       return m_tune;
     }
@@ -467,7 +369,8 @@ public class AbcParserAbstract
           else if (tokenType.equals(AbcTokenType.FIELD_INFORMATION)) return new AbcTextField(AbcTextField.INFORMATION, text);
           else if (tokenType.equals(AbcTokenType.FIELD_NOTES)) return new AbcTextField(AbcTextField.NOTES, text);
           else if (tokenType.equals(AbcTokenType.FIELD_ORIGIN)) return new AbcTextField(AbcTextField.ORIGIN, text);
-          else if (tokenType.equals(AbcTokenType.FIELD_RHYTHM)) return new AbcTextField(AbcTextField.RHYTHM, text);
+          else if (tokenType.equals(AbcTokenType.FIELD_RHYTHM)) 
+        	  return new AbcTextField(AbcTextField.RHYTHM, text);
           else if (tokenType.equals(AbcTokenType.FIELD_SOURCE)) return new AbcTextField(AbcTextField.SOURCE, text);
           else if (tokenType.equals(AbcTokenType.FIELD_TITLE)) return new AbcTextField(AbcTextField.TITLE, text);
           else if (tokenType.equals(AbcTokenType.FIELD_TRANSCRNOTES)) return new AbcTextField(AbcTextField.TRANSCRNOTES, text);
@@ -952,6 +855,8 @@ public class AbcParserAbstract
 
       while (FIRST_OTHER_FIELDS.contains(m_tokenType))
         parseOtherFields(current.createUnion(follow));
+      
+      current.remove(FIRST_OTHER_FIELDS);
 
       current.remove(FIRST_FIELD_KEY);
       //current = current.createUnion(FIRST_ABC_MUSIC);
@@ -1015,8 +920,10 @@ public class AbcParserAbstract
       else if (m_tokenType.equals(AbcTokenType.NO_LINE_BREAK)) accept(AbcTokenType.NO_LINE_BREAK, current, follow);
       else accept(AbcTokenType.LINE_FEED, current, follow);
     }
-
-    //==================================================================================
+    
+    //============================================================================================
+    //================================== MUSIC PART ==============================================
+    //============================================================================================
     /** abc-music ::= 1*abc-line linefeed */
     protected void parseAbcMusic(Set follow)
     {
@@ -1550,7 +1457,6 @@ public class AbcParserAbstract
     {
       //System.out.println("AbcHeaderParser - Try to accept " + token + " with " + set);
       String value2return =null;
-      //if (m_tokenType.equals(tokenType))
       // should be .equals() in theory but as there's only one instance per token
       // type, we can directly compare instances instead of values.
       if (m_tokenType==tokenType)
@@ -1688,28 +1594,17 @@ public class AbcParserAbstract
         //System.out.println("AbcHeaderParser - skipedTo : "+ ParserTools.convertToTypeName(token.getType()));
     }
 
-    /*private FinaleStateAutomata getAutomataFor(TokenType[] tokenTypes)
-    {
-      return AutomataFactory.getAutomata(tokenTypes);
-    }
-
-    private FinaleStateAutomata getAutomataFor(TokenType tokenType)
-    { return AutomataFactory.getAutomata(tokenType); }*/
-
-    protected void notifyListenersForTuneBegin()
-    {
+    protected void notifyListenersForTuneBegin() {
       for (int i=0; i<m_listeners.size();i++)
         ((TuneParserListenerInterface)m_listeners.elementAt(i)).tuneBegin();
     }
 
-    protected void notifyListenersForTuneEnd(Tune tune)
-    {
+    protected void notifyListenersForTuneEnd(Tune tune) {
       for (int i=0; i<m_listeners.size();i++)
         ((TuneParserListenerInterface)m_listeners.elementAt(i)).tuneEnd(tune);
     }
 
-    protected void notifyListenersForValidToken(Token token)
-    {
+    protected void notifyListenersForValidToken(Token token) {
       TokenEvent evt = new TokenEvent(this, token);
       for (int i=0; i<m_listeners.size();i++)
         ((TuneParserListenerInterface)m_listeners.elementAt(i)).validToken(evt);

@@ -59,10 +59,10 @@ public class InvalidTokenEvent extends TokenEvent
   public String toString()
   {
     if (getToken()!=null)
-      return  ("Expecting ttttttttttttt" + m_expectedTokenType.toString() + " instead of "
+      return  ("Expecting " + m_expectedTokenType.toString() + " instead of "
                + getToken().getType().toString() + "(" + getToken() + ")"
                + getPosition());
     else
-      return  ("Expecting tttttttttttt" + m_expectedTokenType.toString() + " " + getPosition());
+      return  ("Expecting " + m_expectedTokenType.toString() + " " + getPosition());
   }
 }
