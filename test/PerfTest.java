@@ -17,7 +17,7 @@ public class PerfTest extends TestCase {
 		super.setUp();
 	}
 	
-	public void headersVswholeFileTest(){
+	public void testHeadersVswholeFile(){
 		File f = new File(ABC_FILE_REFERENCE);
 		System.out.println("Reference file for the test is " + ABC_FILE_REFERENCE);
 		AbcHeadersParser hparser = new AbcHeadersParser();
@@ -58,11 +58,11 @@ public class PerfTest extends TestCase {
 		catch (Exception e ) {
 			e.printStackTrace();
 		}
-		System.out.println("Headers parsing is about " + fileParsingTime / headersParsingTime + " times faster");
+		System.out.println("=====> Headers parsing is about " + fileParsingTime / headersParsingTime + " times faster");
 		
 	}
 	
-	public void headersVsTunebookTest(){
+	public void testHeadersVsTunebook(){
 		try {
 			File f = new File(ABC_FILE_REFERENCE);
 			AbcHeadersParser hparser = new AbcHeadersParser();
@@ -78,7 +78,7 @@ public class PerfTest extends TestCase {
 			end = System.currentTimeMillis();
 			long tuneBookCreationTime = end - start;
 			System.out.println("Tune Book creation time : "+ tuneBookCreationTime);
-			System.out.println("TuneBook introduces an overhead of " 
+			System.out.println("=====> TuneBook introduces an overhead of " 
 					+ ((tuneBookCreationTime - headersParsingTime)*100) / headersParsingTime 
 					+ "% compared to pure headers parsing");
 			System.out.println("tunebook size " + t.size());
