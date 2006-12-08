@@ -24,7 +24,7 @@ public class CrashTest extends TestCase {
 	public void test1(){
 		File f = new File(FILE_NAME);
 		AbcHeadersParser hparser = new AbcHeadersParser();
-		hparser.addListener(new ParsingDumper());
+		//hparser.addListener(new ParsingDumper());
 		long headersParsingTime = 0;
 		try { 
 			long start = System.currentTimeMillis();
