@@ -67,6 +67,7 @@
 	<target name="libs" description="Generates the jar for abc4j">
 			<mkdir dir="${libdir}" />
 			<echo>Generating jars to ${libdir}</echo>
+			<copy file="../abc/LGtunes.abc" todir="../classes/abcynth"/>
 			<jar destfile="${libdir}/abc4j.jar" basedir="${classesdir}"
 				includes="abc/**,abcynth/**,check/**,scanner/**"
 				manifest="${srcdir}/manifest.mf">
@@ -105,9 +106,11 @@
 			  </classpath>
 			
 			<classpath refid="cobertura.classpath" />
-				
+			
+			<test name="CrashTest" todir="${logdir.test}"/>
 			<test name="DurationConversion" todir="${logdir.test}"/>
-			<!--<test name="HeadersTest" todir="${logdir}"/>-->
+			<test name="PerfTest" todir="${logdir}"/>
+			<test name="TuneBookTest" todir="${logdir.test}"/>
 			<test name="Tuplets" todir="${logdir.test}"/>
 			<test name="VariousTests" todir="${logdir.test}"/>
 	  	</junit>
