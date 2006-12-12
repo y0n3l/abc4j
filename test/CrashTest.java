@@ -10,7 +10,7 @@ import abc.parser.InvalidTokenEvent;
 
 public class CrashTest extends TestCase {
 	
-	private static final String FILE_NAME = "D:/Perso/abc/crash.abc";
+	private static final String FILE_NAME = "./crash.abc";
 	
 	public CrashTest(String name) {
 		super(name);
@@ -23,6 +23,7 @@ public class CrashTest extends TestCase {
 
 	public void test1(){
 		File f = new File(FILE_NAME);
+		System.out.println((new File(".")).getAbsolutePath());
 		AbcHeadersParser hparser = new AbcHeadersParser();
 		//hparser.addListener(new ParsingDumper());
 		long headersParsingTime = 0;
