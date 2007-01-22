@@ -1,6 +1,7 @@
 MISSING @SINCE TAG: abc.parser.AbcHeadersParser Class
 MISSING @SINCE TAG: abc.parser.AbcToolkit Class
 NO DOC BLOCK: abc.parser.AbcToolkit.DurationDescription Class
+MISSING @SINCE TAG: scanner.Scanner2 Class
 MISSING @SINCE TAG: abc.notation.Words Class
 MISSING @SINCE TAG: abc.parser.TuneBook Constructor (java.io.Reader)
 MISSING @SINCE TAG: abc.parser.TuneBook Constructor (java.io.Reader, abc.parser.AbcFileParserListenerInterface)
@@ -8,7 +9,6 @@ MISSING @SINCE TAG: abc.notation.NoteAbstract Method countDots()
 MISSING @SINCE TAG: abc.notation.Note Method getHeight()
 MISSING @SINCE TAG: abc.notation.Note Method getStrictDuration()
 MISSING @SINCE TAG: abc.notation.Tuplet Method getTotalDuration()
-MISSING @SINCE TAG: abc.parser.AbcParserAbstract Method initParsing()
 MISSING @SINCE TAG: abc.notation.Note Method isStrictDuration(short)
 NO DOC BLOCK: abc.parser.AbcParserAbstract Method notifyListenersForTuneBegin()
 NO DOC BLOCK: abc.parser.AbcParserAbstract Method notifyListenersForTuneEnd(abc.notation.Tune)
@@ -18,3 +18,11 @@ MISSING @SINCE TAG: abc.parser.AbcParserAbstract Method parseAbcMusic(scanner.Se
 MISSING @SINCE TAG: abc.notation.Note Method setDuration(short)
 MISSING @SINCE TAG: abc.notation.Note Method setHeight(byte)
 MISSING @SINCE TAG: abc.notation.Note Method setStrictDuration(short)
+NO DOC BLOCK: scanner.Scanner Field FSA
+NO DOC BLOCK: scanner.Scanner Field m_charStream
+NO DOC BLOCK: scanner.Scanner Field m_currentChar
+NO DOC BLOCK: scanner.Scanner Field m_currentLine
+NO DOC BLOCK: scanner.Scanner Field m_listeners
+NO DOC BLOCK: scanner.Scanner Field m_position
+NO DOC BLOCK: scanner.Scanner Field m_previousPosition
+MISSING @SINCE TAG: abc.parser.AbcParserAbstract Field m_tune

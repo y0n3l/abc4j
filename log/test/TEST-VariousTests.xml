@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite name="VariousTests" tests="3" failures="0" errors="0" time="0.531">
+<testsuite name="VariousTests" tests="3" failures="0" errors="0" time="0.5">
   <properties>
     <property name="java.vendor" value="Sun Microsystems Inc."></property>
     <property name="OLD_VERSION_DIR" value="D:/Perso/abc4jOld"></property>
@@ -49,11 +49,11 @@
     <property name="eclipse.pdebuild.scripts" value="/D:/eclipse/plugins/org.eclipse.pde.build_3.2.1.r321_v20060823/scripts/"></property>
     <property name="user.home" value="C:\Documents and Settings\uidd0558"></property>
     <property name="java.specification.vendor" value="Sun Microsystems Inc."></property>
-    <property name="java.library.path" value="C:\Program Files\Java\j2re1.4.2_05\bin;.;C:\WINDOWS\system32;C:\WINDOWS;C:\Program Files\CatPC\Bin;C:\Program Files\CatPC\Windows\System32;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\Program Files\Rational\common;D:\Program Files\IDM Computer Solutions\UltraEdit-32;C:\j2sdk1.4.2_06\bin"></property>
+    <property name="java.library.path" value="C:\Program Files\Java\j2re1.4.2_05\bin;.;C:\WINDOWS\system32;C:\WINDOWS;C:\Program Files\CatPC\Bin;C:\Program Files\CatPC\Windows\System32;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\Program Files\Rational\common;D:\Program Files\IDM Computer Solutions\UltraEdit-32;C:\Program Files\Java\jdk1.5.0\bin;D:\Program Files\Common Files\GTK\2.0\bin;D:\Program Files\QuickTime\QTSystem\"></property>
     <property name="java.vendor.url" value="http://java.sun.com/"></property>
     <property name="java.vm.vendor" value="Sun Microsystems Inc."></property>
     <property name="java.runtime.name" value="Java(TM) 2 Runtime Environment, Standard Edition"></property>
-    <property name="java.class.path" value="D:\Perso\abc4j\instclasses;D:\Perso\abc4j\classes;D:\installs\cobertura-1.8\cobertura.jar;D:\installs\cobertura-1.8\lib\asm-2.2.1.jar;D:\installs\cobertura-1.8\lib\jakarta-oro-2.0.8.jar;D:\installs\cobertura-1.8\lib\log4j-1.2.9.jar;D:\eclipse\plugins\org.junit_3.8.1\junit.jar;D:\eclipse\plugins\org.apache.ant_1.6.5\lib\ant-launcher.jar;D:\eclipse\plugins\org.apache.ant_1.6.5\lib\ant.jar;D:\eclipse\plugins\org.apache.ant_1.6.5\lib\ant-junit.jar"></property>
+    <property name="java.class.path" value="D:\Perso\abc4j\instclasses;D:\Perso\abc4j\classes;D:\installs\cobertura-1.8\cobertura.jar;D:\installs\cobertura-1.8\lib\asm-2.2.1.jar;D:\installs\cobertura-1.8\lib\jakarta-oro-2.0.8.jar;D:\installs\cobertura-1.8\lib\log4j-1.2.9.jar;D:\Perso\abc4j\src;C:\Program Files\Java\jre1.5.0\lib\ext\QTJava.zip;D:\eclipse\plugins\org.junit_3.8.1\junit.jar;D:\eclipse\plugins\org.apache.ant_1.6.5\lib\ant-launcher.jar;D:\eclipse\plugins\org.apache.ant_1.6.5\lib\ant.jar;D:\eclipse\plugins\org.apache.ant_1.6.5\lib\ant-junit.jar"></property>
     <property name="ant.version" value="Apache Ant version 1.6.5 compiled on June 2 2005"></property>
     <property name="logdir.cov" value="./../log/cov"></property>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"></property>
@@ -66,7 +66,7 @@
     <property name="os.arch" value="x86"></property>
     <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment"></property>
     <property name="java.ext.dirs" value="C:\Program Files\Java\j2re1.4.2_05\lib\ext"></property>
-    <property name="user.dir" value="D:\Perso\abc4j\log\test"></property>
+    <property name="user.dir" value="D:\Perso\abc4j\instclasses"></property>
     <property name="logdir" value="./../log"></property>
     <property name="libdir" value="./../lib"></property>
     <property name="line.separator" value="
@@ -78,7 +78,7 @@
     <property name="file.encoding" value="Cp1252"></property>
     <property name="java.specification.version" value="1.4"></property>
   </properties>
-  <testcase name="test1" classname="VariousTests" time="0.438"></testcase>
+  <testcase name="test1" classname="VariousTests" time="0.422"></testcase>
   <testcase name="test2" classname="VariousTests" time="0.047"></testcase>
   <testcase name="test3" classname="VariousTests" time="0.031"></testcase>
   <system-out><![CDATA[]]></system-out>

@@ -102,6 +102,9 @@ All Differences Index
 <!-- Field FIRST_ABC_MUSIC -->
 <nobr><A HREF="abc.parser.AbcParserAbstract.html#abc.parser.AbcParserAbstract.FIRST_ABC_MUSIC" class="hiddenlink" target="rightframe">FIRST_ABC_MUSIC</A>
 </nobr><br>
+<!-- Field FSA -->
+<nobr><A HREF="scanner.Scanner.html#scanner.Scanner.FSA" class="hiddenlink" target="rightframe">FSA</A>
+</nobr><br>
 <!-- Method getDotted -->
 <A NAME="G"></A>
 <br><font size="+2">G</font>&nbsp;
@@ -134,7 +137,7 @@ All Differences Index
 <!-- Method getTotalRelativeLength -->
 <nobr><A HREF="abc.notation.Tuplet.html#abc.notation.Tuplet.getTotalRelativeLength_changed()" class="hiddenlink" target="rightframe">getTotalRelativeLength
 ()</A></nobr><br>
-<!-- Method initParsing -->
+<!-- Method isStrictDuration -->
 <A NAME="I"></A>
 <br><font size="+2">I</font>&nbsp;
 <a href="#A"><font size="-2">A</font></a> 
@@ -149,12 +152,9 @@ All Differences Index
 <a href="#W"><font size="-2">W</font></a> 
  <a href="#topheader"><font size="-2">TOP</font></a>
 <br>
-<nobr><A HREF="abc.parser.AbcParserAbstract.html#abc.parser.AbcParserAbstract.initParsing_added()" class="hiddenlink" target="rightframe"><b>initParsing</b>
-()</A></nobr><br>
-<!-- Method isStrictDuration -->
 <nobr><A HREF="abc.notation.Note.html#abc.notation.Note.isStrictDuration_added(short)" class="hiddenlink" target="rightframe"><b>isStrictDuration</b>
 (<code>short</code>)</A></nobr><br>
-<!-- Class MidiMessageType -->
+<!-- Field m_charStream -->
 <A NAME="M"></A>
 <br><font size="+2">M</font>&nbsp;
 <a href="#A"><font size="-2">A</font></a> 
@@ -169,6 +169,27 @@ All Differences Index
 <a href="#W"><font size="-2">W</font></a> 
  <a href="#topheader"><font size="-2">TOP</font></a>
 <br>
+<nobr><A HREF="scanner.Scanner.html#scanner.Scanner.m_charStream" class="hiddenlink" target="rightframe">m_charStream</A>
+</nobr><br>
+<!-- Field m_currentChar -->
+<nobr><A HREF="scanner.Scanner.html#scanner.Scanner.m_currentChar" class="hiddenlink" target="rightframe">m_currentChar</A>
+</nobr><br>
+<!-- Field m_currentLine -->
+<nobr><A HREF="scanner.Scanner.html#scanner.Scanner.m_currentLine" class="hiddenlink" target="rightframe">m_currentLine</A>
+</nobr><br>
+<!-- Field m_listeners -->
+<nobr><A HREF="scanner.Scanner.html#scanner.Scanner.m_listeners" class="hiddenlink" target="rightframe">m_listeners</A>
+</nobr><br>
+<!-- Field m_position -->
+<nobr><A HREF="scanner.Scanner.html#scanner.Scanner.m_position" class="hiddenlink" target="rightframe">m_position</A>
+</nobr><br>
+<!-- Field m_previousPosition -->
+<nobr><A HREF="scanner.Scanner.html#scanner.Scanner.m_previousPosition" class="hiddenlink" target="rightframe">m_previousPosition</A>
+</nobr><br>
+<!-- Field m_tune -->
+<nobr><A HREF="abc.parser.AbcParserAbstract.html#abc.parser.AbcParserAbstract.m_tune" class="hiddenlink" target="rightframe">m_tune</A>
+</nobr><br>
+<!-- Class MidiMessageType -->
 <A HREF="abc.midi.MidiMessageType.html" class="hiddenlink" target="rightframe"><i>MidiMessageType</i></A><br>
 <!-- Field NOTATION_MARKER -->
 <A NAME="N"></A>
@@ -219,12 +240,12 @@ All Differences Index
  <a href="#topheader"><font size="-2">TOP</font></a>
 <br>
 <i>parse</i><br>
-&nbsp;&nbsp;<nobr><A HREF="abc.parser.AbcParserAbstract.html#abc.parser.AbcParserAbstract.parse_changed(java.io.Reader)" class="hiddenlink" target="rightframe">type&nbsp;
-(<code>Reader</code>)&nbsp;in&nbsp;abc.parser.AbcParserAbstract
+&nbsp;&nbsp;<nobr><A HREF="abc.parser.AbcParserAbstract.html#abc.parser.AbcParserAbstract.parse_removed(java.io.Reader)" class="hiddenlink" target="rightframe">type&nbsp;<strike>
+(<code>Reader</code>)</strike>&nbsp;in&nbsp;abc.parser.AbcParserAbstract
 </A></nobr><br>
 <!-- Method parse -->
-&nbsp;&nbsp;<nobr><A HREF="abc.parser.AbcParserAbstract.html#abc.parser.AbcParserAbstract.parse_changed(java.lang.String)" class="hiddenlink" target="rightframe">type&nbsp;
-(<code>String</code>)&nbsp;in&nbsp;abc.parser.AbcParserAbstract
+&nbsp;&nbsp;<nobr><A HREF="abc.parser.AbcParserAbstract.html#abc.parser.AbcParserAbstract.parse_removed(java.lang.String)" class="hiddenlink" target="rightframe">type&nbsp;<strike>
+(<code>String</code>)</strike>&nbsp;in&nbsp;abc.parser.AbcParserAbstract
 </A></nobr><br>
 <!-- Method parseAbcFile -->
 <i>parseAbcFile</i><br>
@@ -252,28 +273,21 @@ All Differences Index
 </A></nobr><br>
 <!-- Method parseHeader -->
 <i>parseHeader</i><br>
-&nbsp;&nbsp;<nobr><A HREF="abc.parser.AbcParserAbstract.html#abc.parser.AbcParserAbstract.parseHeader_changed(java.io.Reader)" class="hiddenlink" target="rightframe">type&nbsp;
-(<code>Reader</code>)&nbsp;in&nbsp;abc.parser.AbcParserAbstract
+&nbsp;&nbsp;<nobr><A HREF="abc.parser.AbcParserAbstract.html#abc.parser.AbcParserAbstract.parseHeader_removed(java.io.Reader)" class="hiddenlink" target="rightframe">type&nbsp;<strike>
+(<code>Reader</code>)</strike>&nbsp;in&nbsp;abc.parser.AbcParserAbstract
 </A></nobr><br>
 <!-- Method parseHeader -->
-&nbsp;&nbsp;<nobr><A HREF="abc.parser.AbcParserAbstract.html#abc.parser.AbcParserAbstract.parseHeader_changed(java.lang.String)" class="hiddenlink" target="rightframe">type&nbsp;
-(<code>String</code>)&nbsp;in&nbsp;abc.parser.AbcParserAbstract
+&nbsp;&nbsp;<nobr><A HREF="abc.parser.AbcParserAbstract.html#abc.parser.AbcParserAbstract.parseHeader_removed(java.lang.String)" class="hiddenlink" target="rightframe">type&nbsp;<strike>
+(<code>String</code>)</strike>&nbsp;in&nbsp;abc.parser.AbcParserAbstract
 </A></nobr><br>
-<!-- Method setDotted -->
+<!-- Package scanner -->
 <A NAME="S"></A>
-<br><font size="+2">S</font>&nbsp;
-<a href="#A"><font size="-2">A</font></a> 
-<a href="#C"><font size="-2">C</font></a> 
-<a href="#F"><font size="-2">F</font></a> 
-<a href="#G"><font size="-2">G</font></a> 
-<a href="#I"><font size="-2">I</font></a> 
-<a href="#M"><font size="-2">M</font></a> 
-<a href="#N"><font size="-2">N</font></a> 
-<a href="#P"><font size="-2">P</font></a> 
-<a href="#T"><font size="-2">T</font></a> 
-<a href="#W"><font size="-2">W</font></a> 
- <a href="#topheader"><font size="-2">TOP</font></a>
-<br>
+<A HREF="pkg_scanner.html" class="hiddenlink" target="rightframe">scanner</A><br>
+<!-- Class Scanner -->
+<A HREF="scanner.Scanner.html" class="hiddenlink" target="rightframe">Scanner</A><br>
+<!-- Class Scanner2 -->
+<A HREF="pkg_scanner.html#Scanner2" class="hiddenlink" target="rightframe"><b>Scanner2</b></A><br>
+<!-- Method setDotted -->
 <nobr><A HREF="abc.notation.Note.html#abc.notation.Note.setDotted_changed(byte)" class="hiddenlink" target="rightframe">setDotted
 (<code>byte</code>)</A></nobr><br>
 <!-- Method setDuration -->
@@ -291,10 +305,21 @@ All Differences Index
 <!-- Method setStrictDuration -->
 <nobr><A HREF="abc.notation.Note.html#abc.notation.Note.setStrictDuration_added(short)" class="hiddenlink" target="rightframe"><b>setStrictDuration</b>
 (<code>short</code>)</A></nobr><br>
-<!-- Package test -->
-<A NAME="T"></A>
-<A HREF="changes-summary.html#test" class="hiddenlink" target="rightframe"><strike>test</strike></A><br>
 <!-- Field TEXT_EVENT -->
+<A NAME="T"></A>
+<br><font size="+2">T</font>&nbsp;
+<a href="#A"><font size="-2">A</font></a> 
+<a href="#C"><font size="-2">C</font></a> 
+<a href="#F"><font size="-2">F</font></a> 
+<a href="#G"><font size="-2">G</font></a> 
+<a href="#I"><font size="-2">I</font></a> 
+<a href="#M"><font size="-2">M</font></a> 
+<a href="#N"><font size="-2">N</font></a> 
+<a href="#P"><font size="-2">P</font></a> 
+<a href="#S"><font size="-2">S</font></a> 
+<a href="#W"><font size="-2">W</font></a> 
+ <a href="#topheader"><font size="-2">TOP</font></a>
+<br>
 <nobr><A HREF="abc.midi.MidiMessageType.html#abc.midi.MidiMessageType.TEXT_EVENT" class="hiddenlink" target="rightframe"><strike>TEXT_EVENT</strike></A>
 </nobr><br>
 <!-- Class TuneBook -->

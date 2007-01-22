@@ -208,7 +208,7 @@
   </text>
 </comment>
 <comment>
-  <identifier id="abc.parser.AbcParserAbstract.initParsing_added()"/>
+  <identifier id="abc.parser.AbcParserAbstract.m_tune"/>
   <text>
     InsertCommentsHere
   </text>
@@ -262,25 +262,25 @@
   </text>
 </comment>
 <comment>
-  <identifier id="abc.parser.AbcParserAbstract.parseHeader_changed(java.io.Reader)"/>
+  <identifier id="abc.parser.AbcParserAbstract.parseHeader_removed(java.io.Reader)"/>
   <text>
     InsertCommentsHere
   </text>
 </comment>
 <comment>
-  <identifier id="abc.parser.AbcParserAbstract.parseHeader_changed(java.lang.String)"/>
+  <identifier id="abc.parser.AbcParserAbstract.parseHeader_removed(java.lang.String)"/>
   <text>
     InsertCommentsHere
   </text>
 </comment>
 <comment>
-  <identifier id="abc.parser.AbcParserAbstract.parse_changed(java.io.Reader)"/>
+  <identifier id="abc.parser.AbcParserAbstract.parse_removed(java.io.Reader)"/>
   <text>
     InsertCommentsHere
   </text>
 </comment>
 <comment>
-  <identifier id="abc.parser.AbcParserAbstract.parse_changed(java.lang.String)"/>
+  <identifier id="abc.parser.AbcParserAbstract.parse_removed(java.lang.String)"/>
   <text>
     InsertCommentsHere
   </text>
@@ -334,7 +334,61 @@
   </text>
 </comment>
 <comment>
-  <identifier id="test"/>
+  <identifier id="scanner"/>
+  <text>
+    InsertCommentsHere
+  </text>
+</comment>
+<comment>
+  <identifier id="scanner.Scanner"/>
+  <text>
+    InsertCommentsHere
+  </text>
+</comment>
+<comment>
+  <identifier id="scanner.Scanner.FSA"/>
+  <text>
+    InsertCommentsHere
+  </text>
+</comment>
+<comment>
+  <identifier id="scanner.Scanner.m_charStream"/>
+  <text>
+    InsertCommentsHere
+  </text>
+</comment>
+<comment>
+  <identifier id="scanner.Scanner.m_currentChar"/>
+  <text>
+    InsertCommentsHere
+  </text>
+</comment>
+<comment>
+  <identifier id="scanner.Scanner.m_currentLine"/>
+  <text>
+    InsertCommentsHere
+  </text>
+</comment>
+<comment>
+  <identifier id="scanner.Scanner.m_listeners"/>
+  <text>
+    InsertCommentsHere
+  </text>
+</comment>
+<comment>
+  <identifier id="scanner.Scanner.m_position"/>
+  <text>
+    InsertCommentsHere
+  </text>
+</comment>
+<comment>
+  <identifier id="scanner.Scanner.m_previousPosition"/>
+  <text>
+    InsertCommentsHere
+  </text>
+</comment>
+<comment>
+  <identifier id="scanner.Scanner2"/>
   <text>
     InsertCommentsHere
   </text>

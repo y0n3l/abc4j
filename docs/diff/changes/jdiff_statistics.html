@@ -53,7 +53,7 @@ Where <code>added</code> is the number of packages added, <code>removed</code> i
 This definition is applied recursively for the classes and their program elements, so the value for a changed package will be less than 1, unless every class in that package has changed.
 The definition ensures that if all packages are removed and all new packages are
 added, the change will be 100%. Values are rounded here, so a value of 0% indicates a percentage difference of less than 0.5%.
-<p>The overall difference between the two APIs is approximately 7%.
+<p>The overall difference between the two APIs is approximately 2%.
 </BLOCKQUOTE>
 <h3>Sections</h3>
 <a href="#packages">Packages</a> sorted by percentage difference<br>
@@ -76,6 +76,10 @@ added, the change will be 100%. Values are rounded here, so a value of 0% indica
   <TD><A HREF="pkg_abc.notation.html">abc.notation</A></TD>
 </TR>
 <TR>
+  <TD ALIGN="center">3</TD>
+  <TD><A HREF="pkg_scanner.html">scanner</A></TD>
+</TR>
+<TR>
   <TD ALIGN="center">&lt;1</TD>
   <TD><A HREF="pkg_abc.midi.html">abc.midi</A></TD>
 </TR>
@@ -90,23 +94,29 @@ added, the change will be 100%. Values are rounded here, so a value of 0% indica
 </TR>
 <TR>
   <TD ALIGN="center">0</TD>
-  <TD>0.3333333333333333</TD>
-  <TD><img alt="|" src="../black.gif" height=20 width=100.0></TD>
+  <TD>0.25</TD>
+  <TD><img alt="|" src="../black.gif" height=20 width=75.0></TD>
+</TR>
+<TR>
+  <TD ALIGN="center">3</TD>
+  <TD>0.25</TD>
+  <TD><img alt="|" src="../black.gif" height=20 width=75.0></TD>
 </TR>
 <TR>
   <TD ALIGN="center">4</TD>
-  <TD>0.3333333333333333</TD>
-  <TD><img alt="|" src="../black.gif" height=20 width=100.0></TD>
+  <TD>0.25</TD>
+  <TD><img alt="|" src="../black.gif" height=20 width=75.0></TD>
 </TR>
 <TR>
   <TD ALIGN="center">14</TD>
-  <TD>0.3333333333333333</TD>
-  <TD><img alt="|" src="../black.gif" height=20 width=100.0></TD>
+  <TD>0.25</TD>
+  <TD><img alt="|" src="../black.gif" height=20 width=75.0></TD>
 </TR>
 <!-- START_PACKAGE_HISTOGRAM
-0,0.3333333333333333
-4,0.3333333333333333
-14,0.3333333333333333
+0,0.25
+3,0.25
+4,0.25
+14,0.25
 END_PACKAGE_HISTOGRAM -->
 </TABLE>
 <hr>
@@ -133,6 +143,11 @@ abc.parser.AbcFileParser</A></TD>
 <i>abc.midi.MidiMessageType</i></A></TD>
 </TR>
 <TR>
+  <TD ALIGN="center">17</TD>
+  <TD><A HREF="scanner.Scanner.html">
+scanner.Scanner</A></TD>
+</TR>
+<TR>
   <TD ALIGN="center">13</TD>
   <TD><A HREF="abc.parser.TuneBook.html">
 abc.parser.TuneBook</A></TD>
@@ -143,7 +158,7 @@ abc.parser.TuneBook</A></TD>
 abc.notation.Note</A></TD>
 </TR>
 <TR>
-  <TD ALIGN="center">8</TD>
+  <TD ALIGN="center">6</TD>
   <TD><A HREF="abc.parser.AbcParserAbstract.html">
 abc.parser.AbcParserAbstract</A></TD>
 </TR>
@@ -163,47 +178,53 @@ abc.notation.NoteAbstract</A></TD>
 </TR>
 <TR>
   <TD ALIGN="center">4</TD>
-  <TD>0.14285714285714285</TD>
-  <TD><img alt="|" src="../black.gif" height=20 width=42.857142857142854></TD>
+  <TD>0.125</TD>
+  <TD><img alt="|" src="../black.gif" height=20 width=37.5></TD>
 </TR>
 <TR>
-  <TD ALIGN="center">8</TD>
-  <TD>0.14285714285714285</TD>
-  <TD><img alt="|" src="../black.gif" height=20 width=42.857142857142854></TD>
+  <TD ALIGN="center">6</TD>
+  <TD>0.125</TD>
+  <TD><img alt="|" src="../black.gif" height=20 width=37.5></TD>
 </TR>
 <TR>
   <TD ALIGN="center">9</TD>
-  <TD>0.14285714285714285</TD>
-  <TD><img alt="|" src="../black.gif" height=20 width=42.857142857142854></TD>
+  <TD>0.125</TD>
+  <TD><img alt="|" src="../black.gif" height=20 width=37.5></TD>
 </TR>
 <TR>
   <TD ALIGN="center">13</TD>
-  <TD>0.14285714285714285</TD>
-  <TD><img alt="|" src="../black.gif" height=20 width=42.857142857142854></TD>
+  <TD>0.125</TD>
+  <TD><img alt="|" src="../black.gif" height=20 width=37.5></TD>
+</TR>
+<TR>
+  <TD ALIGN="center">17</TD>
+  <TD>0.125</TD>
+  <TD><img alt="|" src="../black.gif" height=20 width=37.5></TD>
 </TR>
 <TR>
   <TD ALIGN="center">18</TD>
-  <TD>0.14285714285714285</TD>
-  <TD><img alt="|" src="../black.gif" height=20 width=42.857142857142854></TD>
+  <TD>0.125</TD>
+  <TD><img alt="|" src="../black.gif" height=20 width=37.5></TD>
 </TR>
 <TR>
   <TD ALIGN="center">23</TD>
-  <TD>0.14285714285714285</TD>
-  <TD><img alt="|" src="../black.gif" height=20 width=42.857142857142854></TD>
+  <TD>0.125</TD>
+  <TD><img alt="|" src="../black.gif" height=20 width=37.5></TD>
 </TR>
 <TR>
   <TD ALIGN="center">42</TD>
-  <TD>0.14285714285714285</TD>
-  <TD><img alt="|" src="../black.gif" height=20 width=42.857142857142854></TD>
+  <TD>0.125</TD>
+  <TD><img alt="|" src="../black.gif" height=20 width=37.5></TD>
 </TR>
 <!-- START_CLASS_HISTOGRAM
-4,0.14285714285714285
-8,0.14285714285714285
-9,0.14285714285714285
-13,0.14285714285714285
-18,0.14285714285714285
-23,0.14285714285714285
-42,0.14285714285714285
+4,0.125
+6,0.125
+9,0.125
+13,0.125
+17,0.125
+18,0.125
+23,0.125
+42,0.125
 END_CLASS_HISTOGRAM -->
 </TABLE>
 <hr>
@@ -226,17 +247,17 @@ The numbers of program elements (packages, classes. constructors, methods and fi
 </TR>
 <TR>
   <TD>Packages</TD>
-  <TD ALIGN="right">1</TD>
   <TD ALIGN="right">0</TD>
-  <TD ALIGN="right">3</TD>
+  <TD ALIGN="right">0</TD>
+  <TD ALIGN="right">4</TD>
   <TD ALIGN="right">4</TD>
 </TR>
 <TR>
   <TD>Classes and <i>Interfaces</i></TD>
   <TD ALIGN="right">1</TD>
-  <TD ALIGN="right">4</TD>
-  <TD ALIGN="right">7</TD>
-  <TD ALIGN="right">12</TD>
+  <TD ALIGN="right">5</TD>
+  <TD ALIGN="right">8</TD>
+  <TD ALIGN="right">14</TD>
 </TR>
 <TR>
   <TD>Constructors</TD>
@@ -247,24 +268,24 @@ The numbers of program elements (packages, classes. constructors, methods and fi
 </TR>
 <TR>
   <TD>Methods</TD>
-  <TD ALIGN="right">2</TD>
-  <TD ALIGN="right">14</TD>
+  <TD ALIGN="right">6</TD>
   <TD ALIGN="right">13</TD>
-  <TD ALIGN="right">29</TD>
+  <TD ALIGN="right">9</TD>
+  <TD ALIGN="right">28</TD>
 </TR>
 <TR>
   <TD>Fields</TD>
   <TD ALIGN="right">1</TD>
-  <TD ALIGN="right">0</TD>
+  <TD ALIGN="right">8</TD>
   <TD ALIGN="right">3</TD>
-  <TD ALIGN="right">4</TD>
+  <TD ALIGN="right">12</TD>
 </TR>
 <TR>
   <TD><b>Total</b></TD>
-  <TD ALIGN="right">5</TD>
-  <TD ALIGN="right">20</TD>
-  <TD ALIGN="right">29</TD>
-  <TD ALIGN="right">54</TD>
+  <TD ALIGN="right">8</TD>
+  <TD ALIGN="right">28</TD>
+  <TD ALIGN="right">27</TD>
+  <TD ALIGN="right">63</TD>
 </TR>
 </TABLE>
 </HTML>

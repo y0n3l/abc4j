@@ -70,6 +70,35 @@ Class abc.parser.<A HREF="..\v0.2\abc/parser/AbcParserAbstract.html" target="_to
   </TD>
   <TD>&nbsp;</TD>
 </TR>
+<TR BGCOLOR="#FFFFFF" CLASS="TableRowColor">
+  <TD VALIGN="TOP" WIDTH="25%">
+  <A NAME="abc.parser.AbcParserAbstract.parse_removed(java.io.Reader)"></A>
+  <nobr><code>Tune</code>&nbsp;<A HREF="..\v0.1\abc/parser/AbcParserAbstract.html#parse(java.io.Reader)" target="_top"><tt>parse</tt></A>(<code>Reader</code>)</nobr>
+  </TD>
+  <TD VALIGN="TOP">Parses the specified stream in ABC notation.</TD>
+</TR>
+<TR BGCOLOR="#FFFFFF" CLASS="TableRowColor">
+  <TD VALIGN="TOP" WIDTH="25%">
+  <A NAME="abc.parser.AbcParserAbstract.parse_removed(java.lang.String)"></A>
+  <nobr><code>Tune</code>&nbsp;<A HREF="..\v0.1\abc/parser/AbcParserAbstract.html#parse(java.lang.String)" target="_top"><tt>parse</tt></A>(<code>String</code>)</nobr>
+  </TD>
+  <TD VALIGN="TOP">Parse the given string and creates a <TT>Tune</TT> object as parsing result.</TD>
+</TR>
+<TR BGCOLOR="#FFFFFF" CLASS="TableRowColor">
+  <TD VALIGN="TOP" WIDTH="25%">
+  <A NAME="abc.parser.AbcParserAbstract.parseHeader_removed(java.io.Reader)"></A>
+  <nobr><code>Tune</code>&nbsp;<A HREF="..\v0.1\abc/parser/AbcParserAbstract.html#parseHeader(java.io.Reader)" target="_top"><tt>parseHeader</tt></A>(<code>Reader</code>)</nobr>
+  </TD>
+  <TD VALIGN="TOP">Parse the given string and creates a <TT>Tune</TT> object with no score
+ as parsing result.</TD>
+</TR>
+<TR BGCOLOR="#FFFFFF" CLASS="TableRowColor">
+  <TD VALIGN="TOP" WIDTH="25%">
+  <A NAME="abc.parser.AbcParserAbstract.parseHeader_removed(java.lang.String)"></A>
+  <nobr><code>Tune</code>&nbsp;<A HREF="..\v0.1\abc/parser/AbcParserAbstract.html#parseHeader(java.lang.String)" target="_top"><tt>parseHeader</tt></A>(<code>String</code>)</nobr>
+  </TD>
+  <TD VALIGN="TOP">Parses the header of the specified tune notation.</TD>
+</TR>
 </TABLE>
 &nbsp;
 <p>
@@ -77,15 +106,6 @@ Class abc.parser.<A HREF="..\v0.2\abc/parser/AbcParserAbstract.html" target="_to
 <TABLE summary="Added Methods" BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
 <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
   <TD VALIGN="TOP" COLSPAN=2><FONT SIZE="+1"><B>Added Methods</B></FONT></TD>
-</TR>
-<TR BGCOLOR="#FFFFFF" CLASS="TableRowColor">
-  <TD VALIGN="TOP" WIDTH="25%">
-  <A NAME="abc.parser.AbcParserAbstract.initParsing_added()"></A>
-  <nobr><code>Set</code>&nbsp;<A HREF="..\v0.2\abc/parser/AbcParserAbstract.html#initParsing()" target="_top"><tt>initParsing</tt></A>()</nobr>
-  </TD>
-  <TD VALIGN="TOP">Inits the parsing : sets the starting state of the current Set +
- sets the finale state automata of the scanner + retrieves the first 
- token and its type.</TD>
 </TR>
 <TR BGCOLOR="#FFFFFF" CLASS="TableRowColor">
   <TD VALIGN="TOP" WIDTH="25%">
@@ -124,56 +144,22 @@ Class abc.parser.<A HREF="..\v0.2\abc/parser/AbcParserAbstract.html" target="_to
 </TR>
 </TABLE>
 &nbsp;
+<a NAME="fields"></a>
 <p>
-<a NAME="Changed"></a>
-<TABLE summary="Changed Methods" BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
+<a NAME="Added"></a>
+<TABLE summary="Added Fields" BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
 <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-  <TD VALIGN="TOP" COLSPAN=3><FONT SIZE="+1"><B>Changed Methods</B></FONT></TD>
+  <TD VALIGN="TOP" COLSPAN=2><FONT SIZE="+1"><B>Added Fields</B></FONT></TD>
 </TR>
 <TR BGCOLOR="#FFFFFF" CLASS="TableRowColor">
   <TD VALIGN="TOP" WIDTH="25%">
-  <A NAME="abc.parser.AbcParserAbstract.parse_changed(java.io.Reader)"></A>
-  <nobr><code>Tune</code>&nbsp;<A HREF="..\v0.2\abc/parser/AbcParserAbstract.html#parse(java.io.Reader)" target="_top"><tt>parse</tt></A>(<code>Reader</code>)  </nobr>
+  <A NAME="abc.parser.AbcParserAbstract.m_tune"></A>
+  <nobr><code>Tune</code>&nbsp;<A HREF="..\v0.2\abc/parser/AbcParserAbstract.html#m_tune" target="_top"><tt>m_tune</tt></A></nobr>
   </TD>
-  <TD VALIGN="TOP" WIDTH="30%">
-Change of visibility from public to protected.<br>
-  </TD>
-  <TD VALIGN="TOP">Parses the specified stream in ABC notation.</TD>
-</TR>
-<TR BGCOLOR="#FFFFFF" CLASS="TableRowColor">
-  <TD VALIGN="TOP" WIDTH="25%">
-  <A NAME="abc.parser.AbcParserAbstract.parse_changed(java.lang.String)"></A>
-  <nobr><code>Tune</code>&nbsp;<A HREF="..\v0.2\abc/parser/AbcParserAbstract.html#parse(java.lang.String)" target="_top"><tt>parse</tt></A>(<code>String</code>)  </nobr>
-  </TD>
-  <TD VALIGN="TOP" WIDTH="30%">
-Change of visibility from public to protected.<br>
-  </TD>
-  <TD VALIGN="TOP">Parse the given string and creates a <TT>Tune</TT> object as parsing result.</TD>
-</TR>
-<TR BGCOLOR="#FFFFFF" CLASS="TableRowColor">
-  <TD VALIGN="TOP" WIDTH="25%">
-  <A NAME="abc.parser.AbcParserAbstract.parseHeader_changed(java.io.Reader)"></A>
-  <nobr><code>Tune</code>&nbsp;<A HREF="..\v0.2\abc/parser/AbcParserAbstract.html#parseHeader(java.io.Reader)" target="_top"><tt>parseHeader</tt></A>(<code>Reader</code>)  </nobr>
-  </TD>
-  <TD VALIGN="TOP" WIDTH="30%">
-Change of visibility from public to protected.<br>
-  </TD>
-  <TD VALIGN="TOP">Parse the given string and creates a <TT>Tune</TT> object with no score
- as parsing result.</TD>
-</TR>
-<TR BGCOLOR="#FFFFFF" CLASS="TableRowColor">
-  <TD VALIGN="TOP" WIDTH="25%">
-  <A NAME="abc.parser.AbcParserAbstract.parseHeader_changed(java.lang.String)"></A>
-  <nobr><code>Tune</code>&nbsp;<A HREF="..\v0.2\abc/parser/AbcParserAbstract.html#parseHeader(java.lang.String)" target="_top"><tt>parseHeader</tt></A>(<code>String</code>)  </nobr>
-  </TD>
-  <TD VALIGN="TOP" WIDTH="30%">
-Change of visibility from public to protected.<br>
-  </TD>
-  <TD VALIGN="TOP">Parses the header of the specified tune notation.</TD>
+  <TD VALIGN="TOP">The tune resulting of the last parsing.</TD>
 </TR>
 </TABLE>
 &nbsp;
-<a NAME="fields"></a>
 <p>
 <a NAME="Changed"></a>
 <TABLE summary="Changed Fields" BORDER="1" CELLPADDING="3" CELLSPACING="0" WIDTH="100%">
