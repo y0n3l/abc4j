@@ -10,9 +10,11 @@ import java.awt.geom.Point2D;
 
 import javax.swing.JComponent;
 
+import abc.notation.BarLine;
 import abc.notation.KeySignature;
 import abc.notation.Note;
 import abc.notation.ScoreElementInterface;
+import abc.notation.TimeSignature;
 import abc.notation.Tune;
 import abc.notation.Tune.Score;
 
@@ -34,14 +36,25 @@ public class JScoreComponent extends JComponent {
 			g2.draw(new Line2D.Float(0, staffLinesOffset, 1500, staffLinesOffset));
 			g2.setColor(Color.BLACK);
 			g2.setFont(context.getFont());
+			double width = 0;
+			width = ClefRenderer.render(context, (Point2D)cursor.clone());
+			cursor.setLocation(cursor.getX()+width, cursor.getY());
 			for (int i=0; i<score.size(); i++) {
+				width = 0;
 				ScoreElementInterface s = (ScoreElementInterface)score.elementAt(i);
 				if (s instanceof KeySignature)
-					ClefRenderer.render(context, cursor, (KeySignature)s);
+					width = KeySignatureRenderer.render(context, (Point2D)cursor.clone(), (KeySignature)s);
 				else
-					if (s instanceof Note)
-						SingleNoteRenderer.render(context, cursor, (Note)s);
-				cursor.setLocation(cursor.getX()+context.getNoteWidth()*2, cursor.getY());
+					if (s instanceof TimeSignature)
+						width = TimeSignatureRenderer.render(context, (Point2D)cursor.clone(), (TimeSignature)s);
+					else
+						if (s instanceof Note)
+							width = SingleNoteRenderer.render(context, (Point2D)cursor.clone(), (Note)s);
+						else
+							if (s instanceof BarLine)
+								width = BarRenderer.render(context, (Point2D)cursor.clone(), (BarLine)s);
+				cursor.setLocation(cursor.getX()+width+context.getNoteWidth(), cursor.getY());
+				//System.out.println("cursor locaiton : " + cursor.getX());
 			}
 		}
 	}
