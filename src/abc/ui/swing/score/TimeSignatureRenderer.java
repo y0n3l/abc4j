@@ -7,7 +7,7 @@ import abc.notation.TimeSignature;
 public class TimeSignatureRenderer {
 	
 	public static double render(ScoreRenditionContext context, Point2D base, TimeSignature timeSig){
-		System.out.println("base for time : " + base);
+		//System.out.println("base for time : " + base);
 		char[] numChars = getChar(timeSig.getNumerator());
 		char[] denomChars = getChar(timeSig.getDenominator());
 		context.getGraphics().drawChars(numChars, 0, 1, 

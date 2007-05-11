@@ -4,8 +4,11 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileInputStream;
+
+import abc.notation.Note;
 
 public class ScoreRenditionContext {
 	
@@ -28,7 +31,7 @@ public class ScoreRenditionContext {
 	
 	public static final char[] STROKE = {'\uF05F'};
 	
-	public static final char NOTE = '\uF0CF';
+	public static final char[] NOTE = {'\uF0CF'};
 	
 	public static final char STEM_COMBINE_UP_SINGLE = '\uF021';
 	public static final char STEM_COMBINE_UP_DOUBLE = '\uF040';
@@ -40,6 +43,7 @@ public class ScoreRenditionContext {
 
 	private double noteHeigth = -1;
 	private double noteWidth = -1;
+	private double staffCharWidth = -1;
 	private Graphics2D graphics2D = null;
 	private Font myFont = null; 
 	
@@ -50,9 +54,11 @@ public class ScoreRenditionContext {
 			  FileInputStream fontStream = new FileInputStream(file);
 			  myFont = Font.createFont(Font.TRUETYPE_FONT, fontStream);
 			  myFont = myFont.deriveFont(DEFAULT_SIZE);
-			  noteHeigth = new TextLayout(new Character(STAFF_SIX_LINES).toString(), myFont, frc).getBounds().getHeight()/4;
+			  Rectangle2D staffCharBounds = new TextLayout(new Character(STAFF_SIX_LINES).toString(), myFont, frc).getBounds();
+			  noteHeigth = staffCharBounds.getHeight()/4.1;
+			  staffCharWidth = staffCharBounds.getWidth();
 			  System.out.println("context : " + noteHeigth);
-			  noteWidth =  new TextLayout(new Character(NOTE).toString(), myFont, frc).getBounds().getWidth();
+			  noteWidth =  new TextLayout(new Character(NOTE[0]).toString(), myFont, frc).getBounds().getWidth();
 			  graphics2D = g2;
 		}
 		catch (Exception e){
@@ -74,5 +80,9 @@ public class ScoreRenditionContext {
 	
 	public Font getFont() {
 		return myFont;
+	}
+	
+	public double getStaffCharWidth() {
+		return staffCharWidth;
 	}
 }
