@@ -270,13 +270,15 @@ public class Note extends NoteAbstract
   
   /** Sets the accidental for this note.
    * @param accidentalValue Accidental for this note. Possible values are
-   * <TT>NATURAL</TT>, <TT>SHARP</TT> (#) or <TT>FLAT</TT> (b). */
+   * <TT>AccidentalType.NATURAL</TT>, <TT>AccidentalType.SHARP</TT> (#), 
+   * <TT>AccidentalType.FLAT</TT> (b) or <TT>AccidentalType.NONE</TT>. */
   public void setAccidental(byte accidentalValue)
   { accidental = accidentalValue; }
 
   /** Returns accidental for this note if any.
    * @return Accidental for this note if any. Possible values are
-   * <TT>NATURAL</TT>, <TT>FLAT</TT> or <TT>SHARP</TT>.
+   * <TT>AccidentalType.NATURAL</TT>, <TT>AccidentalType.FLAT</TT>, <TT>AccidentalType.SHARP</TT>
+   * or <TT>AccidentalType.NONE</TT>.
    * @see #setAccidental(byte) */
   public byte getAccidental()
   { return accidental; }
