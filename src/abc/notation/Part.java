@@ -1,17 +1,20 @@
 package abc.notation;
 
 /** <TT>Part</TT> objects are used to define parts in tunes. */
-public class Part
-{
+public class Part implements Cloneable {
   private char m_label;
   //private Tune m_tune = null;
   private Tune.Score m_score = null;
 
-  Part (Tune tune, char labelValue)
-  {
+  Part (Tune tune, char labelValue) {
     //m_tune = tune;
     m_label = labelValue;
     m_score = tune.createScore();
+  }
+  
+  Part (Part root) {
+	  m_label = root.m_label;
+	  m_score = (Tune.Score)root.m_score.clone();
   }
 
   /** Sets the label that identifies this part.
@@ -31,4 +34,8 @@ public class Part
 
   void setScore(Tune.Score score)
   {m_score = score;}
+  	
+  	public Object clone(){
+  		return new Part(this);
+  	}
 }

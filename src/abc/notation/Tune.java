@@ -5,7 +5,7 @@ import java.util.Vector;
 
 /** This class encapsulates all information retrieved from a tune transcribed
  * using abc notation : header and music. */
-public class Tune
+public class Tune implements Cloneable
 {
   //    Field name                     header this elsewhere Used by Examples and notes
   private String m_area = null;           //yes                           A:Donegal, A:Bampton
@@ -28,16 +28,40 @@ public class Tune
   //private AbcMultiPartsDefinition abcMultiPartsDefinition = null;  //yes    yes                    P:ABAC, P:A, P:B
   //private AbcScore m_abcScore = null;
   private Part m_defaultPart = null;
-
+  /** the multi parts definition of this tune if composed of several parts.
+   * If this tune is a one-part tune, this attribtue is <TT>null</TT> */
   private MultiPartsDefinition m_multiPartsDef = null;
   private Hashtable m_parts = null;
 
   /** Creates a new empty tune. */
-  public Tune()
-  {
+  public Tune() {
     super();
     m_titles = new Vector();
     m_defaultPart = new Part(this, ' ');
+  }
+  
+  /** Copy constructor
+   * @param tune The tune to be copied in depth. */
+  public Tune(Tune tune) {
+	  this.m_area = tune.m_area;
+	  this.m_book = tune.m_book;
+	  this.m_composer = tune.m_composer;
+	  this.m_discography = tune.m_discography;
+	  this.m_group = tune.m_group;
+	  this.m_history = tune.m_history;
+	  this.m_information = tune.m_information;
+	  this.m_key = (KeySignature)tune.m_key.clone();
+	  this.m_notes = tune.m_notes;
+	  this.m_origin = tune.m_origin;
+	  this.m_rhythm = tune.m_rhythm;
+	  this.m_source = tune.m_source;
+	  this.m_referenceNumber = tune.m_referenceNumber;
+	  this.m_transcriptionNotes = tune.m_transcriptionNotes;
+	  this.m_elemskip = tune.m_elemskip;
+	  this.m_titles = (Vector)tune.m_titles.clone();
+	  this.m_parts = (Hashtable)tune.m_parts.clone(); 
+	  this.m_defaultPart = (Part)tune.m_defaultPart.clone();
+	  this.m_multiPartsDef = (MultiPartsDefinition)tune.m_multiPartsDef.clone();
   }
 
   /** Sets the geographic area where this tune comes from.
@@ -201,12 +225,14 @@ public class Tune
   /** Creates a new part in this tune and returns it.
    * @param partLabel The label defining this new tune part.
    * @return The new part properly labeled. */
-  public Part createPart(char partLabel)
-  {
-    Part part = new Part(this, partLabel);
-    if (m_parts==null) m_parts = new Hashtable();
-    m_parts.put(new Character(partLabel), part);
-    return part;
+  public Part createPart(char partLabel) {
+	  // check should be requiered to see if the label is not 
+	  // empty or blank character because the blank character is
+	  // used as flag for the default part.
+	  Part part = new Part(this, partLabel);
+	  if (m_parts==null) m_parts = new Hashtable();
+	  m_parts.put(new Character(partLabel), part);
+	  return part;
   }
 
   /** Sets the multi parts definition of this tune.
@@ -334,7 +360,7 @@ public class Tune
       return globalScore;
     }
   }
-
+  
   /** Returns a string representation of this tune.
    * @return A string representation of this tune. */
   public String toString()
@@ -346,8 +372,14 @@ public class Tune
       string2return = "(" + m_referenceNumber + ")@" + hashCode();
     return string2return;
   }
+  
+  	public Object clone() {
+  		return new Tune(this);
+  	}
 
-  /** Creates a new score. */
+  /** Creates a new score. 
+   * NB : bullshit pattern, why going through a tune to create a score???
+   * The reference to the tune is not kept in the score. */
   Score createScore()
   { return new Score(); }
 
