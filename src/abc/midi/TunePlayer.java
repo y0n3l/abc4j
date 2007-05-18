@@ -137,34 +137,38 @@ public class TunePlayer implements MetaEventListener
 //  public void controlChange(ShortMessage event)
 //  { System.out.println("control  : "  + event); }
 
-  //========================================================================
-  //======================= Meta events  Listener =========================
-  //========================================================================
-  public void meta(MetaMessage meta)
-  {
-    if (MetaMessageWA.isTempoMessage(meta))
-    {
-      //System.out.println("TEMPO CHANGE DETECTED");
-      notifyForTempoChange((int)seq.getTempoInBPM());
-    }
-    else
-    if (MetaMessageWA.isNoteIndexMessage(meta))
-    {
-      notifyNotePlayedChanged((NoteAbstract)m_tune.getScore().elementAt(NoteIndexMessage.getIndex(meta.getData())));
-      //System.out.println("Note Index detected : " + NoteIndexMessage.getIndex(meta.getData()));
-      //notifyForTempoChange((int)seq.getTempoInBPM());
-    }
-    else
-    if (MetaMessageWA.isNotationMarker(meta))
-    {
-      //System.out.println("NOTATION MARKER");
-      int begin = NotationMarkerMessage.getBeginOffset(meta.getData());
-      int end = NotationMarkerMessage.getEndOffset(meta.getData());
-      notifyForPartPlayedChanged (begin, end);
-    }
-    else
-    if (meta.getType()==MidiMessageType.END_OF_TRACK)
-    { notifyForPlayEnd(); }
+  	//========================================================================
+  	//======================= Meta events  Listener =========================
+  	//========================================================================
+  	public void meta(MetaMessage meta) {
+		//System.out.println("Meta Message detected : " + meta.getType());
+		if (meta.getType()==MidiMessageType.TEMPO_CHANGE ||
+				// Work around part with generic meta message work around
+				(meta.getType()==MidiMessageType.MARKER && MetaMessageWA.isTempoMessage(meta))
+				) {
+			int expectdNotesNbPerMn = TempoMessage.getTempo(meta.getData()).getNotesNumberPerMinute();
+			System.out.println("detected tempo change : " + expectdNotesNbPerMn + 
+					" current seq tempo : " + seq.getTempoInBPM());
+			// Work around for JDK 1.5 (seems to work in JDK 1.4....)
+			if ((int)seq.getTempoInBPM()!=expectdNotesNbPerMn)
+				seq.setTempoInBPM(expectdNotesNbPerMn);
+			notifyForTempoChange((int)seq.getTempoInBPM());
+		}
+		else
+			if (meta.getType()==MidiMessageType.NOTE_INDEX_MARKER) {
+				notifyNotePlayedChanged((NoteAbstract)m_tune.getScore().elementAt(NoteIndexMessage.getIndex(meta.getData())));
+			}
+			else
+				if (MetaMessageWA.isNotationMarker(meta)) {
+					//System.out.println("NOTATION MARKER");
+					int begin = NotationMarkerMessage.getBeginOffset(meta.getData());
+					int end = NotationMarkerMessage.getEndOffset(meta.getData());
+					notifyForPartPlayedChanged (begin, end);
+				}
+				else
+					if (meta.getType()==MidiMessageType.END_OF_TRACK) { 
+						notifyForPlayEnd();
+					}
   }
 
   /** Starts the player so that it can play tunes.

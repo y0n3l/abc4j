@@ -1,11 +1,12 @@
 package abc.midi;
 
 import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MetaMessage;
 
 import scanner.PositionableInCharStream;
 
 /** A midi meta event to flag a positionable object in a midi stream. */
-public class NotationMarkerMessage extends MetaMessageWA
+public class NotationMarkerMessage extends MetaMessage
 {
   //private PositionableInCharStream m_pos = null;
 
@@ -36,9 +37,9 @@ public class NotationMarkerMessage extends MetaMessageWA
 
   public static int getBeginOffset(byte[] bytes)
   {
-    int a = ((int)bytes[1]&0xFF)<<16;
-    int b = ((int)bytes[2]&0xFF)<<8;
-    int c = ((int)bytes[3]&0xFF);
+    int a = ((int)bytes[0]&0xFF)<<16;
+    int b = ((int)bytes[1]&0xFF)<<8;
+    int c = ((int)bytes[2]&0xFF);
     if (a+b+c<0)
       System.out.println("ca va péter !");
     return a+b+c;
@@ -47,9 +48,9 @@ public class NotationMarkerMessage extends MetaMessageWA
 
   public static int getEndOffset(byte[] bytes)
   {
-    int a = ((int)bytes[4]&0xFF)<<16;
-    int b = ((int)bytes[5]&0xFF)<<8;
-    int c = ((int)bytes[6]&0xFF);
+    int a = ((int)bytes[3]&0xFF)<<16;
+    int b = ((int)bytes[4]&0xFF)<<8;
+    int c = ((int)bytes[5]&0xFF);
     return a+b+c;
   }
 }

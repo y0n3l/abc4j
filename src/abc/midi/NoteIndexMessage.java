@@ -1,8 +1,9 @@
 package abc.midi;
 
 import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MetaMessage;
 
-public class NoteIndexMessage extends MetaMessageWA
+public class NoteIndexMessage extends MetaMessage
 {
   //private PositionableInCharStream m_pos = null;
 
@@ -25,11 +26,11 @@ public class NoteIndexMessage extends MetaMessageWA
 
   public static int getIndex(byte[] bytes)
   {
-    int a = ((int)bytes[1]&0xFF)<<16;
-    int b = ((int)bytes[2]&0xFF)<<8;
-    int c = ((int)bytes[3]&0xFF);
+	int a = ((int)bytes[0]&0xFF)<<16;
+    int b = ((int)bytes[1]&0xFF)<<8;
+    int c = ((int)bytes[2]&0xFF);
     if (a+b+c<0)
-      System.out.println("ca va péter !");
+      System.err.println("ca va péter !");
     return a+b+c;
 
   }

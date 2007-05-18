@@ -29,10 +29,10 @@ public class BasicMidiConverter extends MidiConverterAbstract
     return events;
   }
 
-  public MidiMessage getMidiEventFor(Tempo tempo) throws InvalidMidiDataException
-  {
-    //MidiMessage[] message = {new TempoMessage(tempo)};
-    return new TempoMessage(tempo);
+  public MidiMessage[] getMidiMessagesFor(Tempo tempo) throws InvalidMidiDataException {
+	  TempoMessage tempoM = new TempoMessage(tempo);
+	  MidiMessage[] messages = {tempoM, new MetaMessageWA(tempoM)};
+	  return messages;
   }
 
 }

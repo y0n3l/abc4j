@@ -3,25 +3,42 @@ package abc.midi;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaMessage;
 /**
- * This class describes midi meta messages with an additional
- * type that is expressed as the first byte of the data...
- * Not the straight way to use meta message but the standard 
- * way does not seem to work properly (message not detected 
- * while play back)
+ * As the jdk 1.4 sequencer does not seem to detect all kind of meta
+ * messages during sequence playback, a workaround has been introduced
+ * to rely on the only type of meta message the sequencer detects : 
+ * the one with type 0x06 (represented by the constant
+ * <PRE>MidiMessageType.MARKER</PRE>.
  */
 public class MetaMessageWA extends MetaMessage {
+	byte[] m_realData = null;
+	
+	public MetaMessageWA(MetaMessage rootMessage) throws InvalidMidiDataException {
+		m_realData = rootMessage.getData();
+		byte[] newData = new byte[m_realData.length+1];
+		System.arraycopy(m_realData, 0, newData, 1, m_realData.length);
+		newData[0] = (byte)rootMessage.getType();
+		super.setMessage(MidiMessageType.MARKER, newData, newData.length);
+	}
+	
+	public int getType(){
+		return super.getData()[0];
+	}
+	
+	public byte[] getData(){
+		return m_realData;
+	}
 	
 	/* Sets the content of this meta message.
 	 * @
 	 * @see javax.sound.midi.MetaMessage#setMessage(int, byte[], int)
 	 */
-	public void setMessage(int type, byte[] data, int length) throws InvalidMidiDataException {
+	/*public void setMessage(int type, byte[] data, int length) throws InvalidMidiDataException {
 		byte[] newData = new byte[data.length+1];
 		newData[0] = (byte)type;
 		for (int i=0; i<data.length; i++)
 			newData[i+1] = data[i];
 		super.setMessage(MidiMessageType.MARKER, newData, newData.length);
-	}
+	}*/
 
 	/** Checks the first byte of the data part of the message to check 
 	 * if it is a tempo message or not.

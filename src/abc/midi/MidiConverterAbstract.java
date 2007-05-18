@@ -48,8 +48,9 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   			while (i < staff.size()) {
   				if (!inWrongEnding) {
   					//==================================================================== TEMPO
-  					if (staff.elementAt(i) instanceof abc.notation.Tempo)
-  						addTempoEventsFor(track, elapsedTime, getMidiEventFor((Tempo)staff.elementAt(i)));//, trackLengthInTicks));
+  					if (staff.elementAt(i) instanceof abc.notation.Tempo) {
+  						addTempoEventsFor(track, elapsedTime, getMidiMessagesFor((Tempo)staff.elementAt(i)));//, trackLengthInTicks));
+  					}
   					else
   						//==================================================================== KEY SIGNATURE
   						if (staff.elementAt(i) instanceof abc.notation.KeySignature) {
@@ -161,11 +162,12 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
     addEventsToTrack(track, events);
   }
 
-  private void addTempoEventsFor(Track track, long timeReference, MidiMessage message)
-  {
-    MidiEvent me = new MidiEvent(message, timeReference);
-    MidiEvent[] events = {me, new MidiEvent(new TempoMessageWA(), timeReference)};
-    addEventsToTrack(track, events);
+  private void addTempoEventsFor(Track track, long timeReference, MidiMessage[] messages) {
+	  for (int i=0; i<messages.length; i++) {
+		  MidiEvent me = new MidiEvent(messages[i], timeReference);
+		  //MidiEvent[] events = {me, new MidiEvent(new TempoMessageWA(), timeReference)};
+		  addEventsToTrack(track, me);
+	  }
   }
 
   private void addNoteOffEventsFor(Track track, long timeReference, MidiMessage[] messages)
@@ -186,12 +188,16 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   /**
    * @return The length of the track in ticks, once events have been added to it.
    */
-  protected static long addEventsToTrack(Track track, MidiEvent[] events)
-  {
+  protected static long addEventsToTrack(Track track, MidiEvent[] events) {
     if (events!=null)
       for (int i=0; i<events.length; i++)
         track.add(events[i]);
     return track.ticks();
+  }
+  
+  protected static long addEventsToTrack(Track track, MidiEvent event) {
+	  track.add(event);
+	  return track.ticks();
   }
 
   /** */
@@ -201,7 +207,7 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   public abstract MidiMessage[] getNoteOffMessageFor(Note note, KeySignature key) throws InvalidMidiDataException;
 
   /** Returns the corresponding midi events for a tempo change. */
-  public abstract MidiMessage getMidiEventFor(Tempo tempo) throws InvalidMidiDataException;
+  public abstract MidiMessage[] getMidiMessagesFor(Tempo tempo) throws InvalidMidiDataException;
 
   	/** Returns the length of the note in ticks, thanks to the sequence
   	 * resolution and the default note length. */

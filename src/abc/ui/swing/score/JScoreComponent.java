@@ -45,6 +45,7 @@ public class JScoreComponent extends JComponent {
 			ArrayList lessThanQuarter = new ArrayList();
 			Point2D lessThanQuarterStart = null;
 			int durationInGroup = 0;
+			int maxDurationInGroup = 0;
 			for (int i=0; i<score.size(); i++) {
 				//width = 0;
 				ScoreElementInterface s = (ScoreElementInterface)score.elementAt(i);
@@ -62,12 +63,16 @@ public class JScoreComponent extends JComponent {
 						int nbOfDefaultNotesPerBeat = ((TimeSignature)s).getNumberOfDefaultNotesPerBeat(defNoteLength);
 						System.out.println("default note length" + defNoteLength);
 						System.out.println("nb of def not / beat " + nbOfDefaultNotesPerBeat);
+						if(s.equals(TimeSignature.SIGNATURE_6_8))
+							maxDurationInGroup = 3*Note.EIGHTH;
+						else
+							if(s.equals(TimeSignature.SIGNATURE_4_4))
+								maxDurationInGroup = Note.QUARTER;
 					}
 					else
 						if (s instanceof Note) {
 							short strictDur = ((Note)s).getStrictDuration();
-							if (strictDur==Note.EIGHTH || strictDur==Note.SIXTEENTH ||
-									strictDur==Note.THIRTY_SECOND || strictDur==Note.SIXTY_FOURTH) {
+							if (strictDur<Note.QUARTER) {
 								if (lessThanQuarter.size()==0) {
 									//System.out.println("less than quarter cursor : " + cursor);
 									lessThanQuarterStart = (Point2D)cursor.clone();
@@ -81,17 +86,26 @@ public class JScoreComponent extends JComponent {
 								durationInGroup+=((Note)s).getDuration();
 								System.out.println("duration in group " + durationInGroup);
 								lessThanQuarter.add(s);
+								if (durationInGroup>=maxDurationInGroup) {
+									Note[] notes = (Note[])lessThanQuarter.toArray(new Note[lessThanQuarter.size()]);
+									width = GroupOfNotesRenderer.render(context, lessThanQuarterStart, notes);
+									lessThanQuarter.clear();
+									durationInGroup = 0;
+									//System.out.println("cursor : " + cursor);
+									int cursorNewLocationX = (int)(cursor.getX() + width);
+									cursor.setLocation(cursorNewLocationX, cursor.getY());
+								}
 							}
 							else {
-								if (lessThanQuarter.size()!=0) {
+								/*if (lessThanQuarter.size()!=0) {
 									Note[] notes = (Note[])lessThanQuarter.toArray(new Note[lessThanQuarter.size()]);
 									width = GroupOfNotesRenderer.render(context, lessThanQuarterStart, notes);
 									lessThanQuarter.clear();
 									//System.out.println("cursor : " + cursor);
 									int cursorNewLocationX = (int)(cursor.getX() + width);
 									cursor.setLocation(cursorNewLocationX, cursor.getY());
-								}
-								//System.out.println("width = " + width);
+								}*/
+								System.out.println("Displaying single note");
 								width = SingleNoteRenderer.render(context, (Point2D)cursor.clone(), (Note)s);
 								int cursorNewLocationX = (int)(cursor.getX() + width + SingleNoteRenderer.getOffsetAfterNoteRendition(context));
 								cursor.setLocation(cursorNewLocationX, cursor.getY());

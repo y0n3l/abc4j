@@ -1,8 +1,17 @@
 package abc.notation;
 
 /** This class enables you to describe any time signatures like 4/4, 6/8 ...*/
-public class TimeSignature extends Fraction implements ScoreElementInterface
-{
+public class TimeSignature extends Fraction implements ScoreElementInterface {
+	
+	/** The 4/4 time signature constant. */
+	public static final TimeSignature SIGNATURE_4_4 = new TimeSignature(4,4);
+	
+	/** The 3/4 time signature constant. */
+	public static final TimeSignature SIGNATURE_3_4 = new TimeSignature(3,4);
+	
+	/** The 6/8 time signature constant. */
+	public static final TimeSignature SIGNATURE_6_8 = new TimeSignature(6,8);
+	
   /** Creates a new time signature with the specified parameters.
    * @param num The number of beat in a bar.
    * @param den The type of those beats. */
@@ -38,5 +47,17 @@ public class TimeSignature extends Fraction implements ScoreElementInterface
     short meterDefLength = Note.convertToNoteLengthStrict(1, getDenominator());
     return meterDefLength / defaultLength;
   }
+  
+  	public boolean equals(Object o) {
+  		if (o instanceof TimeSignature){
+  			return ( 
+  			((TimeSignature)o).getDenominator()==this.getDenominator()
+  				&& 
+  			((TimeSignature)o).getNumerator()==this.getNumerator()
+  			);
+  		}
+  		else
+  			return super.equals(o);
+  	}
 
 }

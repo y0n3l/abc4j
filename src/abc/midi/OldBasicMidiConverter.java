@@ -85,7 +85,7 @@ public class OldBasicMidiConverter extends OldMidiConverterAbstract
   {
     TempoMessage mt = new TempoMessage(tempo);
     MidiEvent me = new MidiEvent(mt,lastPosInTicks);
-    MidiEvent[] events = {me, new MidiEvent(new TempoMessageWA(), lastPosInTicks)};
+    MidiEvent[] events = null;//{me, new MidiEvent(new TempoMessageWA(), lastPosInTicks)};
     return events;
   }
 

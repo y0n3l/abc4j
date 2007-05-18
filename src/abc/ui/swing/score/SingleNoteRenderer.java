@@ -38,9 +38,9 @@ public class SingleNoteRenderer {
 		if (note.countDots()!=0){
 			renderDots(context, base, note);
 		}
-		context.getGraphics().setColor(Color.RED);
-		context.getGraphics().drawLine((int)(base.getX()+totalWidth), (int)base.getY(), (int)(base.getX()+totalWidth), (int)(base.getY()-50));
-		context.getGraphics().setColor(Color.BLACK);
+		//context.getGraphics().setColor(Color.RED);
+		//context.getGraphics().drawLine((int)(base.getX()+totalWidth), (int)base.getY(), (int)(base.getX()+totalWidth), (int)(base.getY()-50));
+		//context.getGraphics().setColor(Color.BLACK);
 		return totalWidth;
 	}
 	
