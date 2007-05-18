@@ -3,13 +3,20 @@ package abc.notation;
 import java.util.Vector;
 
 /** This class describes the way a multipart score is defined. */
-public class MultiPartsDefinition extends RepeatedPartAbstract
+public class MultiPartsDefinition extends RepeatedPartAbstract implements Cloneable
 {
   private Vector m_parts = new Vector();
 
   /** Creates a new multi part definition. */
-  public MultiPartsDefinition()
-  { new Vector();}
+  public MultiPartsDefinition() { 
+	  new Vector();
+  }
+  
+  /** Copy constructor 
+   */
+  public MultiPartsDefinition(MultiPartsDefinition root) { 
+	  m_parts = (Vector)root.m_parts.clone();
+  }
 
   /** Adds a new part to this multi part.
    * @param p The part that has to be added to the multi part. This part can
@@ -49,4 +56,8 @@ public class MultiPartsDefinition extends RepeatedPartAbstract
     }
     return parts;
   }
+  
+  	public Object clone() {
+  		return new MultiPartsDefinition(this);
+  	}
 }

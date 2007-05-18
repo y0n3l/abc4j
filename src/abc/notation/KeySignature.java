@@ -10,7 +10,7 @@ package abc.notation;
  * </PRE>
  * If we consider the key namned "Ab aeolian", "A" is called the note of this
  * key, "b" is called the key accidental and "aeolian" is called the mode. */
-public class KeySignature implements ScoreElementInterface
+public class KeySignature implements ScoreElementInterface, Cloneable
 {
     private final byte[][] accidentalsRules =
     {
@@ -276,6 +276,10 @@ public class KeySignature implements ScoreElementInterface
     string2Return = string2Return.concat("}");
     return string2Return;
   }
+  
+  	public Object clone() {
+  		return new KeySignature(this.getNote(), this.getAccidental(), this.getMode());
+  	}
 
 /*    public void display ()
     {
