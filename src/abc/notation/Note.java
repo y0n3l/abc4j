@@ -104,8 +104,11 @@ public class Note extends NoteAbstract
   public static final short DOTTED_SIXTY_FOURTH	= (short)(LENGTH_RESOLUTION * 1.5);
   /** The <TT>SIXTY_FOURTH</TT> length type. */
   public static final short SIXTY_FOURTH	= LENGTH_RESOLUTION;      // quadruple croche
-
-  private byte height = REST;
+  /** The height of the note AS A CONSTANT such as C D E F G A B <B>only</B> !!
+   * This strict height must be used with the octave transposition (if defined) to know the 
+   * real height of this note. Accidentals are not taken into account in this value. */ 
+  private byte strictHeight = REST;
+  
   private byte octaveTransposition = 0;
   /** Accidental for this note. */
   private byte accidental = AccidentalType.NONE;
@@ -119,25 +122,39 @@ public class Note extends NoteAbstract
   private boolean m_isTied = false;
 
   /** Creates an abc note with the specified heigth and accidental.
-   * @param heigthValue The heigth of the note.
-   * @param accidentalValue The accidental of the note. */
-  public Note (byte heigthValue, byte accidentalValue)
+   * @param heightValue The heigth of this note as a byte that respect the scale defined by
+   * constants such as C D E F G A B c d e ..... The heigth is <TT>REST</TT> if
+   * this note is a rest.
+   * @param accidentalValue Accidental for this note. Possible values are
+   * <TT>AccidentalType.NATURAL</TT>, <TT>AccidentalType.SHARP</TT> (#), 
+   * <TT>AccidentalType.FLAT</TT> (b) or <TT>AccidentalType.NONE</TT>.
+   * @see #setAccidental(byte) 
+   * @see #setHeight(byte) */
+  public Note (byte heightValue, byte accidentalValue)
   {
     super();
-    height = heigthValue;
-    accidental = accidentalValue;
+    setHeight(heightValue);
+    setAccidental(accidentalValue);
   }
 
   /** Creates an abc note with the specified heigth, accidental and octave
    * transposition.
-   * @param heigthValue
-   * @param accidentalValue */
-  public Note (byte heigthValue, byte accidentalValue, byte octaveTranspositionValue)
+   * @param heightValue The heigth of this note as a byte that respect the scale defined by
+   * constants such as C D E F G A B c d e ..... The heigth is <TT>REST</TT> if
+   * this note is a rest.
+   * @param accidentalValue Accidental for this note. Possible values are
+   * <TT>AccidentalType.NATURAL</TT>, <TT>AccidentalType.SHARP</TT> (#), 
+   * <TT>AccidentalType.FLAT</TT> (b) or <TT>AccidentalType.NONE</TT>.
+   * @param octaveTranspositionValue The octave transposition for this note :
+   * 1, 2 or 3 means "1, 2 or 3 octave(s) higher than the reference octave" and
+   * -1, -2 or -3 means "1, 2 or 3 octave(s) less than the reference octave". 
+   * @see #setAccidental(byte) 
+   * @see #setOctaveTransposition(byte) 
+   * @see #setHeight(byte) */
+  public Note (byte heightValue, byte accidentalValue, byte octaveTranspositionValue)
   {
-    super();
-    height = heigthValue;
-    accidental = accidentalValue;
-    octaveTransposition = octaveTranspositionValue;
+    this(heightValue, accidentalValue);
+    setOctaveTransposition((byte)(octaveTransposition+octaveTranspositionValue));
   }
 
   /** Sets the heigth of this note.
@@ -146,51 +163,113 @@ public class Note extends NoteAbstract
    * @deprecated use setHeight(byte heigthValue) instead. sorry for the typo... 
    * @see #setHeight(byte) */
   public void setHeigth(byte heigthValue)
-  { height = heigthValue; }
+  { setHeight(heigthValue); }
   
-  /** Sets the heigth of this note.
-   * @param heigthValue The heigth of this note. The heigth is <TT>REST</TT> if
-   * this note is a rest. */
-  public void setHeight(byte heigthValue)
-  { height = heigthValue; }
+  /** Sets the heigth of this note. Accidentals are not taken into account in this value, Ex:
+   * using this method you will be able to specify that your note is a C but not a C#.
+   * To express the sharp, you'll have to use the {@link #setAccidental(byte)} method.  
+   * @param heightValue The heigth of this note as a byte that respect the scale defined by
+   * constants such as C D E F G A B c d e ..... The heigth is <TT>REST</TT> if
+   * this note is a rest. 
+   * @see #getHeight() 
+   * @see #setAccidental(byte) */
+  public void setHeight(byte heightValue) throws IllegalArgumentException {
+	  //checks if this height does not describe a sharp.
+	  strictHeight = getStrictHeight(heightValue);
+	  if (strictHeight<0)
+		  throw new IllegalArgumentException("negative : " + strictHeight);
+	  octaveTransposition = getOctaveTransposition(heightValue);
+	  //System.out.println(heightValue + " decomposed into " + strictHeight + ", "+ octaveTransposition);
+  }
 
-  /** Returns this note absolute height. This height doesn't take in account
-   * octave transposition.
-   * @return This note height. <TT>REST</TT> is returned if this note is a rest.
-   * Possible other values are <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>,
-   * <TT>A</TT>, <TT>B</TT>, <TT>c</TT>, <TT>d</TT>, <TT>e</TT>, <TT>f</TT>, <TT>g</TT>,
-   * <TT>a</TT> or <TT>b</TT>. 
+  /** Returns this note absolute height. This height <DEL>doesn't take in account</DEL>
+   * <B>takes into account</B> octave transposition.
+   * @return This note height.
    * @deprecated use getHeight() instead. Sorry for the typo.... 
    * @see #getHeight() */
   public byte getHeigth ()
-  { return height; }
+  { return getHeight(); }
+  
+  /** Returns this note height. This height <DEL>doesn't take in account</DEL>
+   * <B>takes into account</B> octave transposition. This height is not the height 
+   * of the note itself (like how it would be played using midi for instance) but 
+   * the height of its representation on a score. 
+   * For instance 2 notes written C and C# would have the same value returned 
+   * by getHeight(). They would only differ with their accidental value returned
+   * by {@link #getAccidental()}. 
+   * @return The heigth of this note as a byte that respect the scale defined by
+   * constants such as C D E F G A B c d e .... 
+   * @see #getStrictHeight()
+   * @see #setHeight(byte) */
+  public byte getHeight() {
+	  return (byte)(strictHeight + octaveTransposition*12);
+  }
   
   /** Returns this note absolute height. This height doesn't take in account
    * octave transposition.
-   * @return This note height. <TT>REST</TT> is returned if this note is a rest.
-   * Possible other values are <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>,
-   * <TT>A</TT>, <TT>B</TT>, <TT>c</TT>, <TT>d</TT>, <TT>e</TT>, <TT>f</TT>, <TT>g</TT>,
-   * <TT>a</TT> or <TT>b</TT>. */
-  public byte getHeight() {
-	  return height;
+   * @return The heigth of this note on the first octave. Possible values are
+   * <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>, <TT>A</TT>(404)
+   * or <TT>B</TT> only. 
+   * @see #getHeight()
+   * @see #setHeight(byte) */
+  public byte getStrictHeight() {
+	  return getStrictHeight(strictHeight);
+  }
+ 
+  /** Returns this note absolute height. This height doesn't take in account
+   * octave transposition.
+   * @param height A heigth of a note as a byte that respect the scale defined by
+   * constants such as C D E F G A B c d e ....
+   * @return The heigth of this note on the first octave. Possible values are
+   * <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>, <TT>A</TT>(404)
+   * or <TT>B</TT> only.
+   * @see #getHeight() */
+  public static byte getStrictHeight(byte height) {
+	  // The +24 is needed to move the height of the note to a positive range
+	  // X*12 , 24 should be enough.
+	  byte sh = (byte)((height+24)%12);
+	  if (!(sh==Note.C || sh==Note.D || sh==Note.E || sh==Note.F ||
+			  sh==Note.G || sh==Note.A || sh==Note.B))
+			  throw new IllegalArgumentException("The height " + height + " cannot be strictly mapped because of sharp or flat (sh=" + sh + ")");
+	  else
+		  return sh;
+  }
+  
+  /** Returns the octave transposition for the specified height 
+   * relative to its strict height. For instance, the octave 
+   * transposition of <TT>Note.c</TT> is <TT>1</TT> because it 
+   * is one octave higher than its strict height <TT>Note.C</TT>.
+   * @param height A height as a byte that respect the scale defined by
+   * constants such as C D E F G A B c d e ....
+   * @return The number of octave(s), to reach the given height from
+   * the stric height. A positive value is returned if the height 
+   * is higher than the strict height, negative otherwise. */
+  public static byte getOctaveTransposition(byte height) {
+	  return (byte)((height-getStrictHeight(height))/12);
   }
 
   /** Returns the heigth of this note on the first octave.
    * @return the heigth of this note on the first octave. Possible values are
    * <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>, <TT>A</TT>(404)
-   * or <TT>B</TT>. */
+   * or <TT>B</TT>. 
+   * @deprecated use getStrictHeight() instead 
+   * @see #getStrictHeight() */
   public byte toRootOctaveHeigth()
-  { return (byte)Math.abs(height%12); }
+  { return (byte)Math.abs(strictHeight%12); }
 
   /** Sets the octave transposition for this note.
    * @param octaveTranspositionValue The octave transposition for this note :
    * 1, 2 or 3 means "1, 2 or 3 octave(s) higher than the reference octave" and
    * -1, -2 or -3 means "1, 2 or 3 octave(s) less than the reference octave". */
-  public void setOctaveTransposition (byte octaveTranspositionValue)
-  { octaveTransposition = octaveTranspositionValue; }
+  public void setOctaveTransposition (byte octaveTranspositionValue) {
+	  //byte strictHeight = getStrictHeight();
+	  octaveTransposition = octaveTranspositionValue;
+	  //strictHeight = (byte)(strictHeight + octaveTransposition * 12);
+  }
 
   /** Returns the octave transposition for this note.
-   * @return The octave transposition for this note. Default is 0.*/
+   * @return The octave transposition for this note. Default is 0.
+   * @see #setOctaveTransposition(byte) */
   public byte getOctaveTransposition()
   { return octaveTransposition; }
 
@@ -284,25 +363,32 @@ public class Note extends NoteAbstract
   { return accidental; }
 
   /** Sets if this note is tied, wheter or not.
-   * @param isTied <TT>true</TT> if this note is tied, <TT>false</TT> otherwise. */
+   * @param isTied <TT>true</TT> if this note is tied, <TT>false</TT> otherwise.
+   * @see #isTied() */
   public void setIsTied(boolean isTied)
   { m_isTied = isTied; }
 
   /** Returns <TT>true</TT> if this note is tied.
-   * @return <TT>true</TT> if this note is tied, <TT>false</TT> otherwise. */
+   * @return <TT>true</TT> if this note is tied, <TT>false</TT> otherwise.
+   * @see #setIsTied(boolean) */
   public boolean isTied()
   { return m_isTied; }
 
-  /** Returns <TT>true</TT> if this note is a rest
+  /** A convenient method that returns <TT>true</TT> if this note is a rest. 
+   * A note is a rest if its height returned by {@link #getHeight()} 
+   * or {@link #getStrictHeight()} is equals to <TT>Note.REST</TT>.  
    * @return <TT>true</TT> if this note is a rest, <TT>false</TT> otherwise. */
   public boolean isRest()
-  { return (height == REST); }
+  { return (strictHeight == REST); }
   
-  	public void setDotted(byte dotted) { 
-  		super.setDotted(dotted);
-  		// Re init the whole duration => will be computed later on request only.
-  		m_duration = -1; 
-  	}
+  /** Sets the number of dots for this note.
+   * @param dotsNb The number of dots for this note.
+   * @see #countDots() */
+  public void setDotted(byte dotsNb) { 
+  	super.setDotted(dotsNb);
+  	// Re init the whole duration => will be computed later on request only.
+  	m_duration = -1; 
+  }
 
   public static byte convertToNoteType(String note)
   {
@@ -350,21 +436,21 @@ public class Note extends NoteAbstract
   public String toString()
   {
     String string2Return = super.toString();
-    if (height == REST) 	string2Return = string2Return.concat("z"); else
-    if (height == C) 	string2Return = string2Return.concat("C"); else
-    if (height == D) 	string2Return = string2Return.concat("D"); else
-    if (height == E) 	string2Return = string2Return.concat("E"); else
-    if (height == F) 	string2Return = string2Return.concat("F"); else
-    if (height == G) 	string2Return = string2Return.concat("G"); else
-    if (height == A) 	string2Return = string2Return.concat("A"); else
-    if (height == B) 	string2Return = string2Return.concat("B"); else
-    if (height == c) 	string2Return = string2Return.concat("c"); else
-    if (height == d) 	string2Return = string2Return.concat("d"); else
-    if (height == e) 	string2Return = string2Return.concat("e"); else
-    if (height == f) 	string2Return = string2Return.concat("f"); else
-    if (height == g) 	string2Return = string2Return.concat("g"); else
-    if (height == a) 	string2Return = string2Return.concat("a"); else
-    if (height == b) 	string2Return = string2Return.concat("b");
+    if (strictHeight == REST) 	string2Return = string2Return.concat("z"); else
+    if (strictHeight == C) 	string2Return = string2Return.concat("C"); else
+    if (strictHeight == D) 	string2Return = string2Return.concat("D"); else
+    if (strictHeight == E) 	string2Return = string2Return.concat("E"); else
+    if (strictHeight == F) 	string2Return = string2Return.concat("F"); else
+    if (strictHeight == G) 	string2Return = string2Return.concat("G"); else
+    if (strictHeight == A) 	string2Return = string2Return.concat("A"); else
+    if (strictHeight == B) 	string2Return = string2Return.concat("B"); /*else
+    if (strictHeight == c) 	string2Return = string2Return.concat("c"); else
+    if (strictHeight == d) 	string2Return = string2Return.concat("d"); else
+    if (strictHeight == e) 	string2Return = string2Return.concat("e"); else
+    if (strictHeight == f) 	string2Return = string2Return.concat("f"); else
+    if (strictHeight == g) 	string2Return = string2Return.concat("g"); else
+    if (strictHeight == a) 	string2Return = string2Return.concat("a"); else
+    if (strictHeight == b) 	string2Return = string2Return.concat("b");*/
     if (octaveTransposition == 1) 	string2Return = string2Return.concat("'"); else
     if (octaveTransposition == -1) 	string2Return = string2Return.concat(",");
     if (accidental == AccidentalType.FLAT)	string2Return = string2Return.concat("b");
@@ -414,5 +500,27 @@ public class Note extends NoteAbstract
   	    }
   	    return duration;
   	}
+  	
+  	public static Note getHighestNote(Note[] notes) {
+		Note highestNote = notes[0];
+		for (int i=0; i<notes.length; i++) {
+			if(notes[i].getHeight()>highestNote.getHeight()) {
+				highestNote =notes[i];
+				//System.out.println("highest note is" + i);
+			}
+		}
+		return highestNote;
+	}
+	
+	public static Note getLowestNote(Note[] notes) {
+		Note lowestNote = notes[0];
+		for (int i=0; i<notes.length; i++) {
+			if(notes[i].getHeight()<lowestNote.getHeight()) {
+				lowestNote =notes[i];
+				//System.out.println("highest note is" + i);
+			}
+		}
+		return lowestNote;
+	}
 }
 
