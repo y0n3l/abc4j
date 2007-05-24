@@ -1,7 +1,9 @@
 package abc.ui.swing.score;
 
+import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
@@ -39,13 +41,22 @@ public class ScoreRenditionContext {
 	public static final char[] SHARP = {'\uF023'};
 	public static final char[] FLAT = {'\uF062'};
 	public static final char[] NATURAL = {'\uF06E'};
-	public static final float DEFAULT_SIZE = 200;
+	public static final float DEFAULT_SIZE = 150;
 
 	private double noteHeigth = -1;
 	private double noteWidth = -1;
 	private double staffCharWidth = -1;
 	private Graphics2D graphics2D = null;
 	private Font myFont = null; 
+	private Rectangle2D sharpBounds = null;
+	private Rectangle2D naturalBounds = null;
+	private Rectangle2D flatBounds = null;
+	private Rectangle2D quarterNoteBounds = null;
+	private BasicStroke notesLinkStroke = null; 
+	private BasicStroke stemStroke = null;
+	private int noteStrokeLength = -1;
+	private int stemLength = -1;
+	private int notesSpacing = -1;
 	
 	public ScoreRenditionContext(Graphics2D g2) {
 		try {
@@ -57,8 +68,16 @@ public class ScoreRenditionContext {
 			  Rectangle2D staffCharBounds = new TextLayout(new Character(STAFF_SIX_LINES).toString(), myFont, frc).getBounds();
 			  noteHeigth = staffCharBounds.getHeight()/4.1;
 			  staffCharWidth = staffCharBounds.getWidth();
-			  System.out.println("context : " + noteHeigth);
+			  sharpBounds = new TextLayout(new Character(SHARP[0]).toString(), myFont, frc).getBounds();
+			  flatBounds = new TextLayout(new Character(FLAT[0]).toString(), myFont, frc).getBounds();
+			  naturalBounds = new TextLayout(new Character(FLAT[0]).toString(), myFont, frc).getBounds();
+			  quarterNoteBounds =  new TextLayout(new Character(QUARTER_NOTE[0]).toString(), myFont, frc).getBounds();
 			  noteWidth =  new TextLayout(new Character(NOTE[0]).toString(), myFont, frc).getBounds().getWidth();
+			  notesLinkStroke = new BasicStroke((float)(noteWidth/3), 0, 0);
+			  stemStroke = new BasicStroke((float)(noteWidth/12));
+			  stemLength = (int)(noteHeigth*3);
+			  noteStrokeLength = 2;
+			  notesSpacing = (int)(1.5*noteWidth);
 			  graphics2D = g2;
 		}
 		catch (Exception e){
@@ -70,12 +89,48 @@ public class ScoreRenditionContext {
 		return noteHeigth;
 	}
 	
+	public double getNoteStrokeLength() {
+		return noteStrokeLength;
+	}
+	
 	public double getNoteWidth() {
 		return noteWidth;
 	}
 	
+	public double getNotesSpacing() {
+		return notesSpacing;
+	}
+	
+	public BasicStroke getNotesLinkStroke(){
+		return notesLinkStroke;
+	}
+	
+	public BasicStroke getStemStroke(){
+		return stemStroke;
+	}
+	
+	public int getStemLength(){
+		return stemLength;
+	}
+	
 	public Graphics2D getGraphics(){
 		return graphics2D;
+	}
+	
+	public Rectangle2D getSharpBounds(){
+		return sharpBounds;
+	}
+	
+	public Rectangle2D getNaturalBounds(){
+		return naturalBounds;
+	}
+	
+	public Rectangle2D getFlatBounds(){
+		return flatBounds;
+	}
+	
+	public Rectangle2D getQuarterNoteBounds(){
+		return quarterNoteBounds;
 	}
 	
 	public Font getFont() {

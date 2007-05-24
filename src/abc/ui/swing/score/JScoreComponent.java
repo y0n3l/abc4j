@@ -31,6 +31,7 @@ public class JScoreComponent extends JComponent {
 		if (tune!=null) {
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g2.setColor(Color.black);
 			ScoreRenditionContext context = new ScoreRenditionContext(g2);
 			Score score = tune.getScore();
@@ -50,8 +51,11 @@ public class JScoreComponent extends JComponent {
 				//width = 0;
 				ScoreElementInterface s = (ScoreElementInterface)score.elementAt(i);
 				if (s instanceof KeySignature) {
-					width = KeySignatureRenderer.render(context, (Point2D)cursor.clone(), (KeySignature)s);
-					int cursorNewLocationX = (int)(cursor.getX() + width + SingleNoteRenderer.getOffsetAfterNoteRendition(context));
+					SKeySignature sk = new SKeySignature((KeySignature)s, cursor, context);
+					//width = KeySignatureRenderer.render(context, (Point2D)cursor.clone(), (KeySignature)s);
+					width = sk.render(context, cursor);
+					//int cursorNewLocationX = (int)(cursor.getX() + width + SingleNoteRenderer.getOffsetAfterNoteRendition(context));
+					int cursorNewLocationX = (int)(cursor.getX() + width);
 					cursor.setLocation(cursorNewLocationX, cursor.getY());
 				}
 				else
@@ -61,8 +65,8 @@ public class JScoreComponent extends JComponent {
 						cursor.setLocation(cursorNewLocationX, cursor.getY());
 						short defNoteLength = ((TimeSignature)s).getDefaultNoteLength();
 						int nbOfDefaultNotesPerBeat = ((TimeSignature)s).getNumberOfDefaultNotesPerBeat(defNoteLength);
-						System.out.println("default note length" + defNoteLength);
-						System.out.println("nb of def not / beat " + nbOfDefaultNotesPerBeat);
+						//System.out.println("default note length" + defNoteLength);
+						//System.out.println("nb of def not / beat " + nbOfDefaultNotesPerBeat);
 						if(s.equals(TimeSignature.SIGNATURE_6_8))
 							maxDurationInGroup = 3*Note.EIGHTH;
 						else
@@ -74,17 +78,10 @@ public class JScoreComponent extends JComponent {
 							short strictDur = ((Note)s).getStrictDuration();
 							if (strictDur<Note.QUARTER) {
 								if (lessThanQuarter.size()==0) {
-									//System.out.println("less than quarter cursor : " + cursor);
 									lessThanQuarterStart = (Point2D)cursor.clone();
-									context.getGraphics().setColor(Color.RED);
-									context.getGraphics().drawLine((int)(lessThanQuarterStart.getX()),
-											(int)lessThanQuarterStart.getY(), 
-											(int)(lessThanQuarterStart.getX()),
-											(int)(lessThanQuarterStart.getY()-100));
-									context.getGraphics().setColor(Color.BLACK);
 								}
 								durationInGroup+=((Note)s).getDuration();
-								System.out.println("duration in group " + durationInGroup);
+								//System.out.println("duration in group " + durationInGroup);
 								lessThanQuarter.add(s);
 								if (durationInGroup>=maxDurationInGroup) {
 									Note[] notes = (Note[])lessThanQuarter.toArray(new Note[lessThanQuarter.size()]);
@@ -97,23 +94,18 @@ public class JScoreComponent extends JComponent {
 								}
 							}
 							else {
-								/*if (lessThanQuarter.size()!=0) {
-									Note[] notes = (Note[])lessThanQuarter.toArray(new Note[lessThanQuarter.size()]);
-									width = GroupOfNotesRenderer.render(context, lessThanQuarterStart, notes);
-									lessThanQuarter.clear();
-									//System.out.println("cursor : " + cursor);
-									int cursorNewLocationX = (int)(cursor.getX() + width);
-									cursor.setLocation(cursorNewLocationX, cursor.getY());
-								}*/
-								System.out.println("Displaying single note");
-								width = SingleNoteRenderer.render(context, (Point2D)cursor.clone(), (Note)s);
+								SNote noteR = new SNote((Note)s, cursor, context);
+								width = noteR.render(context, cursor);//SingleNoteRenderer.render(context, (Point2D)cursor.clone(), (Note)s);
 								int cursorNewLocationX = (int)(cursor.getX() + width + SingleNoteRenderer.getOffsetAfterNoteRendition(context));
 								cursor.setLocation(cursorNewLocationX, cursor.getY());
 							}
 						}
 						else
-							if (s instanceof BarLine)
+							if (s instanceof BarLine) {
 								width = BarRenderer.render(context, (Point2D)cursor.clone(), (BarLine)s);
+								int cursorNewLocationX = (int)(cursor.getX() + width );
+								cursor.setLocation(cursorNewLocationX, cursor.getY());
+							}
 				//System.out.println("cursor locaiton : " + cursor.getX());
 			}
 			if (lessThanQuarter.size()!=0) {

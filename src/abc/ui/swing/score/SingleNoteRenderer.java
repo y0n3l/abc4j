@@ -32,6 +32,7 @@ public class SingleNoteRenderer {
 		}
 		int noteX = getNoteX(context, base, note);
 		context.getGraphics().drawChars(chars, 0, chars.length, noteX, noteY);
+		context.getGraphics().drawRect(noteX, (int)(noteY-context.getQuarterNoteBounds().getHeight()), (int)(context.getQuarterNoteBounds().getWidth()), (int)(context.getQuarterNoteBounds().getHeight()));
 		if (note.getHeight()==Note.C || note.getHeight()==Note.a)
 			context.getGraphics().drawChars(ScoreRenditionContext.STROKE, 0, 1, (int)(noteX-context.getNoteWidth()/4), strokeY);
 		totalWidth+=context.getNoteWidth();
@@ -74,6 +75,21 @@ public class SingleNoteRenderer {
 		}
 	}
 	
+	public static void renderExtendedStaffLines(ScoreRenditionContext context, Point2D base, Note note){
+		if (note.getHeight()<Note.C){
+			double Coffset = getOffset(new Note(Note.C, AccidentalType.NONE));
+			System.out.println("C offset " + Coffset);
+			double offset = getOffset(note);
+			System.out.println("current note offset " + offset);
+			for (double i=offset; i<Coffset; i++) {
+				int strokeY = (int)(getNoteY(context, base, note) + i*context.getNoteHeigth());
+				int strokeX = (int)(getNoteX(context, base, note));
+				context.getGraphics().drawLine(strokeX-10, strokeY, strokeX+10, strokeY);
+				//context.getGraphics().drawChars(ScoreRenditionContext.STROKE, 0, 1,(int)(base.getX()), strokeY);
+			}
+		}
+	}
+	
 	public static int getNoteY(ScoreRenditionContext context, Point2D base, Note note){
 		return (int)(base.getY()-getOffset(note)*context.getNoteHeigth());
 	}
@@ -99,7 +115,7 @@ public class SingleNoteRenderer {
 	
 	public static double getOffset(Note note) {
 		double positionOffset = 0;
-		byte noteHeight = note.getHeight();
+		byte noteHeight = note.getStrictHeight();
 		switch (noteHeight) {
 			case Note.C : positionOffset = -1.5; break;
 			case Note.D : positionOffset = -1;break;
@@ -108,14 +124,8 @@ public class SingleNoteRenderer {
 			case Note.G : positionOffset = 0.5;break;
 			case Note.A : positionOffset = 1;break;
 			case Note.B : positionOffset = 1.5;break;
-			case Note.c : positionOffset = 2;break;
-			case Note.d : positionOffset = 2.5;break;
-			case Note.e : positionOffset = 3;break;
-			case Note.f : positionOffset = 3.5;break;
-			case Note.g : positionOffset = 4;break;
-			case Note.a : positionOffset = 4.5;break;
-			case Note.b : positionOffset = 5;break;
 		}
+		positionOffset = positionOffset + note.getOctaveTransposition()*3.5;
 		short noteDuration = note.getStrictDuration();
 		switch (noteDuration) {
 			case Note.THIRTY_SECOND : positionOffset=positionOffset+0.5; break;
