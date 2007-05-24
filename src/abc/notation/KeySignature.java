@@ -60,6 +60,7 @@ public class KeySignature implements ScoreElementInterface, Cloneable
     private byte m_keyAccidental = AccidentalType.NATURAL;
     private byte mode = OTHER;
     private byte[] accidentals = accidentalsRules[0];
+    private int keyIndex=0;
 
     /** Creates a new signature with the specified parameters.
      * @param keyNoteType The note of the mode. Possible values are
@@ -101,7 +102,7 @@ public class KeySignature implements ScoreElementInterface, Cloneable
       key = keyNoteType;
       mode = modeType;
       m_keyAccidental = keyAccidental;
-      int keyIndex=0;
+      keyIndex=0;
       if (key == Note.D) keyIndex = keyIndex + 2;
       else if (key == Note.E) keyIndex = keyIndex + 4;
       else if (key == Note.F) keyIndex = keyIndex + 5;
@@ -155,7 +156,8 @@ public class KeySignature implements ScoreElementInterface, Cloneable
     { return m_keyAccidental; }
 
     /** Returns accidentals of this key signature.
-     * @return accidentals of this key signature*/
+     * @return accidentals of this key signature. Index 0 correspond to 
+     * accidental for C, 1 to accidental for D and so on up to B.*/
     public byte[] getAccidentals ()
     { return accidentals; }
 
@@ -209,7 +211,15 @@ public class KeySignature implements ScoreElementInterface, Cloneable
         else throw new IllegalArgumentException("Invalid note heigth : " + noteHeigth);
       return accidentals[index];
     }
-
+    
+    public boolean hasOnlySharps(){
+    	return (keyIndex==1 || keyIndex==2 || keyIndex==4 || keyIndex==6 || keyIndex== 9 || keyIndex==11);     
+    }
+    
+    public boolean hasOnlyFlats(){
+    	return (keyIndex==3 || keyIndex==5 || keyIndex==7 || keyIndex==8 || keyIndex== 10);     
+    }
+    
     public String toLitteralNotation()
     {
       String notation = "";
