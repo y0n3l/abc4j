@@ -237,7 +237,7 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
    * @return The midi height of the note in the given key. */
   public static byte getMidiNoteNumber (Note note, KeySignature key)
   {
-    byte heigth = note.getHeight();
+    byte heigth = note.getStrictHeight();
     byte accidental = note.getAccidental();
     byte midiNoteNumber = (byte)(heigth+(69-Note.A));
     midiNoteNumber = (byte)(midiNoteNumber + note.getOctaveTransposition()*12);
