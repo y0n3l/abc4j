@@ -41,13 +41,14 @@ public class ScoreRenditionContext {
 	public static final char[] SHARP = {'\uF023'};
 	public static final char[] FLAT = {'\uF062'};
 	public static final char[] NATURAL = {'\uF06E'};
-	public static final float DEFAULT_SIZE = 150;
+	public static final float DEFAULT_SIZE = 80;
 
 	private double noteHeigth = -1;
 	private double noteWidth = -1;
 	private double staffCharWidth = -1;
 	private Graphics2D graphics2D = null;
 	private Font myFont = null; 
+	private Rectangle2D staffCharBounds = null;
 	private Rectangle2D sharpBounds = null;
 	private Rectangle2D naturalBounds = null;
 	private Rectangle2D flatBounds = null;
@@ -65,7 +66,7 @@ public class ScoreRenditionContext {
 			  FileInputStream fontStream = new FileInputStream(file);
 			  myFont = Font.createFont(Font.TRUETYPE_FONT, fontStream);
 			  myFont = myFont.deriveFont(DEFAULT_SIZE);
-			  Rectangle2D staffCharBounds = new TextLayout(new Character(STAFF_SIX_LINES).toString(), myFont, frc).getBounds();
+			  staffCharBounds = new TextLayout(new Character(STAFF_SIX_LINES).toString(), myFont, frc).getBounds();
 			  noteHeigth = staffCharBounds.getHeight()/4.1;
 			  staffCharWidth = staffCharBounds.getWidth();
 			  sharpBounds = new TextLayout(new Character(SHARP[0]).toString(), myFont, frc).getBounds();
@@ -103,6 +104,10 @@ public class ScoreRenditionContext {
 	
 	public BasicStroke getNotesLinkStroke(){
 		return notesLinkStroke;
+	}
+	
+	public Rectangle2D getStaffCharBounds(){
+		return staffCharBounds;
 	}
 	
 	public BasicStroke getStemStroke(){

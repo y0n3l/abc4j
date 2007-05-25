@@ -13,8 +13,8 @@ public class TimeSignatureRenderer {
 		context.getGraphics().drawChars(numChars, 0, 1, 
 				(int)base.getX(), (int)(base.getY()-context.getNoteHeigth()*3.1));
 		context.getGraphics().drawChars(denomChars, 0, 1, 
-				(int)base.getX(), (int)(base.getY()-context.getNoteHeigth()*0.6));
-		return 0;
+				(int)base.getX(), (int)(base.getY()-context.getNoteHeigth()*0.9));
+		return context.getNoteWidth();
 	}
 	
 	public static char[] getChar(int number) {

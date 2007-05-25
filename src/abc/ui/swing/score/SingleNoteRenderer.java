@@ -8,7 +8,7 @@ import abc.notation.Note;
 
 public class SingleNoteRenderer {
 
-	public static double render(ScoreRenditionContext context, Point2D base, Note note){
+	/*public static double render(ScoreRenditionContext context, Point2D base, Note note){
 		context.getGraphics().setColor(Color.BLUE);
 		context.getGraphics().drawLine((int)base.getX(), (int)base.getY(), (int)base.getX(), (int)(base.getY()-50));
 		context.getGraphics().setColor(Color.BLACK);
@@ -78,9 +78,9 @@ public class SingleNoteRenderer {
 	public static void renderExtendedStaffLines(ScoreRenditionContext context, Point2D base, Note note){
 		if (note.getHeight()<Note.C){
 			double Coffset = getOffset(new Note(Note.C, AccidentalType.NONE));
-			System.out.println("C offset " + Coffset);
+			//System.out.println("C offset " + Coffset);
 			double offset = getOffset(note);
-			System.out.println("current note offset " + offset);
+			//System.out.println("current note offset " + offset);
 			for (double i=offset; i<Coffset; i++) {
 				int strokeY = (int)(getNoteY(context, base, note) + i*context.getNoteHeigth());
 				int strokeX = (int)(getNoteX(context, base, note));
@@ -98,9 +98,6 @@ public class SingleNoteRenderer {
 		return (int)(base.getX()+((note.getAccidental()!=AccidentalType.NONE)?context.getNoteWidth():0));
 	}
 	
-	/*public static int getNoteRenditionWidth(ScoreRenditionContext context, Point2D base, Note note){
-		return (int)(base.getY()-getOffset(note)*context.getNoteHeigth());
-	}*/
 	
 	public static double getAccidentalRenditionWidth(ScoreRenditionContext context, Point2D base, Note note) {
 		if (note.getAccidental()!=AccidentalType.NONE)
@@ -133,5 +130,5 @@ public class SingleNoteRenderer {
 			case Note.WHOLE: positionOffset=positionOffset+0.5; break;
 		}
 		return positionOffset;
-	}
+	}*/
 }

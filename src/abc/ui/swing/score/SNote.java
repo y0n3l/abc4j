@@ -14,10 +14,23 @@ public class SNote {
 	protected char[] noteChars = null;
 	protected char[] accidentalsChars = null;
 	protected  int width = 0;
+	public static final char[] DOUBLE_REST = {'\uF0E3'};
+	public static final char[] WHOLE_REST = {'\uF0B7'};
+	public static final char[] HALF_REST = {'\uF0EE'};
+	public static final char[] QUARTER_REST = {'\uF0CE'};
+	public static final char[] EIGHTH_REST = {'\uF0E4'};
+	public static final char[] SIXTEENTH_REST = {'\uF071'};
+	public static final char[] THIRTY_SECOND_REST = {'\uF071'};
+	public static final char[] SIXTY_FOUR_REST = {'\uF0F4'};
+	
 	
 	public SNote(Note noteValue, Point2D base, ScoreRenditionContext c) {
 		note = noteValue;
-		int noteY = (int)(base.getY()-getOffset(note)*c.getNoteHeigth());
+		int noteY = 0;
+		if (note.isRest())
+			noteY = (int)(base.getY()-2*c.getNoteHeigth());
+		else
+			noteY = (int)(base.getY()-getOffset(note)*c.getNoteHeigth());
 		double accidentalsWidth = 0;
 		if (note.getAccidental()!=AccidentalType.NONE) {
 			accidentalsPosition = new Point2D.Double(base.getX(),noteY-c.getNoteHeigth()/2);
@@ -34,7 +47,20 @@ public class SNote {
 			}
 		}
 		short noteDuration = note.getStrictDuration();
-		switch (noteDuration) {
+		if (note.isRest()){
+			System.out.println("duration of the rest is " + noteDuration);
+			switch (noteDuration) {
+			//Note.SIXTY_FOURTH: chars[0] = ScoreRenditionContext.
+				case Note.THIRTY_SECOND : noteChars = THIRTY_SECOND_REST; break;
+				case Note.SIXTEENTH : noteChars = SIXTEENTH_REST; break;
+				case Note.EIGHTH : noteChars = EIGHTH_REST; break;
+				case Note.QUARTER: noteChars = QUARTER_REST; break;
+				case Note.HALF: noteChars = HALF_REST; break;
+				case Note.WHOLE: noteChars = WHOLE_REST; break;
+			}
+		}
+		else {
+			switch (noteDuration) {
 				//Note.SIXTY_FOURTH: chars[0] = ScoreRenditionContext.
 				case Note.THIRTY_SECOND : noteChars = ScoreRenditionContext.THIRTY_SECOND_NOTE; break;
 				case Note.SIXTEENTH : noteChars = ScoreRenditionContext.SIXTEENTH_NOTE; break;
@@ -43,35 +69,16 @@ public class SNote {
 				case Note.HALF: noteChars = ScoreRenditionContext.HALF_NOTE; break;
 				case Note.WHOLE: noteChars = ScoreRenditionContext.WHOLE_NOTE; break;
 			}
-			//double noteY =(int)(base.getY()-getOffset(note)*c.getNoteHeigth());
-			double noteX = base.getX()+accidentalsWidth;
-			notePosition = new Point2D.Double(noteX, noteY);
-			//c.getGraphics().drawChars(chars, 0, chars.length, noteX, noteY);
-			/*if (note.getHeight()==Note.C || note.getHeight()==Note.a)
-				c.getGraphics().drawChars(ScoreRenditionContext.STROKE, 0, 1, (int)(noteX-context.getNoteWidth()/4), strokeY);*/
-			width = (int)(accidentalsWidth+c.getNoteWidth());
-			/*if (note.countDots()!=0){
-				renderDots(c, base, note);
-			}*/
-			//context.getGraphics().setColor(Color.RED);
-			//context.getGraphics().drawLine((int)(base.getX()+totalWidth), (int)base.getY(), (int)(base.getX()+totalWidth), (int)(base.getY()-50));
-			//context.getGraphics().setColor(Color.BLACK);
-			//return -1;
-			/*if (note.getAccidental()!=AccidentalType.NONE) {
-				accidentalsPosition = new Point2D.Double(base.getX(),0);
-				if (note.getAccidental()==AccidentalType.FLAT)
-					chars = ScoreRenditionContext.FLAT;
-				else
-					if (note.getAccidental()==AccidentalType.SHARP)
-						chars = ScoreRenditionContext.SHARP; 
-					else
-						if (note.getAccidental()==AccidentalType.NATURAL)
-						chars = ScoreRenditionContext.NATURAL;
-					context.getGraphics().drawChars(chars, 0, chars.length, 
-						(int)(base.getX()), 
-						(int)(noteY-context.getNoteHeigth()/2));
-				}*/
 		}
+		System.out.println("note chars " + noteChars[0]);
+		//double noteY =(int)(base.getY()-getOffset(note)*c.getNoteHeigth());
+		double noteX = base.getX()+accidentalsWidth;
+		notePosition = new Point2D.Double(noteX, noteY);
+		//c.getGraphics().drawChars(chars, 0, chars.length, noteX, noteY);
+		/*if (note.getHeight()==Note.C || note.getHeight()==Note.a)
+			c.getGraphics().drawChars(ScoreRenditionContext.STROKE, 0, 1, (int)(noteX-context.getNoteWidth()/4), strokeY);*/
+		width = (int)(accidentalsWidth+c.getNoteWidth());
+	}
 	
 	public static double getOffset(Note note) {
 		double positionOffset = 0;
@@ -106,12 +113,14 @@ public class SNote {
 	
 	public int render(ScoreRenditionContext context, Point2D base){
 		renderExtendedStaffLines(context, base);
+		renderAccidentals(context.getGraphics());
 		context.getGraphics().drawChars(noteChars, 0, 1, (int)notePosition.getX(), (int)notePosition.getY());
 		return width;
 	}
 	
 	protected void renderAccidentals(Graphics2D gfx) {
-		gfx.drawChars(accidentalsChars, 0, 1, (int)accidentalsPosition.getX(), (int)accidentalsPosition.getY()); 
+		if (accidentalsPosition!=null)
+			gfx.drawChars(accidentalsChars, 0, 1, (int)accidentalsPosition.getX(), (int)accidentalsPosition.getY()); 
 	}
 	
 	public void renderExtendedStaffLines(ScoreRenditionContext c, Point2D base){
@@ -127,7 +136,7 @@ public class SNote {
 						(int)(notePosition.getX()+c.getNoteWidth()+5), currentPosition);
 				currentOffset--;
 				currentPosition = (int)(currentPosition + c.getNoteHeigth());
-				System.out.println("current offset : " + currentOffset + " " + currentPosition);
+				//System.out.println("current offset : " + currentOffset + " " + currentPosition);
 			}
 			c.getGraphics().setStroke(dfs);
 		}
@@ -144,7 +153,7 @@ public class SNote {
 							(int)(notePosition.getX()+c.getNoteWidth()+5), currentPosition);
 					currentOffset++;
 					currentPosition = (int)(currentPosition - c.getNoteHeigth());
-					System.out.println("current offset : " + currentOffset + " " + currentPosition);
+					//System.out.println("current offset : " + currentOffset + " " + currentPosition);
 				}
 				c.getGraphics().setStroke(dfs);
 			}

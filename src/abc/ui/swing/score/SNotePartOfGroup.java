@@ -19,7 +19,7 @@ public class SNotePartOfGroup extends SNote {
 		notePosition.setLocation(notePosition.getX(), noteY);
 		double noteX = notePosition.getX();
 		BasicStroke stemStroke = c.getNotesLinkStroke();
-		stemX = (int)(noteX + c.getNoteWidth() - stemStroke.getLineWidth()/4);
+		stemX = (int)(noteX + c.getNoteWidth() - stemStroke.getLineWidth()/10);
 		stemYBegin = (int)(noteY - c.getNoteHeigth()/6);
 	}
 	
