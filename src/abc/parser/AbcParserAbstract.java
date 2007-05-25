@@ -22,6 +22,8 @@ import abc.notation.NoteAbstract;
 import abc.notation.RepeatBarLine;
 import abc.notation.RepeatedPart;
 import abc.notation.RepeatedPartAbstract;
+import abc.notation.ScorePresentationElementInterface;
+import abc.notation.StaffEndOfLine;
 import abc.notation.Tempo;
 import abc.notation.TimeSignature;
 import abc.notation.Tune;
@@ -948,7 +950,9 @@ public class AbcParserAbstract
         while (FIRST_ELEMENT.contains(m_tokenType));
         current.remove(FIRST_ELEMENT);
         current.remove(FIRST_LINE_ENDER);
-        parseLineEnder(current.createUnion(follow));
+        Object lineEnder = parseLineEnder(current.createUnion(follow));
+        if (lineEnder!=null)
+        	m_score.addElement(lineEnder);
       }
       else
         if (FIRST_MID_TUNE_FIELD.contains(m_tokenType))
@@ -1422,19 +1426,21 @@ public class AbcParserAbstract
     }
 
     /** line-ender ::= comment / linefeed / line-break / no-line-break */
-    private void parseLineEnder(Set follow)
-    {
-      //Set current = new Set();
-      if (FIRST_COMMENT.contains(m_tokenType))
-        parseComment(follow);
-      else
-      if (m_tokenType.equals(AbcTokenType.LINE_BREAK))
-        accept(AbcTokenType.LINE_BREAK, null, follow);
-      else
-      if (m_tokenType.equals(AbcTokenType.NO_LINE_BREAK))
-        accept(AbcTokenType.NO_LINE_BREAK, null, follow);
-      else//if (m_tokenType.equals(AbcTokenType.LINE_FEED))
-        accept(AbcTokenType.LINE_FEED, null, follow);
+    private ScorePresentationElementInterface parseLineEnder(Set follow) {
+    	ScorePresentationElementInterface lineEnder = null;
+    	//Set current = new Set();
+    	if (FIRST_COMMENT.contains(m_tokenType))
+    		parseComment(follow);
+    	else
+    		if (m_tokenType.equals(AbcTokenType.LINE_BREAK))
+    			lineEnder=(accept(AbcTokenType.LINE_BREAK, null, follow)==null)?null:new StaffEndOfLine();
+    		else
+    			if (m_tokenType.equals(AbcTokenType.NO_LINE_BREAK))
+    				accept(AbcTokenType.NO_LINE_BREAK, null, follow);
+    			else//if (m_tokenType.equals(AbcTokenType.LINE_FEED))
+    				lineEnder=(accept(AbcTokenType.LINE_FEED, null, follow)==null)?null:new StaffEndOfLine();
+    				//accept(AbcTokenType.LINE_FEED, null, follow);
+    	return lineEnder; 
     }
 
 /*    private void parseTexCommand(Set follow)
