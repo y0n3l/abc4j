@@ -176,7 +176,7 @@ public class Note extends NoteAbstract
   public void setHeight(byte heightValue) throws IllegalArgumentException {
 	  //checks if this height does not describe a sharp.
 	  strictHeight = getStrictHeight(heightValue);
-	  if (strictHeight<0)
+	  if (strictHeight<0 && strictHeight!=REST)
 		  throw new IllegalArgumentException("negative : " + strictHeight);
 	  octaveTransposition = getOctaveTransposition(heightValue);
 	  //System.out.println(heightValue + " decomposed into " + strictHeight + ", "+ octaveTransposition);
@@ -222,9 +222,11 @@ public class Note extends NoteAbstract
    * constants such as C D E F G A B c d e ....
    * @return The heigth of this note on the first octave. Possible values are
    * <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>, <TT>A</TT>(404)
-   * or <TT>B</TT> only.
+   * <TT>B</TT> or <TT>REST</TT> only.
    * @see #getHeight() */
   public static byte getStrictHeight(byte height) {
+	  if (height==REST)
+		  return REST;
 	  // The +24 is needed to move the height of the note to a positive range
 	  // X*12 , 24 should be enough.
 	  byte sh = (byte)((height+24)%12);
@@ -245,6 +247,8 @@ public class Note extends NoteAbstract
    * the stric height. A positive value is returned if the height 
    * is higher than the strict height, negative otherwise. */
   public static byte getOctaveTransposition(byte height) {
+	  if (height==REST)
+		  return 0;
 	  return (byte)((height-getStrictHeight(height))/12);
   }
 
