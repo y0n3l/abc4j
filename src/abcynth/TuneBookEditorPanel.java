@@ -20,9 +20,9 @@ import abc.ui.swing.TuneEditorPane;
  * tunes. */
 public class TuneBookEditorPanel extends JSplitPane
 {
-  private static final String FIRST_TAB_NAME = "Header";
-  private static final String SECOND_TAB_NAME = "Errors";
-  private static final String THIRD_TAB_NAME = "Tokens";
+  //private static final String FIRST_TAB_NAME = "Header";
+  //private static final String SECOND_TAB_NAME = "Errors";
+  //private static final String THIRD_TAB_NAME = "Tokens";
   private TuneBookTable m_tuneBookTable = null;
   private int m_selectedTuneIndex = -1;
   private TuneEditorSplitPane m_tuneEditPane = null;

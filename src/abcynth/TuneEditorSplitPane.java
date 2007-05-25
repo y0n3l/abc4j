@@ -15,9 +15,12 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import scanner.PositionableInCharStream;
+import abc.notation.Tune;
+import abc.parser.TuneParserAdapter;
 import abc.ui.swing.ErrorsList;
 import abc.ui.swing.ParsingEventsList;
 import abc.ui.swing.TuneEditorPane;
+import abc.ui.swing.score.JScoreComponent;
 
 /** A pane for displaying tunes. */
 public class TuneEditorSplitPane extends JSplitPane// implements TuneParserListenerInterface
@@ -26,12 +29,14 @@ public class TuneEditorSplitPane extends JSplitPane// implements TuneParserListe
   //private TuneParser m_parser = null;
   private JList m_errorsList = null;
   private ParsingEventsList m_tokensList = null;
+  private JScoreComponent m_score = null;
   private JTextArea m_tuneHeaderComments = null;
   private JTabbedPane m_tabbedPane = null;
 
   private static final String HEADER_TAB_NAME = "Header";
   private static final String ERRORS_TAB_NAME = "Errors";
   private static final String TOKENS_TAB_NAME = "Tokens";
+  private static final String SCORE_TAB_NAME = "Score";
   private static final boolean DISPLAY_TOKEN_TAB = false;
 
   public TuneEditorSplitPane()
@@ -40,6 +45,12 @@ public class TuneEditorSplitPane extends JSplitPane// implements TuneParserListe
     setOneTouchExpandable(true);
     m_tunePane = new TuneEditorPane();
     m_errorsList = new ErrorsList(m_tunePane.getParser());
+    m_score = new JScoreComponent();
+    m_tunePane.getParser().addListener(new TuneParserAdapter(){
+    	public void tuneEnd(Tune tune){
+    		m_score.setTune(tune);
+    	}
+    });
     if (DISPLAY_TOKEN_TAB)
       m_tokensList = new ParsingEventsList(m_tunePane.getParser());
     setTopComponent(new JScrollPane(m_tunePane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
@@ -119,6 +130,7 @@ public class TuneEditorSplitPane extends JSplitPane// implements TuneParserListe
     m_tabbedPane.addTab(HEADER_TAB_NAME, new JScrollPane(m_tuneHeaderComments, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
     if(DISPLAY_TOKEN_TAB)
       m_tabbedPane.addTab(TOKENS_TAB_NAME, new JScrollPane(m_tokensList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
+    m_tabbedPane.addTab(SCORE_TAB_NAME, new JScrollPane(m_score, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
 
     JPanel downerPanel = new JPanel(new BorderLayout());
     downerPanel.add(m_tabbedPane, BorderLayout.CENTER);
