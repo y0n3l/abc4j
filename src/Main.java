@@ -1,10 +1,12 @@
-import java.io.BufferedReader;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.InputStreamReader;
 
-import scanner.Scanner2;
+import javax.swing.JFrame;
+
+import abc.notation.Tune;
+import abc.parser.TuneBook;
+import abc.ui.swing.score.JScoreComponent;
 
 //import jm.music.data.*;
 //import jm.gui.show.*;
@@ -19,7 +21,7 @@ public class Main  {
 
   //static int PARSING_TIMES_NB = 1;
   //static int tunesNb = 0;
-  public static void main (String[] arg) {
+  /*public static void main (String[] arg) {
 	  boolean endOfStreamReached = false;
 	  char[] currentChar = new char[1];
 	  long start  = 0;
@@ -101,13 +103,32 @@ public class Main  {
   	  }	catch (Exception e) {
   		  e.printStackTrace();
   	  }
-  
-
-	  
-	 /*TuneEditorPane area = new TuneEditorPane(new TuneParser());
-    Frame frame = new Frame();
-    frame.setSize(200,100);
-    frame.add(area);
-    frame.setVisible(true);*/
-  }
+  }*/
+	
+	public static void main (String[] arg) {
+		try {
+		//MusicDisplaySample sample= new MusicDisplaySample();
+		JScoreComponent sample =new JScoreComponent();
+		File file =new File("D:/Perso/abc/test.abc");
+		TuneBook tb = new TuneBook(file);
+		Tune tune = tb.getTune(1);
+		System.out.println(tune);
+		sample.setTune(tune);
+		JFrame j = new JFrame();
+		j.addWindowListener(new WindowAdapter(){
+			public void windowClosing(WindowEvent e){
+				System.out.println("on exit");
+				System.exit(0);
+			}
+		});
+		j.setSize(1000, 400);
+		j.add(sample);
+		j.setVisible(true);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
 }
