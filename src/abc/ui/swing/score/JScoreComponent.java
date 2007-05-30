@@ -1,6 +1,7 @@
 package abc.ui.swing.score;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -25,6 +26,8 @@ public class JScoreComponent extends JComponent {
 	private Tune tune = null; 
 	
 	private int staffLinesOffset = -1;
+	
+	private int componentWidth = 0; 
 	
 	private int XOffset = 0;
 	
@@ -66,23 +69,29 @@ public class JScoreComponent extends JComponent {
 					currentKey = (KeySignature)s;
 					SKeySignature sk = new SKeySignature(currentKey, cursor, context);
 					width = sk.render(context, cursor);
-					int cursorNewLocationX = (int)(cursor.getX() + width);
+					int cursorNewLocationX = (int)(cursor.getX() + width + context.getNotesSpacing());
 					cursor.setLocation(cursorNewLocationX, cursor.getY());
 				}
 				else
 					if (s instanceof TimeSignature) {
 						width = TimeSignatureRenderer.render(context, (Point2D)cursor.clone(), (TimeSignature)s);
-						int cursorNewLocationX = (int)(cursor.getX() + width );
+						int cursorNewLocationX = (int)(cursor.getX() + width + context.getNotesSpacing());
 						cursor.setLocation(cursorNewLocationX, cursor.getY());
 						//short defNoteLength = ((TimeSignature)s).getDefaultNoteLength();
 						//int nbOfDefaultNotesPerBeat = ((TimeSignature)s).getNumberOfDefaultNotesPerBeat(defNoteLength);
 						//System.out.println("default note length" + defNoteLength);
 						//System.out.println("nb of def not / beat " + nbOfDefaultNotesPerBeat);
-						if(s.equals(TimeSignature.SIGNATURE_6_8))
-							maxDurationInGroup = 3*Note.EIGHTH;
+						if(s.equals(TimeSignature.SIGNATURE_4_4))
+							maxDurationInGroup = 2*Note.QUARTER;
 						else
-							if(s.equals(TimeSignature.SIGNATURE_4_4))
-								maxDurationInGroup = 2*Note.QUARTER;
+							if(((TimeSignature)s).getDenominator()==8)
+								maxDurationInGroup = 3*Note.EIGHTH;
+							else
+								if(((TimeSignature)s).getDenominator()==4)
+									maxDurationInGroup = Note.QUARTER;
+							/*else
+								if(s.equals(TimeSignature.SIGNATURE_3_4))
+									maxDurationInGroup = Note.QUARTER;*/
 					}
 					else
 						if (s instanceof Note) {
@@ -135,6 +144,8 @@ public class JScoreComponent extends JComponent {
 							else
 								if (s instanceof StaffEndOfLine) {
 									renderStaffLines(cursor, context);
+									if (cursor.getX()>componentWidth)
+										componentWidth = (int)cursor.getX(); 
 									cursor.setLocation(0, cursor.getY()+staffLinesOffset);
 									initNewStaffLine(currentKey, cursor, context);
 								}
@@ -159,13 +170,14 @@ public class JScoreComponent extends JComponent {
 			for (int i=0; i<staffCharNb; i++)
 				staffS[i] = ScoreRenditionContext.STAFF_SIX_LINES;
 			context.getGraphics().drawChars(staffS, 0, staffS.length, XOffset, staffLinesOffset);*/
+			setPreferredSize(new Dimension(componentWidth, (int)cursor.getY()));
 		}
 	}
 	
 	private void renderNotesInGroup(ArrayList lessThanQuarter, ScoreRenditionContext context, Point2D start, Point2D cursor){
 		Note[] notes = (Note[])lessThanQuarter.toArray(new Note[lessThanQuarter.size()]);
 		int width = (int)GroupOfNotesRenderer.render(context, start, notes);
-		System.out.println("width of group is " + width);
+		//System.out.println("width of group is " + width);
 		int cursorNewLocationX = (int)(cursor.getX() + width);
 		cursor.setLocation(cursorNewLocationX, cursor.getY());
 		cursorNewLocationX = (int)(cursor.getX() + context.getNotesSpacing()/2);

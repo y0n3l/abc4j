@@ -27,9 +27,14 @@ public class ScoreRenditionContext {
 	public static final char[] DOT = {'\uF06B'};
 	
 	public static final char[] NUMBER_1 = {'\uF031'};
+	public static final char[] NUMBER_2 = {'\uF032'};
+	public static final char[] NUMBER_3 = {'\uF033'};
 	public static final char[] NUMBER_4 = {'\uF034'};
+	public static final char[] NUMBER_5 = {'\uF035'};
 	public static final char[] NUMBER_6 = {'\uF036'};
+	public static final char[] NUMBER_7 = {'\uF037'};
 	public static final char[] NUMBER_8 = {'\uF038'};
+	public static final char[] NUMBER_9 = {'\uF039'};
 	
 	public static final char[] STROKE = {'\uF05F'};
 	
@@ -41,7 +46,7 @@ public class ScoreRenditionContext {
 	public static final char[] SHARP = {'\uF023'};
 	public static final char[] FLAT = {'\uF062'};
 	public static final char[] NATURAL = {'\uF06E'};
-	public static final float DEFAULT_SIZE = 80;
+	public static final float DEFAULT_SIZE = 60;
 
 	private double noteHeigth = -1;
 	private double noteWidth = -1;
@@ -71,7 +76,7 @@ public class ScoreRenditionContext {
 			  staffCharWidth = staffCharBounds.getWidth();
 			  sharpBounds = new TextLayout(new Character(SHARP[0]).toString(), myFont, frc).getBounds();
 			  flatBounds = new TextLayout(new Character(FLAT[0]).toString(), myFont, frc).getBounds();
-			  naturalBounds = new TextLayout(new Character(FLAT[0]).toString(), myFont, frc).getBounds();
+			  naturalBounds = new TextLayout(new Character(NATURAL[0]).toString(), myFont, frc).getBounds();
 			  quarterNoteBounds =  new TextLayout(new Character(QUARTER_NOTE[0]).toString(), myFont, frc).getBounds();
 			  noteWidth =  new TextLayout(new Character(NOTE[0]).toString(), myFont, frc).getBounds().getWidth();
 			  notesLinkStroke = new BasicStroke((float)(noteWidth/3), 0, 0);

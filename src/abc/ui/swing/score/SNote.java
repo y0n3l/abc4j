@@ -11,6 +11,7 @@ public class SNote {
 	protected Note note = null;
 	protected Point2D notePosition = null;
 	protected Point2D accidentalsPosition = null;
+	protected Point2D dotsPosition = null;
 	protected char[] noteChars = null;
 	protected char[] accidentalsChars = null;
 	protected  int width = 0;
@@ -48,7 +49,7 @@ public class SNote {
 		}
 		short noteDuration = note.getStrictDuration();
 		if (note.isRest()){
-			System.out.println("duration of the rest is " + noteDuration);
+			//System.out.println("duration of the rest is " + noteDuration);
 			switch (noteDuration) {
 			//Note.SIXTY_FOURTH: chars[0] = ScoreRenditionContext.
 				case Note.THIRTY_SECOND : noteChars = THIRTY_SECOND_REST; break;
@@ -70,10 +71,13 @@ public class SNote {
 				case Note.WHOLE: noteChars = ScoreRenditionContext.WHOLE_NOTE; break;
 			}
 		}
-		System.out.println("note chars " + noteChars[0]);
+		//System.out.println("note chars " + noteChars[0]);
 		//double noteY =(int)(base.getY()-getOffset(note)*c.getNoteHeigth());
 		double noteX = base.getX()+accidentalsWidth;
 		notePosition = new Point2D.Double(noteX, noteY);
+		if (note.countDots()!=0)
+			dotsPosition = new Point2D.Double(noteX + c.getNoteWidth()*1.1, noteY);
+
 		//c.getGraphics().drawChars(chars, 0, chars.length, noteX, noteY);
 		/*if (note.getHeight()==Note.C || note.getHeight()==Note.a)
 			c.getGraphics().drawChars(ScoreRenditionContext.STROKE, 0, 1, (int)(noteX-context.getNoteWidth()/4), strokeY);*/
@@ -114,6 +118,7 @@ public class SNote {
 	public int render(ScoreRenditionContext context, Point2D base){
 		renderExtendedStaffLines(context, base);
 		renderAccidentals(context.getGraphics());
+		renderDots(context.getGraphics());
 		context.getGraphics().drawChars(noteChars, 0, 1, (int)notePosition.getX(), (int)notePosition.getY());
 		return width;
 	}
@@ -158,18 +163,13 @@ public class SNote {
 				c.getGraphics().setStroke(dfs);
 			}
 	}
-		/*public static void renderDots(ScoreRenditionContext context, Point2D base, Note note){
-			int noteY = getNoteY(context, base, note);
-			int dotY = (int)(noteY-context.getNoteHeigth()/6);
-			if (note.countDots()!=0){
-				context.getGraphics().drawChars(ScoreRenditionContext.DOT, 0, 1, 
-					(int)(base.getX()
-						+context.getNoteWidth()+((note.getAccidental()!=AccidentalType.NONE)?context.getNoteWidth():0)), 
-						dotY);
+	
+	public void renderDots(Graphics2D context){
+			if (dotsPosition!=null){
+				context.drawChars(ScoreRenditionContext.DOT, 0, 1, 
+					(int)dotsPosition.getX(), (int)dotsPosition.getY());
 			}
 		}
-		
-		}*/
 		
 }
 
