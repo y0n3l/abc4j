@@ -73,7 +73,7 @@ public class SNote {
 		}
 		//System.out.println("note chars " + noteChars[0]);
 		//double noteY =(int)(base.getY()-getOffset(note)*c.getNoteHeigth());
-		double noteX = base.getX()+accidentalsWidth;
+		double noteX = base.getX()+accidentalsWidth*1.2;
 		notePosition = new Point2D.Double(noteX, noteY);
 		if (note.countDots()!=0)
 			dotsPosition = new Point2D.Double(noteX + c.getNoteWidth()*1.1, noteY);
