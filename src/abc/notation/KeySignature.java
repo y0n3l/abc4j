@@ -213,11 +213,11 @@ public class KeySignature implements ScoreElementInterface, Cloneable
     }
     
     public boolean hasOnlySharps(){
-    	return (keyIndex==1 || keyIndex==2 || keyIndex==4 || keyIndex==6 || keyIndex== 9 || keyIndex==11);     
+    	return (keyIndex==1 || keyIndex==2 || keyIndex==4 || keyIndex==6 || keyIndex==7 || keyIndex== 9 || keyIndex==11);     
     }
     
     public boolean hasOnlyFlats(){
-    	return (keyIndex==3 || keyIndex==5 || keyIndex==7 || keyIndex==8 || keyIndex== 10);     
+    	return (keyIndex==3 || keyIndex==5 || keyIndex==8 || keyIndex== 10);     
     }
     
     public String toLitteralNotation()
