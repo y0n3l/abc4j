@@ -9,7 +9,7 @@ public class RepeatBarLine extends BarLine implements ScoreElementInterface
    * @param repeatsNumber The number of times the repeat should occur. */
   public RepeatBarLine(byte repeatsNumber)
   {
-    super(BarLine.REPEAT_CLOSE);
+    super((repeatsNumber==1)?BarLine.SIMPLE:BarLine.REPEAT_CLOSE);
     m_repeatNumber = repeatsNumber;
   }
 
