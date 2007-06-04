@@ -45,6 +45,10 @@ public class HeightTest extends TestCase {
 		assertEquals(Note.C, note.getStrictHeight());
 		assertEquals(2, note.getOctaveTransposition());
 		assertEquals(Note.c*2, note.getHeight());
+		
+		note = new Note(Note.REST, AccidentalType.NONE);
+		assertEquals(Note.REST, note.getStrictHeight());
+		assertEquals(0, note.getOctaveTransposition());
 	}
 	
 	public void testMidiHeight() {
