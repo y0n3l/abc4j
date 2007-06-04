@@ -1,0 +1,324 @@
+%This is a file for tests.
+X:0
+T:Empty score
+M:4/4
+K:C
+
+%this is the second tune.
+X:1
+T:Simple scale exercise
+M:4/4
+K:C
+C,D,E,F,|
+G,A,B,C|
+DEFG|
+ABcd|
+efga|
+bc'd'e'|
+f'g'a'b'|
+
+X:2
+%fdgdg
+T:abc notes
+M:4/4
+K:C
+C,^C,D,^D,E,F,^F,G,^G,A,^A,B,|
+C ^C D ^D E F ^F G ^G A ^A B |
+c ^c d ^d e f ^f g ^g a ^a b |
+c'^c'd'^d'e'f'^f'g'^g'a'^a'b'|
+_C,C,_D,D,_E,F,_G,G,_A,A,_B, |
+_C C _D D _E F _G G _A A _B  |
+_c c _d d _e f _g g _a a _b
+_c'c'_d'd'_e'f'_g'g'_a'a'_b'b'
+
+X:3
+T:repeat bars |:  :|
+M:4/4
+K:C
+abc|:eeee|fff:|
+
+X:4
+T:repeat bars |: :: :| 
+M:4/4
+K:C
+|:eeff::ggaa:|
+
+X:5
+T:special endings
+M:4/4
+K:C
+dB|:AAAA|AAAA|1BBBB|BBBB:|2CCCC|CCCC 
+
+X:6
+T:chords
+M:4/4
+K:C
+[C3E3G3c3][d2f2]
+[C5E3G3c]
+
+X:7
+T:dotted notes
+M:4/4
+K:C
+aaaa|b>bb>b|c<cc<c
+
+X:8
+T:duplets triplets etc...
+M:4/4
+K:C
+aaaa|(2bb(3ccc(4dddd
+
+X:9
+T:Multi Parts
+P:A2BA
+M:4/4
+K:C
+P:A
+aaaa|bbbb
+P:B
+cccc|dddd
+
+X:10
+T:Voices
+M:4/4
+K:C
+V:1
+abcdefg
+
+X:11
+T:Notes Lengths
+M:4/4
+K:C
+a/2aa3/2a2
+a/aa3/2a2
+D D2 D3 D4 D6 | d/ d/2 d1/2
+
+X:12
+T:Bug ?
+S:hnj0
+M:6/8
+K:G
+AAA AAA AAA |1 BBB BBB:|2 CCC CCC||
+|:EEE EEE|1 BBB BBB:|2 GGG GGG||
+|:FFF FFF:|
+
+X:100
+T:The Dub Reel
+C:Reel - Em
+L:1/8
+Q:300
+M:4/4
+K:D
+|:E2BEcddd|dBAFDEFD|E2BEcddd|dBAdBEED|E2BEcddd|dBAFDEFF|AFG/F/EFDEC|DB,A,DB,EED:|
+|:E2EFGFED|B,DAFDEFD|E2EFGFED|B,DAFFEED|E2EFGFED|B,DA,B,D2DF|AFG/F/EFDEC|DB,A,DB,EED:|
+
+X:102
+T:Hag at the Churn, The
+R:jig
+D:Bothy Band: Out of the Wind, into the Sun
+Z:id:hn-jig-102
+M:6/8
+K:Dmix
+|:A2G ADD|A2G Adc|A2G ADD|EFG EFG:|
+|:AdB c2G|Add efg|1 AdB c2G|EDE GED:|2 fge dcA|GEF GED||
+
+X:103
+T:Gan Ainm
+R:Jig
+S:Unknown box player (Fisher Street?)
+D:Clare FM broadcast. 
+M:6/8
+Z:Bernie Stocks
+K:G
+|: ~B3 BAG | ~F3 AFD | DBB BAG | BdB cAG | ~B3 BAG | ~F3 AFD | dcd fed | cAF G3 :|
+| B2d gdB | dgB dgB | c2e gec | egc egc | d2f afd | fad fad | gfg efg | afd d3 |
+B2d gdB | dgB dgB | c2e gec | egc egc | d2f afd | fad fad | ~g3 fed | cAF G3 ||
+
+X:101
+T:Holly Bush
+M:4/4
+L:1/8
+S:Connie Connel, Cork (fiddle)
+R:Reel
+D:Session tape - Milltown Malbay 1983
+N:As played
+Z:Bernie Stocks
+K:G %that is a D-C type tune (1 sharp)
+A2FA DFAG | FAde fded | cG~G2 EG~G2 |~c3c {d}cAGB | ADFA DFAG |\
+FAde fded | cG~G2 cGBc| {d}cAGE DEFG:: Ad{e}d^c defg | adde dcAB |\
+c3B cdeg | aged cAGc | Ad{e}d^c ~d3f | adde dcAB | c2{d}cB cAGc | AEGE D4 :|
+
+X:104
+T:Modes changes
+K:D
+cdefgab
+z2
+K:C ^C ^F %should be the same as above.
+cdefgab
+z2
+K:C
+cdefgab
+
+X:13
+T:Rests
+K:C
+aaaaa
+azazaz
+az2az2a
+
+X:14
+T:Chords 2
+T:Plead for Slough
+T:Speed The Plough (arr.)
+M:4/4
+L:1/8
+H:Illustrative file for abc tutorial
+F:http://www.lesession.co.uk/abc/abc_notation_part2.htm
+N:The tune that should be the English national anthem,
+N:renamed in this version in honour of the John Betjeman poem
+C:Trad.arr. Steve Mansfield June 2000
+R:reel
+P:(2A2B)ad infinitum
+Z:Steve Mansfield 6/6/2000
+K:G
+P:A
+"G" (GAB)c dedB | "G" .d.e.d.B dedB |
+"Am" c2ec "D7" B2dB | "D"A2"Dm"A2 "Am" A2BA |
+"G" (GABc d)edB | "G" .d.e.d.B dedB | "C" ~c2ec "G" ~B2dB- |
+"D7" BA A2 "G" ~G4 ::
+P:B
+"C" g2g2 {GABcdef}g4 | "G" g2fe dBGB |
+"Am" cAEc "Bm"BGDB | "F#m"A2A2 "D"A4 |
+"C"g2g2 "G"g4 | "G"g2fe dBGB |
+"C" (5cdedc "Am" ec"Bm"B2"~G"dB |
+"A"[A2c2]"Am"[A2a2] "G"[G4B4d4g4] :|
+
+X:106
+T:Modes changes 2
+K:Bb
+cdefgab
+z2
+K:C _B _E%should be the same as above.
+cdefgab
+z2
+K:C
+cdefgab
+
+X:107
+T:Modes changes 3
+K:D
+abcdefg
+z2
+K:Dm%should sound different
+abcdefg
+
+X:15
+T:Modes Variations
+K:C
+CDEF|GABc|defg|ab
+K:G
+CDEF|GABc|defg|ab
+K:D
+CDEF|GABc|defg|ab
+K:A
+CDEF|GABc|defg|ab
+
+X:16
+T:Repeats first time/second time
+K:C
+|:aaaa|bbbb:|
+|:dddd|1 eeee:|2 ffff
+|:dddd|1 eeee:|2 ffff
+
+X:17
+T:Accidentals
+K:C
+aa^aa|aaaa
+bb_bb|bbbb
+K:D
+ff=ff|ffff
+cc=cc|cccc
+
+X:18
+T:Multi Notes
+K:D
+[d2a2f2]
+[gbd']
+[daf]ef | [gbd']ab
+
+
+X:19
+T:Slurs
+K:C
+(abcd)
+(ABCG)
+
+X:20
+T:Guitar chord
+K:C
+"D"BAF | "A"FEE EFA
+
+X:21
+T:modes
+K:Bb
+CDEF|GABc|defg|ab
+K:C
+CDEF|GABc|defg|ab
+
+X:22
+T:modes
+K:D
+CDEF|GABc|defg|ab
+K:C #c #f
+CDEF|GABc|defg|ab
+
+X:23
+T:tempo changes
+M:4/4
+L:1/8
+Q:110 %test de commentaire
+K:C
+CDEF|GABc|defg|ab
+Q:C2=110
+CDEF|GABc|defg|ab
+Q:180
+CDEF|GABc|defg|ab
+Q:1/8=115
+CDEF|GABc|defg|ab
+Q:C2=180
+CDEF|GABc|defg|ab
+
+X:24
+T:gracings
+K:C
+{ED}CDEF3
+{D}CDEF3
+{ab}CDEF3
+CD{F}EF | {A}GA{c}Bc | defg | ab
+
+X:25
+T:multiParts
+M:4/4
+P:(AB)2CCC
+K:C
+P:A
+a
+P:B
+b
+P:C
+c
+
+X:26
+T:abc notes
+M:4/4
+K:C
+C,^C,D,^D,E,F,^F,G,^G,A,^A,B, |
+C ^C D ^D E F ^F G ^G A ^A B  |
+c ^c d ^d e f ^f g ^g a ^a b |
+c'^c'd'^d'e'f'^f'g'^g'a'^a'b' |
+
+X:27
+T:nUplets
+K:C
+(3[daf]ef | gggg
+

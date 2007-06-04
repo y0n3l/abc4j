@@ -18,7 +18,7 @@ public class TuneBookTest extends TestCase {
 	}
 	
 	public void test1(){
-		File f = new File("D:/Perso/abc/testPlan.abc");
+		File f = new File("./testPlan.abc");
 		//AbcHeadersParser hp = new AbcHeadersParser();
 		try {
 			/*hp.addListener(new AbcFileParserAdapter(){
