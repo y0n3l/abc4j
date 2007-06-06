@@ -35,6 +35,7 @@ public class JScoreComponent extends JComponent {
 	
 	public void paint(Graphics g){
 		if (tune!=null) {
+			//System.out.println("JScore paint");
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -51,6 +52,7 @@ public class JScoreComponent extends JComponent {
 			int maxDurationInGroup = Note.QUARTER;
 			int durationInCurrentMeasure = 0;
 			KeySignature currentKey = tune.getKey();
+			TimeSignature currentTimeSignature = null;
 			boolean currentStaffLineInitialized = false;
 			int staffLineNb = 0;
 			for (int i=0; i<score.size(); i++) {
@@ -67,13 +69,8 @@ public class JScoreComponent extends JComponent {
 					lessThanQuarter.clear();
 					durationInGroup = 0;
 				}
-				if (s instanceof KeySignature) {
+				if (s instanceof KeySignature) 
 					currentKey = (KeySignature)s;
-					//SKeySignature sk = new SKeySignature(currentKey, cursor, context);
-					//width = sk.render(context, cursor);
-					//int cursorNewLocationX = (int)(cursor.getX() + width + context.getNotesSpacing());
-					//cursor.setLocation(cursorNewLocationX, cursor.getY());
-				}
 				else
 					if (s instanceof TimeSignature) {
 						if (!currentStaffLineInitialized) {initNewStaffLine(currentKey, (TimeSignature)s, cursor, context);currentStaffLineInitialized = true;}
@@ -137,6 +134,7 @@ public class JScoreComponent extends JComponent {
 							else
 								if (s instanceof StaffEndOfLine) {
 									renderStaffLines(cursor, context);
+									staffLineNb++;
 									if (cursor.getX()>componentWidth)
 										componentWidth = (int)cursor.getX(); 
 									/*cursor.setLocation(0, cursor.getY()+staffLinesOffset);*/
@@ -152,16 +150,23 @@ public class JScoreComponent extends JComponent {
 				durationInGroup = 0;
 			}
 			//System.out.println("char staff woidth : " + context.getStaffCharWidth());
-			//renderStaffLines(cursor, context);
+			renderStaffLines(cursor, context);
 			setPreferredSize(new Dimension(componentWidth, (int)cursor.getY()));
-			repaint();
+			invalidate();
+			//repaint();
 		}
 	}
 	
 	private void renderNotesInGroup(ArrayList lessThanQuarter, ScoreRenditionContext context, Point2D start, Point2D cursor){
 		Note[] notes = (Note[])lessThanQuarter.toArray(new Note[lessThanQuarter.size()]);
-		int width = (int)GroupOfNotesRenderer.render(context, start, notes);
-		//System.out.println("width of group is " + width);
+		int width = 0;
+		if (notes.length==1) {
+			SNote sn = new SNote(notes[0], cursor, context);
+			width = sn.render(context, cursor);
+		}
+		else
+			width = (int)GroupOfNotesRenderer.render(context, (Point2D)cursor.clone(), notes);
+		System.out.println("width of group is " + width);
 		int cursorNewLocationX = (int)(cursor.getX() + width);
 		cursor.setLocation(cursorNewLocationX, cursor.getY());
 		cursorNewLocationX = (int)(cursor.getX() + context.getNotesSpacing());
@@ -187,10 +192,12 @@ public class JScoreComponent extends JComponent {
 			int cursorNewLocationX = (int)(cursor.getX() + width + context.getNotesSpacing());
 			cursor.setLocation(cursorNewLocationX, cursor.getY());
 		}
-		SKeySignature sk = new SKeySignature(key, cursor, context);
-		width = sk.render(context, cursor);
-		int cursorNewLocationX = (int)(cursor.getX() + width + context.getNotesSpacing());
-		cursor.setLocation(cursorNewLocationX, cursor.getY());
+		if (key!=null) {
+			SKeySignature sk = new SKeySignature(key, cursor, context);
+			width = sk.render(context, cursor);
+			int cursorNewLocationX = (int)(cursor.getX() + width + context.getNotesSpacing());
+			cursor.setLocation(cursorNewLocationX, cursor.getY());
+		}
 	}
 	
 	public void setTune(Tune theTune){

@@ -11,6 +11,8 @@ import abc.notation.Note;
 public class GroupOfNotesRenderer {
 	
 	public static double render(ScoreRenditionContext context, Point2D base, Note[] notes){
+		if (notes.length<=1)
+			throw new IllegalArgumentException(notes + "is not a group of notes, length = " + notes.length);
 		double cursorPosOffset = 0;
 		Note highestNote = Note.getHighestNote(notes);
 		BasicStroke notesLinkStroke = context.getNotesLinkStroke();

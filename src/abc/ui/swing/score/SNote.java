@@ -128,7 +128,7 @@ public class SNote {
 			gfx.drawChars(accidentalsChars, 0, 1, (int)accidentalsPosition.getX(), (int)accidentalsPosition.getY()); 
 	}
 	
-	public void renderExtendedStaffLines(ScoreRenditionContext c, Point2D base){
+	protected void renderExtendedStaffLines(ScoreRenditionContext c, Point2D base){
 		if (note.getHeight()<=Note.C){
 			double currentOffset = getOffset(new Note(Note.C, AccidentalType.NONE));
 			int currentPosition = (int)(base.getY()-currentOffset*c.getNoteHeigth()/1.5);
@@ -164,7 +164,7 @@ public class SNote {
 			}
 	}
 	
-	public void renderDots(Graphics2D context){
+	protected void renderDots(Graphics2D context){
 			if (dotsPosition!=null){
 				context.drawChars(ScoreRenditionContext.DOT, 0, 1, 
 					(int)dotsPosition.getX(), (int)dotsPosition.getY());
