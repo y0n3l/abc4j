@@ -32,6 +32,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 
 import scanner.PositionableInCharStream;
 import abc.midi.BasicMidiConverter;
@@ -46,6 +47,8 @@ import abc.parser.TuneBook;
 import abc.ui.swing.AddTuneAction;
 import abc.ui.swing.RemoveTuneAction;
 import abc.ui.swing.TuneBookActionAbstract;
+
+import com.birosoft.liquid.LiquidLookAndFeel;
 
 //import jm.music.data.*;
 //import jm.gui.show.*;
@@ -73,6 +76,14 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
   public PlayerApp()
   {
     super("ABCynth");
+    /*try {
+    	//QuaquaManager.setProperty("Quaqua.tabLayoutPolicy","wrap" );
+        //UIManager.setLookAndFeel("ch.randelshofer.quaqua.QuaquaLookAndFeel");
+    	LiquidLookAndFeel.setLiquidDecorations(true, "mac");
+        UIManager.setLookAndFeel("com.birosoft.liquid.LiquidLookAndFeel");
+   } catch (Exception e) {
+       e.printStackTrace();
+   }*/
     m_logFrame = new LogFrame();
     //m_logFrame.setVisible(true);
     m_tuneBookEditorPanel = new TuneBookEditorPanel();
