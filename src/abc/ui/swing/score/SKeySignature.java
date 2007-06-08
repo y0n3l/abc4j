@@ -1,5 +1,6 @@
 package abc.ui.swing.score;
 
+import java.awt.Graphics;
 import java.awt.geom.Point2D;
 
 import abc.notation.AccidentalType;
@@ -25,7 +26,7 @@ public class SKeySignature {
 	int totalWidth = 0;
 	
 	
-	public SKeySignature(KeySignature keyV, Point2D base, ScoreRenditionContext c) {
+	public SKeySignature(KeySignature keyV, Point2D base, ScoreMetrics c) {
 		key = keyV;
 		if (keyV.hasOnlySharps()) {
 			double FPositionX = base.getX();
@@ -78,12 +79,12 @@ public class SKeySignature {
 		for (int i=0; i<accidentals.length; i++){
 			char[] chars = null;
 			if (accidentals[i]==AccidentalType.SHARP) {
-				chars=ScoreRenditionContext.SHARP;
+				chars=ScoreMetrics.SHARP;
 				totalWidth+=c.getSharpBounds().getWidth();
 			}
 			else
 				if (accidentals[i]==AccidentalType.FLAT){
-					chars=ScoreRenditionContext.FLAT;
+					chars=ScoreMetrics.FLAT;
 					totalWidth+=c.getFlatBounds().getWidth();
 				}
 			switch (i) {
@@ -98,21 +99,21 @@ public class SKeySignature {
 		}
 	}
 	
-	public int render(ScoreRenditionContext context, Point2D base){
+	public int render(Graphics context){
 		if (Fchar!=null)
-			context.getGraphics().drawChars(Fchar, 0, 1, (int)FPosition.getX(), (int)FPosition.getY());
+			context.drawChars(Fchar, 0, 1, (int)FPosition.getX(), (int)FPosition.getY());
 		if (Cchar!=null)
-			context.getGraphics().drawChars(Cchar, 0, 1, (int)CPosition.getX(), (int)CPosition.getY());
+			context.drawChars(Cchar, 0, 1, (int)CPosition.getX(), (int)CPosition.getY());
 		if (Gchar!=null)
-			context.getGraphics().drawChars(Gchar, 0, 1, (int)GPosition.getX(), (int)GPosition.getY());
+			context.drawChars(Gchar, 0, 1, (int)GPosition.getX(), (int)GPosition.getY());
 		if (Dchar!=null)
-			context.getGraphics().drawChars(Dchar, 0, 1, (int)DPosition.getX(), (int)DPosition.getY());
+			context.drawChars(Dchar, 0, 1, (int)DPosition.getX(), (int)DPosition.getY());
 		if (Achar!=null)
-			context.getGraphics().drawChars(Achar, 0, 1, (int)APosition.getX(), (int)APosition.getY());
+			context.drawChars(Achar, 0, 1, (int)APosition.getX(), (int)APosition.getY());
 		if (Echar!=null)
-			context.getGraphics().drawChars(Echar, 0, 1, (int)EPosition.getX(), (int)EPosition.getY());
+			context.drawChars(Echar, 0, 1, (int)EPosition.getX(), (int)EPosition.getY());
 		if (Bchar!=null)
-			context.getGraphics().drawChars(Bchar, 0, 1, (int)BPosition.getX(), (int)BPosition.getY());
+			context.drawChars(Bchar, 0, 1, (int)BPosition.getX(), (int)BPosition.getY());
 		return totalWidth;
 	}
 	

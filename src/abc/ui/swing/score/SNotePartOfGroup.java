@@ -1,6 +1,7 @@
 package abc.ui.swing.score;
 
 import java.awt.BasicStroke;
+import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Point2D;
 
@@ -11,10 +12,10 @@ public class SNotePartOfGroup extends SNote {
 	protected int stemYBegin = -1;  
 	protected int stemYEnd = -1;
 	
-	public SNotePartOfGroup(Note noteValue, Point2D base, ScoreRenditionContext c) {
+	public SNotePartOfGroup(Note noteValue, Point2D base, ScoreMetrics c) {
 		super(noteValue, base, c);
 		//correct what differs from SNote...
-		noteChars = ScoreRenditionContext.NOTE;
+		noteChars = ScoreMetrics.NOTE;
 		int noteY = (int)(base.getY()-getOffset(note)*c.getNoteHeigth());
 		notePosition.setLocation(notePosition.getX(), noteY);
 		double noteX = notePosition.getX();
@@ -63,13 +64,13 @@ public class SNotePartOfGroup extends SNote {
 		return positionOffset;
 	}
 	
-	public int render(ScoreRenditionContext context, Point2D base){
-		super.render(context, base);
-		context.getGraphics().drawChars(noteChars, 0, 1, (int)notePosition.getX(), (int)notePosition.getY());
-		Stroke defaultS = context.getGraphics().getStroke();
-		context.getGraphics().setStroke(context.getStemStroke());
-		context.getGraphics().drawLine((int)stemX, stemYBegin,stemX, stemYEnd);
-		context.getGraphics().setStroke(defaultS);
+	public int render(Graphics2D context){
+		super.render(context);
+		context.drawChars(noteChars, 0, 1, (int)notePosition.getX(), (int)notePosition.getY());
+		Stroke defaultS = context.getStroke();
+		context.setStroke(m_metrics.getStemStroke());
+		context.drawLine((int)stemX, stemYBegin,stemX, stemYEnd);
+		context.setStroke(defaultS);
 		return width;
 	}
 }

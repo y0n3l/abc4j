@@ -7,13 +7,16 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
 
 import abc.notation.BarLine;
 import abc.notation.KeySignature;
+import abc.notation.MultiNote;
 import abc.notation.Note;
+import abc.notation.NoteAbstract;
 import abc.notation.RepeatBarLine;
 import abc.notation.ScoreElementInterface;
 import abc.notation.StaffEndOfLine;
@@ -31,28 +34,44 @@ public class JScoreComponent extends JComponent {
 	
 	private int XOffset = 0;
 	
+	protected ScoreMetrics m_metrics = null;
+	
+	protected BufferedImage m_bufferedImage = new BufferedImage(3000, 3000, BufferedImage.TYPE_BYTE_GRAY);;
+	
+	protected Graphics2D m_gfx2 = m_bufferedImage.createGraphics();
+	
+	
 	//private int staffLineNb = 0;
 	
 	public void paint(Graphics g){
+		((Graphics2D)g).drawImage(m_bufferedImage, 0, 0, null);
+	}
+	
+	public void drawIn(Graphics g){
+		System.out.println("Calculating score");
 		if (tune!=null) {
-			//System.out.println("JScore paint");
+			if (m_metrics==null)
+				m_metrics = new ScoreMetrics((Graphics2D)g);
 			Graphics2D g2 = (Graphics2D) g;
+			g2.setColor(Color.WHITE);
+			g2.fillRect(0, 0, 3000, 3000);
+			g2.setColor(Color.BLACK);
 			g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			g2.setColor(Color.black);
-			ScoreRenditionContext context = new ScoreRenditionContext(g2);
+			//g2.setColor(Color.black);
+			//ScoreMetrics context = new ScoreMetrics(g2);
 			Score score = tune.getScore();
-			staffLinesOffset = (int)(context.getStaffCharBounds().getHeight()*2.5);
+			staffLinesOffset = (int)(m_metrics.getStaffCharBounds().getHeight()*2.5);
 			Point2D cursor = new Point(XOffset, 0);
-			g2.setFont(context.getFont());
+			g2.setFont(m_metrics.getFont());
 			double width = 0;
 			ArrayList lessThanQuarter = new ArrayList();
-			Point2D lessThanQuarterStart = null;
+			//Point2D lessThanQuarterStart = null;
 			int durationInGroup = 0;
 			int maxDurationInGroup = Note.QUARTER;
 			int durationInCurrentMeasure = 0;
 			KeySignature currentKey = tune.getKey();
-			TimeSignature currentTimeSignature = null;
+			//TimeSignature currentTimeSignature = null;
 			boolean currentStaffLineInitialized = false;
 			int staffLineNb = 0;
 			for (int i=0; i<score.size(); i++) {
@@ -64,8 +83,8 @@ public class JScoreComponent extends JComponent {
 						|| (s instanceof Note && ((Note)s).getStrictDuration()>=Note.QUARTER) )
 						&& lessThanQuarter.size()!=0)
 					{
-					if (!currentStaffLineInitialized) {initNewStaffLine(currentKey, null, cursor, context);currentStaffLineInitialized = true;}
-					renderNotesInGroup(lessThanQuarter, context, lessThanQuarterStart, cursor);
+					if (!currentStaffLineInitialized) {initNewStaffLine(g, currentKey, null, cursor, m_metrics);currentStaffLineInitialized = true;}
+					renderNotesInGroup(g2, lessThanQuarter, cursor);
 					lessThanQuarter.clear();
 					durationInGroup = 0;
 				}
@@ -73,9 +92,9 @@ public class JScoreComponent extends JComponent {
 					currentKey = (KeySignature)s;
 				else
 					if (s instanceof TimeSignature) {
-						if (!currentStaffLineInitialized) {initNewStaffLine(currentKey, (TimeSignature)s, cursor, context);currentStaffLineInitialized = true;}
-						//width = TimeSignatureRenderer.render(context, (Point2D)cursor.clone(), (TimeSignature)s);
-						//int cursorNewLocationX = (int)(cursor.getX() + width + context.getNotesSpacing());
+						if (!currentStaffLineInitialized) {initNewStaffLine(g, currentKey, (TimeSignature)s, cursor, m_metrics);currentStaffLineInitialized = true;}
+						//width = TimeSignatureRenderer.render(m_metrics, (Point2D)cursor.clone(), (TimeSignature)s);
+						//int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
 						//cursor.setLocation(cursorNewLocationX, cursor.getY());
 						if(s.equals(TimeSignature.SIGNATURE_4_4)) maxDurationInGroup = Note.QUARTER;
 						else if(((TimeSignature)s).getDenominator()==8) maxDurationInGroup = 3*Note.EIGHTH;
@@ -83,31 +102,35 @@ public class JScoreComponent extends JComponent {
 							/*else if(s.equals(TimeSignature.SIGNATURE_3_4)) maxDurationInGroup = Note.QUARTER;*/
 					}
 					else
-						if (s instanceof Note) {
-							Note note = ((Note)s);
+						if (s instanceof NoteAbstract) {
+							Note note = null;
+							if (s instanceof MultiNote)
+								note = ((MultiNote)s).getShortestNote();
+							else
+								note = ((Note)s);
 							short strictDur = note.getStrictDuration();
 							if (strictDur<Note.QUARTER && !note.isRest() && 
 									(
 											(lessThanQuarter.size()==0&&durationInCurrentMeasure%maxDurationInGroup==0))
 											|| lessThanQuarter.size()>0) {
-								if (lessThanQuarter.size()==0) {
+								/*if (lessThanQuarter.size()==0) {
 									lessThanQuarterStart = (Point2D)cursor.clone();
-								}
-								durationInGroup+=((Note)s).getDuration();
+								}*/
+								durationInGroup+=(note).getDuration();
 								//System.out.println("duration in group " + durationInGroup);
-								lessThanQuarter.add(s);
+								lessThanQuarter.add(note);
 								if (durationInGroup>=maxDurationInGroup) {
-									if (!currentStaffLineInitialized) {initNewStaffLine(currentKey, null, cursor, context);currentStaffLineInitialized = true;}
-									renderNotesInGroup(lessThanQuarter, context, lessThanQuarterStart, cursor);
+									if (!currentStaffLineInitialized) {initNewStaffLine(g, currentKey, null, cursor, m_metrics);currentStaffLineInitialized = true;}
+									renderNotesInGroup(g2, lessThanQuarter, cursor);
 									lessThanQuarter.clear();
 									durationInGroup = 0;
 								}
 							}
 							else {
-								if (!currentStaffLineInitialized) {initNewStaffLine(currentKey, null, cursor, context);currentStaffLineInitialized = true;}
-								SNote noteR = new SNote((Note)s, cursor, context);
-								width = noteR.render(context, cursor);//SingleNoteRenderer.render(context, (Point2D)cursor.clone(), (Note)s);
-								int cursorNewLocationX = (int)(cursor.getX() + width + context.getNotesSpacing());
+								if (!currentStaffLineInitialized) {initNewStaffLine(g, currentKey, null, cursor, m_metrics);currentStaffLineInitialized = true;}
+								SNote noteR = new SNote(note, cursor, m_metrics);
+								width = noteR.render(g2);//SingleNoteRenderer.render(m_metrics, (Point2D)cursor.clone(), (Note)s);
+								int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
 								cursor.setLocation(cursorNewLocationX, cursor.getY());
 							}
 							durationInCurrentMeasure+=note.getDuration();
@@ -115,93 +138,95 @@ public class JScoreComponent extends JComponent {
 						}
 						else
 							if (s instanceof RepeatBarLine) {
-								if (!currentStaffLineInitialized) {initNewStaffLine(currentKey, null, cursor, context);currentStaffLineInitialized = true;}
-								SRepeatBar bar = new SRepeatBar((RepeatBarLine)s, cursor, context);
-								width = bar.render(context, cursor);
-								int cursorNewLocationX = (int)(cursor.getX() + width + context.getNotesSpacing());
+								if (!currentStaffLineInitialized) {initNewStaffLine(g, currentKey, null, cursor, m_metrics);currentStaffLineInitialized = true;}
+								SRepeatBar bar = new SRepeatBar((RepeatBarLine)s, cursor, m_metrics);
+								width = bar.render(g);
+								int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
 								cursor.setLocation(cursorNewLocationX, cursor.getY());
 								durationInCurrentMeasure=0;
 							}
 							else
 							if (s instanceof BarLine) {
-								if (!currentStaffLineInitialized) {initNewStaffLine(currentKey, null, cursor, context);currentStaffLineInitialized = true;}
-								SBar bar = new SBar((BarLine)s, cursor, context);
-								width = bar.render(context, cursor);
-								int cursorNewLocationX = (int)(cursor.getX() + width + context.getNotesSpacing());
+								if (!currentStaffLineInitialized) {initNewStaffLine(g, currentKey, null, cursor, m_metrics);currentStaffLineInitialized = true;}
+								SBar bar = new SBar((BarLine)s, cursor, m_metrics);
+								width = bar.render(g);
+								int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
 								cursor.setLocation(cursorNewLocationX, cursor.getY());
 								durationInCurrentMeasure=0;
 							}
 							else
 								if (s instanceof StaffEndOfLine) {
-									renderStaffLines(cursor, context);
+									renderStaffLines(g2, cursor);
 									staffLineNb++;
 									if (cursor.getX()>componentWidth)
 										componentWidth = (int)cursor.getX(); 
 									/*cursor.setLocation(0, cursor.getY()+staffLinesOffset);*/
-									//initNewStaffLine(currentKey, cursor, context);
+									//initNewStaffLine(currentKey, cursor, m_metrics);
 									currentStaffLineInitialized = false;
 								}
 				//System.out.println("cursor locaiton : " + cursor.getX());
 			}
 			if (lessThanQuarter.size()!=0) {
-				if (!currentStaffLineInitialized) {initNewStaffLine(currentKey, null, cursor, context);currentStaffLineInitialized = true;}
-				renderNotesInGroup(lessThanQuarter, context, lessThanQuarterStart, cursor);
+				if (!currentStaffLineInitialized) {initNewStaffLine(g, currentKey, null, cursor, m_metrics);currentStaffLineInitialized = true;}
+				renderNotesInGroup(g2, lessThanQuarter, cursor);
 				lessThanQuarter.clear();
 				durationInGroup = 0;
 			}
-			//System.out.println("char staff woidth : " + context.getStaffCharWidth());
-			renderStaffLines(cursor, context);
+			//System.out.println("char staff woidth : " + m_metrics.getStaffCharWidth());
+			renderStaffLines(g2, cursor);
 			setPreferredSize(new Dimension(componentWidth, (int)cursor.getY()));
-			invalidate();
+			setSize(new Dimension(componentWidth, (int)cursor.getY()));
 			//repaint();
 		}
 	}
 	
-	private void renderNotesInGroup(ArrayList lessThanQuarter, ScoreRenditionContext context, Point2D start, Point2D cursor){
+	private void renderNotesInGroup(Graphics2D context, ArrayList lessThanQuarter, Point2D cursor){
 		Note[] notes = (Note[])lessThanQuarter.toArray(new Note[lessThanQuarter.size()]);
 		int width = 0;
 		if (notes.length==1) {
-			SNote sn = new SNote(notes[0], cursor, context);
-			width = sn.render(context, cursor);
+			SNote sn = new SNote(notes[0], cursor, m_metrics);
+			width = sn.render(context);
 		}
 		else
-			width = (int)GroupOfNotesRenderer.render(context, (Point2D)cursor.clone(), notes);
-		System.out.println("width of group is " + width);
+			width = (int)GroupOfNotesRenderer.render(context, m_metrics, cursor, notes);
+		//System.out.println("width of group is " + width);
 		int cursorNewLocationX = (int)(cursor.getX() + width);
 		cursor.setLocation(cursorNewLocationX, cursor.getY());
-		cursorNewLocationX = (int)(cursor.getX() + context.getNotesSpacing());
+		cursorNewLocationX = (int)(cursor.getX() + m_metrics.getNotesSpacing());
 		cursor.setLocation(cursorNewLocationX, cursor.getY());
 	}
 	
-	private void renderStaffLines(Point2D cursor, ScoreRenditionContext context){
-		int staffCharNb = (int)((cursor.getX()-XOffset)/context.getStaffCharWidth());
+	private void renderStaffLines(Graphics2D context, Point2D cursor){
+		int staffCharNb = (int)((cursor.getX()-XOffset)/m_metrics.getStaffCharWidth());
 		//System.out.println("char staff nb : " + staffCharNb);
 		char[] staffS = new char[staffCharNb+1];
 		for (int i=0; i<staffCharNb+1; i++)
-			staffS[i] = ScoreRenditionContext.STAFF_SIX_LINES;
-		context.getGraphics().drawChars(staffS, 0, staffS.length, XOffset, (int)cursor.getY());
+			staffS[i] = ScoreMetrics.STAFF_SIX_LINES;
+		context.drawChars(staffS, 0, staffS.length, XOffset, (int)cursor.getY());
 	}
 	
-	private void initNewStaffLine(KeySignature key, TimeSignature ts, Point2D cursor, ScoreRenditionContext context){
+	private void initNewStaffLine(Graphics context, KeySignature key, TimeSignature ts, Point2D cursor, ScoreMetrics metrix){
 		cursor.setLocation(0, cursor.getY()+staffLinesOffset);
-		int width = (int)ClefRenderer.render(context, cursor);
+		SClef clef = new SClef(cursor, metrix);
+		int width = clef.render(context);
 		cursor.setLocation(cursor.getX()+width, cursor.getY());
 		if (ts!=null) {
-			STimeSignature sig = new STimeSignature(ts, cursor, context);
-			width = (int)sig.render(context, cursor);
-			int cursorNewLocationX = (int)(cursor.getX() + width + context.getNotesSpacing());
+			STimeSignature sig = new STimeSignature(ts, cursor, metrix);
+			width = (int)sig.render(context);
+			int cursorNewLocationX = (int)(cursor.getX() + width + metrix.getNotesSpacing());
 			cursor.setLocation(cursorNewLocationX, cursor.getY());
 		}
 		if (key!=null) {
-			SKeySignature sk = new SKeySignature(key, cursor, context);
-			width = sk.render(context, cursor);
-			int cursorNewLocationX = (int)(cursor.getX() + width + context.getNotesSpacing());
+			SKeySignature sk = new SKeySignature(key, cursor, metrix);
+			width = sk.render(context);
+			int cursorNewLocationX = (int)(cursor.getX() + width + metrix.getNotesSpacing());
 			cursor.setLocation(cursorNewLocationX, cursor.getY());
 		}
 	}
 	
 	public void setTune(Tune theTune){
 		tune = theTune;
+		drawIn(m_gfx2);
 		repaint();
 	}
 }
