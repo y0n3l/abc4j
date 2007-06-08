@@ -117,9 +117,20 @@ public class Note extends NoteAbstract
   private short m_duration = -1;
   /** The strict duration (that does not take into account the dots, 
    * the tuplet or whatever : this is the pure note type definition. */
-  private short m_strictDuration = -1;
+  private short m_strictDuration = EIGHTH;
   /** <TT>true</TT> if this note is tied, <TT>false</TT> otherwise. */
   private boolean m_isTied = false;
+  
+  /** Creates an abc note with the specified height. Accidental will inherit 
+   * its default value <TT>AccidentalType.NONE</TT>.
+   * @param heightValue The heigth of this note as a byte that respect the scale defined by
+   * constants such as C D E F G A B c d e ..... The heigth is <TT>REST</TT> if
+   * this note is a rest.
+   * @see #setHeight(byte) */
+   public Note (byte heightValue) {
+    super();
+    setHeight(heightValue);
+  }
 
   /** Creates an abc note with the specified heigth and accidental.
    * @param heightValue The heigth of this note as a byte that respect the scale defined by

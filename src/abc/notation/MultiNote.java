@@ -32,6 +32,21 @@ public class MultiNote extends NoteAbstract
     }
     return maxNote;
   }
+  
+  /** Returns the shortest note of this multi note.
+   * @return The shortest note of this multi note. If several notes have the
+   * same shortest length, the first one is returned. */
+  public Note getShortestNote() {
+	  Note shortNote = (Note)m_notes.elementAt(0);
+	  float length = shortNote.getDuration();
+	  float currentNoteLength = 0;
+	  for (int i=0; i<m_notes.size() && shortNote==null; i++) {
+		  currentNoteLength = ((Note)(m_notes.elementAt(i))).getDuration();
+		  if (currentNoteLength < length)
+			  shortNote = (Note)m_notes.elementAt(i);
+	  }
+	  return shortNote;
+  }
 
   /** Returns a new vector containing all <TT>Note</TT> objects contained in
    * this multi note.
