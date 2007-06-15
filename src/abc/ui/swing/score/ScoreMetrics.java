@@ -26,7 +26,7 @@ public class ScoreMetrics {
 	public static final char[] SHARP = {'\uF023'};
 	public static final char[] FLAT = {'\uF062'};
 	public static final char[] NATURAL = {'\uF06E'};
-	public static final float DEFAULT_SIZE = 60;
+	public static final float DEFAULT_SIZE = 45;
 
 	private double noteHeigth = -1;
 	private double noteWidth = -1;

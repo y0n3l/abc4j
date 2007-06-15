@@ -84,7 +84,7 @@ public class SNote extends SRenderer {
 		double noteX = base.getX()+accidentalsWidth*1.2;
 		notePosition = new Point2D.Double(noteX, noteY);
 		if (note.countDots()!=0)
-			dotsPosition = new Point2D.Double(noteX + c.getNoteWidth()*1.1, noteY);
+			dotsPosition = new Point2D.Double(noteX + c.getNoteWidth()*1.2, noteY-c.getNoteHeigth()*0.05);
 
 		//c.getGraphics().drawChars(chars, 0, chars.length, noteX, noteY);
 		/*if (note.getHeight()==Note.C || note.getHeight()==Note.a)
@@ -137,6 +137,7 @@ public class SNote extends SRenderer {
 	}
 	
 	protected void renderExtendedStaffLines(Graphics2D context, ScoreMetrics metrics, Point2D base){
+		int extSize = (int)metrics.getNoteWidth()/3;
 		if (note.getHeight()<=Note.C){
 			double currentOffset = getOffset(new Note(Note.C, AccidentalType.NONE));
 			int currentPosition = (int)(base.getY()-currentOffset*metrics.getNoteHeigth()/1.5);
@@ -145,8 +146,8 @@ public class SNote extends SRenderer {
 			context.setStroke(metrics.getStemStroke());
 			while (currentOffset>=offset) {
 				context.drawLine(
-						(int)(notePosition.getX()-5), currentPosition,
-						(int)(notePosition.getX()+metrics.getNoteWidth()+5), currentPosition);
+						(int)(notePosition.getX()-extSize), currentPosition,
+						(int)(notePosition.getX()+metrics.getNoteWidth()+extSize), currentPosition);
 				currentOffset--;
 				currentPosition = (int)(currentPosition + metrics.getNoteHeigth());
 				//System.out.println("current offset : " + currentOffset + " " + currentPosition);
@@ -162,8 +163,8 @@ public class SNote extends SRenderer {
 				context.setStroke(metrics.getStemStroke());
 				while (currentOffset<=offset) {
 					context.drawLine(
-							(int)(notePosition.getX()-5), currentPosition,
-							(int)(notePosition.getX()+metrics.getNoteWidth()+5), currentPosition);
+							(int)(notePosition.getX()-extSize), currentPosition,
+							(int)(notePosition.getX()+metrics.getNoteWidth()+extSize), currentPosition);
 					currentOffset++;
 					currentPosition = (int)(currentPosition - metrics.getNoteHeigth());
 					//System.out.println("current offset : " + currentOffset + " " + currentPosition);

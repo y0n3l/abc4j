@@ -4,8 +4,9 @@
 	
 	<!-- Environment variables -->
 	<property name="JDIFF_HOME" value="D:/installs/jdiff"/>
-	<property name="OLD_VERSION_DIR" value="D:/Perso/abc4jOld"/>
+	<property name="OLD_VERSION_DIR" value="D:/Perso/abc4jOld/v0.2"/>
 	<property name="COBERTURA_DIR" value="D:/installs/cobertura-1.8"/>
+	<property name="JUNIT_JAR" value="D:/eclipse/plugins/org.junit4_4.1.0.1/junit-4.1.jar" />
 
 	<!-- Properties for this project. -->
 	<property name="classesdir" value="./../classes" />
@@ -60,7 +61,7 @@
 	
 	<!-- Compiles the unit tests. -->
 	<target name="unittests.compile">
-		<javac srcdir="${testsdir}" destdir="${classesdir}" debuglevel="source,vars,lines" debug="true"/>
+		<javac srcdir="${testsdir}" destdir="${classesdir}" classpath="${JUNIT_JAR}" debuglevel="source,vars,lines" debug="true"/>
 	</target>
 	
 	<!-- generates jar -->
@@ -179,10 +180,10 @@
 	<!-- Generates the diff between the current api and the previous version -->
 	<target name="jdiff" description="Generates changes diff between 2 abc4j versions">
 		<jdiff stats="on" destdir="${docdir}/diff">
-			<old name="v0.1" javadoc="${OLD_VERSION_DIR}/docs/api">
+			<old name="v0.2" javadoc="${OLD_VERSION_DIR}/docs/api">
 				<dirset dir="${OLD_VERSION_DIR}/src/"/>
 			</old>
-			<new name="v0.2" javadoc="${docdir}/api">
+			<new name="v0.3" javadoc="${docdir}/api">
 				<dirset dir="${srcdir}"/>
 			</new>
 		</jdiff>

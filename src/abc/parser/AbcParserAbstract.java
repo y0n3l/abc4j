@@ -1106,7 +1106,8 @@ public class AbcParserAbstract
       do
       {
         NoteAbstract note = parseNoteElement(current.createUnion(follow));
-        notes.addElement(note);
+        if (note!=null)
+        	notes.addElement(note);
         notesNumber--;
       }
       while(FIRST_NOTE_ELEMENT.contains(m_tokenType) && notesNumber>0);

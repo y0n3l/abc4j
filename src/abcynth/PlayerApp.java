@@ -32,7 +32,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
-import javax.swing.UIManager;
 
 import scanner.PositionableInCharStream;
 import abc.midi.BasicMidiConverter;
@@ -48,7 +47,7 @@ import abc.ui.swing.AddTuneAction;
 import abc.ui.swing.RemoveTuneAction;
 import abc.ui.swing.TuneBookActionAbstract;
 
-import com.birosoft.liquid.LiquidLookAndFeel;
+//import com.birosoft.liquid.LiquidLookAndFeel;
 
 //import jm.music.data.*;
 //import jm.gui.show.*;

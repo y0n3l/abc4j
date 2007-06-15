@@ -8,8 +8,11 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 
 import abc.notation.BarLine;
@@ -26,7 +29,7 @@ import abc.notation.Tune.Score;
 
 public class JScoreComponent extends JComponent {
 	
-	private Tune tune = null; 
+	private Tune m_tune = null; 
 	
 	private int staffLinesOffset = -1;
 	
@@ -40,14 +43,21 @@ public class JScoreComponent extends JComponent {
 	
 	protected Graphics2D m_gfx2 = m_bufferedImage.createGraphics();
 	
-	
-	//private int staffLineNb = 0;
-	
 	public void paint(Graphics g){
-		((Graphics2D)g).drawImage(m_bufferedImage, 0, 0, null);
+		if(m_tune!=null)
+			((Graphics2D)g).drawImage(m_bufferedImage, 0, 0, null);
 	}
 	
-	public void drawIn(Graphics g){
+	public void writeScoreTo(Tune tune, File file) throws IOException {
+		BufferedImage score = new BufferedImage(3000, 3000, BufferedImage.TYPE_BYTE_GRAY);
+		Dimension dim = drawIn(tune, score.getGraphics());
+		System.out.println("dimension : " + dim);
+		BufferedImage scoreResized = new BufferedImage((int)dim.getWidth(), (int)dim.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+		scoreResized.getGraphics().drawImage(score, 0, 0, null);
+		ImageIO.write(scoreResized,"jpg",file);
+	}
+	
+	public Dimension drawIn(Tune tune, Graphics g){
 		System.out.println("Calculating score");
 		if (tune!=null) {
 			if (m_metrics==null)
@@ -96,7 +106,7 @@ public class JScoreComponent extends JComponent {
 						//width = TimeSignatureRenderer.render(m_metrics, (Point2D)cursor.clone(), (TimeSignature)s);
 						//int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
 						//cursor.setLocation(cursorNewLocationX, cursor.getY());
-						if(s.equals(TimeSignature.SIGNATURE_4_4)) maxDurationInGroup = Note.QUARTER;
+						if(s.equals(TimeSignature.SIGNATURE_4_4)) maxDurationInGroup = 2*Note.QUARTER;
 						else if(((TimeSignature)s).getDenominator()==8) maxDurationInGroup = 3*Note.EIGHTH;
 							else if(((TimeSignature)s).getDenominator()==4) maxDurationInGroup = Note.QUARTER;
 							/*else if(s.equals(TimeSignature.SIGNATURE_3_4)) maxDurationInGroup = Note.QUARTER;*/
@@ -109,9 +119,13 @@ public class JScoreComponent extends JComponent {
 							else
 								note = ((Note)s);
 							short strictDur = note.getStrictDuration();
+							// checks if this note should be part of a group.
 							if (strictDur<Note.QUARTER && !note.isRest() && 
 									(
-											(lessThanQuarter.size()==0&&durationInCurrentMeasure%maxDurationInGroup==0))
+											//if this note may be the first of a group
+											(lessThanQuarter.size()==0
+													&&durationInCurrentMeasure%maxDurationInGroup+note.getDuration()<maxDurationInGroup))
+											// if a group has been started already 
 											|| lessThanQuarter.size()>0) {
 								/*if (lessThanQuarter.size()==0) {
 									lessThanQuarterStart = (Point2D)cursor.clone();
@@ -174,10 +188,13 @@ public class JScoreComponent extends JComponent {
 			}
 			//System.out.println("char staff woidth : " + m_metrics.getStaffCharWidth());
 			renderStaffLines(g2, cursor);
-			setPreferredSize(new Dimension(componentWidth, (int)cursor.getY()));
-			setSize(new Dimension(componentWidth, (int)cursor.getY()));
+			if (cursor.getX()>componentWidth)
+				componentWidth = (int)cursor.getX();
+			return new Dimension((int)(componentWidth+m_metrics.getStaffCharBounds().getWidth()), (int)(cursor.getY()+m_metrics.getStaffCharBounds().getHeight()));
 			//repaint();
 		}
+		else
+			return null;
 	}
 	
 	private void renderNotesInGroup(Graphics2D context, ArrayList lessThanQuarter, Point2D cursor){
@@ -187,8 +204,10 @@ public class JScoreComponent extends JComponent {
 			SNote sn = new SNote(notes[0], cursor, m_metrics);
 			width = sn.render(context);
 		}
-		else
-			width = (int)GroupOfNotesRenderer.render(context, m_metrics, cursor, notes);
+		else {
+			GroupOfNotesRenderer rend = new GroupOfNotesRenderer(m_metrics, cursor, notes);
+			width = (int)rend.render(context);
+		}
 		//System.out.println("width of group is " + width);
 		int cursorNewLocationX = (int)(cursor.getX() + width);
 		cursor.setLocation(cursorNewLocationX, cursor.getY());
@@ -225,8 +244,11 @@ public class JScoreComponent extends JComponent {
 	}
 	
 	public void setTune(Tune theTune){
-		tune = theTune;
-		drawIn(m_gfx2);
+		m_tune = theTune;
+		Dimension dim = drawIn(m_tune, m_gfx2);
+		setPreferredSize(dim);
+		setSize(dim);
 		repaint();
 	}
+	
 }

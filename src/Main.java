@@ -3,7 +3,11 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 
+import abc.notation.KeySignature;
+import abc.notation.Note;
+import abc.notation.TimeSignature;
 import abc.notation.Tune;
 import abc.parser.TuneBook;
 import abc.ui.swing.score.JScoreComponent;
@@ -107,28 +111,44 @@ public class Main  {
 	
 	public static void main (String[] arg) {
 		try {
-		//MusicDisplaySample sample= new MusicDisplaySample();
-		JScoreComponent sample =new JScoreComponent();
-		File file =new File("D:/Perso/abc/test.abc");
+		File file =new File("D:/Perso/abc/LGtunes.abc");
 		TuneBook tb = new TuneBook(file);
 		Tune tune = tb.getTune(1);
 		System.out.println(tune);
-		sample.setTune(tune);
-		JFrame j = new JFrame();
-		j.addWindowListener(new WindowAdapter(){
-			public void windowClosing(WindowEvent e){
-				System.out.println("on exit");
-				System.exit(0);
-			}
-		});
-		j.setSize(1000, 400);
-		j.add(sample);
-		j.setVisible(true);
+		JScoreComponent jscore = new JScoreComponent();
+		jscore.writeScoreTo(tune, new File("D:/Perso/partitions/"+ tune.getTitles()[0]+".jpg"));
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+	public static void main2 (String[] arg) {
+		Tune tune = new Tune();
+		KeySignature key = new KeySignature(Note.D, KeySignature.MAJOR);
+		tune.getScore().addElement(key);
+		Tune.Score score = tune.getScore();
+		score.addElement(TimeSignature.SIGNATURE_4_4);
+		score.addElement(new Note(Note.C));
+		score.addElement(new Note(Note.D));
+		score.addElement(new Note(Note.E));
+		score.addElement(new Note(Note.F));
+		score.addElement(new Note(Note.G));
+		score.addElement(new Note(Note.A));
+		score.addElement(new Note(Note.B));
+		score.addElement(new Note(Note.c));
+		JScoreComponent scoreUI =new JScoreComponent();
+		scoreUI.setTune(tune);
+		JFrame j = new JFrame();
+		j.setSize(500, 200);
+		j.add(scoreUI);
+		//System.out.println(sp.getSize());
+		j.setVisible(true);
+		try {
+		scoreUI.writeScoreTo(tune, new File("D:/Perso/partitions/abc4j.jpg"));
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+	}
 	
 }
