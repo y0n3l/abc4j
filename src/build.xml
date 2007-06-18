@@ -68,7 +68,8 @@
 	<target name="libs" description="Generates the jar for abc4j">
 			<mkdir dir="${libdir}" />
 			<echo>Generating jars to ${libdir}</echo>
-			<copy file="../abc/LGtunes.abc" todir="../classes/abcynth"/>
+			<copy file="../ressources/LGtunes.abc" todir="../classes/abcynth"/>
+			<copy file="../ressources/SONORA.TTF" todir="../classes/abc/ui/swing/score"/>
 			<jar destfile="${libdir}/abc4j.jar" basedir="${classesdir}"
 				includes="abc/**,abcynth/**,check/**,scanner/**"
 				manifest="${srcdir}/manifest.mf">
@@ -96,7 +97,7 @@
 		<!-- Run JUnit -->
 		<mkdir dir="${logdir.test}" />
 		<copy todir="${instclassesdir}">
-			<fileset dir="../abc">
+			<fileset dir="../ressources">
 				<include name="**/*.abc"/>
 			</fileset>
 		</copy>
