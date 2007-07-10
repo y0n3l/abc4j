@@ -10,7 +10,7 @@ import abc.parser.InvalidTokenEvent;
 
 public class CrashTest extends TestCase {
 	
-	private static final String FILE_NAME = "./crash.abc";
+	private static final String FILE_NAME = "../abc/crash.abc";
 	
 	public CrashTest(String name) {
 		super(name);
