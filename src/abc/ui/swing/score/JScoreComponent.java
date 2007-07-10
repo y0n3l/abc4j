@@ -81,6 +81,7 @@ public class JScoreComponent extends JComponent {
 			int maxDurationInGroup = Note.QUARTER;
 			int durationInCurrentMeasure = 0;
 			KeySignature currentKey = tune.getKey();
+			boolean isPartOfTuplet = false;
 			//TimeSignature currentTimeSignature = null;
 			boolean currentStaffLineInitialized = false;
 			int staffLineNb = 0;
@@ -90,7 +91,10 @@ public class JScoreComponent extends JComponent {
 						//detects the end of a group.
 						(!(s instanceof Note)  
 						|| (s instanceof Note && ((Note)s).isRest()) 
-						|| (s instanceof Note && ((Note)s).getStrictDuration()>=Note.QUARTER) )
+						//if we were in a tuplet and the current note isn't part of tuplet anymore.
+						|| (s instanceof NoteAbstract && isPartOfTuplet && (!((NoteAbstract)s).isPartOfTuplet()))
+						|| (s instanceof Note && ((Note)s).getStrictDuration()>=Note.QUARTER) 
+						|| (durationInCurrentMeasure!=0 && durationInCurrentMeasure%maxDurationInGroup==0))
 						&& lessThanQuarter.size()!=0)
 					{
 					if (!currentStaffLineInitialized) {initNewStaffLine(g, currentKey, null, cursor, m_metrics);currentStaffLineInitialized = true;}
@@ -119,17 +123,9 @@ public class JScoreComponent extends JComponent {
 							else
 								note = ((Note)s);
 							short strictDur = note.getStrictDuration();
+							isPartOfTuplet = note.isPartOfTuplet();
 							// checks if this note should be part of a group.
-							if (strictDur<Note.QUARTER && !note.isRest() && 
-									(
-											//if this note may be the first of a group
-											(lessThanQuarter.size()==0
-													&&durationInCurrentMeasure%maxDurationInGroup+note.getDuration()<maxDurationInGroup))
-											// if a group has been started already 
-											|| lessThanQuarter.size()>0) {
-								/*if (lessThanQuarter.size()==0) {
-									lessThanQuarterStart = (Point2D)cursor.clone();
-								}*/
+							if (strictDur<Note.QUARTER && !note.isRest()) {
 								durationInGroup+=(note).getDuration();
 								//System.out.println("duration in group " + durationInGroup);
 								lessThanQuarter.add(note);
