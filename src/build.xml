@@ -150,6 +150,7 @@
 	<target name="javadoc" description="Generates the javadoc for abc4j">
 		<mkdir dir="${docdir}/api"/>
 		<javadoc destdir="${docdir}/api" author="true" version="true" use="true" access="public"
+			additionalparam="-notimestamp" 
 			windowtitle="abc4j API Documentation" 
 			doctitle="abc4j API Specification"
 			header="abc4j API Specification"
