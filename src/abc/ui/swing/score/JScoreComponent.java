@@ -25,6 +25,7 @@ import abc.notation.ScoreElementInterface;
 import abc.notation.StaffEndOfLine;
 import abc.notation.TimeSignature;
 import abc.notation.Tune;
+import abc.notation.Tuplet;
 import abc.notation.Tune.Score;
 
 public class JScoreComponent extends JComponent {
@@ -48,6 +49,11 @@ public class JScoreComponent extends JComponent {
 			((Graphics2D)g).drawImage(m_bufferedImage, 0, 0, null);
 	}
 	
+	public void setSize(float size){
+		m_metrics = new ScoreMetrics(m_gfx2, size);
+		repaint();
+	}
+	
 	public void writeScoreTo(Tune tune, File file) throws IOException {
 		BufferedImage score = new BufferedImage(3000, 3000, BufferedImage.TYPE_BYTE_GRAY);
 		Dimension dim = drawIn(tune, score.getGraphics());
@@ -58,7 +64,7 @@ public class JScoreComponent extends JComponent {
 	}
 	
 	public Dimension drawIn(Tune tune, Graphics g){
-		System.out.println("Calculating score");
+		//System.out.println("Calculating score");
 		if (tune!=null) {
 			if (m_metrics==null)
 				m_metrics = new ScoreMetrics((Graphics2D)g);
@@ -81,7 +87,7 @@ public class JScoreComponent extends JComponent {
 			int maxDurationInGroup = Note.QUARTER;
 			int durationInCurrentMeasure = 0;
 			KeySignature currentKey = tune.getKey();
-			boolean isPartOfTuplet = false;
+			Tuplet tupletContainer = null;
 			//TimeSignature currentTimeSignature = null;
 			boolean currentStaffLineInitialized = false;
 			int staffLineNb = 0;
@@ -91,8 +97,10 @@ public class JScoreComponent extends JComponent {
 						//detects the end of a group.
 						(!(s instanceof Note)  
 						|| (s instanceof Note && ((Note)s).isRest()) 
-						//if we were in a tuplet and the current note isn't part of tuplet anymore.
-						|| (s instanceof NoteAbstract && isPartOfTuplet && (!((NoteAbstract)s).isPartOfTuplet()))
+						//if we were in a tuplet and the current note isn't part of tuplet anymore or part of another tuplet
+						|| (s instanceof NoteAbstract && tupletContainer!=null && (!tupletContainer.equals(((NoteAbstract)s).getTuplet())))
+						//if we weren't in a tuplet and the new note is part of a tuplet.
+						|| (s instanceof NoteAbstract && tupletContainer==null && ((NoteAbstract)s).isPartOfTuplet())
 						|| (s instanceof Note && ((Note)s).getStrictDuration()>=Note.QUARTER) 
 						|| (durationInCurrentMeasure!=0 && durationInCurrentMeasure%maxDurationInGroup==0))
 						&& lessThanQuarter.size()!=0)
@@ -123,7 +131,7 @@ public class JScoreComponent extends JComponent {
 							else
 								note = ((Note)s);
 							short strictDur = note.getStrictDuration();
-							isPartOfTuplet = note.isPartOfTuplet();
+							tupletContainer = note.getTuplet();
 							// checks if this note should be part of a group.
 							if (strictDur<Note.QUARTER && !note.isRest()) {
 								durationInGroup+=(note).getDuration();

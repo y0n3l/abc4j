@@ -12,6 +12,17 @@ public class GroupOfNotesRenderer extends SRenderer {
 	
 	protected Note[] m_notes = null;
 	
+	public static final char[] DIGITS = {
+		'\uF0C1', 
+		'\uF0AA',
+		'\uF0A3',
+		'\uF0A2',
+		'\uF0B0',
+		'\uF0A4',
+		'\uF0A6',
+		'\uF0A5',
+		'\uF0BB'};
+	
 	public GroupOfNotesRenderer(ScoreMetrics metrics, Point2D base, Note[] notes){
 		super(base, metrics);
 		m_notes = notes;
@@ -100,6 +111,11 @@ public class GroupOfNotesRenderer extends SRenderer {
 		if (lastNote==null)
 			lastNote=firstNote;
 		int width = (int)(lastNote.getStemX()-firstNote.getNotePosition().getX());
+		if (m_notes[0].getTuplet()!=null) {
+			int nb = m_notes[0].getTuplet().getNotesAsVector().size();
+			char[] chars = {DIGITS[nb-1]};
+			context.drawChars(chars, 0, 1, (int)(firstNote.getNotePosition().getX()+width/2), (int)(stemYend - m_metrics.getNoteHeigth()/4));
+		}
 		return width;
 	}
 	

@@ -44,13 +44,17 @@ public class ScoreMetrics {
 	private int notesSpacing = -1;
 	
 	public ScoreMetrics(Graphics2D g2) {
+		this(g2, DEFAULT_SIZE);
+	}
+	
+	public ScoreMetrics(Graphics2D g2, float size) {
 		try {
 			  FontRenderContext frc = g2.getFontRenderContext();
 			  //getClass().getResourceAsStream("SONORA.TTF");
 			  //File file =new File("D:/Perso/musicfonts/MIDIDESI/TRUETYPE/SONORA.TTF");
 			  //FileInputStream fontStream = new FileInputStream(file);
 			  myFont = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("SONORA.TTF"));
-			  myFont = myFont.deriveFont(DEFAULT_SIZE);
+			  myFont = myFont.deriveFont(size);
 			  staffCharBounds = new TextLayout(new Character(STAFF_SIX_LINES).toString(), myFont, frc).getBounds();
 			  noteHeigth = staffCharBounds.getHeight()/4.1;
 			  staffCharWidth = staffCharBounds.getWidth();
