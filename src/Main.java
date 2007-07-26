@@ -109,7 +109,7 @@ public class Main  {
   	  }
   }*/
 	
-	public static void main (String[] arg) {
+	public static void main2 (String[] arg) {
 		try {
 		File file =new File("D:/Perso/abc/LGtunes.abc");
 		TuneBook tb = new TuneBook(file);
@@ -122,7 +122,7 @@ public class Main  {
 			e.printStackTrace();
 		}
 	}
-	public static void main2 (String[] arg) {
+	public static void main (String[] arg) {
 		Tune tune = new Tune();
 		KeySignature key = new KeySignature(Note.D, KeySignature.MAJOR);
 		tune.getScore().addElement(key);
@@ -137,18 +137,19 @@ public class Main  {
 		score.addElement(new Note(Note.B));
 		score.addElement(new Note(Note.c));
 		JScoreComponent scoreUI =new JScoreComponent();
+		scoreUI.setSize(43);
 		scoreUI.setTune(tune);
 		JFrame j = new JFrame();
 		j.setSize(500, 200);
 		j.add(scoreUI);
 		//System.out.println(sp.getSize());
 		j.setVisible(true);
-		try {
+		/*try {
 		scoreUI.writeScoreTo(tune, new File("D:/Perso/partitions/abc4j.jpg"));
 		}
 		catch (Exception e){
 			e.printStackTrace();
-		}
+		}*/
 	}
 	
 }
