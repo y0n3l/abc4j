@@ -36,10 +36,15 @@ public class TimeSignature extends Fraction implements ScoreElementInterface {
   /** Return <TT>true</TT> if this time signature if compound, <TT>false</TT>
    * otherwise.
    * @return <TT>true</TT> if this time signature if compound, <TT>false</TT>
-   * otherwise. Compound time signatures are 3/4, 3/8, 9/8 etc... simple time
-   * signatures are C, 4/4, 2/4 etc... */
+   * otherwise. A time signature is considered as compound if its top number can
+   * be divided by 3. As a way of consequence, compound time signatures are 3/4, 3/8, 9/8 
+   * etc... simple time signatures are C, 4/4, 2/4 etc... */
   public boolean isCoumpound()
-  { return (getNumerator()%2!=0); }
+  {
+	  // a time signature is compound if the top number can be divised by 3.
+	  // http://www.musictheory.halifax.ns.ca/14tsmc.html
+	  return (getNumerator()%3==0);
+  }
 
   public int getNumberOfDefaultNotesPerBeat(short defaultLength)
   {
