@@ -1090,13 +1090,40 @@ public class AbcParserAbstract
       int[] tupletSpec = parseTupletSpec(current.createUnion(follow));
       if (tupletSpec[1]==-1)
       {
+    	 /*
         if (m_timeSignature!=null)
          if (m_timeSignature.isCoumpound())
            tupletSpec[1]=3;
          else
            tupletSpec[1]=2;
         else
-          System.err.println("Cannot evaluate tuplet : no time signature");
+        */
+    	  /*
+   	   		* The values of the particular tuplets are (to quote the abc specification)
+			(2 	2 notes in the time of 3
+			(3 	3 notes in the time of 2
+			(4 	4 notes in the time of 3
+			(5 	5 notes in the time of n
+			(6 	6 notes in the time of 2
+			(7 	7 notes in the time of n
+			(8 	8 notes in the time of 3
+			(9 	9 notes in the time of n
+			n is 3 in compound time signatures (3/4, 3/8, 9/8 etc), 
+			and 2 in simple time signatures (C, 4/4, 2/4 etc.)
+    	   */
+    	  if (tupletSpec[0]==2 || tupletSpec[0]==4 || tupletSpec[0]==8)
+    		  tupletSpec[1]=3;
+    	  else
+    		  if (tupletSpec[0]==3 || tupletSpec[0]==6)
+        		  tupletSpec[1]=2;
+    		  else
+    			  if (tupletSpec[0]==5 || tupletSpec[0]==7 || tupletSpec[0]==9)
+    				  if (m_timeSignature.isCoumpound())
+    			           tupletSpec[1]=3;
+    			         else
+    			           tupletSpec[1]=2;
+    			  else
+    				  System.err.println("Cannot evaluate tuplet : no time signature");
       }
       if (tupletSpec[2]==-1)
         tupletSpec[2]=tupletSpec[0];
