@@ -1,13 +1,13 @@
 package abc.ui.swing.score;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
 import abc.notation.AccidentalType;
 import abc.notation.KeySignature;
 import abc.notation.Note;
 
-public class SKeySignature {
+public class SKeySignature extends SRenderer {
 	KeySignature key = null;
 	Point2D FPosition = null; 
 	char[] Fchar = null;
@@ -23,10 +23,9 @@ public class SKeySignature {
 	char[] Echar = null;
 	Point2D BPosition = null;
 	char[] Bchar = null;
-	int totalWidth = 0;
-	
 	
 	public SKeySignature(KeySignature keyV, Point2D base, ScoreMetrics c) {
+		super(base, c);
 		key = keyV;
 		if (keyV.hasOnlySharps()) {
 			double FPositionX = base.getX();
@@ -80,12 +79,12 @@ public class SKeySignature {
 			char[] chars = null;
 			if (accidentals[i]==AccidentalType.SHARP) {
 				chars=ScoreMetrics.SHARP;
-				totalWidth+=c.getSharpBounds().getWidth();
+				m_width+=c.getSharpBounds().getWidth();
 			}
 			else
 				if (accidentals[i]==AccidentalType.FLAT){
 					chars=ScoreMetrics.FLAT;
-					totalWidth+=c.getFlatBounds().getWidth();
+					m_width+=c.getFlatBounds().getWidth();
 				}
 			switch (i) {
 				case 0: Cchar = chars; break;
@@ -99,7 +98,8 @@ public class SKeySignature {
 		}
 	}
 	
-	public int render(Graphics context){
+	public double render(Graphics2D context){
+		super.render(context);
 		if (Fchar!=null)
 			context.drawChars(Fchar, 0, 1, (int)FPosition.getX(), (int)FPosition.getY());
 		if (Cchar!=null)
@@ -114,7 +114,7 @@ public class SKeySignature {
 			context.drawChars(Echar, 0, 1, (int)EPosition.getX(), (int)EPosition.getY());
 		if (Bchar!=null)
 			context.drawChars(Bchar, 0, 1, (int)BPosition.getX(), (int)BPosition.getY());
-		return totalWidth;
+		return m_width;
 	}
 	
 	

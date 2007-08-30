@@ -14,7 +14,6 @@ public class SNote extends SRenderer {
 	protected Point2D dotsPosition = null;
 	protected char[] noteChars = null;
 	protected char[] accidentalsChars = null;
-	protected  int width = 0;
 	public static final char[] WHOLE_NOTE = {'\uF092'};
 	public static final char[] HALF_NOTE = {'\uF068'};
 	public static final char[] QUARTER_NOTE = {'\uF071'};
@@ -89,7 +88,7 @@ public class SNote extends SRenderer {
 		//c.getGraphics().drawChars(chars, 0, chars.length, noteX, noteY);
 		/*if (note.getHeight()==Note.C || note.getHeight()==Note.a)
 			c.getGraphics().drawChars(ScoreRenditionContext.STROKE, 0, 1, (int)(noteX-context.getNoteWidth()/4), strokeY);*/
-		width = (int)(accidentalsWidth+c.getNoteWidth());
+		m_width = (int)(accidentalsWidth+c.getNoteWidth());
 	}
 	
 	public static double getOffset(Note note) {
@@ -118,17 +117,21 @@ public class SNote extends SRenderer {
 	public Point2D getNotePosition(){
 		return notePosition;
 	}
+	
+	public Note getNote(){
+		return note;
+	}
 		
 	public Point2D getAccidentalsPosition(ScoreMetrics context, Point2D base, Note note){
 		return accidentalsPosition;
 	}
 	
-	public int render(Graphics2D g){
+	public double render(Graphics2D g){
 		renderExtendedStaffLines(g, m_metrics, m_base);
 		renderAccidentals(g);
 		renderDots(g);
 		g.drawChars(noteChars, 0, 1, (int)notePosition.getX(), (int)notePosition.getY());
-		return width;
+		return m_width;
 	}
 	
 	protected void renderAccidentals(Graphics2D gfx) {

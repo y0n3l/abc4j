@@ -1,6 +1,6 @@
 package abc.ui.swing.score;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
 import abc.notation.RepeatBarLine;
@@ -22,7 +22,7 @@ public class SRepeatBar extends SBar{
 		super(barLine,base, c); 
 	}
 	
-	public int render(Graphics context){
+	public double render(Graphics2D context){
 		char[] ch = DIGITS[((RepeatBarLine)m_barLine).getRepeatNumber()-1];
 		context.drawChars(ch, 0, ch.length, 
 				(int)(m_base.getX()+m_metrics.getNoteWidth()), 

@@ -6,9 +6,11 @@ import java.awt.Graphics2D;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
-import java.io.File;
-import java.io.FileInputStream;
 
+/**
+ * This class encapsulates all needed dimensions needed to draw
+ * correctly a score (notes spacing, space between accidental and notes etc...).
+ * All those values are calculated from the font size. */
 public class ScoreMetrics {
 	
 	public static final char STAFF_SIX_LINES = '\uF03D';

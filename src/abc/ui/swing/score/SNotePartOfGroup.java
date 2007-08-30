@@ -64,8 +64,8 @@ public class SNotePartOfGroup extends SNote {
 		return positionOffset;
 	}
 	
-	public int render(Graphics2D context){
-		super.render(context);
+	public double render(Graphics2D context){
+		double width = super.render(context);
 		context.drawChars(noteChars, 0, 1, (int)notePosition.getX(), (int)notePosition.getY());
 		Stroke defaultS = context.getStroke();
 		context.setStroke(m_metrics.getStemStroke());
