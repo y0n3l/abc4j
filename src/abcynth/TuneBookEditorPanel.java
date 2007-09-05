@@ -13,8 +13,8 @@ import javax.swing.event.ListSelectionListener;
 import abc.midi.TunePlayer;
 import abc.notation.Tune;
 import abc.parser.TuneBook;
-import abc.ui.swing.TuneBookTable;
 import abc.ui.swing.TuneEditorPane;
+import abcynth.ui.TuneBookTable;
 
 /** A simple user interface to display abc files content and play
  * tunes. */

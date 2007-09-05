@@ -43,9 +43,9 @@ import abc.midi.TunePlayerListenerInterface;
 import abc.notation.NoteAbstract;
 import abc.notation.Tune;
 import abc.parser.TuneBook;
-import abc.ui.swing.AddTuneAction;
-import abc.ui.swing.RemoveTuneAction;
-import abc.ui.swing.TuneBookActionAbstract;
+import abcynth.ui.AddTuneAction;
+import abcynth.ui.RemoveTuneAction;
+import abcynth.ui.TuneBookActionAbstract;
 
 //import com.birosoft.liquid.LiquidLookAndFeel;
 

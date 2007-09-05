@@ -17,10 +17,10 @@ import javax.swing.event.ListSelectionListener;
 import scanner.PositionableInCharStream;
 import abc.notation.Tune;
 import abc.parser.TuneParserAdapter;
-import abc.ui.swing.ErrorsList;
-import abc.ui.swing.ParsingEventsList;
 import abc.ui.swing.TuneEditorPane;
-import abc.ui.swing.score.JScoreComponent;
+import abc.ui.swing.JScoreComponent;
+import abcynth.ui.ErrorsList;
+import abcynth.ui.ParsingEventsList;
 
 /** A pane for displaying tunes. */
 public class TuneEditorSplitPane extends JSplitPane// implements TuneParserListenerInterface
@@ -127,11 +127,11 @@ public class TuneEditorSplitPane extends JSplitPane// implements TuneParserListe
     m_tuneHeaderComments = new JTextArea();
     m_tuneHeaderComments.setBackground(Color.lightGray);
     m_tuneHeaderComments.setEditable(false);
+    m_tabbedPane.addTab(SCORE_TAB_NAME, new JScrollPane(m_score, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
     m_tabbedPane.addTab(ERRORS_TAB_NAME, new JScrollPane(m_errorsList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
     m_tabbedPane.addTab(HEADER_TAB_NAME, new JScrollPane(m_tuneHeaderComments, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
     if(DISPLAY_TOKEN_TAB)
       m_tabbedPane.addTab(TOKENS_TAB_NAME, new JScrollPane(m_tokensList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
-    m_tabbedPane.addTab(SCORE_TAB_NAME, new JScrollPane(m_score, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
 
     JPanel downerPanel = new JPanel(new BorderLayout());
     downerPanel.add(m_tabbedPane, BorderLayout.CENTER);
