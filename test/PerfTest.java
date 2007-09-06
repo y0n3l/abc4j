@@ -7,7 +7,7 @@ import abc.parser.TuneBook;
 
 public class PerfTest extends TestCase {
 	
-	private static final String ABC_FILE_REFERENCE = "../abc/OneillDos.abc";
+	private static final String ABC_FILE_REFERENCE = "../ressources/OneillDos.abc";
 	
 	public PerfTest(String name) {
 		super(name);

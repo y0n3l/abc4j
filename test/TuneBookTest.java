@@ -18,7 +18,7 @@ public class TuneBookTest extends TestCase {
 	}
 	
 	public void test1(){
-		File f = new File("./testPlan.abc");
+		File f = new File("../ressources/testPlan.abc");
 		//AbcHeadersParser hp = new AbcHeadersParser();
 		try {
 			/*hp.addListener(new AbcFileParserAdapter(){
@@ -38,29 +38,29 @@ public class TuneBookTest extends TestCase {
 			//Checks the 2nd tune : simple scale exercise.
 			t = tb.getTune(1);
 			//Checks if in-file tune header are properly parsed.
-			assertNotNull(tb.getTuneHeader(0));
+			assertNotNull(tb.getTuneHeader(1));
 			PositionableNote n = null;
 			System.out.println(t.getScore());
 			n = (PositionableNote)t.getScore().elementAt(2);
-			assertEquals(Note.C, n.getHeight());
+			assertEquals(Note.C, n.getStrictHeight());
 			assertEquals(1, n.getPosition().getColumn());
 			assertEquals(5, n.getPosition().getLine());
 			assertEquals(2, n.getLength());
 			
 			n = (PositionableNote)t.getScore().elementAt(3);
-			assertEquals(Note.D, n.getHeight());
+			assertEquals(Note.D, n.getStrictHeight());
 			assertEquals(3, n.getPosition().getColumn());
 			assertEquals(5, n.getPosition().getLine());
 			assertEquals(2, n.getLength());
 			
 			n = (PositionableNote)t.getScore().elementAt(4);
-			assertEquals(Note.E, n.getHeight());
+			assertEquals(Note.E, n.getStrictHeight());
 			assertEquals(5, n.getPosition().getColumn());
 			assertEquals(5, n.getPosition().getLine());
 			assertEquals(2, n.getLength());
 			
 			n = (PositionableNote)t.getScore().elementAt(5);
-			assertEquals(Note.F, n.getHeight());
+			assertEquals(Note.F, n.getStrictHeight());
 			assertEquals(7, n.getPosition().getColumn());
 			assertEquals(5, n.getPosition().getLine());
 			assertEquals(2, n.getLength());
@@ -69,25 +69,25 @@ public class TuneBookTest extends TestCase {
 			
 			
 			n = (PositionableNote)t.getScore().elementAt(7);
-			assertEquals(Note.G, n.getHeight());
+			assertEquals(Note.G, n.getStrictHeight());
 			assertEquals(1, n.getPosition().getColumn());
 			assertEquals(6, n.getPosition().getLine());
 			assertEquals(2, n.getLength());
 			
 			n = (PositionableNote)t.getScore().elementAt(8);
-			assertEquals(Note.A, n.getHeight());
+			assertEquals(Note.A, n.getStrictHeight());
 			assertEquals(3, n.getPosition().getColumn());
 			assertEquals(6, n.getPosition().getLine());
 			assertEquals(2, n.getLength());
 			
 			n = (PositionableNote)t.getScore().elementAt(9);
-			assertEquals(Note.B, n.getHeight());
+			assertEquals(Note.B, n.getStrictHeight());
 			assertEquals(5, n.getPosition().getColumn());
 			assertEquals(6, n.getPosition().getLine());
 			assertEquals(2, n.getLength());
 			
 			n = (PositionableNote)t.getScore().elementAt(10);
-			assertEquals(Note.C, n.getHeight());
+			assertEquals(Note.C, n.getStrictHeight());
 			assertEquals(7, n.getPosition().getColumn());
 			assertEquals(6, n.getPosition().getLine());
 			assertEquals(1, n.getLength());
