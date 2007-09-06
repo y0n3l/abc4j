@@ -34,7 +34,7 @@ import abc.parser.InvalidTokenEvent;
 import abc.parser.TuneParser;
 import abc.parser.TuneParserListenerInterface;
 
-/** A pane for displaying and editing tunes. This pane handles copy/paste
+/** A JTextPane to display and edit abc tunes. This pane handles copy/paste.
  * actions. */
 public class TuneEditorPane extends JTextPane implements ActionListener
 {

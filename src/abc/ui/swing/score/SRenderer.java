@@ -17,20 +17,35 @@ public abstract class SRenderer {
 	protected double m_width = -1;
 	
 	public SRenderer(Point2D base, ScoreMetrics c) {
+		this (c);
+		m_base = (Point2D)base.clone();
+	}
+	
+	protected SRenderer(ScoreMetrics c) {
 		m_metrics = c;
-		m_base = base;
 	}
 	
 	public double getWidth() {
 		return m_width;
 	}
 	
+	public Point2D getBase() {
+		return m_base;
+	}
+	
+	public void setBase(Point2D base) {
+		m_base = base;
+		onBaseChanged();
+	}
+	
+	protected abstract void onBaseChanged();
+	
 	public double render(Graphics2D g) {
-		Color previousColor = g.getColor();
+		/*Color previousColor = g.getColor();
 		g.setColor(Color.RED);
-		g.drawRect((int)(m_base.getX()), (int)(m_base.getY()-m_metrics.getStaffCharBounds().getHeight()), 
-				(int)m_width, (int)(m_metrics.getStaffCharBounds().getHeight()));
-		g.setColor(previousColor);
+		g.drawRect((int)(getBase().getX()), (int)(getBase().getY()-m_metrics.getStaffCharBounds().getHeight()), 
+				(int)getWidth(), (int)(m_metrics.getStaffCharBounds().getHeight()));
+		g.setColor(previousColor);*/
 		return m_width;
 	}
 }

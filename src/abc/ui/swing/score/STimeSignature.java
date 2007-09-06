@@ -29,6 +29,10 @@ public class STimeSignature extends SRenderer {
 	public STimeSignature(TimeSignature ts, Point2D base, ScoreMetrics c) {
 		super(base, c);
 		m_ts = ts;
+		onBaseChanged();
+	}
+	
+	protected void onBaseChanged() {
 		m_numChars = DIGITS[m_ts.getNumerator()-1];
 		m_denomChars = DIGITS[m_ts.getDenominator()-1];
 		m_topNumY = (int)(m_base.getY()-m_metrics.getNoteHeigth()*3.1);

@@ -1,4 +1,4 @@
-package abc.ui.swing.score;
+package abc.ui.swing;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -28,9 +28,26 @@ import abc.notation.TimeSignature;
 import abc.notation.Tune;
 import abc.notation.Tuplet;
 import abc.notation.Tune.Score;
+import abc.ui.swing.score.GroupOfNotesRenderer;
+import abc.ui.swing.score.SBar;
+import abc.ui.swing.score.SClef;
+import abc.ui.swing.score.SKeySignature;
+import abc.ui.swing.score.SNote;
+import abc.ui.swing.score.SRenderer;
+import abc.ui.swing.score.SRepeatBar;
+import abc.ui.swing.score.STimeSignature;
+import abc.ui.swing.score.ScoreMetrics;
+import abc.ui.swing.score.StaffLine;
 
 /**
- * This JComponent displays tunes score. 
+ * This JComponent displays tunes scores.
+ * <BR/> You can get them rendered like :
+ * <IMG src="../../../images/scoreEx.jpg"/> 
+ * <BR/>
+ * To render a tune score, just invoke the <TT>setTune(Tune)</TT> method
+ * with your tune.
+ * @see #setTune(Tune) 
+ * 
  */
 public class JScoreComponent extends JComponent {
 	/** The tune to be displayed. */
@@ -54,6 +71,9 @@ public class JScoreComponent extends JComponent {
 	protected Vector m_staffLines = null;
 	/** The size used for the score scale. */
 	protected float m_size = 45;
+	/** <TT>true</TT> if the rendition of the score should be justified, 
+	 * <TT>false</TT> otherwise. */
+	protected boolean m_isJustified = false;
 	
 	/** Default constructor. */
 	public JScoreComponent() {
@@ -134,7 +154,7 @@ public class JScoreComponent extends JComponent {
 	}
 	
 	/** Sets the tune to be renderered.
-	 * @param theTune The tune to be displayed. */
+	 * @param tune The tune to be displayed. */
 	public void setTune(Tune tune){
 		m_tune = tune;
 		if (m_metrics==null)
@@ -304,31 +324,52 @@ public class JScoreComponent extends JComponent {
 				componentHeight+m_metrics.getStaffCharBounds().getHeight());
 		setPreferredSize(m_dimension);
 		setSize(m_dimension);
-		justify();
+		if (m_isJustified)
+			justify();
 		m_isBufferedImageOutdated=true;
 		repaint();
 	}
 	
 /*	protected void renderStaffLines(Graphics2D g) {
-		
 		//System.out.println("char staff nb : " + staffCharNb);
 		for (int i=0; i<m_staffLines.size(); i++) {
 			StaffLine currentSL = (StaffLine)m_staffLines.elementAt(i);
-							
 		}
 	}*/
+	
+	/** Changes the justification of the rendition score. This will
+	 * set the staff lines aligment to justify in order to have a more
+	 * elegant display. 
+	 * @param isJustified <TT>true</TT> if the score rendition should be
+	 * justified, <TT>false</TT> otherwise. */
+	public void setJustification(boolean isJustified) {
+		m_isJustified = isJustified;
+		repaint();
+	}
+	
+	/** Return <TT>true</TT> if the rendition staff lines alignment is
+	 * justified, <TT>false</TT> otherwise.
+	 * @return <TT>true</TT> if the rendition staff lines alignment is
+	 * justified, <TT>false</TT> otherwise. */
+	public boolean iJustified() {
+		return m_isJustified;
+	}
 
-	public void justify() {
-		double maxWidth = ((StaffLine)m_staffLines.elementAt(0)).getWidth();
-		for (int i=1; i<m_staffLines.size();i++){
-			StaffLine currentStaffLine = (StaffLine)m_staffLines.elementAt(i);
-			if (currentStaffLine.getWidth()>maxWidth)
-				maxWidth = currentStaffLine.getWidth();
-		}
-		for (int i=0; i<m_staffLines.size();i++) {
-			StaffLine currentStaffLine = (StaffLine)m_staffLines.elementAt(i);
-			if (currentStaffLine.getWidth()>maxWidth/2)
-				currentStaffLine.scaleToWidth(maxWidth);
+	/** Triggers the re computation of all staff lines elements in order to 
+	 * get the alignment justified. */
+	protected void justify() {
+		if (m_staffLines.size()>0) {
+			double maxWidth = ((StaffLine)m_staffLines.elementAt(0)).getWidth();
+			for (int i=1; i<m_staffLines.size();i++){
+				StaffLine currentStaffLine = (StaffLine)m_staffLines.elementAt(i);
+				if (currentStaffLine.getWidth()>maxWidth)
+					maxWidth = currentStaffLine.getWidth();
+			}
+			for (int i=0; i<m_staffLines.size();i++) {
+				StaffLine currentStaffLine = (StaffLine)m_staffLines.elementAt(i);
+				if (currentStaffLine.getWidth()>maxWidth/2)
+					currentStaffLine.scaleToWidth(maxWidth);
+			}
 		}
 	}
 	

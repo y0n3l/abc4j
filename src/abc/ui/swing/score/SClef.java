@@ -16,6 +16,9 @@ public class SClef extends SRenderer {
 		m_width = 3*m_metrics.getNoteWidth();
 	}
 	
+	protected void onBaseChanged() {
+	}
+	
 	public double render(Graphics2D context){
 		super.render(context);
 		char[] chars2 = {ScoreMetrics.STAFF_SIX_LINES};

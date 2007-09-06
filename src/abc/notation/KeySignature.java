@@ -8,26 +8,55 @@ package abc.notation;
  * Mixolydian (mode 5)                       A   B   C#   D   E   F#  G
  * Aeolian (mode 6)                              B   C#   D   E   F#  G   A
  * </PRE>
- * If we consider the key namned "Ab aeolian", "A" is called the note of this
- * key, "b" is called the key accidental and "aeolian" is called the mode. */
+ * If we consider the key namned "Ab aeolian", "A" is the note of this
+ * key, "b" is the key accidental and "aeolian" is the mode. */
 public class KeySignature implements ScoreElementInterface, Cloneable
 {
-    private final byte[][] accidentalsRules =
-    {
-    //	Flyd C Cmaj Cion Gmix Ddor Amin Am Aeol  Ephr Bloc
-    //											  C    D    E    F    G    A    B
-    {AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL },	// C
-    {AccidentalType.SHARP, AccidentalType.SHARP,AccidentalType.SHARP,AccidentalType.SHARP,AccidentalType.SHARP,AccidentalType.SHARP,AccidentalType.SHARP},
-    {AccidentalType.SHARP,AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.SHARP,AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL },	// D
-    {AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.FLAT, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.FLAT, AccidentalType.FLAT },
-    {AccidentalType.SHARP,AccidentalType.SHARP,AccidentalType.NATURAL, AccidentalType.SHARP,AccidentalType.SHARP,AccidentalType.NATURAL, AccidentalType.NATURAL },	// E
-    {AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.FLAT },	// F
-    {AccidentalType.SHARP,AccidentalType.SHARP,AccidentalType.SHARP,AccidentalType.SHARP,AccidentalType.SHARP,AccidentalType.SHARP,AccidentalType.NATURAL },
-    {AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.SHARP,AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL },	// G
-    {AccidentalType.NATURAL, AccidentalType.FLAT, AccidentalType.FLAT, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.FLAT, AccidentalType.FLAT },
-    {AccidentalType.SHARP,AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.SHARP,AccidentalType.SHARP,AccidentalType.NATURAL, AccidentalType.NATURAL },	// A
-    {AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.FLAT, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.FLAT },
-    {AccidentalType.SHARP,AccidentalType.SHARP,AccidentalType.NATURAL, AccidentalType.SHARP,AccidentalType.SHARP,AccidentalType.SHARP,AccidentalType.NATURAL }		// B
+    private final byte[][] accidentalsRules = {
+//	Flyd C Cmaj Cion Gmix Ddor Amin Am Aeol  Ephr Bloc
+//						C    					D    					E    					F    					G    					A    					B
+/*C*/ {AccidentalType.NATURAL, 	AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL },	// C
+/*Db*/{AccidentalType.NATURAL, 	AccidentalType.FLAT,	AccidentalType.FLAT,	AccidentalType.NATURAL,	AccidentalType.FLAT,	AccidentalType.FLAT,	AccidentalType.FLAT},
+/*D*/ {AccidentalType.SHARP,	AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.SHARP,	AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL },	// D
+/*Db*/{AccidentalType.NATURAL, 	AccidentalType.NATURAL, AccidentalType.FLAT, 	AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.FLAT, 	AccidentalType.FLAT },
+/*E*/ {AccidentalType.SHARP,	AccidentalType.SHARP,	AccidentalType.NATURAL, AccidentalType.SHARP,	AccidentalType.SHARP,	AccidentalType.NATURAL, AccidentalType.NATURAL },	// E
+/*F*/ {AccidentalType.NATURAL, 	AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.FLAT },		// F
+      {},	// This one would contain E#(=F) Not really OK 
+/*G*/ {AccidentalType.NATURAL, 	AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.SHARP,	AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL },	// G
+/*Ab*/{AccidentalType.NATURAL, 	AccidentalType.FLAT, 	AccidentalType.FLAT, 	AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.FLAT, 	AccidentalType.FLAT },
+/*A*/ {AccidentalType.SHARP,	AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.SHARP,	AccidentalType.SHARP,	AccidentalType.NATURAL, AccidentalType.NATURAL },	// A
+/*Bb*/{AccidentalType.NATURAL, 	AccidentalType.NATURAL, AccidentalType.FLAT, 	AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.FLAT },
+/*B*/ {AccidentalType.SHARP,	AccidentalType.SHARP,	AccidentalType.NATURAL, AccidentalType.SHARP,	AccidentalType.SHARP,	AccidentalType.SHARP,	AccidentalType.NATURAL }	// B
+    };
+    
+    private final byte[][] accidentalRulesFlat = {
+/*C*/ {},
+/* */ {},
+/*D*/ {},
+/* */ {},
+/*E*/ {},
+/*F*/ {},
+/*Gb*/{AccidentalType.FLAT, 		AccidentalType.FLAT, 	AccidentalType.FLAT, 	AccidentalType.NATURAL, AccidentalType.FLAT, 	AccidentalType.FLAT, 	AccidentalType.FLAT },
+/*G*/ {},
+/* */ {},
+/*A*/ {},
+/* */ {},
+/*Cb*/{AccidentalType.FLAT, 		AccidentalType.FLAT, 	AccidentalType.FLAT, 	AccidentalType.FLAT, 	AccidentalType.FLAT, 	AccidentalType.FLAT, 	AccidentalType.FLAT }
+    };
+    
+    private final byte[][] accidentalRulesSharp = {
+/*C*/ {},
+/*C#*/{AccidentalType.SHARP,		AccidentalType.SHARP,	AccidentalType.SHARP, 	AccidentalType.SHARP,	AccidentalType.SHARP,	AccidentalType.SHARP,	AccidentalType.SHARP },
+/*D*/ {},
+/* */ {},
+/*E*/ {},
+/*F*/ {},
+/*F#*/{AccidentalType.SHARP,		AccidentalType.SHARP,	AccidentalType.SHARP, 	AccidentalType.SHARP,	AccidentalType.SHARP,	AccidentalType.SHARP,	AccidentalType.NATURAL },
+/*G*/ {},
+/* */ {},
+/*A*/ {},
+/* */ {},
+/*B*/ {}
     };
 
     /** The aeolian mode type. */
@@ -118,8 +147,27 @@ public class KeySignature implements ScoreElementInterface, Cloneable
       else if (modeType == AEOLIAN)keyIndex = keyIndex + 3;
       else if (modeType == PHRYGIAN) keyIndex = keyIndex + 8;
       else if (modeType == LOCRIAN) keyIndex = keyIndex + 1;
-      keyIndex = keyIndex % 12;
-      accidentals = accidentalsRules [keyIndex];
+      // this + 12 % 12 is a workaound to express key signature 
+      // that are expressed with notes such as Cb (=B) or E# (=F)
+      // Before this fix, keys such as Cb was causing crash (because
+      // keyIndex was equals to -1 in that case.
+      keyIndex = (keyIndex+12) % 12;
+      if (keyIndex==6 && keyAccidental==AccidentalType.FLAT) //Gb (The C is flat)
+    		  accidentals = accidentalRulesFlat[keyIndex];
+    	  else
+    		  if (keyIndex==6 &&  keyAccidental==AccidentalType.SHARP) //F# (The E is sharp)
+    			  accidentals = accidentalRulesSharp[keyIndex];
+    		  else
+    			  if (keyIndex==6 &&  keyAccidental==AccidentalType.NATURAL)
+    				  throw new RuntimeException("Cannot map " + keyNoteType + "/" + keyAccidental + "/" + modeType + " to a key signature");
+    			  else
+    				  if (keyIndex==11 && keyAccidental==AccidentalType.FLAT) // for Cb
+    					  accidentals = accidentalRulesFlat[keyIndex];
+    				  else
+    					  if (keyIndex==1 && keyAccidental==AccidentalType.SHARP) // C#
+    						  accidentals = accidentalRulesSharp[keyIndex];
+    					  else
+    						  accidentals = accidentalsRules [keyIndex]; //apply normal rule.
     }
 
     /** Creates a key signature with the specified accidentals.
@@ -213,11 +261,15 @@ public class KeySignature implements ScoreElementInterface, Cloneable
     }
     
     public boolean hasOnlySharps(){
-    	return (keyIndex==1 || keyIndex==2 || keyIndex==4 || keyIndex==6 || keyIndex==7 || keyIndex== 9 || keyIndex==11);     
+    	return ((keyIndex==1 && m_keyAccidental==AccidentalType.SHARP) || keyIndex==2 || keyIndex==4 
+    			|| (keyIndex==6 && m_keyAccidental==AccidentalType.SHARP) 
+    			|| keyIndex==7 || keyIndex== 9 || (keyIndex==11 && m_keyAccidental==AccidentalType.NATURAL));     
     }
     
     public boolean hasOnlyFlats(){
-    	return (keyIndex==3 || keyIndex==5 || keyIndex==8 || keyIndex== 10);     
+    	return ((keyIndex==1 && m_keyAccidental==AccidentalType.FLAT) || keyIndex==3 || keyIndex==5 
+    			|| (keyIndex==6 && m_keyAccidental==AccidentalType.FLAT) || keyIndex==8 || keyIndex== 10
+    			|| (keyIndex==11 && m_keyAccidental==AccidentalType.FLAT));     
     }
     
     public String toLitteralNotation()

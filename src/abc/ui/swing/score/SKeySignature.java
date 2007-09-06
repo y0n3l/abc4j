@@ -27,54 +27,59 @@ public class SKeySignature extends SRenderer {
 	public SKeySignature(KeySignature keyV, Point2D base, ScoreMetrics c) {
 		super(base, c);
 		key = keyV;
-		if (keyV.hasOnlySharps()) {
-			double FPositionX = base.getX();
-			double FPositionY = base.getY() - SNotePartOfGroup.getOffset(new Note(Note.f, AccidentalType.NONE))*c.getNoteHeigth();
+		onBaseChanged();
+	}
+	
+	protected void onBaseChanged() {
+		ScoreMetrics c = m_metrics;
+		if (key.hasOnlySharps()) {
+			double FPositionX = m_base.getX();
+			double FPositionY = m_base.getY() - SNotePartOfGroup.getOffset(new Note(Note.f, AccidentalType.NONE))*c.getNoteHeigth();
 			FPosition = new Point2D.Double(FPositionX, FPositionY);
-			double CPositionX = base.getX()+c.getSharpBounds().getWidth();
-			double CPositionY = base.getY() - SNotePartOfGroup.getOffset(new Note(Note.c, AccidentalType.NONE))*c.getNoteHeigth();
+			double CPositionX = m_base.getX()+c.getSharpBounds().getWidth();
+			double CPositionY = m_base.getY() - SNotePartOfGroup.getOffset(new Note(Note.c, AccidentalType.NONE))*c.getNoteHeigth();
 			CPosition = new Point2D.Double(CPositionX, CPositionY);
-			double GPositionX = base.getX()+2*c.getSharpBounds().getWidth();
-			double GPositionY = base.getY() - SNotePartOfGroup.getOffset(new Note(Note.g, AccidentalType.NONE))*c.getNoteHeigth();
+			double GPositionX = m_base.getX()+2*c.getSharpBounds().getWidth();
+			double GPositionY = m_base.getY() - SNotePartOfGroup.getOffset(new Note(Note.g, AccidentalType.NONE))*c.getNoteHeigth();
 			GPosition = new Point2D.Double(GPositionX, GPositionY);
-			double DPositionX = base.getX()+3*c.getSharpBounds().getWidth();
-			double DPositionY = base.getY() - SNotePartOfGroup.getOffset(new Note(Note.d, AccidentalType.NONE))*c.getNoteHeigth();
+			double DPositionX = m_base.getX()+3*c.getSharpBounds().getWidth();
+			double DPositionY = m_base.getY() - SNotePartOfGroup.getOffset(new Note(Note.d, AccidentalType.NONE))*c.getNoteHeigth();
 			DPosition = new Point2D.Double(DPositionX, DPositionY);
-			double APositionX = base.getX()+4*c.getSharpBounds().getWidth();
-			double APositionY = base.getY() - SNotePartOfGroup.getOffset(new Note(Note.A, AccidentalType.NONE))*c.getNoteHeigth();
+			double APositionX = m_base.getX()+4*c.getSharpBounds().getWidth();
+			double APositionY = m_base.getY() - SNotePartOfGroup.getOffset(new Note(Note.A, AccidentalType.NONE))*c.getNoteHeigth();
 			APosition = new Point2D.Double(APositionX, APositionY);
-			double EPositionX = base.getX()+5*c.getSharpBounds().getWidth();
-			double EPositionY = base.getY() - SNotePartOfGroup.getOffset(new Note(Note.e, AccidentalType.NONE))*c.getNoteHeigth();
+			double EPositionX = m_base.getX()+5*c.getSharpBounds().getWidth();
+			double EPositionY = m_base.getY() - SNotePartOfGroup.getOffset(new Note(Note.e, AccidentalType.NONE))*c.getNoteHeigth();
 			EPosition = new Point2D.Double(EPositionX, EPositionY);
-			double BPositionX = base.getX()+6*c.getSharpBounds().getWidth();
-			double BPositionY = base.getY() - SNotePartOfGroup.getOffset(new Note(Note.B, AccidentalType.NONE))*c.getNoteHeigth();
+			double BPositionX = m_base.getX()+6*c.getSharpBounds().getWidth();
+			double BPositionY = m_base.getY() - SNotePartOfGroup.getOffset(new Note(Note.B, AccidentalType.NONE))*c.getNoteHeigth();
 			BPosition = new Point2D.Double(BPositionX, BPositionY);
 		}
 		else
-			if (keyV.hasOnlyFlats()) {
-				double BPositionX = base.getX();
-				double BPositionY = base.getY() - SNotePartOfGroup.getOffset(new Note(Note.B, AccidentalType.NONE))*c.getNoteHeigth();
+			if (key.hasOnlyFlats()) {
+				double BPositionX = m_base.getX();
+				double BPositionY = m_base.getY() - SNotePartOfGroup.getOffset(new Note(Note.B, AccidentalType.NONE))*c.getNoteHeigth();
 				BPosition = new Point2D.Double(BPositionX, BPositionY);
-				double EPositionX = base.getX()+c.getSharpBounds().getWidth();
-				double EPositionY = base.getY() - SNotePartOfGroup.getOffset(new Note(Note.e, AccidentalType.NONE))*c.getNoteHeigth();
+				double EPositionX = m_base.getX()+c.getSharpBounds().getWidth();
+				double EPositionY = m_base.getY() - SNotePartOfGroup.getOffset(new Note(Note.e, AccidentalType.NONE))*c.getNoteHeigth();
 				EPosition = new Point2D.Double(EPositionX, EPositionY);
-				double APositionX = base.getX()+2*c.getSharpBounds().getWidth();
-				double APositionY = base.getY() - SNotePartOfGroup.getOffset(new Note(Note.A, AccidentalType.NONE))*c.getNoteHeigth();
+				double APositionX = m_base.getX()+2*c.getSharpBounds().getWidth();
+				double APositionY = m_base.getY() - SNotePartOfGroup.getOffset(new Note(Note.A, AccidentalType.NONE))*c.getNoteHeigth();
 				APosition = new Point2D.Double(APositionX, APositionY);
-				double DPositionX = base.getX()+3*c.getSharpBounds().getWidth();
-				double DPositionY = base.getY() - SNotePartOfGroup.getOffset(new Note(Note.d, AccidentalType.NONE))*c.getNoteHeigth();
+				double DPositionX = m_base.getX()+3*c.getSharpBounds().getWidth();
+				double DPositionY = m_base.getY() - SNotePartOfGroup.getOffset(new Note(Note.d, AccidentalType.NONE))*c.getNoteHeigth();
 				DPosition = new Point2D.Double(DPositionX, DPositionY);
-				double GPositionX = base.getX()+4*c.getSharpBounds().getWidth();
-				double GPositionY = base.getY() - SNotePartOfGroup.getOffset(new Note(Note.g, AccidentalType.NONE))*c.getNoteHeigth();
+				double GPositionX = m_base.getX()+4*c.getSharpBounds().getWidth();
+				double GPositionY = m_base.getY() - SNotePartOfGroup.getOffset(new Note(Note.G, AccidentalType.NONE))*c.getNoteHeigth();
 				GPosition = new Point2D.Double(GPositionX, GPositionY);
-				double CPositionX = base.getX()+5*c.getSharpBounds().getWidth();
-				double CPositionY = base.getY() - SNotePartOfGroup.getOffset(new Note(Note.d, AccidentalType.NONE))*c.getNoteHeigth();
+				double CPositionX = m_base.getX()+5*c.getSharpBounds().getWidth();
+				double CPositionY = m_base.getY() - SNotePartOfGroup.getOffset(new Note(Note.c, AccidentalType.NONE))*c.getNoteHeigth();
 				CPosition = new Point2D.Double(CPositionX, CPositionY);
-				double FPositionX = base.getX()+6*c.getSharpBounds().getWidth();
-				double FPositionY = base.getY() - SNotePartOfGroup.getOffset(new Note(Note.f, AccidentalType.NONE))*c.getNoteHeigth();
+				double FPositionX = m_base.getX()+6*c.getSharpBounds().getWidth();
+				double FPositionY = m_base.getY() - SNotePartOfGroup.getOffset(new Note(Note.F, AccidentalType.NONE))*c.getNoteHeigth();
 				FPosition = new Point2D.Double(FPositionX, FPositionY);
 			}
-		byte[] accidentals = keyV.getAccidentals();
+		byte[] accidentals = key.getAccidentals();
 		for (int i=0; i<accidentals.length; i++){
 			char[] chars = null;
 			if (accidentals[i]==AccidentalType.SHARP) {

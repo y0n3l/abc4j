@@ -20,6 +20,10 @@ public class SBar extends SRenderer{
 	public SBar(BarLine barLine, Point2D base, ScoreMetrics c) {
 		super (base, c);
 		m_barLine = barLine; 
+		onBaseChanged();
+	}
+	
+	protected void onBaseChanged() {
 		m_dotsRadius = (int)(m_metrics.getNoteWidth()*0.3);
 		m_barWidth = (int)(m_metrics.getNoteWidth()*0.5);
 		m_barDotsSpacing = (int)(m_metrics.getNoteWidth()*0.2);

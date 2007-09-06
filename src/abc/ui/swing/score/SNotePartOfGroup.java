@@ -65,12 +65,12 @@ public class SNotePartOfGroup extends SNote {
 	}
 	
 	public double render(Graphics2D context){
-		double width = super.render(context);
+		super.render(context);
 		context.drawChars(noteChars, 0, 1, (int)notePosition.getX(), (int)notePosition.getY());
 		Stroke defaultS = context.getStroke();
 		context.setStroke(m_metrics.getStemStroke());
 		context.drawLine((int)stemX, stemYBegin,stemX, stemYEnd);
 		context.setStroke(defaultS);
-		return width;
+		return m_width;
 	}
 }

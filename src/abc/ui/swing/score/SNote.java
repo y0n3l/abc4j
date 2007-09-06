@@ -34,6 +34,12 @@ public class SNote extends SRenderer {
 	public SNote(Note noteValue, Point2D base, ScoreMetrics c) {
 		super(base, c);
 		note = noteValue;
+		onBaseChanged();
+	}
+	
+	protected void onBaseChanged() {
+		ScoreMetrics c = m_metrics;
+		Point2D base = m_base;
 		int noteY = 0;
 		if (note.isRest())
 			noteY = (int)(base.getY()-2*c.getNoteHeigth());
@@ -122,11 +128,8 @@ public class SNote extends SRenderer {
 		return note;
 	}
 		
-	public Point2D getAccidentalsPosition(ScoreMetrics context, Point2D base, Note note){
-		return accidentalsPosition;
-	}
-	
 	public double render(Graphics2D g){
+		super.render(g);
 		renderExtendedStaffLines(g, m_metrics, m_base);
 		renderAccidentals(g);
 		renderDots(g);
