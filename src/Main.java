@@ -1,16 +1,11 @@
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
-
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
 
 import abc.notation.KeySignature;
 import abc.notation.Note;
 import abc.notation.TimeSignature;
 import abc.notation.Tune;
 import abc.parser.TuneBook;
-import abc.ui.swing.score.JScoreComponent;
+import abc.ui.swing.JScoreComponent;
 
 //import jm.music.data.*;
 //import jm.gui.show.*;
@@ -116,7 +111,7 @@ public class Main  {
 		Tune tune = tb.getTune(1);
 		System.out.println(tune);
 		JScoreComponent jscore = new JScoreComponent();
-		jscore.writeScoreTo(tune, new File("D:/Perso/partitions/"+ tune.getTitles()[0]+".jpg"));
+		//jscore.writeScoreTo(tune, new File("D:/Perso/partitions/"+ tune.getTitles()[0]+".jpg"));
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -137,19 +132,20 @@ public class Main  {
 		score.addElement(new Note(Note.B));
 		score.addElement(new Note(Note.c));
 		JScoreComponent scoreUI =new JScoreComponent();
-		scoreUI.setSize(43);
+		/*scoreUI.setSize(43);
 		scoreUI.setTune(tune);
 		JFrame j = new JFrame();
 		j.setSize(500, 200);
 		j.add(scoreUI);
 		//System.out.println(sp.getSize());
-		j.setVisible(true);
-		/*try {
-		scoreUI.writeScoreTo(tune, new File("D:/Perso/partitions/abc4j.jpg"));
+		j.setVisible(true);*/
+		try {
+			scoreUI.setTune(tune);
+			scoreUI.writeScoreTo(new File("D:/Perso/partitions/abc4j.jpg"));
 		}
 		catch (Exception e){
 			e.printStackTrace();
-		}*/
+		}
 	}
 	
 }

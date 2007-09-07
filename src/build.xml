@@ -144,6 +144,8 @@
 						columns="name, method, line"/>
 			</report>
 		</emma>-->
+		<!--zip cobertura reports -->
+		<!--<zip destfile="${docdir}/coberturaReports.zip" basedir="${logdir.cov}" />-->
 	</target>
 	
 	<!-- ================================== END OF COVERAGE ==================================== -->
@@ -167,6 +169,7 @@
 				<include name="abc/**" />
       			<include name="scanner/**" />
 				<exclude name="abc/parser/def**" />
+      			<exclude name="abc/ui/swing/score**" />
 			</packageset>
 		</javadoc>
 		<mkdir dir="${docdir}/api/images"/>

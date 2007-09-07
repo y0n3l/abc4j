@@ -46,6 +46,7 @@ public class TuneEditorSplitPane extends JSplitPane// implements TuneParserListe
     m_tunePane = new TuneEditorPane();
     m_errorsList = new ErrorsList(m_tunePane.getParser());
     m_score = new JScoreComponent();
+    m_score.setJustification(true);
     m_score.setSize(38);
     m_tunePane.getParser().addListener(new TuneParserAdapter(){
     	public void tuneEnd(Tune tune){
