@@ -3,7 +3,7 @@
 <project name="abc4j" default="all" basedir=".">
 	
 	<!-- Environment variables -->
-	<property name="JDIFF_HOME" value="D:/installs/jdiff"/>
+	<property name="JDIFF_HOME" value="D:/installs/jdiff-1.1.0"/>
 	<property name="OLD_VERSION_DIR" value="D:/Perso/abc4jOld/v0.2"/>
 	<property name="COBERTURA_DIR" value="D:/installs/cobertura-1.8"/>
 	<property name="JUNIT_JAR" value="D:/eclipse/plugins/org.junit4_4.1.0.1/junit-4.1.jar" />
@@ -44,7 +44,7 @@
 	</path>
 
 	<taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
-	<taskdef name="jdiff" classname="jdiff.JDiffAntTask" classpath="${JDIFF_HOME}/lib/antjdiff.jar"/>
+	<taskdef name="jdiff" classname="jdiff.JDiffAntTask" classpath="${JDIFF_HOME}/antjdiff.jar"/>
 	
 	<!-- Makes all -->
 	<target name="all" depends="clean, sources.compile, libs, javadoc, jdiff, unittests" />
@@ -185,13 +185,14 @@
 	<!-- Generates the diff between the current api and the previous version -->
 	<target name="jdiff" description="Generates changes diff between 2 abc4j versions">
 		<jdiff stats="on" destdir="${docdir}/diff">
-			<old name="v0.2" javadoc="${OLD_VERSION_DIR}/docs/api">
+			<old name="v0.2" javadoc="${OLD_VERSION_DIR}/docs/api/">
 				<dirset dir="${OLD_VERSION_DIR}/src/"/>
 			</old>
-			<new name="v0.3" javadoc="${docdir}/api">
+			<new name="v0.3" javadoc="${docdir}/api/">
 				<dirset dir="${srcdir}"/>
 			</new>
 		</jdiff>
+		<zip destfile="${docdir}/abc4jJDiffDoc.zip" basedir="${docdir}/diff" />
 	</target>
 	
 	<!-- Removes the files but keeps the directory structure. -->

@@ -90,7 +90,7 @@ public class JScoreComponent extends JComponent {
 	
 	/** Draws the current tune score into the given graphic context.
 	 * @param g Graphic context. */
-	public void drawIn(Graphics2D g){
+	protected void drawIn(Graphics2D g){
 		if(m_tune!=null) {
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setFont(m_metrics.getFont());
@@ -341,7 +341,8 @@ public class JScoreComponent extends JComponent {
 	 * set the staff lines aligment to justify in order to have a more
 	 * elegant display. 
 	 * @param isJustified <TT>true</TT> if the score rendition should be
-	 * justified, <TT>false</TT> otherwise. */
+	 * justified, <TT>false</TT> otherwise. 
+	 * @see #isJustified()*/
 	public void setJustification(boolean isJustified) {
 		m_isJustified = isJustified;
 		repaint();
@@ -350,8 +351,9 @@ public class JScoreComponent extends JComponent {
 	/** Return <TT>true</TT> if the rendition staff lines alignment is
 	 * justified, <TT>false</TT> otherwise.
 	 * @return <TT>true</TT> if the rendition staff lines alignment is
-	 * justified, <TT>false</TT> otherwise. */
-	public boolean iJustified() {
+	 * justified, <TT>false</TT> otherwise. 
+	 * @see #setJustification(boolean) */
+	public boolean isJustified() {
 		return m_isJustified;
 	}
 

@@ -27,8 +27,7 @@ public class LogFrame extends JFrame implements AbcFileParserListenerInterface
   public JTextArea getErrorsArea()
   { return m_errorsArea; }
 
-  public void tuneBegin()
-  {
+  public void tuneBegin() {
   }
 
   public void invalidToken(InvalidTokenEvent event)
