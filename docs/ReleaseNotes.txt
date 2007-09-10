@@ -1,3 +1,24 @@
+Version 0.3
+===========
+* NOT BACKWARD COMPATIBLE, PLEASE UPDATE YOUR CODE FOR THE FOLLOWING CHANGE !!!! :
+The getHeight() method in the Note class has been RENAMED to getStrictHeigth()
+The getHeight() remains but its meaning has been changed. 
+Please refer to the javadoc for further information about those 2 methods.
+
+*NEW : you can now display music scores from your Tune class instances using the
+abc.ui.swing.JScore class.
+The musical representation still has a lot of limitations (multi notes are 
+not displayed, same for chords etc etc), but the basics are here already (imho:).
+
+* Various fixes : 
+- issue when moving to JDK 1.5 : midi messages to change the tempo in a midi 
+sequence didn't t seem to be recognized by the 1.5 sequencer. I had to work around
+this.
+- Issue 4 fix : nullpointer exception in tuplets part when parsing.
+- Issue 5 fix  : Cb key makes an array out of bounds exception.
+- Issue 6 fix : 	isCompound() in time signature has wrong implementation.
+
+
 Version 0.2
 ===========
 * Lyrics content of abc tunes is now provided from tune score representation.
