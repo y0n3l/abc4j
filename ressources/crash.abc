@@ -312,3 +312,23 @@ GABc d2d2| d=fed c2z2| GABc d2d2| cdcB A2z2| GABA G2d2| edcB B2A2\
 |1 GABc d2A2| FGAB A2z2 :|2 GABc f2g2| f2a2g2z2|]
 % the lower notes in the last 1st-time bar are pretty much a guess -
 % very indistinct photocopy. Sorry.
+
+X:21
+T:Test Gflat
+K:Gb
+G
+
+X:22
+T:Test Fsharp
+K:F#
+F
+
+X:23
+T:Test Cflat
+K:Cb
+C
+
+X:24
+T:Test Csharp
+K:C#
+C
