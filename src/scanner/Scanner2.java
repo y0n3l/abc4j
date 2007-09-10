@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 
 /** A Scanner optimsed for buffered streams. (Experimental purpose for now,
  * not used in abc4j).*/
-public class Scanner2 extends Scanner
+class Scanner2 extends Scanner
 {
 	//private String m_previousLine = null;
 	private String m_theLine = null;
