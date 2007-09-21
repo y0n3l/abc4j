@@ -2,11 +2,16 @@ package abc.ui.swing.score;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.rmi.ServerRuntimeException;
 import java.util.Vector;
 
-public class StaffLine extends SRenderer {
+import abc.notation.ScoreElementInterface;
+import abc.notation.StaffEndOfLine;
+import abc.ui.swing.JScoreElement;
+
+public class StaffLine extends JScoreElement {
 
 	protected Vector m_staffElements = null;
 	
@@ -16,22 +21,36 @@ public class StaffLine extends SRenderer {
 	}
 	
 	public Point2D getBase() {
-		return ((SRenderer)m_staffElements.elementAt(0)).getBase();
+		return ((JScoreElement)m_staffElements.elementAt(0)).getBase();
+	}
+	
+	public ScoreElementInterface getScoreElement() {
+		return null;
 	}
 	
 	protected void onBaseChanged() {
 		
 	}
 	
-	public void addElement(SRenderer r) {
+	public void addElement(JScoreElement r) {
 		m_staffElements.addElement(r);
 		computeWidth();
 	}
 	
-	public SRenderer[] toArray() {
-		SRenderer[] r = new SRenderer[m_staffElements.size()];
+	public JScoreElement[] toArray() {
+		JScoreElement[] r = new JScoreElement[m_staffElements.size()];
 		m_staffElements.toArray(r);
 		return r;
+	}
+	
+	public JScoreElement getScoreElementAt(Point point) {
+		JScoreElement scoreEl = null;
+		for (int i=0; i<m_staffElements.size(); i++) {
+			scoreEl = ((JScoreElement)m_staffElements.elementAt(i)).getScoreElementAt(point);
+			if (scoreEl!=null)
+				return scoreEl;
+		}
+		return scoreEl;
 	}
 	
 	public double render(Graphics2D g) {
@@ -42,8 +61,12 @@ public class StaffLine extends SRenderer {
 				(int)getWidth(), (int)(m_metrics.getStaffCharBounds().getHeight()));
 		g.setColor(previousColor);*/
 		
-		SRenderer[] elmts = toArray();
+		JScoreElement[] elmts = toArray();
 		for (int j=0; j<elmts.length; j++) {
+			/*if (j%2==0)
+				g.setColor(Color.RED);
+			else
+				g.setColor(Color.BLACK);*/
 			elmts[j].render((Graphics2D)g);
 		}
 		int staffCharNb = (int)(getWidth()/m_metrics.getStaffCharWidth());
@@ -57,7 +80,7 @@ public class StaffLine extends SRenderer {
 	
 	public void scaleToWidth(double newWidth) {
 		for (int i=0; i<m_staffElements.size(); i++){
-			SRenderer elmt = (SRenderer)m_staffElements.elementAt(i);
+			JScoreElement elmt = (JScoreElement)m_staffElements.elementAt(i);
 			if ( (!(elmt instanceof SClef)) && (!(elmt instanceof SKeySignature))
 					&& (!(elmt instanceof STimeSignature))
 					)  {
@@ -72,7 +95,7 @@ public class StaffLine extends SRenderer {
 	}
 	
 	private void computeWidth() {
-		SRenderer lastElmt = (SRenderer)m_staffElements.lastElement();
+		JScoreElement lastElmt = (JScoreElement)m_staffElements.lastElement();
 		m_width = lastElmt.getBase().getX()+lastElmt.getWidth();
 	}
 

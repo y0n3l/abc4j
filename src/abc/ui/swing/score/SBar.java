@@ -5,8 +5,10 @@ import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
 import abc.notation.BarLine;
+import abc.notation.ScoreElementInterface;
+import abc.ui.swing.JScoreElement;
 
-public class SBar extends SRenderer{
+public class SBar extends JScoreElement{
 	/** The encapsulated abc notation bar element */
 	protected BarLine m_barLine = null;
 
@@ -21,6 +23,10 @@ public class SBar extends SRenderer{
 		super (base, c);
 		m_barLine = barLine; 
 		onBaseChanged();
+	}
+	
+	public ScoreElementInterface getScoreElement() {
+		return m_barLine;
 	}
 	
 	protected void onBaseChanged() {

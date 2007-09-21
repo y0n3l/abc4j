@@ -1,6 +1,7 @@
 package abcynth;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -33,6 +34,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 
+import scanner.CharStreamPosition;
 import scanner.PositionableInCharStream;
 import abc.midi.BasicMidiConverter;
 import abc.midi.MidiConverterAbstract;
@@ -41,8 +43,10 @@ import abc.midi.TempoChangeEvent;
 import abc.midi.TunePlayer;
 import abc.midi.TunePlayerListenerInterface;
 import abc.notation.NoteAbstract;
+import abc.notation.ScoreElementInterface;
 import abc.notation.Tune;
 import abc.parser.TuneBook;
+import abc.ui.swing.JScoreElement;
 import abcynth.ui.AddTuneAction;
 import abcynth.ui.RemoveTuneAction;
 import abcynth.ui.TuneBookActionAbstract;
@@ -198,7 +202,34 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
     //m_tuneBookEditorPanel.setPreferredSize(new Dimension(100,50));
     //m_tuneBookEditorPanel.getTuneEditArea().setPreferredSize(new Dimension(100,250));
     m_tuneBookEditorPanel.getTuneEditSplitPane().setDividerLocation(200);
-
+    
+    m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().addMouseListener( new MouseAdapter() {
+		public void mouseClicked(MouseEvent e) {
+			
+			JScoreElement sel = m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().getScoreElementAt(e.getPoint());
+			//if (sel!=null)
+			//	System.out.println("Score element at " + e.getX() + " / " + e.getY() + " : " + sel + "@" + sel.getBase());
+			//SRenderer sel = getScoreElementAt(e.getPoint());
+			if (sel!=null) {
+				ScoreElementInterface elmnt = sel.getScoreElement();
+				m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().setSelectedItem(sel);
+				if (elmnt!=null && elmnt instanceof PositionableInCharStream){
+	    			CharStreamPosition pos = ((PositionableInCharStream)elmnt).getPosition();
+	    			int begin = pos.getCharactersOffset();
+	    			int end = begin + ((PositionableInCharStream)elmnt).getLength();
+	    			try	{
+	    				m_tuneBookEditorPanel.getTuneEditArea().setCaretPosition(begin);
+	    				m_tuneBookEditorPanel.getTuneEditArea().moveCaretPosition(end);
+	    				m_tuneBookEditorPanel.getTuneEditArea().getCaret().setSelectionVisible(true);
+	    				m_tuneBookEditorPanel.getTuneEditArea().repaint();
+	    			}
+	    			catch (IllegalArgumentException excpt)
+	    			{}
+	    		}
+			}
+		}
+	});
+    
     setTuneBook(new TuneBook());
     addMouseListenerToHeaderInTable();
     //m_tuneBookEditorPanel.getTuneBookTable().set
@@ -340,6 +371,7 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
        }
        catch (IllegalArgumentException e)
        {}
+       m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().setSelectedItem(note);
     }
   }
 
@@ -593,6 +625,12 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
       m_lastOpenedFilesMenu.remove((JMenuItem)e.getSource());
       m_lastOpenedFilesMenu.add((JMenuItem)e.getSource(),0);
     }
+  }
+  
+  class MyScoreSelectionListener {
+	  public MyScoreSelectionListener() {
+		  
+	  }
   }
 
   public static void main (String[] arg)

@@ -142,6 +142,9 @@ public class TuneEditorSplitPane extends JSplitPane// implements TuneParserListe
 
   public TuneEditorPane getTuneEditorPane()
   { return m_tunePane; }
+  
+  public JScoreComponent getScore()
+  { return m_score; }
 
 
 }

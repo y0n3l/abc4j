@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 import abc.notation.Note;
 
@@ -14,14 +15,22 @@ public class SNotePartOfGroup extends SNote {
 	
 	public SNotePartOfGroup(Note noteValue, Point2D base, ScoreMetrics c) {
 		super(noteValue, base, c);
+		onBaseChanged();
+	}
+	
+	protected void onBaseChanged() {
+		super.onBaseChanged();
 		//correct what differs from SNote...
-		noteChars = ScoreMetrics.NOTE;
-		int noteY = (int)(base.getY()-getOffset(note)*c.getNoteHeigth());
+		//The displayed character is not the same.
+		noteChars = ScoreMetrics.NOTE; 
+		//The Y offset needs to be updated. 
+		int noteY = (int)(m_base.getY()-getOffset(note)*m_metrics.getNoteHeigth());
+		//apply the new Y offset to the note location
 		notePosition.setLocation(notePosition.getX(), noteY);
 		double noteX = notePosition.getX();
-		BasicStroke stemStroke = c.getNotesLinkStroke();
-		stemX = (int)(noteX + c.getNoteWidth() - stemStroke.getLineWidth()/10);
-		stemYBegin = (int)(noteY - c.getNoteHeigth()/6);
+		BasicStroke stemStroke = m_metrics.getNotesLinkStroke();
+		stemX = (int)(noteX + m_metrics.getNoteWidth() - stemStroke.getLineWidth()/10);
+		stemYBegin = (int)(noteY - m_metrics.getNoteHeigth()/6);
 	}
 	
 	public int getStemX(){
@@ -36,8 +45,14 @@ public class SNotePartOfGroup extends SNote {
 		stemYEnd = value;
 	}
 	
-	public int getStemYEnd(int value) {
+	public int getStemYEnd() {
 		return stemYEnd;
+	}
+	
+	public Rectangle2D getBoundingBox() {
+		Rectangle2D bb = new Rectangle2D.Double((int)(m_base.getX()), (int)(stemYEnd), 
+				m_width, stemYBegin-stemYEnd+m_metrics.getNoteHeigth()/2);
+		return bb;
 	}
 	
 	public Point2D getEndOfStemPosition() {

@@ -3,9 +3,11 @@ package abc.ui.swing.score;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
+import abc.notation.ScoreElementInterface;
 import abc.notation.TimeSignature;
+import abc.ui.swing.JScoreElement;
 
-public class STimeSignature extends SRenderer {
+public class STimeSignature extends JScoreElement {
 	
 	public static final char[][] DIGITS = {
 			{'\uF031'},
@@ -30,6 +32,10 @@ public class STimeSignature extends SRenderer {
 		super(base, c);
 		m_ts = ts;
 		onBaseChanged();
+	}
+	
+	public ScoreElementInterface getScoreElement() {
+		return m_ts;
 	}
 	
 	protected void onBaseChanged() {

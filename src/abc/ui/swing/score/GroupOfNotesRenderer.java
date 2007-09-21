@@ -2,13 +2,15 @@ package abc.ui.swing.score;
 
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Stroke;
 import java.awt.geom.Point2D;
 
-import abc.notation.AccidentalType;
 import abc.notation.Note;
+import abc.notation.ScoreElementInterface;
+import abc.ui.swing.JScoreElement;
 
-public class GroupOfNotesRenderer extends SRenderer {
+public class GroupOfNotesRenderer extends JScoreElement {
 	
 	public static final char[] DIGITS = {
 		'\uF0C1', 
@@ -29,14 +31,32 @@ public class GroupOfNotesRenderer extends SRenderer {
 	
 	public GroupOfNotesRenderer(ScoreMetrics metrics, Point2D base, Note[] notes){
 		super(base, metrics);
+		if (notes.length<=1)
+			throw new IllegalArgumentException(m_notes + "is not a group of notes, length = " + m_notes.length);
 		m_notes = notes;
+		//create SNotePartOfGroup instances. Those instance should stay the same
+		//when the base is changed.
+		m_sNoteInstances = new SNotePartOfGroup[m_notes.length];
+		for (int i=0; i<notes.length; i++)
+			m_sNoteInstances[i] = new SNotePartOfGroup(m_notes[i], new Point2D.Double(), m_metrics);
+		//m_sNoteInstances[i]=n;
 		onBaseChanged();
 	}
 	
+	public ScoreElementInterface getScoreElement() {
+		return null;
+	}
+	
+	Note[] getScoreElements() {
+		return m_notes; 
+	}
+	
+	SNotePartOfGroup[] getRenditionElements() {
+		return m_sNoteInstances;
+	}
+	
 	protected void onBaseChanged() {
-		m_sNoteInstances = new SNotePartOfGroup[m_notes.length];
-		if (m_notes.length<=1)
-			throw new IllegalArgumentException(m_notes + "is not a group of notes, length = " + m_notes.length);
+		//m_sNoteInstances = new SNotePartOfGroup[m_notes.length];
 		Point2D currentBase =(Point2D)m_base.clone();
 		Note highestNote = Note.getHighestNote(m_notes);
 		SNotePartOfGroup sn = new SNotePartOfGroup(highestNote, m_base, m_metrics);
@@ -47,18 +67,21 @@ public class GroupOfNotesRenderer extends SRenderer {
 			short noteStrictDuration = m_notes[i].getStrictDuration();
 			if (noteStrictDuration==Note.THIRTY_SECOND || noteStrictDuration==Note.SIXTEENTH || noteStrictDuration==Note.EIGHTH
 					|| noteStrictDuration==Note.QUARTER){
-				SNotePartOfGroup n = new SNotePartOfGroup(m_notes[i], currentBase, m_metrics);
-				m_sNoteInstances[i]=n;
+				//SNotePartOfGroup n = new SNotePartOfGroup(m_notes[i], currentBase, m_metrics);
+				//m_sNoteInstances[i]=n;
+				Point2D updatedBase = m_sNoteInstances[i].getBase();
+				updatedBase.setLocation(currentBase);
+				m_sNoteInstances[i].setBase(updatedBase);
 				if (i==0)
-					firstNote = n;
+					firstNote = m_sNoteInstances[i];
 				else
 					if (i==m_notes.length-1)
-						lastNote = n;
-				n.setStemYEnd(m_stemYend);
+						lastNote = m_sNoteInstances[i];
+				m_sNoteInstances[i].setStemYEnd(m_stemYend);
 				//int stemX = n.getStemX();
 				//double width = n.render(context);
 				m_width+=m_metrics.getNotesSpacing();
-				currentBase.setLocation(currentBase.getX() + n.getWidth() + m_metrics.getNotesSpacing(), m_base.getY());
+				currentBase.setLocation(currentBase.getX() + m_sNoteInstances[i].getWidth() + m_metrics.getNotesSpacing(), m_base.getY());
 			}
 		}
 		if (lastNote==null)
@@ -68,7 +91,7 @@ public class GroupOfNotesRenderer extends SRenderer {
 	}
 	
 	public double render(Graphics2D context){
-		super.render(context);
+		//super.render(context);
 		Stroke defaultStroke = context.getStroke();
 		for (int i=0; i<m_sNoteInstances.length; i++) {
 			SNotePartOfGroup n = m_sNoteInstances[i];
@@ -128,6 +151,16 @@ public class GroupOfNotesRenderer extends SRenderer {
 			context.drawChars(chars, 0, 1, (int)(m_sNoteInstances[0].getNotePosition().getX()+m_width/2), (int)(m_stemYend - m_metrics.getNoteHeigth()/4));
 		}
 		return m_width;
+	}
+	
+	public JScoreElement getScoreElementAt(Point point) {
+		JScoreElement scoreEl = null;
+		for (int i=0; i<m_sNoteInstances.length; i++) {
+			scoreEl = m_sNoteInstances[i].getScoreElementAt(point);
+			if (scoreEl!=null)
+				return scoreEl;
+		}
+		return scoreEl;
 	}
 	
 	public static double getOffset(Note note) {

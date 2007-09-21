@@ -3,11 +3,14 @@ package abc.ui.swing.score;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 import abc.notation.AccidentalType;
 import abc.notation.Note;
+import abc.notation.ScoreElementInterface;
+import abc.ui.swing.JScoreElement;
 
-public class SNote extends SRenderer {
+public class SNote extends JScoreElement {
 	protected Note note = null;
 	protected Point2D notePosition = null;
 	protected Point2D accidentalsPosition = null;
@@ -35,6 +38,10 @@ public class SNote extends SRenderer {
 		super(base, c);
 		note = noteValue;
 		onBaseChanged();
+	}
+	
+	public ScoreElementInterface getScoreElement() {
+		return note;
 	}
 	
 	protected void onBaseChanged() {
@@ -126,6 +133,13 @@ public class SNote extends SRenderer {
 	
 	public Note getNote(){
 		return note;
+	}
+	
+	public Rectangle2D getBoundingBox() {
+		double noteGlyphHeight =  m_metrics.getNoteHeigth()*4;
+		Rectangle2D bb = new Rectangle2D.Double((int)(notePosition.getX()), (int)(notePosition.getY()-noteGlyphHeight), 
+				m_width, noteGlyphHeight);
+		return bb;
 	}
 		
 	public double render(Graphics2D g){

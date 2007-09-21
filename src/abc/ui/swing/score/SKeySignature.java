@@ -6,8 +6,10 @@ import java.awt.geom.Point2D;
 import abc.notation.AccidentalType;
 import abc.notation.KeySignature;
 import abc.notation.Note;
+import abc.notation.ScoreElementInterface;
+import abc.ui.swing.JScoreElement;
 
-public class SKeySignature extends SRenderer {
+public class SKeySignature extends JScoreElement {
 	KeySignature key = null;
 	Point2D FPosition = null; 
 	char[] Fchar = null;
@@ -28,6 +30,10 @@ public class SKeySignature extends SRenderer {
 		super(base, c);
 		key = keyV;
 		onBaseChanged();
+	}
+	
+	public ScoreElementInterface getScoreElement() {
+		return key;
 	}
 	
 	protected void onBaseChanged() {

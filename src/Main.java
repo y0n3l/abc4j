@@ -106,12 +106,14 @@ public class Main  {
 	
 	public static void main2 (String[] arg) {
 		try {
-		File file =new File("D:/Perso/abc/LGtunes.abc");
+		File file =new File("D:/Perso/abc/Book2.abc");
 		TuneBook tb = new TuneBook(file);
-		Tune tune = tb.getTune(1);
+		Tune tune = tb.getTune(60);
 		System.out.println(tune);
 		JScoreComponent jscore = new JScoreComponent();
-		//jscore.writeScoreTo(tune, new File("D:/Perso/partitions/"+ tune.getTitles()[0]+".jpg"));
+		jscore.setTune(tune);
+		jscore.setJustification(false);
+		jscore.writeScoreTo(new File("C:/Documents and Settings/uidd0558/Desktop/"+ tune.getTitles()[0]+".png"));
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -141,7 +143,7 @@ public class Main  {
 		j.setVisible(true);*/
 		try {
 			scoreUI.setTune(tune);
-			scoreUI.writeScoreTo(new File("D:/Perso/partitions/abc4j.jpg"));
+			scoreUI.writeScoreTo(new File("C:/Documents and Settings/uidd0558/Desktop/abc4j.jpg"));
 		}
 		catch (Exception e){
 			e.printStackTrace();
