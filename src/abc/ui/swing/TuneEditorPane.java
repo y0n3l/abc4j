@@ -24,7 +24,9 @@ import javax.swing.text.EditorKit;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 
+import scanner.CharStreamPosition;
 import scanner.InvalidCharacterEvent;
+import scanner.PositionableInCharStream;
 import scanner.Token;
 import scanner.TokenEvent;
 import scanner.TokenType;
@@ -127,6 +129,22 @@ public class TuneEditorPane extends JTextPane implements ActionListener
       //setSelectedTextColor(SELECTION_FOREGROUND_COLOR);
       //setSelectionColor(SELECTION_BACKGROUND_COLOR);
     }
+  }
+  
+  /** Highlights the specified element in the abc tune notation.
+	* @param elmnt The element to be highlighted in the abc tune notation. */
+  public void setSelectedItem(PositionableInCharStream elmnt) {
+	  CharStreamPosition pos = elmnt.getPosition();
+	  int begin = pos.getCharactersOffset();
+	  int end = begin + ((PositionableInCharStream)elmnt).getLength();
+	  try	{
+			setCaretPosition(end);
+			moveCaretPosition(begin);
+			getCaret().setSelectionVisible(true);
+			repaint();
+	  }
+	  catch (IllegalArgumentException excpt)
+	  {}
   }
 
   public void setSize(Dimension d)

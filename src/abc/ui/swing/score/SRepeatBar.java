@@ -35,7 +35,7 @@ public class SRepeatBar extends SBar{
 		context.drawLine(
 				(int)(m_base.getX()+m_metrics.getNoteWidth()/2), 
 				(int)(m_base.getY()-m_metrics.getStaffCharBounds().getHeight()*1.7), 
-				(int)(m_base.getX()+m_metrics.getNoteWidth()/2+m_metrics.getStaffCharWidth()), 
+				(int)(m_base.getX()+m_metrics.getNoteWidth()/2+m_metrics.getStaffCharBounds().getWidth()), 
 				(int)(m_base.getY()-m_metrics.getStaffCharBounds().getHeight()*1.7));
 		return super.render(context);
 		

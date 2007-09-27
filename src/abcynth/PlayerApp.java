@@ -1,7 +1,6 @@
 package abcynth;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -33,6 +32,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 
 import scanner.CharStreamPosition;
 import scanner.PositionableInCharStream;
@@ -214,7 +215,9 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
 				ScoreElementInterface elmnt = sel.getScoreElement();
 				m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().setSelectedItem(sel);
 				if (elmnt!=null && elmnt instanceof PositionableInCharStream){
-	    			CharStreamPosition pos = ((PositionableInCharStream)elmnt).getPosition();
+					m_tuneBookEditorPanel.getTuneEditArea().setSelectedItem((PositionableInCharStream)elmnt);
+	    			/*CharStreamPosition pos = ((PositionableInCharStream)elmnt).getPosition();
+	    			m_tuneBookEditorPanel.getTuneEditArea()
 	    			int begin = pos.getCharactersOffset();
 	    			int end = begin + ((PositionableInCharStream)elmnt).getLength();
 	    			try	{
@@ -224,11 +227,22 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
 	    				m_tuneBookEditorPanel.getTuneEditArea().repaint();
 	    			}
 	    			catch (IllegalArgumentException excpt)
-	    			{}
+	    			{}*/
 	    		}
 			}
 		}
 	});
+    m_tuneBookEditorPanel.getTuneEditSplitPane().getTuneEditorPane().addCaretListener(new CaretListener() {
+    	public void caretUpdate(CaretEvent e) {
+    		//System.out.println("The caret has moved : " + e);
+    		ScoreElementInterface elmnt = null;
+    		Tune tune = m_tuneBookEditorPanel.getTuneEditSplitPane().getTuneEditorPane().getTune();
+    		if (tune!=null) {
+    			elmnt = tune.getScore().getElementAt(e.getDot());
+    		}
+    		m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().setSelectedItem(elmnt);
+    	}
+    });
     
     setTuneBook(new TuneBook());
     addMouseListenerToHeaderInTable();

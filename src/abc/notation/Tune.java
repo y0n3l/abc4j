@@ -3,6 +3,9 @@ package abc.notation;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import scanner.CharStreamPosition;
+import scanner.PositionableInCharStream;
+
 /** This class encapsulates all information retrieved from a tune transcribed
  * using abc notation : header and music. */
 public class Tune implements Cloneable
@@ -393,6 +396,22 @@ public class Tune implements Cloneable
       if (Tune.this.getKey()==null)
         Tune.this.setKey(key);
       super.addElement(key);
+    }
+    
+    public ScoreElementInterface getElementAt(int offset) {
+    	ScoreElementInterface foundElement = null;
+    	ScoreElementInterface current = null;
+    	for (int i=0; i<size(); i++) {
+    		current = (ScoreElementInterface)elementAt(i);
+    		if (current instanceof PositionableInCharStream) {
+    			PositionableInCharStream pos = (PositionableInCharStream)current; 
+    			if (pos.getPosition().getCharactersOffset()<=offset && 
+    					(pos.getPosition().getCharactersOffset()+ pos.getLength())>=offset 
+    					)
+    				foundElement=current;
+    		}
+    	}
+    	return foundElement;
     }
     
   }

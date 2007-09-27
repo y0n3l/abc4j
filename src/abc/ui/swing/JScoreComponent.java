@@ -182,7 +182,9 @@ public class JScoreComponent extends JComponent {
 	 * highlighting. 
 	 * @see @see #setSelectedItem(SRenderer) */
 	public void setSelectedItem(ScoreElementInterface elmnt) {
-		JScoreElement r = (JScoreElement)m_jTune.getRenditionObjectsMapping().get(elmnt);
+		JScoreElement r = null;
+		if (elmnt!=null)
+			r = (JScoreElement)m_jTune.getRenditionObjectsMapping().get(elmnt);
 		//if (r!=null)
 		//	System.out.println("Selecting item " + elmnt + "->" + r + "@" + r.getBase());
 		setSelectedItem(r);

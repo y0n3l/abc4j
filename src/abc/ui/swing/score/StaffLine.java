@@ -69,7 +69,7 @@ public class StaffLine extends JScoreElement {
 				g.setColor(Color.BLACK);*/
 			elmts[j].render((Graphics2D)g);
 		}
-		int staffCharNb = (int)(getWidth()/m_metrics.getStaffCharWidth());
+		int staffCharNb = (int)(getWidth()/m_metrics.getStaffCharBounds().getWidth());
 		//System.out.println("char staff nb : " + staffCharNb);
 		char[] staffS = new char[staffCharNb+2];
 		for (int j=0; j<staffS.length; j++)

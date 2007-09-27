@@ -8,7 +8,7 @@ import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 
 /**
- * This class encapsulates all needed dimensions needed to draw
+ * This class encapsulates all requiered dimensions needed to draw
  * correctly a score (notes spacing, space between accidental and notes etc...).
  * All those values are calculated from the font size. */
 public class ScoreMetrics {
@@ -32,7 +32,7 @@ public class ScoreMetrics {
 
 	private double noteHeigth = -1;
 	private double noteWidth = -1;
-	private double staffCharWidth = -1;
+	//private double staffCharWidth = -1;
 	private Font myFont = null; 
 	private Rectangle2D staffCharBounds = null;
 	private Rectangle2D sharpBounds = null;
@@ -59,7 +59,7 @@ public class ScoreMetrics {
 			  myFont = myFont.deriveFont(size);
 			  staffCharBounds = new TextLayout(new Character(STAFF_SIX_LINES).toString(), myFont, frc).getBounds();
 			  noteHeigth = staffCharBounds.getHeight()/4.1;
-			  staffCharWidth = staffCharBounds.getWidth();
+			  //staffCharWidth = staffCharBounds.getWidth();
 			  sharpBounds = new TextLayout(new Character(SHARP[0]).toString(), myFont, frc).getBounds();
 			  flatBounds = new TextLayout(new Character(FLAT[0]).toString(), myFont, frc).getBounds();
 			  naturalBounds = new TextLayout(new Character(NATURAL[0]).toString(), myFont, frc).getBounds();
@@ -88,6 +88,8 @@ public class ScoreMetrics {
 		return noteWidth;
 	}
 	
+	/** Returns the spacing between notes.
+	 * @return The spacing between notes, expressed in pixels. */
 	public double getNotesSpacing() {
 		return notesSpacing;
 	}
@@ -96,6 +98,8 @@ public class ScoreMetrics {
 		return notesLinkStroke;
 	}
 	
+	/** Returns the bounding box of a staff line character. 
+	 * @return Returns the bounding box of a staff line character. */
 	public Rectangle2D getStaffCharBounds(){
 		return staffCharBounds;
 	}
@@ -108,14 +112,20 @@ public class ScoreMetrics {
 		return stemLength;
 	}
 	
+	/** Returns the bounding box of a sharp character. 
+	 * @return Returns the bounding box of a sharp character. */
 	public Rectangle2D getSharpBounds(){
 		return sharpBounds;
 	}
 	
+	/** Returns the bounding box of a natural character. 
+	 * @return Returns the bounding box of a natural character. */
 	public Rectangle2D getNaturalBounds(){
 		return naturalBounds;
 	}
 	
+	/** Returns the bounding box of a flat character. 
+	 * @return Returns the bounding box of a flat character. */
 	public Rectangle2D getFlatBounds(){
 		return flatBounds;
 	}
@@ -124,11 +134,9 @@ public class ScoreMetrics {
 		return quarterNoteBounds;
 	}
 	
+	/** Returns the font used for this score metrics.
+	 * @return the font used for this score metrics. */
 	public Font getFont() {
 		return myFont;
-	}
-	
-	public double getStaffCharWidth() {
-		return staffCharWidth;
 	}
 }
