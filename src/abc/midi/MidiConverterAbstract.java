@@ -89,9 +89,9 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   							inWrongEnding = false;
   				}
   				else
-  					//====================================================================== BAR LINE
+  					//====================================================================== BAR LINE OPEN / CLOSE
   					if (staff.elementAt(i) instanceof abc.notation.BarLine) {
-  						currentKey = new KeySignature(tuneKey.getAccidentals());
+  						//currentKey = new KeySignature(tuneKey.getAccidentals());
   						switch ( ((BarLine)(staff.elementAt(i))).getType()) {
   							case BarLine.SIMPLE : break;
   							case BarLine.REPEAT_OPEN : lastRepeatOpen=i; repeatNumber=1; break;
@@ -105,6 +105,9 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   								break;
   						}
   					}
+  				//Whatever kind of bar line it is 
+  				if (staff.elementAt(i) instanceof abc.notation.BarLine)
+					currentKey = new KeySignature(tuneKey.getAccidentals());
   				i++;
   			}
   		}
