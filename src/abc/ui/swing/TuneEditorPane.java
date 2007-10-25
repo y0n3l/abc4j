@@ -19,7 +19,6 @@ import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
@@ -38,7 +37,7 @@ import abc.parser.TuneParserListenerInterface;
 
 /** A JTextPane to display and edit abc tunes. This pane handles copy/paste.
  * actions. */
-public class TuneEditorPane extends JTextPane implements ActionListener
+public class TuneEditorPane extends JTextPane// implements ActionListener
 {
   private static Color BACKGROUND_COLOR = new Color(249,234,202);
   private static Color FIELDS_COLOR = new Color (0,128,0);
@@ -50,15 +49,15 @@ public class TuneEditorPane extends JTextPane implements ActionListener
   private static Color BAR_COLOR = new Color (0,0,128);
   private static final String COPY_ACTION = "Copy";
   private static final String PASTE_ACTION = "Paste";
-  public static final String ERROR_STYLE = "error";
-  public static final String BARS_STYLE = "bars";
-  public static final String TEXT_STYLE = "text";
-  public static final String COMMENT_STYLE = "comment";
-  public static final String NOTE_STYLE = "note";
-  public static final String GRACING_STYLE = "note";
-  public static final String FIELD_STYLE = "field";
-  public static final String RHYTHM_STYLE = "rhythm";
-  public static final String DEFAULT_STYLE = "rhythm";
+  private static final String ERROR_STYLE = "error";
+  private static final String BARS_STYLE = "bars";
+  private static final String TEXT_STYLE = "text";
+  private static final String COMMENT_STYLE = "comment";
+  private static final String NOTE_STYLE = "note";
+  private static final String GRACING_STYLE = "note";
+  private static final String FIELD_STYLE = "field";
+  private static final String RHYTHM_STYLE = "rhythm";
+  private static final String DEFAULT_STYLE = "rhythm";
   public static final String REFRESHER_THREAD_NAME = "ABC-TunePaneRefresh";
 
   //private static final boolean ENABLE_COLORING = true;
@@ -73,28 +72,42 @@ public class TuneEditorPane extends JTextPane implements ActionListener
   private ParsingRefresh m_refresher = null;
   /** The tune currently represented in this editor pane. */
   private Tune m_tune = null;
-  private TuneParser m_tuneParser = null;
+  //private TuneParser m_tuneParser = null;
   private int m_idleTimeBeforeRefresh = IDLE_TIME_BEFORE_REFRESH;
   private boolean m_enableColoring = false;
 
   private EditorKit m_editorKit = null;
 
+  /** Default constructor. */
   public TuneEditorPane()
   { this(new TuneParser()); }
 
+  /** Creates a new TuneEditorPane with the given parser.
+   * @param parser The parser to be used to parse the abc notation 
+   * written in the TuneEditorPane and to give the resulting {@link abc.notation.Tune tune} */
   public TuneEditorPane(TuneParser parser)
   { this(parser, IDLE_TIME_BEFORE_REFRESH); }
 
+  /** Creates a new TuneEditorPane with the given idle time before refresh.
+   * @param idleTimeBeforeRefresh The idle time after any text update
+   * before triggering the parsing of the abc text written in this pane.
+   * This is used to avoid perpetual parsing of the text at each text update */
   public TuneEditorPane(int idleTimeBeforeRefresh)
   { this(new TuneParser(), idleTimeBeforeRefresh); }
 
-  public TuneEditorPane(TuneParser parser, int idleTimeBeforeRefresh)
-  {
+  /** Creates a new TuneEditorPane with the given parser and
+   * idle time before refresh.
+   * @param parser The parser to be used to parse the abc notation 
+   * written in the TuneEditorPane and to give the resulting {@link abc.notation.Tune tune}
+   * @param idleTimeBeforeRefresh The idle time after any text update
+   * before triggering the parsing of the abc text written in this pane.
+   * This is used to avoid perpetual parsing of the text at each text update */
+  public TuneEditorPane(TuneParser parser, int idleTimeBeforeRefresh) {
     setBackground(BACKGROUND_COLOR);
     setSelectedTextColor(SELECTION_FOREGROUND_COLOR);
     setSelectionColor(SELECTION_BACKGROUND_COLOR);
     setFont(new Font("Courier", Font.PLAIN, 12));
-    m_tuneParser = parser;
+    //m_tuneParser = parser;
     m_refresher = new ParsingRefresh((DefaultStyledDocument)getDocument(), parser);
     KeyStroke copy = KeyStroke.getKeyStroke(KeyEvent.VK_C,ActionEvent.CTRL_MASK,false);
     // Identifying the copy KeyStroke user can modify this
@@ -102,8 +115,9 @@ public class TuneEditorPane extends JTextPane implements ActionListener
     KeyStroke paste = KeyStroke.getKeyStroke(KeyEvent.VK_V,ActionEvent.CTRL_MASK,false);
     // Identifying the Paste KeyStroke user can modify this
     //to copy on some other Key combination.
-    registerKeyboardAction(this,COPY_ACTION,copy,JComponent.WHEN_FOCUSED);
-    registerKeyboardAction(this,PASTE_ACTION,paste,JComponent.WHEN_FOCUSED);
+    MyActionListener myAL = new MyActionListener();
+    registerKeyboardAction(myAL,COPY_ACTION,copy,JComponent.WHEN_FOCUSED);
+    registerKeyboardAction(myAL,PASTE_ACTION,paste,JComponent.WHEN_FOCUSED);
     createStyles();
     setCharacterAttributes(m_defaultStyle, true);
   }
@@ -111,13 +125,28 @@ public class TuneEditorPane extends JTextPane implements ActionListener
   public boolean getScrollableTracksViewportWidth()
   { return false;  }
 
-  public TuneParser getParser()
-  { return m_refresher.getParser(); }
+  	/** Returns the parser used to build up the tune from the 
+  	 * abc text written in this pane.
+  	 * @return the parser used to build up the tune from the 
+  	 * abc text written in this pane. */ 
+  	public TuneParser getParser() { 
+  		return m_refresher.getParser(); 
+  	}
 
+  /** Returns <TT>true</TT> if text coloring has been enabled, <TT>false</TT>
+   * otherwise. 
+   * @return <TT>true</TT> if text coloring has been enabled, <TT>false</TT>
+   * otherwise. Text coloring enables user to distinguish abc tokens detected in 
+   * the text of this pane. 
+   * @see #setColoringEnable(boolean) */
   public boolean isColoringEnabled()
   { return m_enableColoring; }
 
-  public void setColoringEnable(boolean coloring)
+  /** Enables/disables coloring of the text.
+   * @param coloring <TT>true</TT> if text coloring should be enabled, 
+   * <TT>false</TT> otherwise. 
+   * @see #isColoringEnabled() */
+  public void setColoringEnable(boolean coloring) 
   {
     m_enableColoring = coloring;
     if (m_enableColoring)
@@ -131,21 +160,21 @@ public class TuneEditorPane extends JTextPane implements ActionListener
     }
   }
   
-  /** Highlights the specified element in the abc tune notation.
-	* @param elmnt The element to be highlighted in the abc tune notation. */
-  public void setSelectedItem(PositionableInCharStream elmnt) {
-	  CharStreamPosition pos = elmnt.getPosition();
-	  int begin = pos.getCharactersOffset();
-	  int end = begin + ((PositionableInCharStream)elmnt).getLength();
-	  try	{
-			setCaretPosition(end);
+  	/** Highlights the specified element in the abc tune notation.
+  	 * @param elmnt The element to be highlighted in the abc tune notation. */
+  	public void setSelectedItem(PositionableInCharStream elmnt) {
+  		CharStreamPosition pos = elmnt.getPosition();
+  		int begin = pos.getCharactersOffset();
+  		int end = begin + ((PositionableInCharStream)elmnt).getLength();
+  		try	{
+  			setCaretPosition(end);
 			moveCaretPosition(begin);
 			getCaret().setSelectionVisible(true);
 			repaint();
-	  }
-	  catch (IllegalArgumentException excpt)
-	  {}
-  }
+  		}
+  		catch (IllegalArgumentException excpt)
+  		{}
+  	}
 
   public void setSize(Dimension d)
   {
@@ -154,20 +183,23 @@ public class TuneEditorPane extends JTextPane implements ActionListener
     super.setSize(d);
   }
 
-  public Tune getTune()
-  { return m_tune; }
+  	/** Returns the tune that is currently described in this tune editor.
+  	 * @return The tune that is currently described in this tune editor. */ 
+  	public Tune getTune() { 
+  		return m_tune; 
+  	}
 
-  public void setDocument(Document doc)
+  /*public void setDocument(Document doc)
   {
     //System.out.println("TuneEditorPane - setDocument(" + doc  + ")");
     //m_forceRefresh = true;
     super.setDocument(doc);
-    /*if (m_refresher!=null)
-    {
-      setCharacterAttributes(m_defaultStyle, true);
-      m_refresher.setDocument((DefaultStyledDocument)doc);
-    }*/
-  }
+    //if (m_refresher!=null)
+    //{
+    //  setCharacterAttributes(m_defaultStyle, true);
+    //  m_refresher.setDocument((DefaultStyledDocument)doc);
+    //}
+  }*/
 
   public void setText(String text)
   {
@@ -227,6 +259,8 @@ public class TuneEditorPane extends JTextPane implements ActionListener
     StyleConstants.setForeground(m_rhythmStyle, TUPLET_FOREGROUND_COLOR);
     StyleConstants.setBold(m_rhythmStyle, true);
   }
+  
+  private class MyActionListener implements ActionListener {
 
   /** This method is activated on the Keystrokes we are listening to
    * in this implementation. Here it listens for Copy and Paste ActionCommands. */
@@ -255,6 +289,7 @@ public class TuneEditorPane extends JTextPane implements ActionListener
       catch(Exception ex)
       {ex.printStackTrace();}
     }
+  }
   }
 
   private class ParsingRefresh extends Thread implements DocumentListener, TuneParserListenerInterface
@@ -332,7 +367,7 @@ public class TuneEditorPane extends JTextPane implements ActionListener
                 m_mutex.wait(10);
                 m_idleTime+=10;
               }
-              while (m_idleTime<=IDLE_TIME_BEFORE_REFRESH);
+              while (m_idleTime<=m_idleTimeBeforeRefresh);
             }
             try
             {

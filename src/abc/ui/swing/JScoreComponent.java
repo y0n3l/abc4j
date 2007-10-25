@@ -9,7 +9,6 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
@@ -25,8 +24,9 @@ import abc.ui.swing.score.ScoreMetrics;
  * <IMG src="../../../images/scoreEx.jpg"/> 
  * <BR/>
  * To render a tune score, just invoke the <TT>setTune(Tune)</TT> method
- * with your tune.
- * @see #setTune(Tune) 
+ * with your tune.<BR/>
+ * Basically, a score if composed of {@link abc.ui.swing.JScoreElement "score elements"}
+ * @see Tune 
  * 
  */
 public class JScoreComponent extends JComponent {
@@ -108,8 +108,8 @@ public class JScoreComponent extends JComponent {
 		repaint();
 	}
 	
-	/** Writes the currently set tune score to a jpg file.
-	 * @param file The output JPEG file.
+	/** Writes the currently set tune score to a PNG file.
+	 * @param file The PNG output file.
 	 * @throws IOException Thrown if the given file cannot be accessed. */ 
 	public void writeScoreTo(File file) throws IOException {
 		//if (m_bufferedImage==null || m_dimension.getWidth()>m_bufferedImage.getWidth() 
@@ -180,7 +180,7 @@ public class JScoreComponent extends JComponent {
 	 * @param elmnt The music element to be highlighted in the
 	 * score. <TT>null</TT> can be specified to remove 
 	 * highlighting. 
-	 * @see @see #setSelectedItem(SRenderer) */
+	 * @see #setSelectedItem(JScoreElement) */
 	public void setSelectedItem(ScoreElementInterface elmnt) {
 		JScoreElement r = null;
 		if (elmnt!=null)

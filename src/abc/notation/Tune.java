@@ -398,6 +398,10 @@ public class Tune implements Cloneable
       super.addElement(key);
     }
     
+    /** Returns the score element location at the specified offset.
+     * @param An offset.  
+     * @return The score element location at the specified offset.
+     */  
     public ScoreElementInterface getElementAt(int offset) {
     	ScoreElementInterface foundElement = null;
     	ScoreElementInterface current = null;

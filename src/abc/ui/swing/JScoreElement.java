@@ -11,7 +11,7 @@ import abc.notation.Tune;
 import abc.ui.swing.score.ScoreMetrics;
 
 /** This class defines a score rendition element. Rendition scores elements
- * are graphical representations of tune score elements objects retrived 
+ * are graphical representations of tune score elements objects retrieved 
  * from a tune object.
  * A <TT>JScoreElement</TT> can itself contain <TT>JScoreElement</TT> instances.
  * You should figure out the graphical score representation as a tree of 
@@ -90,7 +90,7 @@ public abstract class JScoreElement {
 	protected abstract void onBaseChanged();
 	
 	/** Renders this Score element to the given graphic context. 
-	 * @param g*/
+	 * @param g2 */
 	public double render(Graphics2D g2) {
 		/*Color previousColor = g.getColor();
 		g.setColor(Color.RED);

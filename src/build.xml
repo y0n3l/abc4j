@@ -4,7 +4,7 @@
 	
 	<!-- Environment variables -->
 	<property name="JDIFF_HOME" value="D:/installs/jdiff-1.1.0"/>
-	<property name="OLD_VERSION_DIR" value="D:/Perso/abc4jOld/v0.2"/>
+	<property name="OLD_VERSION_DIR" value="D:/Perso/abc4jOld/v0.3"/>
 	<property name="COBERTURA_DIR" value="D:/installs/cobertura-1.8"/>
 	<property name="JUNIT_JAR" value="D:/eclipse/plugins/org.junit4_4.1.0.1/junit-4.1.jar" />
 
@@ -23,6 +23,13 @@
 	<!-- Defines the set of java sources to compile. -->
 	<patternset id="source.patternset">
 		<include name="${srcdir}/**" />
+	</patternset>
+	
+	<patternset id="doc.patternset">
+		<include name="abc/**" />
+		<include name="scanner/**" />
+		<exclude name="abc/parser/def**" />
+		<exclude name="abc/ui/swing/score**" />	
 	</patternset>
 	
 	<!-- Emma tool for coverage 
@@ -47,7 +54,7 @@
 	<taskdef name="jdiff" classname="jdiff.JDiffAntTask" classpath="${JDIFF_HOME}/antjdiff.jar"/>
 	
 	<!-- Makes all -->
-	<target name="all" depends="clean, sources.compile, libs, javadoc, jdiff, unittests" />
+	<target name="all" depends="clean, sources.compile, libs, javadoc, jdiff.oldAPI, jdiff.compare, unittests" />
 	<!-- Makes unit tests -->
 	<target name="unittests" depends="sources.compile, unittests.compile, instrument, unittests.run, unittests.report" description="unit tests" />
 
@@ -183,17 +190,44 @@
 	</target>
 	
 	<!-- Generates the diff between the current api and the previous version -->
-	<target name="jdiff" description="Generates changes diff between 2 abc4j versions">
+	<!--<target name="jdiff" description="Generates changes diff between 2 abc4j versions">
 		<jdiff stats="on" destdir="${docdir}/diff">
-			<old name="v0.2" javadoc="${OLD_VERSION_DIR}/docs/api/">
+			<old name="v0.3" javadoc="${OLD_VERSION_DIR}/docs/api/">
 				<dirset dir="${OLD_VERSION_DIR}/src/"/>
 			</old>
-			<new name="v0.3" javadoc="${docdir}/api/">
+			<new name="v0.4" javadoc="${docdir}/api/">
 				<dirset dir="${srcdir}"/>
 			</new>
 		</jdiff>
 		<zip destfile="${docdir}/abc4jJDiffDoc.zip" basedir="${docdir}/diff" />
-	</target>
+	</target> -->
+	
+	<target name="jdiff.oldAPI">
+			<javadoc >
+				<doclet name="jdiff.JDiff" path="${JDIFF_HOME}/jdiff.jar:${JDIFF_HOME}/xerces.jar">
+					<param name="-apiname" value="v0.3"/>
+				</doclet>
+				<packageset dir="${OLD_VERSION_DIR}/src" defaultexcludes="yes">
+	      			<patternset refid="doc.patternset"/>
+	    		</packageset>
+			</javadoc>
+		</target>
+	
+	<target name="jdiff.compare">
+			<javadoc destdir="${docdir}/diff">
+				<doclet name="jdiff.JDiff" path="${JDIFF_HOME}/jdiff.jar:${JDIFF_HOME}/xerces.jar">
+				    <param name="-stats"/>
+				    <param name="-oldapi" value="v0.3"/>
+				    <param name="-newapi" value="v0.4"/>
+				</doclet>
+	  			<classpath path="${classesdir}" />
+				<packageset dir="${srcdir}" defaultexcludes="yes">
+	  				<patternset refid="doc.patternset"/>
+				</packageset>
+			</javadoc>
+			<!--<copy file="${externaltools}/resources/background.gif" todir="${apidocdir}/ApiDoc"/>
+			<copy file="${externaltools}/resources/black.gif" todir="${apidocdir}/ApiDoc"/>-->
+		</target>
 	
 	<!-- Removes the files but keeps the directory structure. -->
 	<target name="clean" description="Removes the compiled files">
