@@ -14,6 +14,7 @@ public class SNote extends JScoreElement {
 	protected Note note = null;
 	protected Point2D notePosition = null;
 	protected Point2D accidentalsPosition = null;
+	protected Point2D slurPosition = null;
 	protected Point2D dotsPosition = null;
 	protected char[] noteChars = null;
 	protected char[] accidentalsChars = null;
@@ -97,7 +98,8 @@ public class SNote extends JScoreElement {
 		notePosition = new Point2D.Double(noteX, noteY);
 		if (note.countDots()!=0)
 			dotsPosition = new Point2D.Double(noteX + c.getNoteWidth()*1.2, noteY-c.getNoteHeigth()*0.05);
-
+		//if (note.getSlurDefinition()!=null)
+		slurPosition = new Point2D.Double(noteX + c.getNoteWidth()/2, noteY+c.getNoteWidth()/2);
 		//c.getGraphics().drawChars(chars, 0, chars.length, noteX, noteY);
 		/*if (note.getHeight()==Note.C || note.getHeight()==Note.a)
 			c.getGraphics().drawChars(ScoreRenditionContext.STROKE, 0, 1, (int)(noteX-context.getNoteWidth()/4), strokeY);*/
@@ -155,6 +157,13 @@ public class SNote extends JScoreElement {
 		if (accidentalsPosition!=null)
 			gfx.drawChars(accidentalsChars, 0, 1, (int)accidentalsPosition.getX(), (int)accidentalsPosition.getY()); 
 	}
+	
+	/*protected void renderSlur(Graphics2D gfx) {
+		if (slurPosition!=null && note.isEndingSlur()) {
+			int width = note.getSlurDefinition().getEnd().
+			gfx.drawLine(accidentalsChars, 0, 1, (int)accidentalsPosition.getX(), (int)accidentalsPosition.getY());
+		}
+	}*/
 	
 	protected void renderExtendedStaffLines(Graphics2D context, ScoreMetrics metrics, Point2D base){
 		int extSize = (int)metrics.getNoteWidth()/3;

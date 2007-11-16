@@ -19,6 +19,7 @@ import abc.notation.KeySignature;
 import abc.notation.MultiPartsDefinition;
 import abc.notation.Note;
 import abc.notation.NoteAbstract;
+import abc.notation.SlurDefinition;
 import abc.notation.RepeatBarLine;
 import abc.notation.RepeatedPart;
 import abc.notation.RepeatedPartAbstract;
@@ -162,7 +163,11 @@ public class AbcParserAbstract
     /** The number of dots inherited from the previous note broken rythm. */
     private byte brknRthmDotsCorrection = 0;
     /** */
-    private boolean m_isPartOfSlur = false;
+    private Vector slursDefinitionStack = null;
+    /** Keep track of the last parsed note. Used for instance to value the
+     * end slur in case of slur */
+    private NoteAbstract lastParsedNote =null;
+    private boolean isTied = false;
     /** The current default note length. */
     private short m_defaultNoteLength = Note.EIGHTH;
 
@@ -193,6 +198,7 @@ public class AbcParserAbstract
       };
       m_scanner.addListener(m_scannerListener);
       m_listeners = new Vector();
+      slursDefinitionStack = new Vector();
     }
 
     /** Returns the scanner internally used for parsing.
@@ -249,7 +255,7 @@ public class AbcParserAbstract
 	}*/
 
     /** abc-tune ::= abc-header abc-music */
-    protected Tune parseAbcTune(Set follow) {
+    protected Tune parseAbcTune(Set follow) {        
       Set current = new Set()./*union(FIRST_ABCHEADER).*/union(FIRST_ABC_MUSIC);
       parseAbcHeader(current.createUnion(follow));
       current.remove(FIRST_ABC_MUSIC);
@@ -829,8 +835,14 @@ public class AbcParserAbstract
      * so those wishing to implement an abc parser should treat this ; field as optional. */
     protected Tune parseAbcHeader(Set follow)
     {
-      m_tune = new Tune();
-      m_score = m_tune.getScore();
+    	//reinit the tune structures
+    	m_tune = new Tune();
+        m_score = m_tune.getScore();
+        brknRthmDotsCorrection = 0;
+        slursDefinitionStack.removeAllElements();
+        lastParsedNote =null;
+        m_defaultNoteLength = Note.EIGHTH;
+        m_timeSignature = null;
       Set current= new Set().union(FIRST_COMMENT).union(FIRST_FIELD_TITLE).union(FIRST_OTHER_FIELDS).union(FIRST_FIELD_KEY);
 
       Integer number = parseFieldNumber(current.createUnion(follow));
@@ -1039,6 +1051,12 @@ public class AbcParserAbstract
         //NoteAbstract note = parseNoteElement(current.createUnion(follow));
         //Experimentation
         NoteAbstract note = parseNoteElement(follow);
+        /*if (!slursDefinitionStack.isEmpty()){
+        	note.setPartOfSlur(true);
+        	SlurDefinition currentSlurDef = (SlurDefinition)slursDefinitionStack.elementAt(slursDefinitionStack.size()-1);
+        	if (currentSlurDef.getStart()==null)
+        		currentSlurDef.setStart(note);
+        }*/
         m_score.addElement(note);
       }
       else
@@ -1069,13 +1087,21 @@ public class AbcParserAbstract
       if (m_tokenType.equals(AbcTokenType.BEGIN_SLUR))
       {
         accept(AbcTokenType.BEGIN_SLUR, null, follow);
-        m_isPartOfSlur = true;
+        SlurDefinition def = new SlurDefinition();
+        slursDefinitionStack.addElement(def);
+        //m_isPartOfSlur = true;
       }
       else
       if (m_tokenType.equals(AbcTokenType.END_SLUR))
       {
         accept(AbcTokenType.END_SLUR, null, follow);
-        m_isPartOfSlur = false;
+        if (!slursDefinitionStack.isEmpty()) {
+        	SlurDefinition slurDef = (SlurDefinition)slursDefinitionStack.elementAt(slursDefinitionStack.size()-1);
+        	slurDef.setEnd(lastParsedNote);
+        	slursDefinitionStack.removeElementAt(slursDefinitionStack.size()-1);
+        	lastParsedNote.setSlurDefinition(slurDef);
+        }
+        //m_isPartOfSlur = false;
       }
       else
       if (m_tokenType.equals(AbcTokenType.SPACE))
@@ -1257,6 +1283,7 @@ public class AbcParserAbstract
       boolean up = false;
       boolean down = false;
       boolean staccato = false;
+      boolean wasTied = isTied;
 
       String chordName = null;
       //======================guitar chord
@@ -1286,13 +1313,12 @@ public class AbcParserAbstract
       if (m_tokenType.equals(AbcTokenType.MULTI_NOTE_BEGIN))
       {
           Vector notes = parseMultiNote(current.createUnion(follow));
-          note = new PositionableMultiNote(notes);
+          if (notes.size()!=0)
+          	note = new PositionableMultiNote(notes);
       }
-      else
-      {
+      else {
         note = parseNote(current.createUnion(follow));
-        if (note!=null)
-        {
+        if (note!=null) {
           if (staccato) note.setStaccato(true);
           if (hasGeneralOrnament) note.setGeneralGracing(true);
           if (up) note.setBow(Note.UP);
@@ -1303,6 +1329,22 @@ public class AbcParserAbstract
             note.setGracingNotes(graceNotes);
         }
       }
+      if (!slursDefinitionStack.isEmpty()){
+      	note.setPartOfSlur(true);
+      	SlurDefinition currentSlurDef = (SlurDefinition)slursDefinitionStack.elementAt(slursDefinitionStack.size()-1);
+      	if (currentSlurDef.getStart()==null){
+      		currentSlurDef.setStart(note);
+      		note.setSlurDefinition(currentSlurDef);
+      	}
+      }
+      if (wasTied && note instanceof Note && !((Note)note).isTied()) {
+      	SlurDefinition currentSlurDef = (SlurDefinition)slursDefinitionStack.elementAt(slursDefinitionStack.size()-1);
+      	currentSlurDef.setEnd(note);
+      	note.setSlurDefinition(currentSlurDef);
+      	slursDefinitionStack.removeElementAt(slursDefinitionStack.size()-1);
+      	isTied=false;
+      }
+      lastParsedNote = note;
       return note;
     }
 
@@ -1386,7 +1428,6 @@ public class AbcParserAbstract
         		note.setDuration((short)(m_defaultNoteLength*length.floatValue()));
         	}
         }
-        
       }
       else
         if (note!=null)
@@ -1396,8 +1437,17 @@ public class AbcParserAbstract
       if (m_tokenType.equals(AbcTokenType.TIE))
       {
         accept(AbcTokenType.TIE, current, follow);
-        if (note!=null) note.setIsTied(true);
+        isTied = true;
+        note.setIsTied(true);
+        //the first of the slur definition is not set
+        //-> will be set by the caller and will
+        //apply the current note parsed.
+        //TODO => bug when this is called from Muti note
+        SlurDefinition def = new SlurDefinition();
+        slursDefinitionStack.addElement(def);
       }
+      else
+      	isTied=false;
       if (note!=null)
       {
         CharStreamPosition endPosition = m_scanner.getPosition();
@@ -1416,7 +1466,7 @@ public class AbcParserAbstract
       if (m_tokenType.equals(AbcTokenType.REST))
       {
         PositionableNote note = new PositionableNote(Note.convertToNoteType(accept(AbcTokenType.REST, null, follow)), AccidentalType.NONE);
-        note.setPartOfSlur(m_isPartOfSlur);
+        //note.setPartOfSlur(!slursDefinitionStack.isEmpty());
         return note;
       }
       else
@@ -1448,8 +1498,8 @@ public class AbcParserAbstract
 
       if (heigth!=null)
         note = new PositionableNote(noteHeigth, accidental, octaveTransposition);
-      if (note!=null)
-        note.setPartOfSlur(m_isPartOfSlur);
+      //if (note!=null)
+      //  note.setPartOfSlur(!slursDefinitionStack.isEmpty());
       return note;
     }
 

@@ -1,14 +1,12 @@
 package abc.ui.swing.score;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
-import java.rmi.ServerRuntimeException;
 import java.util.Vector;
 
+import abc.notation.Note;
 import abc.notation.ScoreElementInterface;
-import abc.notation.StaffEndOfLine;
 import abc.ui.swing.JScoreElement;
 
 public class StaffLine extends JScoreElement {
@@ -60,14 +58,17 @@ public class StaffLine extends JScoreElement {
 		g.fillRect((int)(getBase().getX()), (int)(getBase().getY()-m_metrics.getStaffCharBounds().getHeight()), 
 				(int)getWidth(), (int)(m_metrics.getStaffCharBounds().getHeight()));
 		g.setColor(previousColor);*/
-		
 		JScoreElement[] elmts = toArray();
 		for (int j=0; j<elmts.length; j++) {
-			/*if (j%2==0)
-				g.setColor(Color.RED);
-			else
-				g.setColor(Color.BLACK);*/
 			elmts[j].render((Graphics2D)g);
+			if (elmts[j] instanceof SNote) {
+				Note note = ((SNote)elmts[j]).getNote();
+				if (note.isBeginingSlur()) {
+					//TODO dessiner le slur.
+					//int width = note.
+				}
+					
+			}
 		}
 		int staffCharNb = (int)(getWidth()/m_metrics.getStaffCharBounds().getWidth());
 		//System.out.println("char staff nb : " + staffCharNb);

@@ -18,6 +18,11 @@ public class NoteAbstract implements ScoreElementInterface
   private byte bow				= NONE;
   /** The number of dots for this note. */
   private byte m_dotted = 0;
+  
+  protected SlurDefinition slurDefinition = null;
+  
+  //protected boolean isBeginningSlur = false;
+  
   private boolean m_isPartOfSlur = false;
   /** The tuplet this note may belongs to. <TT>null</TT>
    * if this note does not belong to any tuplet. */
@@ -143,6 +148,34 @@ public class NoteAbstract implements ScoreElementInterface
    * @param tuplet The tuplet this note belongs to. */
   void setTuplet(Tuplet tuplet)
   { m_tuplet = tuplet; }
+  
+  /**
+   * @return Returns the slurDefinition.
+   */
+  public SlurDefinition getSlurDefinition() {
+  	return slurDefinition;
+  }
+  
+  public boolean isBeginingSlur() {
+  	if (slurDefinition==null)
+  		return false;
+  	else
+  		return slurDefinition.getStart().equals(this);
+  }
+  
+  public boolean isEndingSlur() {
+  	if (slurDefinition==null)
+  		return false;
+  	else
+  		return slurDefinition.getEnd().equals(this);
+  }
+  
+  /**
+   * @param slurDefinition The slurDefinition to set.
+   */
+  public void setSlurDefinition(SlurDefinition slurDefinition) {
+  	this.slurDefinition = slurDefinition;
+  }
 
   /** Returns a String representation of this Object.
    * @return a String representation of this Object. */
@@ -159,6 +192,7 @@ public class NoteAbstract implements ScoreElementInterface
     //string2Return = string2Return.concat(notes.toString());
     return string2Return;
   }
+
 
 }
 
