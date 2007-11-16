@@ -216,18 +216,13 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
 				m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().setSelectedItem(sel);
 				if (elmnt!=null && elmnt instanceof PositionableInCharStream){
 					m_tuneBookEditorPanel.getTuneEditArea().setSelectedItem((PositionableInCharStream)elmnt);
-	    			/*CharStreamPosition pos = ((PositionableInCharStream)elmnt).getPosition();
-	    			m_tuneBookEditorPanel.getTuneEditArea()
-	    			int begin = pos.getCharactersOffset();
-	    			int end = begin + ((PositionableInCharStream)elmnt).getLength();
-	    			try	{
-	    				m_tuneBookEditorPanel.getTuneEditArea().setCaretPosition(begin);
-	    				m_tuneBookEditorPanel.getTuneEditArea().moveCaretPosition(end);
-	    				m_tuneBookEditorPanel.getTuneEditArea().getCaret().setSelectionVisible(true);
-	    				m_tuneBookEditorPanel.getTuneEditArea().repaint();
-	    			}
-	    			catch (IllegalArgumentException excpt)
-	    			{}*/
+	    			// Dumping element properties
+					if (elmnt instanceof NoteAbstract) {
+						NoteAbstract note = (NoteAbstract)elmnt;
+						System.out.println("properties for " + elmnt + " : slur?="+ note.isPartOfSlur());
+						String test = (note.getSlurDefinition()==null)?"no slur":"start:"+note.getSlurDefinition().getStart()+" end:"+note.getSlurDefinition().getEnd();
+						System.out.println(test);
+					}
 	    		}
 			}
 		}
