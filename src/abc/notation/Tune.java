@@ -418,5 +418,9 @@ public class Tune implements Cloneable
     	return foundElement;
     }
     
+    public ScoreElementInterface getHighestNoteBewteen(ScoreElementInterface noteBegin, ScoreElementInterface noteEnd) {
+    	return null;
+    }
+    
   }
 }

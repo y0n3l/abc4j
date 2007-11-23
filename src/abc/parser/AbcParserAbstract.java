@@ -1337,7 +1337,7 @@ public class AbcParserAbstract
       		note.setSlurDefinition(currentSlurDef);
       	}
       }
-      if (wasTied && note instanceof Note && !((Note)note).isTied()) {
+      if (wasTied && note instanceof Note && !isTied) {
       	SlurDefinition currentSlurDef = (SlurDefinition)slursDefinitionStack.elementAt(slursDefinitionStack.size()-1);
       	currentSlurDef.setEnd(note);
       	note.setSlurDefinition(currentSlurDef);
@@ -1438,7 +1438,8 @@ public class AbcParserAbstract
       {
         accept(AbcTokenType.TIE, current, follow);
         isTied = true;
-        note.setIsTied(true);
+        //useless isTied / setIsTied is redundant with slurs definition
+        //note.setIsTied(true);
         //the first of the slur definition is not set
         //-> will be set by the caller and will
         //apply the current note parsed.

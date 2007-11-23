@@ -119,7 +119,7 @@ public class Note extends NoteAbstract
    * the tuplet or whatever : this is the pure note type definition. */
   private short m_strictDuration = EIGHTH;
   /** <TT>true</TT> if this note is tied, <TT>false</TT> otherwise. */
-  private boolean m_isTied = false;
+  //private boolean m_isTied = false;
   
   /** Creates an abc note with the specified height. Accidental will inherit 
    * its default value <TT>AccidentalType.NONE</TT>.
@@ -214,6 +214,20 @@ public class Note extends NoteAbstract
    * @see #setHeight(byte) */
   public byte getHeight() {
 	  return (byte)(strictHeight + octaveTransposition*12);
+  }
+  
+  public boolean isHigherThan (Note aNote) {
+	  return getMidiLikeHeight()>aNote.getMidiLikeHeight();
+  }
+  
+  private int getMidiLikeHeight() {
+	  int midiLikeHeight = getHeight();
+	  if (accidental==AccidentalType.SHARP)
+		  midiLikeHeight++;
+	  else
+		  if (accidental==AccidentalType.FLAT)
+			  midiLikeHeight--;
+	  return midiLikeHeight;
   }
   
   /** Returns this note absolute height. This height doesn't take in account
@@ -379,15 +393,24 @@ public class Note extends NoteAbstract
 
   /** Sets if this note is tied, wheter or not.
    * @param isTied <TT>true</TT> if this note is tied, <TT>false</TT> otherwise.
-   * @see #isTied() */
-  public void setIsTied(boolean isTied)
-  { m_isTied = isTied; }
+   * @see #isTied()
+   * @deprecated You can still get the tie information from the slur definition 
+   * provided by {@link #getSlurDefinition()} and {@link #isPartOfSlur()}*/
+  public void setIsTied(boolean isTied) { 
+	  //m_isTied = isTied;
+  }
 
   /** Returns <TT>true</TT> if this note is tied.
    * @return <TT>true</TT> if this note is tied, <TT>false</TT> otherwise.
-   * @see #setIsTied(boolean) */
+   * @see #setIsTied(boolean) 
+   * @deprecated */
   public boolean isTied()
-  { return m_isTied; }
+  { 
+	  // a note is considered to be tied if it's part of a slur 
+	  // and is not the last note of the slur definition  
+	  // the is tied is redundant with slurs definition...  
+	  return isPartOfSlur() && (getSlurDefinition()==null || !getSlurDefinition().getEnd().equals(this)); 
+  }
 
   /** A convenient method that returns <TT>true</TT> if this note is a rest. 
    * A note is a rest if its height returned by {@link #getHeight()} 

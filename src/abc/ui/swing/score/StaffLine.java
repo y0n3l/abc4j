@@ -13,9 +13,12 @@ public class StaffLine extends JScoreElement {
 
 	protected Vector m_staffElements = null;
 	
+	//protected Vector m_beginningSlurElements = null;
+	
 	public StaffLine(Point2D base, ScoreMetrics c) {
 		super (c);
 		m_staffElements = new Vector();
+		//m_beginningSlurElements = new Vector();
 	}
 	
 	public Point2D getBase() {
@@ -34,6 +37,10 @@ public class StaffLine extends JScoreElement {
 		m_staffElements.addElement(r);
 		computeWidth();
 	}
+	
+	/*public Vector getBeginningSlurElements() {
+		return m_beginningSlurElements;
+	}*/
 	
 	public JScoreElement[] toArray() {
 		JScoreElement[] r = new JScoreElement[m_staffElements.size()];
@@ -61,14 +68,12 @@ public class StaffLine extends JScoreElement {
 		JScoreElement[] elmts = toArray();
 		for (int j=0; j<elmts.length; j++) {
 			elmts[j].render((Graphics2D)g);
-			if (elmts[j] instanceof SNote) {
+			/*if (elmts[j] instanceof SNote) {
 				Note note = ((SNote)elmts[j]).getNote();
-				if (note.isBeginingSlur()) {
-					//TODO dessiner le slur.
-					//int width = note.
-				}
+				if (note.isBeginingSlur())
+					m_beginningSlurElements.addElement(note);
 					
-			}
+			}*/
 		}
 		int staffCharNb = (int)(getWidth()/m_metrics.getStaffCharBounds().getWidth());
 		//System.out.println("char staff nb : " + staffCharNb);

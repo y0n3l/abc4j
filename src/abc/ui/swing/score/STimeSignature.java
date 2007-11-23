@@ -39,6 +39,7 @@ public class STimeSignature extends JScoreElement {
 	}
 	
 	protected void onBaseChanged() {
+		//TODO Crashes when num is equals to 9
 		m_numChars = DIGITS[m_ts.getNumerator()-1];
 		m_denomChars = DIGITS[m_ts.getDenominator()-1];
 		m_topNumY = (int)(m_base.getY()-m_metrics.getNoteHeigth()*3.1);
