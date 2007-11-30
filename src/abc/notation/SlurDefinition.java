@@ -13,7 +13,7 @@ public class SlurDefinition implements ScoreElementInterface {
 	
 	public SlurDefinition(){
 		//m_content = new Vector();
-		System.out.println("test");
+		//System.out.println("test");
 	}
 	
 	/*public void add(NoteAbstract groupStart) {

@@ -348,54 +348,47 @@ public class JTune extends JScoreElement {
 		for (int j=0; j<m_beginningSlurElements.size(); j++) {
 			NoteAbstract n = (NoteAbstract)m_beginningSlurElements.elementAt(j);
 			SlurDefinition slurDef = n.getSlurDefinition();
-			SNote elmtStart =  (SNote)m_scoreElements.get(slurDef.getStart());
-			if (slurDef.getEnd()!=null){
-				SNote elmtEnd =  (SNote)m_scoreElements.get(slurDef.getEnd());
-				
-				Note lowestNote = m_tune.getScore().getLowestNoteBewteen(slurDef.getStart(), slurDef.getEnd());
-				SNote lowestNoteGlyph = (SNote)m_scoreElements.get(lowestNote);
-				GeneralPath path = new GeneralPath();
-				path.moveTo((int)elmtStart.getNotePosition().getX(), (int)elmtStart.getNotePosition().getY());
-				
-				QuadCurve2D q = new QuadCurve2D.Float();
-//				 draw QuadCurve2D.Float with set coordinates
-				q.setCurve(
-						(int)elmtStart.getNotePosition().getX(), (int)elmtStart.getNotePosition().getY(),
-						//(int)(elmtStart.getNotePosition().getX()+(elmtEnd.getNotePosition().getX()-elmtStart.getNotePosition().getX())/2), 
-						//(int)elmtEnd.getNotePosition().getY()+10,
-						lowestNoteGlyph.getNotePosition().getX(),
-						lowestNoteGlyph.getNotePosition().getY(),
-						(int)elmtEnd.getNotePosition().getX(), (int)elmtEnd.getNotePosition().getY());
-				path.append(q, true);
-				q = new QuadCurve2D.Float();
-//				 draw QuadCurve2D.Float with set coordinates
-				q.setCurve(
-						(int)elmtEnd.getNotePosition().getX(), (int)elmtEnd.getNotePosition().getY(),
-						//(int)(elmtStart.getNotePosition().getX()+(elmtEnd.getNotePosition().getX()-elmtStart.getNotePosition().getX())/2), 
-						//(int)elmtEnd.getNotePosition().getY()+12,
-						lowestNoteGlyph.getNotePosition().getX(),
-						lowestNoteGlyph.getNotePosition().getY()+3,
-						(int)elmtStart.getNotePosition().getX(), (int)elmtStart.getNotePosition().getY()
-						);
-				path.append(q, true);
-				
-				/*path.append(arg0, arg1)
-				path.curveTo(
-						(int)elmtStart.getNotePosition().getX(), (int)elmtStart.getNotePosition().getY(), 
-						(int)elmtEnd.getNotePosition().getX(), (int)elmtEnd.getNotePosition().getY(),
-						(int)(elmtStart.getNotePosition().getX()+(elmtEnd.getNotePosition().getX()-elmtStart.getNotePosition().getX())/2), 
-						(int)elmtEnd.getNotePosition().getY()+10
-				);*/
-				//path.lineTo((int)elmtStart.getNotePosition().getX(), (int)elmtStart.getNotePosition().getY());
-				g2.fill(path);
-				g2.draw(path);
-				g2.setColor(Color.RED);
-				g2.drawLine((int)lowestNoteGlyph.getNotePosition().getX(),
-						(int)lowestNoteGlyph.getNotePosition().getY(),
-						(int)lowestNoteGlyph.getNotePosition().getX()+50,
-						(int)lowestNoteGlyph.getNotePosition().getY());
-				g2.setColor(Color.BLACK);
+			if (slurDef.getEnd()!=null)
+				drawSlurDown(g2, slurDef);
+		}
+	}
+	
+	protected void drawSlurDown(Graphics2D g2, SlurDefinition slurDef) {
+		SNote elmtStart =  (SNote)m_scoreElements.get(slurDef.getStart());
+		if (slurDef.getEnd()!=null){
+			SNote elmtEnd =  (SNote)m_scoreElements.get(slurDef.getEnd());
+			Point2D controlPoint = null;
+			
+			Note lowestNote = m_tune.getScore().getLowestNoteBewteen(slurDef.getStart(), slurDef.getEnd());
+			if (lowestNote.equals(slurDef.getStart()) || lowestNote.equals(slurDef.getEnd())) {
+				controlPoint = new Point2D.Double(
+						//TODO nullpointer occurs here sometimes...
+						elmtStart.getSlurDownAnchor().getX()+ (elmtEnd.getSlurDownAnchor().getX()-elmtStart.getSlurDownAnchor().getX())/2,
+						elmtStart.getSlurDownAnchor().getY()+ m_metrics.getNoteWidth()/2);
 			}
+			else {
+				SNote lowestNoteGlyph = (SNote)m_scoreElements.get(lowestNote);
+				controlPoint = new Point2D.Double(lowestNoteGlyph.getSlurDownAnchor().getX(), 
+						lowestNoteGlyph.getSlurDownAnchor().getY() + m_metrics.getNoteWidth()/2);
+			}
+			GeneralPath path = new GeneralPath();
+			path.moveTo((int)elmtStart.getSlurDownAnchor().getX(), (int)elmtStart.getSlurDownAnchor().getY());
+			QuadCurve2D q = new QuadCurve2D.Float();
+			q.setCurve(
+					elmtStart.getSlurDownAnchor(),
+					newControl(elmtStart.getSlurDownAnchor(), controlPoint, elmtEnd.getSlurDownAnchor()), 
+					elmtEnd.getSlurDownAnchor());
+			path.append(q, true);
+			q = new QuadCurve2D.Float();
+			controlPoint.setLocation(controlPoint.getX(), controlPoint.getY()+m_metrics.getNoteWidth()/8);
+			q.setCurve(
+					elmtEnd.getSlurDownAnchor(),
+					newControl(elmtStart.getSlurDownAnchor(), controlPoint, elmtEnd.getSlurDownAnchor()), 
+					elmtStart.getSlurDownAnchor());
+			path.append(q, true);
+			
+			g2.fill(path);
+			g2.draw(path);
 		}
 	}
 	
@@ -449,4 +442,18 @@ public class JTune extends JScoreElement {
 		//initElements.toArray(initElementsAsArray);
 		return sl;//new StaffLine(cursor, metrix, initElementsAsArray);
 	}
+	
+	/**
+	 * implementation found at 
+	 * http://forum.java.sun.com/thread.jspa?threadID=609888&messageID=3362448
+	 * This enables the bezier curve to be tangent to the control point.
+	 */
+	private Point2D newControl (Point2D start, Point2D ctrl, Point2D end) {
+	        Point2D.Double newCtrl = new Point2D.Double();
+	        newCtrl.x = 2 * ctrl.getX() - (start.getX() + end.getX()) / 2;
+	        newCtrl.y = 2 * ctrl.getY() - (start.getY() + end.getY()) / 2;
+	        return newCtrl;
+	    }
+
+
 }

@@ -220,6 +220,10 @@ public class Note extends NoteAbstract
 	  return getMidiLikeHeight()>aNote.getMidiLikeHeight();
   }
   
+  public boolean isLowerThan (Note aNote) {
+	  return getMidiLikeHeight()<aNote.getMidiLikeHeight();
+  }
+  
   private int getMidiLikeHeight() {
 	  int midiLikeHeight = getHeight();
 	  if (accidental==AccidentalType.SHARP)

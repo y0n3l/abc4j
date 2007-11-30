@@ -31,6 +31,7 @@ public class SNotePartOfGroup extends SNote {
 		BasicStroke stemStroke = m_metrics.getNotesLinkStroke();
 		stemX = (int)(noteX + m_metrics.getNoteWidth() - stemStroke.getLineWidth()/10);
 		stemYBegin = (int)(noteY - m_metrics.getNoteHeigth()/6);
+		onNotePositionChanged();
 	}
 	
 	public int getStemX(){

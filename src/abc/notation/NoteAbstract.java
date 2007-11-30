@@ -157,7 +157,7 @@ public class NoteAbstract implements ScoreElementInterface
   }
   
   public boolean isBeginingSlur() {
-  	if (slurDefinition==null)
+  	if (slurDefinition==null || slurDefinition.getStart()==null)
   		return false;
   	else
   		return slurDefinition.getStart().equals(this);

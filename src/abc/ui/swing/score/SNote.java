@@ -14,7 +14,7 @@ public class SNote extends JScoreElement {
 	protected Note note = null;
 	protected Point2D notePosition = null;
 	protected Point2D accidentalsPosition = null;
-	protected Point2D slurPosition = null;
+	protected Point2D slurDownAnchor, slurUpAnchor = null;
 	protected Point2D dotsPosition = null;
 	protected char[] noteChars = null;
 	protected char[] accidentalsChars = null;
@@ -30,10 +30,9 @@ public class SNote extends JScoreElement {
 	public static final char[] HALF_REST = {'\uF0EE'};
 	public static final char[] QUARTER_REST = {'\uF0CE'};
 	public static final char[] EIGHTH_REST = {'\uF0E4'};
-	public static final char[] SIXTEENTH_REST = {'\uF071'};
-	public static final char[] THIRTY_SECOND_REST = {'\uF071'};
+	public static final char[] SIXTEENTH_REST = {'\uF0C5'};
+	public static final char[] THIRTY_SECOND_REST = {'\uF0A8'};
 	public static final char[] SIXTY_FOUR_REST = {'\uF0F4'};
-	
 	
 	public SNote(Note noteValue, Point2D base, ScoreMetrics c) {
 		super(base, c);
@@ -96,14 +95,23 @@ public class SNote extends JScoreElement {
 		//double noteY =(int)(base.getY()-getOffset(note)*c.getNoteHeigth());
 		double noteX = base.getX()+accidentalsWidth*1.2;
 		notePosition = new Point2D.Double(noteX, noteY);
+		m_width = (int)(accidentalsWidth+c.getNoteWidth());
+		onNotePositionChanged();
+	}
+	
+	protected void onNotePositionChanged() {
 		if (note.countDots()!=0)
-			dotsPosition = new Point2D.Double(noteX + c.getNoteWidth()*1.2, noteY-c.getNoteHeigth()*0.05);
+			dotsPosition = new Point2D.Double(notePosition.getX() + m_metrics.getNoteWidth()*1.2, 
+					notePosition.getY()-m_metrics.getNoteHeigth()*0.05);
 		//if (note.getSlurDefinition()!=null)
-		slurPosition = new Point2D.Double(noteX + c.getNoteWidth()/2, noteY+c.getNoteWidth()/2);
+		slurDownAnchor = new Point2D.Double(notePosition.getX() + m_metrics.getNoteWidth()/2, 
+				notePosition.getY()+m_metrics.getNoteWidth()/4);
+		slurUpAnchor = new Point2D.Double(notePosition.getX() + m_metrics.getNoteWidth()/2, 
+				notePosition.getY()-m_metrics.getNoteWidth()/4);
 		//c.getGraphics().drawChars(chars, 0, chars.length, noteX, noteY);
 		/*if (note.getHeight()==Note.C || note.getHeight()==Note.a)
 			c.getGraphics().drawChars(ScoreRenditionContext.STROKE, 0, 1, (int)(noteX-context.getNoteWidth()/4), strokeY);*/
-		m_width = (int)(accidentalsWidth+c.getNoteWidth());
+		
 	}
 	
 	public static double getOffset(Note note) {
@@ -137,6 +145,15 @@ public class SNote extends JScoreElement {
 		return note;
 	}
 	
+	public Point2D getSlurUpAnchor() {
+		return slurUpAnchor;
+	}
+	
+	public Point2D getSlurDownAnchor() {
+		return slurDownAnchor;
+	}
+	
+	
 	public Rectangle2D getBoundingBox() {
 		double noteGlyphHeight =  m_metrics.getNoteHeigth()*4;
 		Rectangle2D bb = new Rectangle2D.Double((int)(notePosition.getX()), (int)(notePosition.getY()-noteGlyphHeight), 
@@ -150,6 +167,13 @@ public class SNote extends JScoreElement {
 		renderAccidentals(g);
 		renderDots(g);
 		g.drawChars(noteChars, 0, 1, (int)notePosition.getX(), (int)notePosition.getY());
+		//TODO draw the note position and compare the one from notePartOfGroup and the "normal" ones.
+		/*Color previousColor = g.getColor();
+		g.setColor(Color.RED);
+		m_boundingBox = getBoundingBox();
+		g.drawRect((int)(m_boundingBox.getX()), (int)(m_boundingBox.getY()), 
+				(int)(m_boundingBox.getWidth()), (int)(m_boundingBox.getHeight()));
+		g.setColor(previousColor);*/
 		return m_width;
 	}
 	
@@ -157,13 +181,6 @@ public class SNote extends JScoreElement {
 		if (accidentalsPosition!=null)
 			gfx.drawChars(accidentalsChars, 0, 1, (int)accidentalsPosition.getX(), (int)accidentalsPosition.getY()); 
 	}
-	
-	/*protected void renderSlur(Graphics2D gfx) {
-		if (slurPosition!=null && note.isEndingSlur()) {
-			int width = note.getSlurDefinition().getEnd().
-			gfx.drawLine(accidentalsChars, 0, 1, (int)accidentalsPosition.getX(), (int)accidentalsPosition.getY());
-		}
-	}*/
 	
 	protected void renderExtendedStaffLines(Graphics2D context, ScoreMetrics metrics, Point2D base){
 		int extSize = (int)metrics.getNoteWidth()/3;

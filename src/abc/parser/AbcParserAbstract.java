@@ -1327,24 +1327,25 @@ public class AbcParserAbstract
             note.setChordName(chordName);
           if (graceNotes!=null)
             note.setGracingNotes(graceNotes);
+          if (!slursDefinitionStack.isEmpty()){
+          	note.setPartOfSlur(true);
+          	SlurDefinition currentSlurDef = (SlurDefinition)slursDefinitionStack.elementAt(slursDefinitionStack.size()-1);
+          	if (currentSlurDef.getStart()==null){
+          		currentSlurDef.setStart(note);
+          		note.setSlurDefinition(currentSlurDef);
+          	}
+          }
+          if (wasTied && note instanceof Note && !isTied) {
+        	  //TODO can crash here array out of bounds exception -1 
+          	SlurDefinition currentSlurDef = (SlurDefinition)slursDefinitionStack.elementAt(slursDefinitionStack.size()-1);
+          	currentSlurDef.setEnd(note);
+          	note.setSlurDefinition(currentSlurDef);
+          	slursDefinitionStack.removeElementAt(slursDefinitionStack.size()-1);
+          	isTied=false;
+          }
+          lastParsedNote = note;
         }
       }
-      if (!slursDefinitionStack.isEmpty()){
-      	note.setPartOfSlur(true);
-      	SlurDefinition currentSlurDef = (SlurDefinition)slursDefinitionStack.elementAt(slursDefinitionStack.size()-1);
-      	if (currentSlurDef.getStart()==null){
-      		currentSlurDef.setStart(note);
-      		note.setSlurDefinition(currentSlurDef);
-      	}
-      }
-      if (wasTied && note instanceof Note && !isTied) {
-      	SlurDefinition currentSlurDef = (SlurDefinition)slursDefinitionStack.elementAt(slursDefinitionStack.size()-1);
-      	currentSlurDef.setEnd(note);
-      	note.setSlurDefinition(currentSlurDef);
-      	slursDefinitionStack.removeElementAt(slursDefinitionStack.size()-1);
-      	isTied=false;
-      }
-      lastParsedNote = note;
       return note;
     }
 

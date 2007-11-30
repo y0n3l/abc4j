@@ -418,9 +418,58 @@ public class Tune implements Cloneable
     	return foundElement;
     }
     
-    public ScoreElementInterface getHighestNoteBewteen(ScoreElementInterface noteBegin, ScoreElementInterface noteEnd) {
-    	return null;
+    public Note getHighestNoteBewteen(int scoreElmntIndexBegin, int ScoreElmtIndexEnd) throws IllegalArgumentException {
+    	if (scoreElmntIndexBegin>ScoreElmtIndexEnd)
+    		throw new IllegalArgumentException("First parameter " + scoreElmntIndexBegin + " must be located before " + ScoreElmtIndexEnd + " in the score");
+    	Note highestNote = null;
+    	ScoreElementInterface currentScoreEl;
+    	for (int i=scoreElmntIndexBegin; i<=ScoreElmtIndexEnd; i++) {
+    		currentScoreEl=(ScoreElementInterface)elementAt(i);
+    		if (currentScoreEl instanceof Note && (highestNote==null || ((Note)currentScoreEl).isHigherThan(highestNote)))
+    			highestNote = (Note)currentScoreEl;
+    	}
+    	return highestNote;
     }
     
+    public Note getHighestNoteBewteen(ScoreElementInterface noteBegin, ScoreElementInterface noteEnd)
+    	throws IllegalArgumentException
+    {
+    	int indexBegin = this.indexOf(noteBegin);
+    	int indexEnd = this.indexOf(noteEnd);
+    	if (indexBegin==-1)
+    		throw new IllegalArgumentException("Note " + noteBegin + " hasn't been found in tune");
+    	if (indexEnd==-1)
+        	throw new IllegalArgumentException("Note " + noteEnd + " hasn't been found in tune");
+    	if (indexBegin>indexEnd)
+    		throw new IllegalArgumentException("Note " + noteBegin + " is located after " + noteEnd + " in the score");
+    	return getHighestNoteBewteen(indexBegin, indexEnd);
+    }
+    
+    public Note getLowestNoteBewteen(ScoreElementInterface noteBegin, ScoreElementInterface noteEnd)
+		throws IllegalArgumentException
+	{
+    	int indexBegin = this.indexOf(noteBegin);
+    	int indexEnd = this.indexOf(noteEnd);
+    	if (indexBegin==-1)
+    		throw new IllegalArgumentException("Note " + noteBegin + " hasn't been found in tune");
+    	if (indexEnd==-1)
+    		throw new IllegalArgumentException("Note " + noteEnd + " hasn't been found in tune");
+    	if (indexBegin>indexEnd)
+    		throw new IllegalArgumentException("Note " + noteBegin + " is located after " + noteEnd + " in the score");
+    	return getLowestNoteBewteen(indexBegin, indexEnd);
+	}
+    
+    public Note getLowestNoteBewteen(int scoreElmntIndexBegin, int ScoreElmtIndexEnd) throws IllegalArgumentException {
+    	if (scoreElmntIndexBegin>ScoreElmtIndexEnd)
+    		throw new IllegalArgumentException("First parameter " + scoreElmntIndexBegin + " must be located before " + ScoreElmtIndexEnd + " in the score");
+    	Note lowestNote = null;
+    	ScoreElementInterface currentScoreEl;
+    	for (int i=scoreElmntIndexBegin; i<=ScoreElmtIndexEnd; i++) {
+    		currentScoreEl=(ScoreElementInterface)elementAt(i);
+    		if (currentScoreEl instanceof Note && (lowestNote==null || ((Note)currentScoreEl).isLowerThan(lowestNote)))
+    			lowestNote = (Note)currentScoreEl;
+    	}
+    	return lowestNote;
+    }
   }
 }
