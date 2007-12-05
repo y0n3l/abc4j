@@ -1,14 +1,10 @@
 import java.io.File;
-import java.io.StringReader;
 
 import junit.framework.TestCase;
 import abc.notation.AccidentalType;
 import abc.notation.KeySignature;
 import abc.notation.Note;
-import abc.notation.Tune;
-import abc.parser.AbcHeadersParser;
 import abc.parser.TuneBook;
-import abc.parser.TuneParser;
 
 public class KeySignatureTests extends TestCase {
 	

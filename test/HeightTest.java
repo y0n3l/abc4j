@@ -3,6 +3,8 @@ import abc.midi.MidiConverterAbstract;
 import abc.notation.AccidentalType;
 import abc.notation.KeySignature;
 import abc.notation.Note;
+import abc.notation.Tune;
+import abc.parser.TuneParser;
 
 
 public class HeightTest extends TestCase {
@@ -62,6 +64,22 @@ public class HeightTest extends TestCase {
 		note.setOctaveTransposition((byte)1);
 		assertEquals(72, MidiConverterAbstract.getMidiNoteNumber(note, ks));
 		
+	}
+	
+	public void testNoteHeightComparison() {
+		String tuneAsString = "X:1\nT:test\nK:c\nabcdef\n";
+		TuneParser tuneParser = new TuneParser();
+		Tune tune = tuneParser.parse(tuneAsString);
+		//System.out.println("highest note : " + tune.getScore().getHighestNoteBewteen(0, tune.getScore().size()-1));
+		assertEquals(Note.b, tune.getScore().getHighestNoteBewteen(0, tune.getScore().size()-1).getHeight());
+	}
+	
+	public void testNoteVariousHeightComparison() {
+		String tuneAsString = "X:1\nT:test\nK:c\nA,B,CDEFa,b,cdef\n";
+		Tune tune = new TuneParser().parse(tuneAsString);
+		for (int i=0; i<tune.getScore().size()-1; i++)
+			if (tune.getScore().elementAt(i) instanceof Note && tune.getScore().elementAt(i+1) instanceof Note)
+				assertFalse(((Note)tune.getScore().elementAt(i)).isHigherThan((Note)tune.getScore().elementAt(i+1)));
 	}
 	
 	protected void tearDown() throws Exception {

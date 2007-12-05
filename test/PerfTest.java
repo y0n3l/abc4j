@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import junit.framework.TestCase;
 import abc.parser.AbcFileParser;
@@ -28,36 +29,46 @@ public class PerfTest extends TestCase {
 			}
 		});*/
 		long headersParsingTime = 0;
-		try { 
+		//try { 
 			long start = System.currentTimeMillis();
-			hparser.parseFile(f);
+			try {
+				hparser.parseFile(f);
+				}
+				catch (FileNotFoundException e) {
+					throw new RuntimeException(e);
+				}
 			long end = System.currentTimeMillis();
 			headersParsingTime = end - start;
 			System.out.println("Headers only : " + headersParsingTime); 
-		}
+		/*}
 		catch (Exception e ) {
 			System.out.println("There's an exception here " + e.getMessage());
 			e.printStackTrace();
-		}
+		}*/
 		
 		AbcFileParser fparser = new AbcFileParser();
 		long fileParsingTime = 0;
-		try { 
-			long start = System.currentTimeMillis();
+		//try { 
+			start = System.currentTimeMillis();
 			/*fparser.addListener(new AbcFileParserAdapter(){
 				int tuneNb = 0;
 				public void tuneEnd(Tune tune) {
 					System.out.println((tuneNb++) + " " + tune.getTitles()[0]);
 				}
 			});*/
+			try {
 			fparser.parseFile(f);
-			long end = System.currentTimeMillis();
+			}
+			catch (FileNotFoundException e) {
+				throw new RuntimeException(e);
+			}
+			end = System.currentTimeMillis();
 			fileParsingTime = end - start;
 			System.out.println("Headers only : " + fileParsingTime);
-		}
+		/*}
 		catch (Exception e ) {
 			e.printStackTrace();
-		}
+		}*/
 		System.out.println("=====> Headers parsing is about " + fileParsingTime / headersParsingTime + " times faster");
 		
 	}
