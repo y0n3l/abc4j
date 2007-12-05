@@ -26,6 +26,7 @@ import abc.notation.RepeatedPartAbstract;
 import abc.notation.ScorePresentationElementInterface;
 import abc.notation.StaffEndOfLine;
 import abc.notation.Tempo;
+import abc.notation.TieDefinition;
 import abc.notation.TimeSignature;
 import abc.notation.Tune;
 import abc.notation.Tuplet;
@@ -167,7 +168,8 @@ public class AbcParserAbstract
     /** Keep track of the last parsed note. Used for instance to value the
      * end slur in case of slur */
     private NoteAbstract lastParsedNote =null;
-    private boolean isTied = false;
+    
+    private Note tieStartingNote = null;
     /** The current default note length. */
     private short m_defaultNoteLength = Note.EIGHTH;
 
@@ -1283,7 +1285,7 @@ public class AbcParserAbstract
       boolean up = false;
       boolean down = false;
       boolean staccato = false;
-      boolean wasTied = isTied;
+      //boolean wasTied = isTied;
 
       String chordName = null;
       //======================guitar chord
@@ -1335,14 +1337,24 @@ public class AbcParserAbstract
           		note.setSlurDefinition(currentSlurDef);
           	}
           }
-          if (wasTied && note instanceof Note && !isTied) {
+          if (tieStartingNote!=null && note!=tieStartingNote && ((Note)note).getHeight()==tieStartingNote.getHeight()) {
+        	  //This is the end of the tie, the two notes are the same.
+        	  //TODO needs to be improved: accidentals ?
+        	  tieStartingNote.getTieDefinition().setEnd(note);
+        	  ((Note)note).setTieDefinition(tieStartingNote.getTieDefinition());
+        	  tieStartingNote=null;
+        	  
+          }
+        	  
+          //TODO:check if this is really useless.
+          /*if (wasTied && note instanceof Note && !isTied) {
         	  //TODO can crash here array out of bounds exception -1 
           	SlurDefinition currentSlurDef = (SlurDefinition)slursDefinitionStack.elementAt(slursDefinitionStack.size()-1);
           	currentSlurDef.setEnd(note);
           	note.setSlurDefinition(currentSlurDef);
           	slursDefinitionStack.removeElementAt(slursDefinitionStack.size()-1);
           	isTied=false;
-          }
+          }*/
           lastParsedNote = note;
         }
       }
@@ -1411,6 +1423,7 @@ public class AbcParserAbstract
     private Note parseNote(Set follow)
     {
       Set current = new Set().union(FIRST_NOTE_LENGTH).union(FIRST_TIE);
+      boolean isTied = false;
       PositionableNote note = null;
       CharStreamPosition startPosition = m_token.getPosition();
       note = (PositionableNote)parseNoteOrRest(current.createUnion(follow));
@@ -1441,12 +1454,14 @@ public class AbcParserAbstract
         isTied = true;
         //useless isTied / setIsTied is redundant with slurs definition
         //note.setIsTied(true);
+        //note.setTieDefinition(new Tietrue)
         //the first of the slur definition is not set
         //-> will be set by the caller and will
         //apply the current note parsed.
         //TODO => bug when this is called from Muti note
-        SlurDefinition def = new SlurDefinition();
-        slursDefinitionStack.addElement(def);
+        //SlurDefinition def = new SlurDefinition();
+        //slursDefinitionStack.addElement(def);
+        
       }
       else
       	isTied=false;
@@ -1457,6 +1472,12 @@ public class AbcParserAbstract
             startPosition.getCharactersOffset();
         note.setBeginPosition(startPosition);
         note.setLength(length);
+        if (isTied) {
+        	TieDefinition tieDef = new TieDefinition();
+        	tieDef.setStart(note);
+        	note.setTieDefinition(tieDef);
+        	tieStartingNote = note;
+        }
       }
       return note;
     }

@@ -1,5 +1,6 @@
 package abc.ui.swing.score;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Point2D;
@@ -11,12 +12,26 @@ import abc.notation.ScoreElementInterface;
 import abc.ui.swing.JScoreElement;
 
 public class SNote extends JScoreElement {
+	private static final double SPACE_RATIO_FOR_ACCIDENTALS = 1.3;
+	
 	protected Note note = null;
+	/** This position is independant from the note type (height or rhythm)
+	 * and, as a way of consequence, can be used to render elements such as sharp,
+	 * flats etc around the note.
+	 * This is the base to compute the accidentalsPosition, the slurs positions etc. */
 	protected Point2D notePosition = null;
+	/** This position is used to render the note character in the score. 
+	 * This position may (relatively) differ from one note to another and cannot be 
+	 * used as a stable reference position to draw elements around the note. */
+	protected Point2D displayPosition = null;
+	/** Position to draw accidentals. <TT>null</TT> if no accidental for this note. */
 	protected Point2D accidentalsPosition = null;
 	protected Point2D slurDownAnchor, slurUpAnchor = null;
 	protected Point2D dotsPosition = null;
+	/** The chars from the font that represent the note to be displayed. */
 	protected char[] noteChars = null;
+	/** The chars from the font that represent the accidentals to be displayed. 
+	 * <TT>null</TT> if the note has no accidental. */
 	protected char[] accidentalsChars = null;
 	public static final char[] WHOLE_NOTE = {'\uF092'};
 	public static final char[] HALF_NOTE = {'\uF068'};
@@ -33,6 +48,8 @@ public class SNote extends JScoreElement {
 	public static final char[] SIXTEENTH_REST = {'\uF0C5'};
 	public static final char[] THIRTY_SECOND_REST = {'\uF0A8'};
 	public static final char[] SIXTY_FOUR_REST = {'\uF0F4'};
+	
+	public static final char[] UNKNWON = {'\uF0AD'};
 	
 	public SNote(Note noteValue, Point2D base, ScoreMetrics c) {
 		super(base, c);
@@ -54,7 +71,6 @@ public class SNote extends JScoreElement {
 			noteY = (int)(base.getY()-getOffset(note)*c.getNoteHeigth());
 		double accidentalsWidth = 0;
 		if (note.getAccidental()!=AccidentalType.NONE) {
-			accidentalsPosition = new Point2D.Double(base.getX(),noteY-c.getNoteHeigth()/2);
 			switch (note.getAccidental()) {
 				case AccidentalType.FLAT: accidentalsChars = ScoreMetrics.FLAT; 
 					accidentalsWidth = c.getFlatBounds().getWidth(); 
@@ -65,6 +81,7 @@ public class SNote extends JScoreElement {
 				case AccidentalType.NATURAL: accidentalsChars = ScoreMetrics.NATURAL; 
 					accidentalsWidth = c.getNaturalBounds().getWidth(); 
 					break;
+				default : throw new IllegalArgumentException("Incorrect accidental for " + note + " : " + note.getAccidental());
 			}
 		}
 		short noteDuration = note.getStrictDuration();
@@ -78,6 +95,7 @@ public class SNote extends JScoreElement {
 				case Note.QUARTER: noteChars = QUARTER_REST; break;
 				case Note.HALF: noteChars = HALF_REST; break;
 				case Note.WHOLE: noteChars = WHOLE_REST; break;
+				default : noteChars = UNKNWON;
 			}
 		}
 		else {
@@ -89,12 +107,20 @@ public class SNote extends JScoreElement {
 				case Note.QUARTER: noteChars = QUARTER_NOTE; break;
 				case Note.HALF: noteChars = HALF_NOTE; break;
 				case Note.WHOLE: noteChars = WHOLE_NOTE; break;
+				default : noteChars = UNKNWON;
 			}
 		}
 		//System.out.println("note chars " + noteChars[0]);
 		//double noteY =(int)(base.getY()-getOffset(note)*c.getNoteHeigth());
-		double noteX = base.getX()+accidentalsWidth*1.2;
-		notePosition = new Point2D.Double(noteX, noteY);
+		double noteX = base.getX()+accidentalsWidth*SPACE_RATIO_FOR_ACCIDENTALS;
+		displayPosition = new Point2D.Double(noteX, noteY);
+		if (note.getStrictDuration()==Note.WHOLE || note.getStrictDuration()==Note.SIXTEENTH || 
+				note.getStrictDuration()==Note.THIRTY_SECOND)
+			notePosition = new Point2D.Double(displayPosition.getX(), displayPosition.getY()+m_metrics.getNoteHeigth()*0.5);
+		else
+			notePosition = (Point2D)displayPosition.clone();
+		if (note.hasAccidental())
+			accidentalsPosition = new Point2D.Double(base.getX(),notePosition.getY()-m_metrics.getNoteHeigth()/2);
 		m_width = (int)(accidentalsWidth+c.getNoteWidth());
 		onNotePositionChanged();
 	}
@@ -106,8 +132,10 @@ public class SNote extends JScoreElement {
 		//if (note.getSlurDefinition()!=null)
 		slurDownAnchor = new Point2D.Double(notePosition.getX() + m_metrics.getNoteWidth()/2, 
 				notePosition.getY()+m_metrics.getNoteWidth()/4);
-		slurUpAnchor = new Point2D.Double(notePosition.getX() + m_metrics.getNoteWidth()/2, 
+		slurUpAnchor = new Point2D.Double(displayPosition.getX() + m_metrics.getNoteWidth()/2, 
 				notePosition.getY()-m_metrics.getNoteWidth()/4);
+		//if (note.hasAccidental())
+		//	accidentalsPosition = new Point2D.Double(notePosition.getX(),notePosition.getY()-m_metrics.getNoteHeigth()/2);
 		//c.getGraphics().drawChars(chars, 0, chars.length, noteX, noteY);
 		/*if (note.getHeight()==Note.C || note.getHeight()==Note.a)
 			c.getGraphics().drawChars(ScoreRenditionContext.STROKE, 0, 1, (int)(noteX-context.getNoteWidth()/4), strokeY);*/
@@ -141,6 +169,10 @@ public class SNote extends JScoreElement {
 		return notePosition;
 	}
 	
+	protected Point2D getDisplayPosition(){
+		return displayPosition;
+	}
+	
 	public Note getNote(){
 		return note;
 	}
@@ -156,7 +188,7 @@ public class SNote extends JScoreElement {
 	
 	public Rectangle2D getBoundingBox() {
 		double noteGlyphHeight =  m_metrics.getNoteHeigth()*4;
-		Rectangle2D bb = new Rectangle2D.Double((int)(notePosition.getX()), (int)(notePosition.getY()-noteGlyphHeight), 
+		Rectangle2D bb = new Rectangle2D.Double((int)(displayPosition.getX()), (int)(displayPosition.getY()-noteGlyphHeight), 
 				m_width, noteGlyphHeight);
 		return bb;
 	}
@@ -166,13 +198,17 @@ public class SNote extends JScoreElement {
 		renderExtendedStaffLines(g, m_metrics, m_base);
 		renderAccidentals(g);
 		renderDots(g);
-		g.drawChars(noteChars, 0, 1, (int)notePosition.getX(), (int)notePosition.getY());
-		//TODO draw the note position and compare the one from notePartOfGroup and the "normal" ones.
+		g.drawChars(noteChars, 0, 1, (int)displayPosition.getX(), (int)displayPosition.getY());
 		/*Color previousColor = g.getColor();
 		g.setColor(Color.RED);
 		m_boundingBox = getBoundingBox();
 		g.drawRect((int)(m_boundingBox.getX()), (int)(m_boundingBox.getY()), 
-				(int)(m_boundingBox.getWidth()), (int)(m_boundingBox.getHeight()));
+				(int)(m_boundingBox.getWidth()), (int)(m_boundingBox.getHeight()))
+		g.drawLine((int)getNotePosition().getX(), (int)getNotePosition().getY(), 
+				(int)getNotePosition().getX(), (int)getNotePosition().getY());
+		g.setColor(Color.GREEN);
+		g.drawLine((int)m_base.getX(), (int)m_base.getY(), 
+				(int)m_base.getX(), (int)m_base.getY());
 		g.setColor(previousColor);*/
 		return m_width;
 	}
@@ -192,8 +228,8 @@ public class SNote extends JScoreElement {
 			context.setStroke(metrics.getStemStroke());
 			while (currentOffset>=offset) {
 				context.drawLine(
-						(int)(notePosition.getX()-extSize), currentPosition,
-						(int)(notePosition.getX()+metrics.getNoteWidth()+extSize), currentPosition);
+						(int)(displayPosition.getX()-extSize), currentPosition,
+						(int)(displayPosition.getX()+metrics.getNoteWidth()+extSize), currentPosition);
 				currentOffset--;
 				currentPosition = (int)(currentPosition + metrics.getNoteHeigth());
 				//System.out.println("current offset : " + currentOffset + " " + currentPosition);
@@ -209,8 +245,8 @@ public class SNote extends JScoreElement {
 				context.setStroke(metrics.getStemStroke());
 				while (currentOffset<=offset) {
 					context.drawLine(
-							(int)(notePosition.getX()-extSize), currentPosition,
-							(int)(notePosition.getX()+metrics.getNoteWidth()+extSize), currentPosition);
+							(int)(displayPosition.getX()-extSize), currentPosition,
+							(int)(displayPosition.getX()+metrics.getNoteWidth()+extSize), currentPosition);
 					currentOffset++;
 					currentPosition = (int)(currentPosition - metrics.getNoteHeigth());
 					//System.out.println("current offset : " + currentOffset + " " + currentPosition);

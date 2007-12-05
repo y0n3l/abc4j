@@ -1,5 +1,7 @@
 package abc.notation;
 
+import abc.ui.swing.score.ScoreMetrics;
+
 /**
  * This class defines a (single) Note : height, rhythm, part of tuplet, rest etc...
  * There can be some tricky representation of a duration for a note.
@@ -120,6 +122,7 @@ public class Note extends NoteAbstract
   private short m_strictDuration = EIGHTH;
   /** <TT>true</TT> if this note is tied, <TT>false</TT> otherwise. */
   //private boolean m_isTied = false;
+  protected TieDefinition tieDefinition = null;
   
   /** Creates an abc note with the specified height. Accidental will inherit 
    * its default value <TT>AccidentalType.NONE</TT>.
@@ -394,26 +397,39 @@ public class Note extends NoteAbstract
    * @see #setAccidental(byte) */
   public byte getAccidental()
   { return accidental; }
+  
+  public boolean hasAccidental() {
+	  return accidental==AccidentalType.FLAT || accidental==AccidentalType.SHARP ||
+	  accidental == AccidentalType.NATURAL;
+  }
 
   /** Sets if this note is tied, wheter or not.
    * @param isTied <TT>true</TT> if this note is tied, <TT>false</TT> otherwise.
-   * @see #isTied()
-   * @deprecated You can still get the tie information from the slur definition 
-   * provided by {@link #getSlurDefinition()} and {@link #isPartOfSlur()}*/
-  public void setIsTied(boolean isTied) { 
+   * @see #isTied() */
+  public void setTieDefinition(TieDefinition tieDef) { 
 	  //m_isTied = isTied;
+	  this.tieDefinition = tieDef;
   }
+  
+  public TieDefinition getTieDefinition() { 
+	  //m_isTied = isTied;
+	  return tieDefinition;
+  }
+  
+  public boolean isBeginningTie() { 
+	  return tieDefinition!=null && this.equals(tieDefinition.getStart());
+  }
+  
+  public boolean isEndingTie() { 
+	  return tieDefinition!=null && this.equals(tieDefinition.getEnd());
+  }
+  
 
   /** Returns <TT>true</TT> if this note is tied.
    * @return <TT>true</TT> if this note is tied, <TT>false</TT> otherwise.
-   * @see #setIsTied(boolean) 
-   * @deprecated */
-  public boolean isTied()
-  { 
-	  // a note is considered to be tied if it's part of a slur 
-	  // and is not the last note of the slur definition  
-	  // the is tied is redundant with slurs definition...  
-	  return isPartOfSlur() && (getSlurDefinition()==null || !getSlurDefinition().getEnd().equals(this)); 
+   * @see #setTieDefinition(TieDefinition) */
+  public boolean isTied() { 
+	  return tieDefinition!=null;//isPartOfSlur() && (getSlurDefinition()==null || !getSlurDefinition().getEnd().equals(this)); 
   }
 
   /** A convenient method that returns <TT>true</TT> if this note is a rest. 

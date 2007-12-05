@@ -87,7 +87,7 @@ public class GroupOfNotesRenderer extends JScoreElement {
 		if (lastNote==null)
 			lastNote=firstNote;
 		double firstNoteAccidentalWidth = (firstNote.getWidth()-m_metrics.getNoteWidth());
-		m_width = (int)(lastNote.getStemX()-firstNote.getNotePosition().getX() + firstNoteAccidentalWidth);
+		m_width = (int)(lastNote.getStemX()-firstNote.getDisplayPosition().getX() + firstNoteAccidentalWidth);
 	}
 	
 	public double render(Graphics2D context){
@@ -148,7 +148,7 @@ public class GroupOfNotesRenderer extends JScoreElement {
 		if (m_sNoteInstances[0].getNote().getTuplet()!=null) {
 			int nb = m_notes[0].getTuplet().getNotesAsVector().size();
 			char[] chars = {DIGITS[nb-1]};
-			context.drawChars(chars, 0, 1, (int)(m_sNoteInstances[0].getNotePosition().getX()+m_width/2), (int)(m_stemYend - m_metrics.getNoteHeigth()/4));
+			context.drawChars(chars, 0, 1, (int)(m_sNoteInstances[0].getDisplayPosition().getX()+m_width/2), (int)(m_stemYend - m_metrics.getNoteHeigth()/4));
 		}
 		return m_width;
 	}

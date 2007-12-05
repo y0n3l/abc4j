@@ -1,6 +1,7 @@
 package abc.ui.swing.score;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Point2D;
@@ -26,11 +27,12 @@ public class SNotePartOfGroup extends SNote {
 		//The Y offset needs to be updated. 
 		int noteY = (int)(m_base.getY()-getOffset(note)*m_metrics.getNoteHeigth());
 		//apply the new Y offset to the note location
-		notePosition.setLocation(notePosition.getX(), noteY);
-		double noteX = notePosition.getX();
+		displayPosition.setLocation(displayPosition.getX(), noteY);
+		double noteX = displayPosition.getX();
 		BasicStroke stemStroke = m_metrics.getNotesLinkStroke();
 		stemX = (int)(noteX + m_metrics.getNoteWidth() - stemStroke.getLineWidth()/10);
 		stemYBegin = (int)(noteY - m_metrics.getNoteHeigth()/6);
+		notePosition = new Point2D.Double(displayPosition.getX(), displayPosition.getY()+m_metrics.getNoteHeigth()*0.5);
 		onNotePositionChanged();
 	}
 	
@@ -82,11 +84,20 @@ public class SNotePartOfGroup extends SNote {
 	
 	public double render(Graphics2D context){
 		super.render(context);
-		context.drawChars(noteChars, 0, 1, (int)notePosition.getX(), (int)notePosition.getY());
+		context.drawChars(noteChars, 0, 1, (int)displayPosition.getX(), (int)displayPosition.getY());
 		Stroke defaultS = context.getStroke();
 		context.setStroke(m_metrics.getStemStroke());
 		context.drawLine((int)stemX, stemYBegin,stemX, stemYEnd);
 		context.setStroke(defaultS);
+		/*Color previousColor = context.getColor();
+		context.setColor(Color.RED);
+		context.drawLine((int)getNotePosition().getX(), (int)getNotePosition().getY(), 
+				(int)getNotePosition().getX(), (int)getNotePosition().getY());
+		context.setColor(Color.GREEN);
+		context.drawLine((int)m_base.getX(), (int)m_base.getY(), 
+				(int)m_base.getX(), (int)m_base.getY());
+		context.setColor(previousColor);*/
+		
 		return m_width;
 	}
 }

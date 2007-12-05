@@ -128,7 +128,7 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   	 * @throws InvalidMidiDataException */
   	 protected void playNote(Note note, int indexInScore, KeySignature currentKey, long timeReference, 
 		  long duration, Track track) throws InvalidMidiDataException {
-  		 if (!note.isRest()) {
+  		 if (!note.isRest() && !note.isEndingTie()) {
   			 addNoteOnEventsFor(track, timeReference, getNoteOneMessageFor(note, currentKey));
   			 addNoteOffEventsFor(track, timeReference + duration, getNoteOffMessageFor(note, currentKey));
   			 // In case the note to be played had an accidental, the current key needs
@@ -216,6 +216,8 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   	 * resolution and the default note length. */
   	protected static long getNoteLengthInTicks(Note note) {
   		short noteLength = note.getDuration();
+  		if (note.isBeginningTie())
+  			noteLength+= ((Note)note.getTieDefinition().getEnd()).getDuration();
   		float numberOfQuarterNotesInThisNote = (float)noteLength / Note.QUARTER;
   		float lengthInTicks = (float)SEQUENCE_RESOLUTION * numberOfQuarterNotesInThisNote;
   		return (long)lengthInTicks;
@@ -228,10 +230,10 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
    * of the longest note of the multi note. */
   public static long getNoteLengthInTicks(MultiNote note)
   {
-    short longestLength = note.getLongestNote().getDuration();
-    float numberOfQuarterNotesInThisNote =  (float)longestLength / Note.QUARTER;
+	  return getNoteLengthInTicks(note.getLongestNote());
+    /*float numberOfQuarterNotesInThisNote =  (float)longestLength / Note.QUARTER;
     float lengthInTicks = (float)SEQUENCE_RESOLUTION * numberOfQuarterNotesInThisNote;
-    return (long)lengthInTicks;
+    return (long)lengthInTicks;*/
   }
 
   /** Returns the midi note number corresponding a note in the given key.

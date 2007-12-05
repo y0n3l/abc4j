@@ -18,11 +18,11 @@ import abc.notation.Note;
 import abc.notation.NoteAbstract;
 import abc.notation.RepeatBarLine;
 import abc.notation.ScoreElementInterface;
-import abc.notation.SlurDefinition;
 import abc.notation.StaffEndOfLine;
 import abc.notation.TimeSignature;
 import abc.notation.Tune;
 import abc.notation.Tuplet;
+import abc.notation.TwoNotesLink;
 import abc.notation.Tune.Score;
 import abc.ui.swing.JScoreElement;
 
@@ -31,8 +31,8 @@ public class JTune extends JScoreElement {
 	protected Tune m_tune = null; 
 	/** Hashmap that associates ScoreElement instances (key) and JScoreElement instances(value) */
 	protected Hashtable m_scoreElements = null;
-	
-	protected Vector m_beginningSlurElements = null;
+	/** Note instances starting Slurs and ties. */
+	protected Vector m_beginningNotesLinkElements = null;
 	
 	private int m_staffLinesOffset = -1;
 	/** The dimensions of this score. */
@@ -59,7 +59,7 @@ public class JTune extends JScoreElement {
 		m_staffLines = new Vector();
 		m_isJustified = isJustified;
 		m_scoreElements = new Hashtable();
-		m_beginningSlurElements = new Vector();
+		m_beginningNotesLinkElements = new Vector();
 		setTune(tune);
 		onBaseChanged();
 	}
@@ -183,8 +183,8 @@ public class JTune extends JScoreElement {
 							note = ((MultiNote)s).getShortestNote();
 						else
 							note = ((Note)s);
-						if (note.isBeginingSlur())
-							m_beginningSlurElements.addElement(note);
+						if (note.isBeginingSlur() || note.isBeginningTie())
+							m_beginningNotesLinkElements.addElement(note);
 						short strictDur = note.getStrictDuration();
 						tupletContainer = note.getTuplet();
 						// checks if this note should be part of a group.
@@ -322,7 +322,7 @@ public class JTune extends JScoreElement {
 			currentStaffLine.render(g2);
 			g2.drawChars(staffS, 0, staffS.length, 0, (int)(currentStaffLine.getBase().getY()));
 		}
-		renderSlurs(g2);
+		renderSlursAndTies(g2);
 		return m_width;
 	}
 	
@@ -344,28 +344,36 @@ public class JTune extends JScoreElement {
 		}
 	}
 	
-	protected void renderSlurs(Graphics2D g2) {
-		for (int j=0; j<m_beginningSlurElements.size(); j++) {
-			NoteAbstract n = (NoteAbstract)m_beginningSlurElements.elementAt(j);
-			SlurDefinition slurDef = n.getSlurDefinition();
-			if (slurDef.getEnd()!=null)
-				drawSlurDown(g2, slurDef);
+	protected void renderSlursAndTies(Graphics2D g2) {
+		for (int j=0; j<m_beginningNotesLinkElements.size(); j++) {
+			NoteAbstract n = (NoteAbstract)m_beginningNotesLinkElements.elementAt(j);
+			TwoNotesLink link = n.getSlurDefinition() ;
+			if (link==null)
+				link = ((Note)n).getTieDefinition();
+			if (link.getEnd()!=null)
+				drawLinkDown(g2, link);
 		}
 	}
 	
-	protected void drawSlurDown(Graphics2D g2, SlurDefinition slurDef) {
+	protected void drawLinkDown(Graphics2D g2, TwoNotesLink slurDef) {
 		SNote elmtStart =  (SNote)m_scoreElements.get(slurDef.getStart());
 		if (slurDef.getEnd()!=null){
 			SNote elmtEnd =  (SNote)m_scoreElements.get(slurDef.getEnd());
 			Point2D controlPoint = null;
 			
 			Note lowestNote = m_tune.getScore().getLowestNoteBewteen(slurDef.getStart(), slurDef.getEnd());
-			if (lowestNote.equals(slurDef.getStart()) || lowestNote.equals(slurDef.getEnd())) {
+			if (lowestNote.equals(slurDef.getStart()))
 				controlPoint = new Point2D.Double(
 						//TODO nullpointer occurs here sometimes...
 						elmtStart.getSlurDownAnchor().getX()+ (elmtEnd.getSlurDownAnchor().getX()-elmtStart.getSlurDownAnchor().getX())/2,
-						elmtStart.getSlurDownAnchor().getY()+ m_metrics.getNoteWidth()/2);
-			}
+						elmtStart.getSlurDownAnchor().getY()+ m_metrics.getNoteWidth()/4);
+			else
+				if (lowestNote.equals(slurDef.getEnd()))
+					controlPoint = new Point2D.Double(
+							//TODO nullpointer occurs here sometimes...
+							elmtStart.getSlurDownAnchor().getX()+ (elmtEnd.getSlurDownAnchor().getX()-elmtStart.getSlurDownAnchor().getX())/2,
+							elmtEnd.getSlurDownAnchor().getY()+ m_metrics.getNoteWidth()/4);
+			
 			else {
 				SNote lowestNoteGlyph = (SNote)m_scoreElements.get(lowestNote);
 				controlPoint = new Point2D.Double(lowestNoteGlyph.getSlurDownAnchor().getX(), 
