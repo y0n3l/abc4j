@@ -47,6 +47,48 @@ public class MultiNote extends NoteAbstract
 	  }
 	  return shortNote;
   }
+  
+  /**
+   *  @see #getLowestNote()
+   * @see Note#getStrictHeight() */
+   
+  public Note getHighestNote() {
+	  Note highestNote = (Note)m_notes.elementAt(0);
+	  short highestHeight = highestNote.getStrictHeight();
+	  short currentNoteLength = 0;
+	  for (int i=1; i<m_notes.size(); i++) {
+		  currentNoteLength = ((Note)(m_notes.elementAt(i))).getStrictHeight();
+		  if (currentNoteLength > highestHeight)
+			  highestNote = (Note)m_notes.elementAt(i);
+	  }
+	  return highestNote;
+  }
+  
+  /** 
+   * @see #getHighestNote()
+   * @see Note#getStrictHeight() */
+  public Note getLowestNote() {
+	  Note lowestNote = (Note)m_notes.elementAt(0);
+	  short lowestHeight = lowestNote.getStrictHeight();
+	  short currentNoteLength = 0;
+	  for (int i=1; i<m_notes.size(); i++) {
+		  currentNoteLength = ((Note)(m_notes.elementAt(i))).getStrictHeight();
+		  if (currentNoteLength < lowestHeight)
+			  lowestNote = (Note)m_notes.elementAt(i);
+	  }
+	  return lowestNote;
+  }
+  
+  public boolean hasUniqueStrictDuration() {
+	  short strictDuration = ((Note)m_notes.elementAt(0)).getStrictDuration();
+	  short currentDuration = 0;
+	  for (int i=1; i<m_notes.size(); i++) {
+		  currentDuration = ((Note)(m_notes.elementAt(i))).getStrictDuration();
+		  if (currentDuration!=strictDuration)
+			  return false;
+	  }
+	  return true;
+  }
 
   /** Returns a new vector containing all <TT>Note</TT> objects contained in
    * this multi note.

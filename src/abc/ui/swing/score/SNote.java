@@ -33,12 +33,23 @@ public class SNote extends JScoreElement {
 	/** The chars from the font that represent the accidentals to be displayed. 
 	 * <TT>null</TT> if the note has no accidental. */
 	protected char[] accidentalsChars = null;
+	/** Tells if the note should be displayed stem up or down. */
+	protected boolean isStemUp = true;
+	
 	public static final char[] WHOLE_NOTE = {'\uF092'};
 	public static final char[] HALF_NOTE = {'\uF068'};
 	public static final char[] QUARTER_NOTE = {'\uF071'};
 	public static final char[] EIGHTH_NOTE = {'\uF065'};
 	public static final char[] SIXTEENTH_NOTE = {'\uF072'};
 	public static final char[] THIRTY_SECOND_NOTE = {'\uF078'};
+	
+	public static final char[] WHOLE_NOTE_STEM_DOWN = {'\uF092'};
+	public static final char[] HALF_NOTE_STEM_DOWN = {'\uF048'};
+	public static final char[] QUARTER_NOTE_STEM_DOWN = {'\uF051'};
+	public static final char[] EIGHTH_NOTE_STEM_DOWN = {'\uF045'};
+	public static final char[] SIXTEENTH_NOTE_STEM_DOWN = {'\uF052'};
+	public static final char[] THIRTY_SECOND_NOTE_STEM_DOWN = {'\uF058'};
+
 	
 	public static final char[] DOUBLE_REST = {'\uF0E3'};
 	public static final char[] WHOLE_REST = {'\uF0B7'};
@@ -54,36 +65,6 @@ public class SNote extends JScoreElement {
 	public SNote(Note noteValue, Point2D base, ScoreMetrics c) {
 		super(base, c);
 		note = noteValue;
-		onBaseChanged();
-	}
-	
-	public ScoreElementInterface getScoreElement() {
-		return note;
-	}
-	
-	protected void onBaseChanged() {
-		ScoreMetrics c = m_metrics;
-		Point2D base = m_base;
-		int noteY = 0;
-		if (note.isRest())
-			noteY = (int)(base.getY()-2*c.getNoteHeigth());
-		else
-			noteY = (int)(base.getY()-getOffset(note)*c.getNoteHeigth());
-		double accidentalsWidth = 0;
-		if (note.getAccidental()!=AccidentalType.NONE) {
-			switch (note.getAccidental()) {
-				case AccidentalType.FLAT: accidentalsChars = ScoreMetrics.FLAT; 
-					accidentalsWidth = c.getFlatBounds().getWidth(); 
-					break;
-				case AccidentalType.SHARP: accidentalsChars = ScoreMetrics.SHARP; 
-					accidentalsWidth = c.getSharpBounds().getWidth(); 
-					break;
-				case AccidentalType.NATURAL: accidentalsChars = ScoreMetrics.NATURAL; 
-					accidentalsWidth = c.getNaturalBounds().getWidth(); 
-					break;
-				default : throw new IllegalArgumentException("Incorrect accidental for " + note + " : " + note.getAccidental());
-			}
-		}
 		short noteDuration = note.getStrictDuration();
 		if (note.isRest()){
 			//System.out.println("duration of the rest is " + noteDuration);
@@ -99,17 +80,64 @@ public class SNote extends JScoreElement {
 			}
 		}
 		else {
-			switch (noteDuration) {
-				//Note.SIXTY_FOURTH: chars[0] = ScoreRenditionContext.
-				case Note.THIRTY_SECOND : noteChars = THIRTY_SECOND_NOTE; break;
-				case Note.SIXTEENTH : noteChars = SIXTEENTH_NOTE; break;
-				case Note.EIGHTH : noteChars = EIGHTH_NOTE; break;
-				case Note.QUARTER: noteChars = QUARTER_NOTE; break;
-				case Note.HALF: noteChars = HALF_NOTE; break;
-				case Note.WHOLE: noteChars = WHOLE_NOTE; break;
-				default : noteChars = UNKNWON;
+			if (isStemUp) 
+				switch (noteDuration) {
+					//Note.SIXTY_FOURTH: chars[0] = ScoreRenditionContext.
+					case Note.THIRTY_SECOND : noteChars = THIRTY_SECOND_NOTE; break;
+					case Note.SIXTEENTH : noteChars = SIXTEENTH_NOTE; break;
+					case Note.EIGHTH : noteChars = EIGHTH_NOTE; break;
+					case Note.QUARTER: noteChars = QUARTER_NOTE; break;
+					case Note.HALF: noteChars = HALF_NOTE; break;
+					case Note.WHOLE: noteChars = WHOLE_NOTE; break;
+					default : noteChars = UNKNWON;
+				}
+			else
+				switch (noteDuration) {
+					//Note.SIXTY_FOURTH: chars[0] = ScoreRenditionContext.
+					case Note.THIRTY_SECOND : noteChars = THIRTY_SECOND_NOTE_STEM_DOWN; break;
+					case Note.SIXTEENTH : noteChars = SIXTEENTH_NOTE_STEM_DOWN; break;
+					case Note.EIGHTH : noteChars = EIGHTH_NOTE_STEM_DOWN; break;
+					case Note.QUARTER: noteChars = QUARTER_NOTE_STEM_DOWN; break;
+					case Note.HALF: noteChars = HALF_NOTE_STEM_DOWN; break;
+					case Note.WHOLE: noteChars = WHOLE_NOTE_STEM_DOWN; break;
+					default : noteChars = UNKNWON;
 			}
 		}
+		onBaseChanged();
+	}
+	
+	public ScoreElementInterface getScoreElement() {
+		return note;
+	}
+	
+	public void setStemUp(boolean isUp) {
+		isStemUp = isUp;
+	}
+	
+	protected void onBaseChanged() {
+		ScoreMetrics c = m_metrics;
+		Point2D base = m_base;
+		int noteY = 0;
+		if (note.isRest())
+			noteY = (int)(base.getY()-2*c.getNoteHeigth());
+		else
+			noteY = (int)(base.getY()-getCorrectedOffset(note)*c.getNoteHeigth());
+		double accidentalsWidth = 0;
+		if (note.getAccidental()!=AccidentalType.NONE) {
+			switch (note.getAccidental()) {
+				case AccidentalType.FLAT: accidentalsChars = ScoreMetrics.FLAT; 
+					accidentalsWidth = c.getFlatBounds().getWidth(); 
+					break;
+				case AccidentalType.SHARP: accidentalsChars = ScoreMetrics.SHARP; 
+					accidentalsWidth = c.getSharpBounds().getWidth(); 
+					break;
+				case AccidentalType.NATURAL: accidentalsChars = ScoreMetrics.NATURAL; 
+					accidentalsWidth = c.getNaturalBounds().getWidth(); 
+					break;
+				default : throw new IllegalArgumentException("Incorrect accidental for " + note + " : " + note.getAccidental());
+			}
+		}
+		
 		//System.out.println("note chars " + noteChars[0]);
 		//double noteY =(int)(base.getY()-getOffset(note)*c.getNoteHeigth());
 		double noteX = base.getX()+accidentalsWidth*SPACE_RATIO_FOR_ACCIDENTALS;
@@ -142,6 +170,18 @@ public class SNote extends JScoreElement {
 		
 	}
 	
+	public static double getCorrectedOffset(Note note) {
+		double positionOffset = getOffset(note);
+		short noteDuration = note.getStrictDuration();
+		switch (noteDuration) {
+			case Note.THIRTY_SECOND : 
+			case Note.SIXTEENTH : 
+			case Note.WHOLE: positionOffset=positionOffset+0.5; break;
+		}
+		//System.out.println("offset : " + positionOffset );
+		return positionOffset;
+	}
+	
 	public static double getOffset(Note note) {
 		double positionOffset = 0;
 		byte noteHeight = note.getStrictHeight();
@@ -155,13 +195,6 @@ public class SNote extends JScoreElement {
 			case Note.B : positionOffset = 1.5;break;
 		}
 		positionOffset = positionOffset + note.getOctaveTransposition()*3.5;
-		short noteDuration = note.getStrictDuration();
-		switch (noteDuration) {
-			case Note.THIRTY_SECOND : 
-			case Note.SIXTEENTH : 
-			case Note.WHOLE: positionOffset=positionOffset+0.5; break;
-		}
-		//System.out.println("offset : " + positionOffset );
 		return positionOffset;
 	}
 	
@@ -221,7 +254,7 @@ public class SNote extends JScoreElement {
 	protected void renderExtendedStaffLines(Graphics2D context, ScoreMetrics metrics, Point2D base){
 		int extSize = (int)metrics.getNoteWidth()/3;
 		if (note.getHeight()<=Note.C){
-			double currentOffset = getOffset(new Note(Note.C, AccidentalType.NONE));
+			double currentOffset = getCorrectedOffset(new Note(Note.C, AccidentalType.NONE));
 			int currentPosition = (int)(base.getY()-currentOffset*metrics.getNoteHeigth()/1.5);
 			double offset = getOffset(note);
 			Stroke dfs = context.getStroke();
@@ -238,7 +271,7 @@ public class SNote extends JScoreElement {
 		}
 		else
 			if (note.getHeight()>=Note.a){
-				double currentOffset = getOffset(new Note(Note.a, AccidentalType.NONE));
+				double currentOffset = getCorrectedOffset(new Note(Note.a, AccidentalType.NONE));
 				int currentPosition = (int)(base.getY()-currentOffset*metrics.getNoteHeigth()-metrics.getNoteHeigth()/2);
 				double offset = getOffset(note);
 				Stroke dfs = context.getStroke();

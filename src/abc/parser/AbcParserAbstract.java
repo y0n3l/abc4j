@@ -1425,6 +1425,7 @@ public class AbcParserAbstract
       Set current = new Set().union(FIRST_NOTE_LENGTH).union(FIRST_TIE);
       boolean isTied = false;
       PositionableNote note = null;
+      //FIXME a nullpointer occurs sometimes here, check why !
       CharStreamPosition startPosition = m_token.getPosition();
       note = (PositionableNote)parseNoteOrRest(current.createUnion(follow));
       current.remove(FIRST_NOTE_LENGTH);
@@ -1452,16 +1453,6 @@ public class AbcParserAbstract
       {
         accept(AbcTokenType.TIE, current, follow);
         isTied = true;
-        //useless isTied / setIsTied is redundant with slurs definition
-        //note.setIsTied(true);
-        //note.setTieDefinition(new Tietrue)
-        //the first of the slur definition is not set
-        //-> will be set by the caller and will
-        //apply the current note parsed.
-        //TODO => bug when this is called from Muti note
-        //SlurDefinition def = new SlurDefinition();
-        //slursDefinitionStack.addElement(def);
-        
       }
       else
       	isTied=false;

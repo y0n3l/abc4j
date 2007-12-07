@@ -19,8 +19,10 @@ public class ScoreMetrics {
 	public static final char[] DOT = {'\uF06B'};
 	
 	public static final char[] STROKE = {'\uF05F'};
-	
+	/** The pure note character without any stem for notes such as 1/4, 1/8 and quicker... */
 	public static final char[] NOTE = {'\uF0CF'};
+	/** The pure note character without any stem for notes such as whole & half */
+	public static final char[] NOTE_LONGER = {'\uF092'};
 	
 	public static final char STEM_COMBINE_UP_SINGLE = '\uF021';
 	public static final char STEM_COMBINE_UP_DOUBLE = '\uF040';

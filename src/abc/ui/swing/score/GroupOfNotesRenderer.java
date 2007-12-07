@@ -163,7 +163,7 @@ public class GroupOfNotesRenderer extends JScoreElement {
 		return scoreEl;
 	}
 	
-	public static double getOffset(Note note) {
+	/*public static double getOffset(Note note) {
 		double positionOffset = 0;
 		byte noteHeight = note.getStrictHeight();
 		switch (noteHeight) {
@@ -178,5 +178,5 @@ public class GroupOfNotesRenderer extends JScoreElement {
 		positionOffset = positionOffset + note.getOctaveTransposition()*3.5;
 		//System.out.println("offset for " + note +"," + note.getOctaveTransposition() + " : " + positionOffset);
 		return positionOffset;
-	}
+	}*/
 }

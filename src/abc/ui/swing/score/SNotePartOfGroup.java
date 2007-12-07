@@ -16,6 +16,9 @@ public class SNotePartOfGroup extends SNote {
 	
 	public SNotePartOfGroup(Note noteValue, Point2D base, ScoreMetrics c) {
 		super(noteValue, base, c);
+		//correct what differs from SNote...
+		//The displayed character is not the same.
+		noteChars = ScoreMetrics.NOTE; 
 		onBaseChanged();
 	}
 	
@@ -23,7 +26,7 @@ public class SNotePartOfGroup extends SNote {
 		super.onBaseChanged();
 		//correct what differs from SNote...
 		//The displayed character is not the same.
-		noteChars = ScoreMetrics.NOTE; 
+		//noteChars = ScoreMetrics.NOTE; 
 		//The Y offset needs to be updated. 
 		int noteY = (int)(m_base.getY()-getOffset(note)*m_metrics.getNoteHeigth());
 		//apply the new Y offset to the note location

@@ -130,8 +130,10 @@ public class JTune extends JScoreElement {
 					|| (s instanceof NoteAbstract && tupletContainer!=null && (!tupletContainer.equals(((NoteAbstract)s).getTuplet())))
 					//if we weren't in a tuplet and the new note is part of a tuplet.
 					|| (s instanceof NoteAbstract && tupletContainer==null && ((NoteAbstract)s).isPartOfTuplet())
-					|| (s instanceof Note && ((Note)s).getStrictDuration()>=Note.QUARTER) 
-					|| (durationInCurrentMeasure!=0 && durationInCurrentMeasure%maxDurationInGroup==0))
+					|| (s instanceof Note && ((Note)s).getStrictDuration()>=Note.QUARTER)
+					|| (durationInCurrentMeasure!=0 && durationInCurrentMeasure%maxDurationInGroup==0)
+					//TODO limitation for now, chords cannot be part of groups.
+					|| (s instanceof MultiNote))
 					&& lessThanQuarter.size()!=0)
 				{
 				if (!currentStaffLineInitialized) {
@@ -141,6 +143,7 @@ public class JTune extends JScoreElement {
 				}
 				JScoreElement groupRendition= renderNotesInGroup(cursor, lessThanQuarter);
 				currentStaffLine.addElement(groupRendition);
+				// puts association music object / rendered view into the hashmap. 
 				if (groupRendition instanceof SNote)
 					m_scoreElements.put(((SNote)groupRendition).getNote(), groupRendition);
 				else {
@@ -148,9 +151,6 @@ public class JTune extends JScoreElement {
 					for (int j=0; j<g.getScoreElements().length; j++)
 						m_scoreElements.put(g.getScoreElements()[j], g.getRenditionElements()[j]);
 				}
-					
-						
-					
 				lessThanQuarter.clear();
 				durationInGroup = 0;
 			}
@@ -177,6 +177,21 @@ public class JTune extends JScoreElement {
 						/*else if(s.equals(TimeSignature.SIGNATURE_3_4)) maxDurationInGroup = Note.QUARTER;*/
 				}
 				else
+					if (s instanceof MultiNote) {
+						if (!currentStaffLineInitialized) {
+							currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
+							m_staffLines.addElement(currentStaffLine);
+							//currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
+							currentStaffLineInitialized = true;
+						}
+						SChord chord = new SChord((MultiNote)s, m_metrics,cursor);
+						currentStaffLine.addElement(chord);
+						width = chord.getWidth();
+						int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
+						cursor.setLocation(cursorNewLocationX, cursor.getY());
+						durationInCurrentMeasure=0;
+					}
+					else
 					if (s instanceof NoteAbstract) {
 						Note note = null;
 						if (s instanceof MultiNote)
@@ -220,6 +235,8 @@ public class JTune extends JScoreElement {
 								currentStaffLineInitialized = true;
 							}
 							SNote noteR = new SNote(note, cursor, m_metrics);
+							if (note.getHeight()>Note.c)
+								noteR.setStemUp(false);
 							currentStaffLine.addElement(noteR);
 							m_scoreElements.put(note, noteR);
 							width = noteR.getWidth();//SingleNoteRenderer.render(m_metrics, (Point2D)cursor.clone(), (Note)s);
@@ -302,8 +319,6 @@ public class JTune extends JScoreElement {
 		//repaint();
 	}
 	
-	
-	
 	public double render(Graphics2D g2) {
 		g2.setFont(m_metrics.getFont());
 		g2.setColor(Color.BLACK);
@@ -370,7 +385,6 @@ public class JTune extends JScoreElement {
 			else
 				if (lowestNote.equals(slurDef.getEnd()))
 					controlPoint = new Point2D.Double(
-							//TODO nullpointer occurs here sometimes...
 							elmtStart.getSlurDownAnchor().getX()+ (elmtEnd.getSlurDownAnchor().getX()-elmtStart.getSlurDownAnchor().getX())/2,
 							elmtEnd.getSlurDownAnchor().getY()+ m_metrics.getNoteWidth()/4);
 			
