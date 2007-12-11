@@ -55,6 +55,11 @@ public class SNotePartOfGroup extends SNote {
 		return stemYEnd;
 	}
 	
+	public Point2D getStemBegin() {
+		return new Point2D.Double(stemX, stemYBegin);
+	}
+	
+
 	public Rectangle2D getBoundingBox() {
 		Rectangle2D bb = new Rectangle2D.Double((int)(m_base.getX()), (int)(stemYEnd), 
 				m_width, stemYBegin-stemYEnd+m_metrics.getNoteHeigth()/2);

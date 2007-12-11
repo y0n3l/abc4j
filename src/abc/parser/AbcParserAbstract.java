@@ -1339,22 +1339,12 @@ public class AbcParserAbstract
           }
           if (tieStartingNote!=null && note!=tieStartingNote && ((Note)note).getHeight()==tieStartingNote.getHeight()) {
         	  //This is the end of the tie, the two notes are the same.
-        	  //TODO needs to be improved: accidentals ?
+        	  //FIXME needs to be improved: accidentals ?
         	  tieStartingNote.getTieDefinition().setEnd(note);
         	  ((Note)note).setTieDefinition(tieStartingNote.getTieDefinition());
         	  tieStartingNote=null;
         	  
           }
-        	  
-          //TODO:check if this is really useless.
-          /*if (wasTied && note instanceof Note && !isTied) {
-        	  //TODO can crash here array out of bounds exception -1 
-          	SlurDefinition currentSlurDef = (SlurDefinition)slursDefinitionStack.elementAt(slursDefinitionStack.size()-1);
-          	currentSlurDef.setEnd(note);
-          	note.setSlurDefinition(currentSlurDef);
-          	slursDefinitionStack.removeElementAt(slursDefinitionStack.size()-1);
-          	isTied=false;
-          }*/
           lastParsedNote = note;
         }
       }
@@ -1371,7 +1361,8 @@ public class AbcParserAbstract
       while (FIRST_NOTE.contains(m_tokenType))
       {
         Note note = parseNote(current.createUnion(follow));
-        notes.addElement(note);
+        if (note!=null)
+        	notes.addElement(note);
       }
       current.remove(FIRST_NOTE);
       current.remove(AbcTokenType.MULTI_NOTE_END);

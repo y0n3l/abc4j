@@ -24,6 +24,7 @@ import abc.notation.Tune;
 import abc.notation.Tuplet;
 import abc.notation.TwoNotesLink;
 import abc.notation.Tune.Score;
+import abc.ui.swing.JScoreComponent;
 import abc.ui.swing.JScoreElement;
 
 public class JTune extends JScoreElement {
@@ -48,6 +49,12 @@ public class JTune extends JScoreElement {
 	protected boolean m_isJustified = false;
 	
 	protected double m_height = -1;
+	
+	//temporary variables used only to cumpute the score when tune is set.
+	private boolean currentStaffLineInitialized = false;
+	private StaffLine currentStaffLine = null;
+	private KeySignature currentKey = null;
+	private Point2D cursor = null;
 	
 	public JTune(Tune tune, Point2D base, ScoreMetrics c) {
 		this(tune, base, c, false);
@@ -107,18 +114,18 @@ public class JTune extends JScoreElement {
 		Score score = tune.getScore();
 		//The spacing between two staff lines
 		m_staffLinesOffset = (int)(m_metrics.getStaffCharBounds().getHeight()*2.5);
-		Point2D cursor = new Point(XOffset, 0);
+		cursor = new Point(XOffset, 0);
 		double componentWidth =0, componentHeight = 0;
 		double width = 0;
 		ArrayList lessThanQuarter = new ArrayList();
 		int durationInGroup = 0;
 		int maxDurationInGroup = Note.QUARTER;
 		int durationInCurrentMeasure = 0;
-		KeySignature currentKey = tune.getKey();
+		currentKey = tune.getKey();
 		Tuplet tupletContainer = null;
 		//TimeSignature currentTimeSignature = null;
-		boolean currentStaffLineInitialized = false;
-		StaffLine currentStaffLine = null;
+		currentStaffLineInitialized = false;
+		currentStaffLine = null;
 		int staffLineNb = 0;
 		for (int i=0; i<score.size(); i++) {
 			ScoreElementInterface s = (ScoreElementInterface)score.elementAt(i);
@@ -158,7 +165,8 @@ public class JTune extends JScoreElement {
 				currentKey = (KeySignature)s;
 			else
 				if (s instanceof TimeSignature) {
-					if (!currentStaffLineInitialized) {
+					appendToScore(new STimeSignature((TimeSignature)s, cursor, m_metrics));
+					/*if (!currentStaffLineInitialized) {
 						currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
 						m_staffLines.addElement(currentStaffLine);
 						currentStaffLineInitialized = true;
@@ -167,7 +175,7 @@ public class JTune extends JScoreElement {
 					currentStaffLine.addElement(ts);
 					width = ts.getWidth();//SingleNoteRenderer.render(m_metrics, (Point2D)cursor.clone(), (Note)s);
 					int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
-					cursor.setLocation(cursorNewLocationX, cursor.getY());
+					cursor.setLocation(cursorNewLocationX, cursor.getY());*/
 					//width = TimeSignatureRenderer.render(m_metrics, (Point2D)cursor.clone(), (TimeSignature)s);
 					//int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
 					//cursor.setLocation(cursorNewLocationX, cursor.getY());
@@ -178,17 +186,18 @@ public class JTune extends JScoreElement {
 				}
 				else
 					if (s instanceof MultiNote) {
-						if (!currentStaffLineInitialized) {
+						appendToScore(new JChord((MultiNote)s, m_metrics,cursor));
+						/*if (!currentStaffLineInitialized) {
 							currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
 							m_staffLines.addElement(currentStaffLine);
 							//currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
 							currentStaffLineInitialized = true;
 						}
-						SChord chord = new SChord((MultiNote)s, m_metrics,cursor);
+						JChord chord = new JChord((MultiNote)s, m_metrics,cursor);
 						currentStaffLine.addElement(chord);
 						width = chord.getWidth();
 						int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
-						cursor.setLocation(cursorNewLocationX, cursor.getY());
+						cursor.setLocation(cursorNewLocationX, cursor.getY());*/
 						durationInCurrentMeasure=0;
 					}
 					else
@@ -228,27 +237,31 @@ public class JTune extends JScoreElement {
 							}
 						}
 						else {
-							if (!currentStaffLineInitialized) {
+							/*
+							 if (!currentStaffLineInitialized) {
 								currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
 								m_staffLines.addElement(currentStaffLine);
 								//currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
 								currentStaffLineInitialized = true;
-							}
+							}*/
 							SNote noteR = new SNote(note, cursor, m_metrics);
 							if (note.getHeight()>Note.c)
 								noteR.setStemUp(false);
-							currentStaffLine.addElement(noteR);
+							appendToScore(noteR);
+							
+							/*currentStaffLine.addElement(noteR);
 							m_scoreElements.put(note, noteR);
 							width = noteR.getWidth();//SingleNoteRenderer.render(m_metrics, (Point2D)cursor.clone(), (Note)s);
 							int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
-							cursor.setLocation(cursorNewLocationX, cursor.getY());
+							cursor.setLocation(cursorNewLocationX, cursor.getY());*/
 						}
 						durationInCurrentMeasure+=note.getDuration();
 						//System.out.println("duration in current measure " + durationInCurrentMeasure);
 					}
 					else
 						if (s instanceof RepeatBarLine) {
-							if (!currentStaffLineInitialized) {
+							appendToScore(new SRepeatBar((RepeatBarLine)s, cursor, m_metrics));
+							/* if (!currentStaffLineInitialized) {
 								currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
 								m_staffLines.addElement(currentStaffLine);
 								//currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
@@ -258,12 +271,13 @@ public class JTune extends JScoreElement {
 							currentStaffLine.addElement(bar);
 							width = bar.getWidth();
 							int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
-							cursor.setLocation(cursorNewLocationX, cursor.getY());
+							cursor.setLocation(cursorNewLocationX, cursor.getY());*/
 							durationInCurrentMeasure=0;
 						}
 						else
 						if (s instanceof BarLine) {
-							if (!currentStaffLineInitialized) {
+							appendToScore(new SBar((BarLine)s, cursor, m_metrics));
+							/*if (!currentStaffLineInitialized) {
 								currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
 								m_staffLines.addElement(currentStaffLine);
 								//currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
@@ -273,7 +287,7 @@ public class JTune extends JScoreElement {
 							currentStaffLine.addElement(bar);
 							width = bar.getWidth();
 							int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
-							cursor.setLocation(cursorNewLocationX, cursor.getY());
+							cursor.setLocation(cursorNewLocationX, cursor.getY());*/
 							durationInCurrentMeasure=0;
 						}
 						else
@@ -317,6 +331,19 @@ public class JTune extends JScoreElement {
 		
 		//m_isBufferedImageOutdated=true;
 		//repaint();
+	}
+	
+	protected void appendToScore(JScoreElement element) {
+		if (!currentStaffLineInitialized) {
+			currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
+		m_staffLines.addElement(currentStaffLine);
+		//currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
+		currentStaffLineInitialized = true;
+		}
+		currentStaffLine.addElement(element);
+		double width = element.getWidth();
+		int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
+		cursor.setLocation(cursorNewLocationX, cursor.getY());
 	}
 	
 	public double render(Graphics2D g2) {
@@ -379,7 +406,7 @@ public class JTune extends JScoreElement {
 			Note lowestNote = m_tune.getScore().getLowestNoteBewteen(slurDef.getStart(), slurDef.getEnd());
 			if (lowestNote.equals(slurDef.getStart()))
 				controlPoint = new Point2D.Double(
-						//TODO nullpointer occurs here sometimes...
+						//FIXME nullpointer occurs here sometimes...
 						elmtStart.getSlurDownAnchor().getX()+ (elmtEnd.getSlurDownAnchor().getX()-elmtStart.getSlurDownAnchor().getX())/2,
 						elmtStart.getSlurDownAnchor().getY()+ m_metrics.getNoteWidth()/4);
 			else

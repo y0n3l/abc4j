@@ -50,32 +50,26 @@ public class MultiNote extends NoteAbstract
   
   /**
    *  @see #getLowestNote()
-   * @see Note#getStrictHeight() */
+   * @see Note#isHigherThan(Note) */
    
   public Note getHighestNote() {
 	  Note highestNote = (Note)m_notes.elementAt(0);
-	  short highestHeight = highestNote.getStrictHeight();
-	  short currentNoteLength = 0;
-	  for (int i=1; i<m_notes.size(); i++) {
-		  currentNoteLength = ((Note)(m_notes.elementAt(i))).getStrictHeight();
-		  if (currentNoteLength > highestHeight)
+	  //short highestHeight = highestNote.getHeight();
+	  //short currentNoteLength = 0;
+	  for (int i=1; i<m_notes.size(); i++)
+		  if (((Note)(m_notes.elementAt(i))).isHigherThan(highestNote))
 			  highestNote = (Note)m_notes.elementAt(i);
-	  }
 	  return highestNote;
   }
   
   /** 
    * @see #getHighestNote()
-   * @see Note#getStrictHeight() */
+   * @see Note#isLowerThan(Note) */
   public Note getLowestNote() {
 	  Note lowestNote = (Note)m_notes.elementAt(0);
-	  short lowestHeight = lowestNote.getStrictHeight();
-	  short currentNoteLength = 0;
-	  for (int i=1; i<m_notes.size(); i++) {
-		  currentNoteLength = ((Note)(m_notes.elementAt(i))).getStrictHeight();
-		  if (currentNoteLength < lowestHeight)
+	  for (int i=1; i<m_notes.size(); i++)
+		  if (((Note)(m_notes.elementAt(i))).isLowerThan(lowestNote))
 			  lowestNote = (Note)m_notes.elementAt(i);
-	  }
 	  return lowestNote;
   }
   
@@ -88,6 +82,17 @@ public class MultiNote extends NoteAbstract
 			  return false;
 	  }
 	  return true;
+  }
+  
+  /**
+   * @return
+   * @see Note#hasAccidental()
+   */
+  public boolean hasAccidental() {
+	  for (int i=1; i<m_notes.size(); i++)
+		  if (((Note)(m_notes.elementAt(i))).hasAccidental())
+			  return true;
+	  return false;
   }
 
   /** Returns a new vector containing all <TT>Note</TT> objects contained in

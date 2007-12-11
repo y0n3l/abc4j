@@ -80,7 +80,8 @@ public class SNote extends JScoreElement {
 			}
 		}
 		else {
-			if (isStemUp) 
+			setStemUp(isStemUp);
+			/*if (isStemUp) 
 				switch (noteDuration) {
 					//Note.SIXTY_FOURTH: chars[0] = ScoreRenditionContext.
 					case Note.THIRTY_SECOND : noteChars = THIRTY_SECOND_NOTE; break;
@@ -101,7 +102,7 @@ public class SNote extends JScoreElement {
 					case Note.HALF: noteChars = HALF_NOTE_STEM_DOWN; break;
 					case Note.WHOLE: noteChars = WHOLE_NOTE_STEM_DOWN; break;
 					default : noteChars = UNKNWON;
-			}
+			}*/
 		}
 		onBaseChanged();
 	}
@@ -112,6 +113,47 @@ public class SNote extends JScoreElement {
 	
 	public void setStemUp(boolean isUp) {
 		isStemUp = isUp;
+		short noteDuration = note.getStrictDuration();
+		if (isStemUp) 
+			switch (noteDuration) {
+				//Note.SIXTY_FOURTH: chars[0] = ScoreRenditionContext.
+				case Note.THIRTY_SECOND : noteChars = THIRTY_SECOND_NOTE; break;
+				case Note.SIXTEENTH : noteChars = SIXTEENTH_NOTE; break;
+				case Note.EIGHTH : noteChars = EIGHTH_NOTE; break;
+				case Note.QUARTER: noteChars = QUARTER_NOTE; break;
+				case Note.HALF: noteChars = HALF_NOTE; break;
+				case Note.WHOLE: noteChars = WHOLE_NOTE; break;
+				default : noteChars = UNKNWON;
+			}
+		else
+			switch (noteDuration) {
+				//Note.SIXTY_FOURTH: chars[0] = ScoreRenditionContext.
+				case Note.THIRTY_SECOND : noteChars = THIRTY_SECOND_NOTE_STEM_DOWN; break;
+				case Note.SIXTEENTH : noteChars = SIXTEENTH_NOTE_STEM_DOWN; break;
+				case Note.EIGHTH : noteChars = EIGHTH_NOTE_STEM_DOWN; break;
+				case Note.QUARTER: noteChars = QUARTER_NOTE_STEM_DOWN; break;
+				case Note.HALF: noteChars = HALF_NOTE_STEM_DOWN; break;
+				case Note.WHOLE: noteChars = WHOLE_NOTE_STEM_DOWN; break;
+				default : noteChars = UNKNWON;
+		}
+	}
+	
+	public Point2D getStemBegin() {
+		return new Point2D.Double(notePosition.getX()+ m_metrics.getNoteWidth()*0.93, 
+				notePosition.getY()-m_metrics.getNoteHeigth()/2);
+	}
+	
+	/**
+	 * Moves the note to a new position in order to set the new stem 
+	 * begin position to the new location .
+	 *
+	 */
+	public void setStemBegin(Point2D newStemBeginPos) {
+		double xDelta = newStemBeginPos.getX() - getStemBegin().getX();
+		double yDelta = newStemBeginPos.getY() - getStemBegin().getY();
+		//System.out.println("translating " + this + " with " + xDelta + "/" + yDelta);
+		Point2D newBase = new Point2D.Double(m_base.getX()+xDelta, m_base.getY()+yDelta);  
+		setBase(newBase);
 	}
 	
 	protected void onBaseChanged() {
@@ -231,7 +273,8 @@ public class SNote extends JScoreElement {
 		renderExtendedStaffLines(g, m_metrics, m_base);
 		renderAccidentals(g);
 		renderDots(g);
-		g.drawChars(noteChars, 0, 1, (int)displayPosition.getX(), (int)displayPosition.getY());
+		renderNoteChars(g);
+		
 		/*Color previousColor = g.getColor();
 		g.setColor(Color.RED);
 		m_boundingBox = getBoundingBox();
@@ -240,10 +283,14 @@ public class SNote extends JScoreElement {
 		g.drawLine((int)getNotePosition().getX(), (int)getNotePosition().getY(), 
 				(int)getNotePosition().getX(), (int)getNotePosition().getY());
 		g.setColor(Color.GREEN);
-		g.drawLine((int)m_base.getX(), (int)m_base.getY(), 
-				(int)m_base.getX(), (int)m_base.getY());
+		g.drawLine((int)getStemBegin().getX(), (int)getStemBegin().getY(), 
+				(int)getStemBegin().getX()+10, (int)getStemBegin().getY());
 		g.setColor(previousColor);*/
 		return m_width;
+	}
+	
+	protected void renderNoteChars(Graphics2D gfx) {
+		gfx.drawChars(noteChars, 0, 1, (int)displayPosition.getX(), (int)displayPosition.getY());
 	}
 	
 	protected void renderAccidentals(Graphics2D gfx) {

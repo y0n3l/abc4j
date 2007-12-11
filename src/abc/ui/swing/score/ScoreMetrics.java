@@ -47,6 +47,8 @@ public class ScoreMetrics {
 	private int stemLength = -1;
 	private int notesSpacing = -1;
 	
+	protected double biggestAccidentalWidth = -1; 
+	
 	public ScoreMetrics(Graphics2D g2) {
 		this(g2, DEFAULT_SIZE);
 	}
@@ -72,6 +74,10 @@ public class ScoreMetrics {
 			  stemLength = (int)(noteHeigth*3);
 			  noteStrokeLength = 2;
 			  notesSpacing = (int)(1.5*noteWidth);
+			  biggestAccidentalWidth = (getFlatBounds().getWidth()>getNaturalBounds().getWidth())
+				?getFlatBounds().getWidth():getNaturalBounds().getWidth();
+				biggestAccidentalWidth = (getSharpBounds().getWidth()>biggestAccidentalWidth)
+				?getSharpBounds().getWidth():biggestAccidentalWidth;
 		}
 		catch (Exception e){
 			e.printStackTrace();
@@ -130,6 +136,10 @@ public class ScoreMetrics {
 	 * @return Returns the bounding box of a flat character. */
 	public Rectangle2D getFlatBounds(){
 		return flatBounds;
+	}
+	
+	public double getBiggestAccidentalWidth() {
+		return biggestAccidentalWidth;
 	}
 	
 	public Rectangle2D getQuarterNoteBounds(){

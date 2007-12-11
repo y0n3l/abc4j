@@ -38,6 +38,8 @@ public class TuneEditorSplitPane extends JSplitPane// implements TuneParserListe
   private static final String TOKENS_TAB_NAME = "Tokens";
   private static final String SCORE_TAB_NAME = "Score";
   private static final boolean DISPLAY_TOKEN_TAB = false;
+  
+  private static final int SCORE_SIZE = 38;
 
   public TuneEditorSplitPane()
   {
@@ -47,7 +49,7 @@ public class TuneEditorSplitPane extends JSplitPane// implements TuneParserListe
     m_errorsList = new ErrorsList(m_tunePane.getParser());
     m_score = new JScoreComponent();
     m_score.setJustification(true);
-    m_score.setSize(38);
+    m_score.setSize(SCORE_SIZE);
     m_tunePane.getParser().addListener(new TuneParserAdapter(){
     	public void tuneEnd(Tune tune){
     		m_score.setTune(tune);
