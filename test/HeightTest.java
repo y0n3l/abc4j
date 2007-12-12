@@ -2,6 +2,7 @@ import junit.framework.TestCase;
 import abc.midi.MidiConverterAbstract;
 import abc.notation.AccidentalType;
 import abc.notation.KeySignature;
+import abc.notation.MultiNote;
 import abc.notation.Note;
 import abc.notation.Tune;
 import abc.parser.TuneParser;
@@ -74,6 +75,39 @@ public class HeightTest extends TestCase {
 		assertEquals(Note.b, tune.getScore().getHighestNoteBewteen(0, tune.getScore().size()-1).getHeight());
 	}
 	
+	/** */
+	public void test2(){
+		String tuneAsString = "X:1\nT:test\nK:c\nb/2 b2 b b4 b8 \n";
+		Tune tune = new TuneParser().parse(tuneAsString);
+		Note firstNote = (Note)tune.getScore().elementAt(1);
+		Note secondNote = (Note)tune.getScore().elementAt(2);
+		Note thirdNote = (Note)tune.getScore().elementAt(3);
+		Note fourthNote = (Note)tune.getScore().elementAt(4);
+		assertEquals(firstNote.getHeight(), Note.b);
+		assertEquals(secondNote.getHeight(), Note.b);
+		assertEquals(thirdNote.getHeight(), Note.b);
+		assertEquals(fourthNote.getHeight(), Note.b);
+	}
+	
+	/** */
+	public void test3(){
+		Tune tune = new TuneParser().parse("X:1\nT:test\nK:c\naFc\n");
+		Note firstNote = (Note)tune.getScore().elementAt(1);
+		Note secondNote = (Note)tune.getScore().elementAt(2);
+		Note thirdNote = (Note)tune.getScore().elementAt(3);
+		assertEquals(tune.getScore().getLowestNoteBewteen(firstNote, thirdNote), secondNote);
+		assertEquals(tune.getScore().getHighestNoteBewteen(firstNote, thirdNote), firstNote);
+	}
+	
+	public void test4(){
+		Tune tune = new TuneParser().parse("X:1\nT:test\nK:c\n[aFc]\n");
+		MultiNote firstNote = (MultiNote)tune.getScore().elementAt(1);
+		//Note secondNote = (Note)tune.getScore().elementAt(2);
+		//Note thirdNote = (Note)tune.getScore().elementAt(3);
+		assertEquals(firstNote.getHighestNote().getStrictHeight(), Note.A);
+		assertEquals(firstNote.getLowestNote().getStrictHeight(), Note.F);
+	}
+	
 	public void testNoteVariousHeightComparison() {
 		String tuneAsString = "X:1\nT:test\nK:c\nA,B,CDEFa,b,cdef\n";
 		Tune tune = new TuneParser().parse(tuneAsString);
@@ -87,4 +121,3 @@ public class HeightTest extends TestCase {
 	}
 
 }
-

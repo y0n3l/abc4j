@@ -68,7 +68,6 @@ public class SlursTest extends TestCase {
 	}
 	
 	private void checkSlursInScore(Score score) {
-		//TODO check the slurred count notes in the slur
 		Note firstNote = null;
 		Note lastNote = null;
 		for (int i=0; i<score.size(); i++)
