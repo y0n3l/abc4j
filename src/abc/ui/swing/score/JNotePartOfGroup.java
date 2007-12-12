@@ -9,12 +9,12 @@ import java.awt.geom.Rectangle2D;
 
 import abc.notation.Note;
 
-public class SNotePartOfGroup extends SNote {
+public class JNotePartOfGroup extends JNote {
 	protected int stemX = -1;
 	protected int stemYBegin = -1;  
 	protected int stemYEnd = -1;
 	
-	public SNotePartOfGroup(Note noteValue, Point2D base, ScoreMetrics c) {
+	public JNotePartOfGroup(Note noteValue, Point2D base, ScoreMetrics c) {
 		super(noteValue, base, c);
 		//correct what differs from SNote...
 		//The displayed character is not the same.

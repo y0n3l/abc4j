@@ -19,21 +19,21 @@ public class JChord extends JScoreElement {
 	/** All the notes composing the chord. */
 	protected Note[] m_notes = null;
 	/** All the notes rendition elements that are part of the group. */
-	protected SNote[] m_sNoteInstances = null;
+	protected JNote[] m_sNoteInstances = null;
 	
-	protected SNote highestElement = null;
-	protected SNotePartOfGroup lowestElement = null;
+	protected JNote highestElement = null;
+	protected JNotePartOfGroup lowestElement = null;
 	
 	public JChord(MultiNote multiNote, ScoreMetrics metrics, Point2D base){
-		super(base, metrics);
+		super(metrics);
 		this.multiNote = multiNote;
 		m_notes = new Note[multiNote.getNotesAsVector().size()];
 		multiNote.getNotesAsVector().toArray(m_notes);
-		//create SNotePartOfGroup instances. Those instances should stay the same
+		//create JNotePartOfGroup instances. Those instances should stay the same
 		//when the base is changed.
 		//m_sNoteInstances = new JScoreElement[m_notes.length];
 		if (multiNote.hasUniqueStrictDuration()) {
-			m_sNoteInstances = new SNote[m_notes.length];
+			m_sNoteInstances = new JNote[m_notes.length];
 			for (int i=0; i<m_notes.length; i++) {
 				if (m_notes[i].equals(multiNote.getHighestNote())) {
 					highestElement = createAnchorNote(m_notes[i], new Point2D.Double(), m_metrics);
@@ -50,12 +50,12 @@ public class JChord extends JScoreElement {
 		}
 		else {
 			//TODO support multi notes when the notes have different durations.
-			m_sNoteInstances = new SNote[1];
-			m_sNoteInstances[0] = new SNote(multiNote.getHighestNote(), new Point2D.Double(), m_metrics);
+			m_sNoteInstances = new JNote[1];
+			m_sNoteInstances[0] = new JNote(multiNote.getHighestNote(), new Point2D.Double(), m_metrics);
 			m_width = m_sNoteInstances[0].getWidth();
 		}
 		//m_sNoteInstances[i]=n;
-		onBaseChanged();
+		setBase(base);
 	}
 	
 	/** The anchor of the chord is the one that present the rhytm (the highest one 
@@ -65,8 +65,8 @@ public class JChord extends JScoreElement {
 	 * @param metrics
 	 * @return
 	 */
-	protected SNote createAnchorNote(Note note, Point2D base, ScoreMetrics metrics) {
-		return new SNote(note, new Point2D.Double(), m_metrics);
+	protected JNote createAnchorNote(Note note, Point2D base, ScoreMetrics metrics) {
+		return new JNote(note, new Point2D.Double(), m_metrics);
 	}
 	
 	public ScoreElementInterface getScoreElement() {
@@ -77,18 +77,18 @@ public class JChord extends JScoreElement {
 		return m_notes; 
 	}
 	
-	/*SNotePartOfGroup[] getRenditionElements() {
+	/*JNotePartOfGroup[] getRenditionElements() {
 		return m_sNoteInstances;
 	}*/
 	
 	protected void onBaseChanged() {
-		//m_sNoteInstances = new SNotePartOfGroup[m_notes.length];
+		//m_sNoteInstances = new JNotePartOfGroup[m_notes.length];
 		//Point2D currentBase =(Point2D)m_base.clone();
 		//Note highestNote = Note.getHighestNote(m_notes);
-		//SNotePartOfGroup sn = new SNotePartOfGroup(highestNote, m_base, m_metrics);
+		//JNotePartOfGroup sn = new JNotePartOfGroup(highestNote, m_base, m_metrics);
 		//m_stemYend = sn.getStemYBegin()-m_metrics.getStemLength();
-		//SNotePartOfGroup firstNote = null;
-		//SNotePartOfGroup lastNote = null;
+		//JNotePartOfGroup firstNote = null;
+		//JNotePartOfGroup lastNote = null;
 		
 		//double width = 0;
 		//boolean hasAccidental = multiNote.hasAccidental();

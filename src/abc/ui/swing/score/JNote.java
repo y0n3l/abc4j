@@ -11,7 +11,7 @@ import abc.notation.Note;
 import abc.notation.ScoreElementInterface;
 import abc.ui.swing.JScoreElement;
 
-public class SNote extends JScoreElement {
+public class JNote extends JScoreElement {
 	private static final double SPACE_RATIO_FOR_ACCIDENTALS = 1.3;
 	
 	protected Note note = null;
@@ -62,8 +62,8 @@ public class SNote extends JScoreElement {
 	
 	public static final char[] UNKNWON = {'\uF0AD'};
 	
-	public SNote(Note noteValue, Point2D base, ScoreMetrics c) {
-		super(base, c);
+	public JNote(Note noteValue, Point2D base, ScoreMetrics c) {
+		super(c);
 		note = noteValue;
 		short noteDuration = note.getStrictDuration();
 		if (note.isRest()){
@@ -104,7 +104,7 @@ public class SNote extends JScoreElement {
 					default : noteChars = UNKNWON;
 			}*/
 		}
-		onBaseChanged();
+		setBase(base);
 	}
 	
 	public ScoreElementInterface getScoreElement() {

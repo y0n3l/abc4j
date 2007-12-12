@@ -5,7 +5,7 @@ import java.awt.geom.Point2D;
 
 import abc.notation.RepeatBarLine;
 
-public class SRepeatBar extends SBar{
+public class JRepeatBar extends JBar{
 	
 	public static final char[][] DIGITS = {
 			{'\uF0C1', '\uF02E'}, 
@@ -18,7 +18,7 @@ public class SRepeatBar extends SBar{
 			{'\uF0A5', '\uF02E'},
 			{'\uF0BB', '\uF02E'}};
 
-	public SRepeatBar(RepeatBarLine barLine, Point2D base, ScoreMetrics c) {
+	public JRepeatBar(RepeatBarLine barLine, Point2D base, ScoreMetrics c) {
 		super(barLine,base, c); 
 	}
 	

@@ -6,7 +6,7 @@ import java.awt.geom.Point2D;
 
 import abc.notation.Note;
 
-public class JChordNote extends SNotePartOfGroup {
+public class JChordNote extends JNotePartOfGroup {
 
 	public JChordNote(Note noteValue, Point2D base, ScoreMetrics c) {
 		super(noteValue, base, c);

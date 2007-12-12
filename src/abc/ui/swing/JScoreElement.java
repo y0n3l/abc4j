@@ -6,8 +6,6 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import quicktime.qd.SetGWorld;
-
 import abc.notation.ScoreElementInterface;
 import abc.notation.Tune;
 import abc.ui.swing.score.ScoreMetrics;
@@ -34,10 +32,10 @@ public abstract class JScoreElement {
 	
 	protected Color m_color = null;
 	
-	protected JScoreElement(Point2D base, ScoreMetrics c) {
+	/*protected JScoreElement(Point2D base, ScoreMetrics c) {
 		this (c);
 		m_base = (Point2D)base.clone();
-	}
+	}*/
 	
 	protected JScoreElement(ScoreMetrics c) {
 		m_metrics = c;
@@ -82,7 +80,7 @@ public abstract class JScoreElement {
 	 * @param base The new bas that should be used to draw this element. 
 	 * @see #getBase() */
 	public void setBase(Point2D base) {
-		m_base = base;
+		m_base = (Point2D)base.clone();
 		onBaseChanged();
 	}
 	

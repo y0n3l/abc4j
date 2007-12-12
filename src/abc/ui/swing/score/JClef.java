@@ -3,19 +3,19 @@ package abc.ui.swing.score;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
-import abc.notation.BarLine;
 import abc.notation.ScoreElementInterface;
 import abc.ui.swing.JScoreElement;
 
-public class SClef extends JScoreElement {
+public class JClef extends JScoreElement {
 	
 	public static final char G_CLEF = '\uF026';
 	
 	//protected BarLine m_barLine = null;
 	
-	public SClef(Point2D base, ScoreMetrics c) {
-		super (base, c);
+	public JClef(Point2D base, ScoreMetrics c) {
+		super (c);
 		m_width = 3*m_metrics.getNoteWidth();
+		setBase(base);
 	}
 	
 	protected void onBaseChanged() {

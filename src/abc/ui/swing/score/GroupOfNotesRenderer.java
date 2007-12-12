@@ -25,22 +25,22 @@ public class GroupOfNotesRenderer extends JScoreElement {
 	/** All the notes that are part of the group. */
 	protected Note[] m_notes = null;
 	/** All the notes rendition elements that are part of the group. */
-	protected SNotePartOfGroup[] m_sNoteInstances = null;
+	protected JNotePartOfGroup[] m_sNoteInstances = null;
 	/** The Y coordinate where the line linking all the notes is put. */
 	protected int m_stemYend = -1;
 	
 	public GroupOfNotesRenderer(ScoreMetrics metrics, Point2D base, Note[] notes){
-		super(base, metrics);
+		super(metrics);
 		if (notes.length<=1)
 			throw new IllegalArgumentException(m_notes + "is not a group of notes, length = " + m_notes.length);
 		m_notes = notes;
-		//create SNotePartOfGroup instances. Those instance should stay the same
+		//create JNotePartOfGroup instances. Those instance should stay the same
 		//when the base is changed.
-		m_sNoteInstances = new SNotePartOfGroup[m_notes.length];
+		m_sNoteInstances = new JNotePartOfGroup[m_notes.length];
 		for (int i=0; i<notes.length; i++)
-			m_sNoteInstances[i] = new SNotePartOfGroup(m_notes[i], new Point2D.Double(), m_metrics);
+			m_sNoteInstances[i] = new JNotePartOfGroup(m_notes[i], new Point2D.Double(), m_metrics);
 		//m_sNoteInstances[i]=n;
-		onBaseChanged();
+		setBase(base);
 	}
 	
 	public ScoreElementInterface getScoreElement() {
@@ -51,23 +51,23 @@ public class GroupOfNotesRenderer extends JScoreElement {
 		return m_notes; 
 	}
 	
-	SNotePartOfGroup[] getRenditionElements() {
+	JNotePartOfGroup[] getRenditionElements() {
 		return m_sNoteInstances;
 	}
 	
 	protected void onBaseChanged() {
-		//m_sNoteInstances = new SNotePartOfGroup[m_notes.length];
+		//m_sNoteInstances = new JNotePartOfGroup[m_notes.length];
 		Point2D currentBase =(Point2D)m_base.clone();
 		Note highestNote = Note.getHighestNote(m_notes);
-		SNotePartOfGroup sn = new SNotePartOfGroup(highestNote, m_base, m_metrics);
+		JNotePartOfGroup sn = new JNotePartOfGroup(highestNote, m_base, m_metrics);
 		m_stemYend = sn.getStemYBegin()-m_metrics.getStemLength();
-		SNotePartOfGroup firstNote = null;
-		SNotePartOfGroup lastNote = null;
+		JNotePartOfGroup firstNote = null;
+		JNotePartOfGroup lastNote = null;
 		for (int i=0; i<m_notes.length; i++) {
 			short noteStrictDuration = m_notes[i].getStrictDuration();
 			if (noteStrictDuration==Note.THIRTY_SECOND || noteStrictDuration==Note.SIXTEENTH || noteStrictDuration==Note.EIGHTH
 					|| noteStrictDuration==Note.QUARTER){
-				//SNotePartOfGroup n = new SNotePartOfGroup(m_notes[i], currentBase, m_metrics);
+				//JNotePartOfGroup n = new JNotePartOfGroup(m_notes[i], currentBase, m_metrics);
 				//m_sNoteInstances[i]=n;
 				Point2D updatedBase = m_sNoteInstances[i].getBase();
 				updatedBase.setLocation(currentBase);
@@ -94,7 +94,7 @@ public class GroupOfNotesRenderer extends JScoreElement {
 		//super.render(context);
 		Stroke defaultStroke = context.getStroke();
 		for (int i=0; i<m_sNoteInstances.length; i++) {
-			SNotePartOfGroup n = m_sNoteInstances[i];
+			JNotePartOfGroup n = m_sNoteInstances[i];
 			n.render(context);
 			BasicStroke notesLinkStroke = m_metrics.getNotesLinkStroke();
 			context.setStroke(notesLinkStroke);
@@ -130,7 +130,7 @@ public class GroupOfNotesRenderer extends JScoreElement {
 				if (hasPrevious) {
 					if (previousNoteIsShorterOrEquals)
 						//the end is the stem of the previous note.
-						noteLinkEnd = ((SNotePartOfGroup)m_sNoteInstances[i-1]).getStemX();//getE (int)(stemX-2*context.getNoteWidth()); 
+						noteLinkEnd = ((JNotePartOfGroup)m_sNoteInstances[i-1]).getStemX();//getE (int)(stemX-2*context.getNoteWidth()); 
 					else
 						if (!(hasNext && nextNoteIsShorterOrEquals))
 							noteLinkEnd = (int)(m_sNoteInstances[i].getStemX()-m_metrics.getNoteWidth()/2);

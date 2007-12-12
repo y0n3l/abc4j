@@ -67,7 +67,7 @@ public class ScoreMetrics {
 			  sharpBounds = new TextLayout(new Character(SHARP[0]).toString(), myFont, frc).getBounds();
 			  flatBounds = new TextLayout(new Character(FLAT[0]).toString(), myFont, frc).getBounds();
 			  naturalBounds = new TextLayout(new Character(NATURAL[0]).toString(), myFont, frc).getBounds();
-			  quarterNoteBounds =  new TextLayout(new Character(SNote.QUARTER_NOTE[0]).toString(), myFont, frc).getBounds();
+			  quarterNoteBounds =  new TextLayout(new Character(JNote.QUARTER_NOTE[0]).toString(), myFont, frc).getBounds();
 			  noteWidth =  new TextLayout(new Character(NOTE[0]).toString(), myFont, frc).getBounds().getWidth();
 			  notesLinkStroke = new BasicStroke((float)(noteWidth/3), 0, 0);
 			  stemStroke = new BasicStroke((float)(noteWidth/12));

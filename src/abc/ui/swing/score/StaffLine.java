@@ -87,8 +87,8 @@ public class StaffLine extends JScoreElement {
 	public void scaleToWidth(double newWidth) {
 		for (int i=0; i<m_staffElements.size(); i++){
 			JScoreElement elmt = (JScoreElement)m_staffElements.elementAt(i);
-			if ( (!(elmt instanceof SClef)) && (!(elmt instanceof SKeySignature))
-					&& (!(elmt instanceof STimeSignature))
+			if ( (!(elmt instanceof JClef)) && (!(elmt instanceof JKeySignature))
+					&& (!(elmt instanceof JTimeSignature))
 					)  {
 				double newXpos =(elmt.getBase().getX()*newWidth/getWidth());
 				Point2D base = elmt.getBase();

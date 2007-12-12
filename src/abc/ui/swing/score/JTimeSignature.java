@@ -7,7 +7,7 @@ import abc.notation.ScoreElementInterface;
 import abc.notation.TimeSignature;
 import abc.ui.swing.JScoreElement;
 
-public class STimeSignature extends JScoreElement {
+public class JTimeSignature extends JScoreElement {
 	
 	public static final char[][] DIGITS = {
 			{'\uF031'},
@@ -28,10 +28,10 @@ public class STimeSignature extends JScoreElement {
 	protected int m_topNumY = -1;
 	protected int m_bottomNumY = -1;
 
-	public STimeSignature(TimeSignature ts, Point2D base, ScoreMetrics c) {
-		super(base, c);
+	public JTimeSignature(TimeSignature ts, Point2D base, ScoreMetrics c) {
+		super(c);
 		m_ts = ts;
-		onBaseChanged();
+		setBase(base);
 	}
 	
 	public ScoreElementInterface getScoreElement() {

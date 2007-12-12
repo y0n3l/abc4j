@@ -54,6 +54,7 @@ public class JTune extends JScoreElement {
 	private boolean currentStaffLineInitialized = false;
 	private StaffLine currentStaffLine = null;
 	private KeySignature currentKey = null;
+	private TimeSignature currentTime = null;
 	private Point2D cursor = null;
 	
 	public JTune(Tune tune, Point2D base, ScoreMetrics c) {
@@ -62,13 +63,13 @@ public class JTune extends JScoreElement {
 	
 	
 	public JTune(Tune tune, Point2D base, ScoreMetrics c, boolean isJustified) {
-		super(base, c);
+		super(c);
 		m_staffLines = new Vector();
 		m_isJustified = isJustified;
 		m_scoreElements = new Hashtable();
 		m_beginningNotesLinkElements = new Vector();
 		setTune(tune);
-		onBaseChanged();
+		setBase(base);
 	}
 	
 	public void onBaseChanged() {
@@ -122,6 +123,7 @@ public class JTune extends JScoreElement {
 		int maxDurationInGroup = Note.QUARTER;
 		int durationInCurrentMeasure = 0;
 		currentKey = tune.getKey();
+		currentTime = null;
 		Tuplet tupletContainer = null;
 		//TimeSignature currentTimeSignature = null;
 		currentStaffLineInitialized = false;
@@ -141,23 +143,37 @@ public class JTune extends JScoreElement {
 					|| (durationInCurrentMeasure!=0 && durationInCurrentMeasure%maxDurationInGroup==0)
 					//TODO limitation for now, chords cannot be part of groups.
 					|| (s instanceof MultiNote))
-					&& lessThanQuarter.size()!=0)
-				{
+					&& lessThanQuarter.size()!=0) {
+				//this is is the end of the group, append the current group content to the score.
+				JScoreElement renditionResult = null;
+				Note[] notes = (Note[])lessThanQuarter.toArray(new Note[lessThanQuarter.size()]);
+				if (notes.length==1) {
+					renditionResult = new JNote(notes[0], cursor, m_metrics);
+					m_scoreElements.put(((JNote)renditionResult).getNote(), renditionResult);
+				}
+				else {
+					renditionResult = new GroupOfNotesRenderer(m_metrics, cursor, notes);
+					GroupOfNotesRenderer g = (GroupOfNotesRenderer)renditionResult;
+					for (int j=0; j<g.getScoreElements().length; j++)
+						m_scoreElements.put(g.getScoreElements()[j], g.getRenditionElements()[j]);
+				}
+				appendToScore(renditionResult);
+				/*
 				if (!currentStaffLineInitialized) {
 					currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
 					m_staffLines.addElement(currentStaffLine);
 					currentStaffLineInitialized = true;
 				}
 				JScoreElement groupRendition= renderNotesInGroup(cursor, lessThanQuarter);
-				currentStaffLine.addElement(groupRendition);
+				currentStaffLine.addElement(groupRendition);*/
 				// puts association music object / rendered view into the hashmap. 
-				if (groupRendition instanceof SNote)
-					m_scoreElements.put(((SNote)groupRendition).getNote(), groupRendition);
+				/*if (renditionResult instanceof JNote)
+					m_scoreElements.put(((JNote)renditionResult).getNote(), renditionResult);
 				else {
-					GroupOfNotesRenderer g = (GroupOfNotesRenderer)groupRendition;
+					GroupOfNotesRenderer g = (GroupOfNotesRenderer)renditionResult;
 					for (int j=0; j<g.getScoreElements().length; j++)
 						m_scoreElements.put(g.getScoreElements()[j], g.getRenditionElements()[j]);
-				}
+				}*/
 				lessThanQuarter.clear();
 				durationInGroup = 0;
 			}
@@ -165,20 +181,8 @@ public class JTune extends JScoreElement {
 				currentKey = (KeySignature)s;
 			else
 				if (s instanceof TimeSignature) {
-					appendToScore(new STimeSignature((TimeSignature)s, cursor, m_metrics));
-					/*if (!currentStaffLineInitialized) {
-						currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
-						m_staffLines.addElement(currentStaffLine);
-						currentStaffLineInitialized = true;
-					}
-					STimeSignature ts = new STimeSignature((TimeSignature)s, cursor, m_metrics);
-					currentStaffLine.addElement(ts);
-					width = ts.getWidth();//SingleNoteRenderer.render(m_metrics, (Point2D)cursor.clone(), (Note)s);
-					int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
-					cursor.setLocation(cursorNewLocationX, cursor.getY());*/
-					//width = TimeSignatureRenderer.render(m_metrics, (Point2D)cursor.clone(), (TimeSignature)s);
-					//int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
-					//cursor.setLocation(cursorNewLocationX, cursor.getY());
+					//appendToScore(new STimeSignature((TimeSignature)s, cursor, m_metrics));
+					currentTime = (TimeSignature)s;
 					if(s.equals(TimeSignature.SIGNATURE_4_4)) maxDurationInGroup = 2*Note.QUARTER;
 					else if(((TimeSignature)s).getDenominator()==8) maxDurationInGroup = 3*Note.EIGHTH;
 						else if(((TimeSignature)s).getDenominator()==4) maxDurationInGroup = Note.QUARTER;
@@ -187,26 +191,11 @@ public class JTune extends JScoreElement {
 				else
 					if (s instanceof MultiNote) {
 						appendToScore(new JChord((MultiNote)s, m_metrics,cursor));
-						/*if (!currentStaffLineInitialized) {
-							currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
-							m_staffLines.addElement(currentStaffLine);
-							//currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
-							currentStaffLineInitialized = true;
-						}
-						JChord chord = new JChord((MultiNote)s, m_metrics,cursor);
-						currentStaffLine.addElement(chord);
-						width = chord.getWidth();
-						int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
-						cursor.setLocation(cursorNewLocationX, cursor.getY());*/
-						durationInCurrentMeasure=0;
+						durationInCurrentMeasure+=((MultiNote)s).getLongestNote().getDuration();
 					}
 					else
-					if (s instanceof NoteAbstract) {
-						Note note = null;
-						if (s instanceof MultiNote)
-							note = ((MultiNote)s).getShortestNote();
-						else
-							note = ((Note)s);
+					if (s instanceof Note) {
+						Note note = note = ((Note)s);
 						if (note.isBeginingSlur() || note.isBeginningTie())
 							m_beginningNotesLinkElements.addElement(note);
 						short strictDur = note.getStrictDuration();
@@ -217,6 +206,7 @@ public class JTune extends JScoreElement {
 							//System.out.println("duration in group " + durationInGroup);
 							lessThanQuarter.add(note);
 							if (durationInGroup>=maxDurationInGroup) {
+								/*
 								if (!currentStaffLineInitialized) {
 									currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
 									m_staffLines.addElement(currentStaffLine);
@@ -225,69 +215,48 @@ public class JTune extends JScoreElement {
 								}
 								JScoreElement groupRendition= renderNotesInGroup(cursor, lessThanQuarter);
 								currentStaffLine.addElement(groupRendition);
-								if (groupRendition instanceof SNote)
-									m_scoreElements.put(((SNote)groupRendition).getNote(), groupRendition);
+								if (groupRendition instanceof JNote)
+									m_scoreElements.put(((JNote)groupRendition).getNote(), groupRendition);
 								else {
 									GroupOfNotesRenderer g = (GroupOfNotesRenderer)groupRendition;
 									for (int j=0; j<g.getScoreElements().length; j++)
 										m_scoreElements.put(g.getScoreElements()[j], g.getRenditionElements()[j]);
+								}*/
+								JScoreElement renditionResult = null;
+								Note[] notes = (Note[])lessThanQuarter.toArray(new Note[lessThanQuarter.size()]);
+								if (notes.length==1) {
+									renditionResult = new JNote(notes[0], cursor, m_metrics);
+									m_scoreElements.put(((JNote)renditionResult).getNote(), renditionResult);
 								}
+								else {
+									renditionResult = new GroupOfNotesRenderer(m_metrics, cursor, notes);
+									GroupOfNotesRenderer g = (GroupOfNotesRenderer)renditionResult;
+									for (int j=0; j<g.getScoreElements().length; j++)
+										m_scoreElements.put(g.getScoreElements()[j], g.getRenditionElements()[j]);
+								}
+								appendToScore(renditionResult);
 								lessThanQuarter.clear();
 								durationInGroup = 0;
 							}
 						}
 						else {
-							/*
-							 if (!currentStaffLineInitialized) {
-								currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
-								m_staffLines.addElement(currentStaffLine);
-								//currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
-								currentStaffLineInitialized = true;
-							}*/
-							SNote noteR = new SNote(note, cursor, m_metrics);
+							JNote noteR = new JNote(note, cursor, m_metrics);
+							m_scoreElements.put(note, noteR);
 							if (note.getHeight()>Note.c)
 								noteR.setStemUp(false);
 							appendToScore(noteR);
-							
-							/*currentStaffLine.addElement(noteR);
-							m_scoreElements.put(note, noteR);
-							width = noteR.getWidth();//SingleNoteRenderer.render(m_metrics, (Point2D)cursor.clone(), (Note)s);
-							int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
-							cursor.setLocation(cursorNewLocationX, cursor.getY());*/
 						}
 						durationInCurrentMeasure+=note.getDuration();
 						//System.out.println("duration in current measure " + durationInCurrentMeasure);
 					}
 					else
 						if (s instanceof RepeatBarLine) {
-							appendToScore(new SRepeatBar((RepeatBarLine)s, cursor, m_metrics));
-							/* if (!currentStaffLineInitialized) {
-								currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
-								m_staffLines.addElement(currentStaffLine);
-								//currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
-								currentStaffLineInitialized = true;
-							}
-							SRepeatBar bar = new SRepeatBar((RepeatBarLine)s, cursor, m_metrics);
-							currentStaffLine.addElement(bar);
-							width = bar.getWidth();
-							int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
-							cursor.setLocation(cursorNewLocationX, cursor.getY());*/
+							appendToScore(new JRepeatBar((RepeatBarLine)s, cursor, m_metrics));
 							durationInCurrentMeasure=0;
 						}
 						else
 						if (s instanceof BarLine) {
-							appendToScore(new SBar((BarLine)s, cursor, m_metrics));
-							/*if (!currentStaffLineInitialized) {
-								currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
-								m_staffLines.addElement(currentStaffLine);
-								//currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
-								currentStaffLineInitialized = true;
-							}
-							SBar bar = new SBar((BarLine)s, cursor, m_metrics);
-							currentStaffLine.addElement(bar);
-							width = bar.getWidth();
-							int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
-							cursor.setLocation(cursorNewLocationX, cursor.getY());*/
+							appendToScore(new JBar((BarLine)s, cursor, m_metrics));
 							durationInCurrentMeasure=0;
 						}
 						else
@@ -323,23 +292,21 @@ public class JTune extends JScoreElement {
 		
 		m_width = componentWidth+m_metrics.getStaffCharBounds().getWidth();
 		m_height = componentHeight+m_metrics.getStaffCharBounds().getHeight();
-		//setPreferredSize(m_dimension);
-		//setSize(m_dimension);
 		
 		if (m_isJustified)
 			justify();
 		
-		//m_isBufferedImageOutdated=true;
-		//repaint();
 	}
 	
 	protected void appendToScore(JScoreElement element) {
 		if (!currentStaffLineInitialized) {
-			currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
-		m_staffLines.addElement(currentStaffLine);
-		//currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
-		currentStaffLineInitialized = true;
+			currentStaffLine=initNewStaffLine(currentKey, currentTime, cursor, m_metrics);
+			m_staffLines.addElement(currentStaffLine);
+			//currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
+			currentStaffLineInitialized = true;
+			element.setBase(cursor);
 		}
+		//element.setBase(cursor);
 		currentStaffLine.addElement(element);
 		double width = element.getWidth();
 		int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
@@ -398,9 +365,9 @@ public class JTune extends JScoreElement {
 	}
 	
 	protected void drawLinkDown(Graphics2D g2, TwoNotesLink slurDef) {
-		SNote elmtStart =  (SNote)m_scoreElements.get(slurDef.getStart());
+		JNote elmtStart =  (JNote)m_scoreElements.get(slurDef.getStart());
 		if (slurDef.getEnd()!=null){
-			SNote elmtEnd =  (SNote)m_scoreElements.get(slurDef.getEnd());
+			JNote elmtEnd =  (JNote)m_scoreElements.get(slurDef.getEnd());
 			Point2D controlPoint = null;
 			
 			Note lowestNote = m_tune.getScore().getLowestNoteBewteen(slurDef.getStart(), slurDef.getEnd());
@@ -416,7 +383,7 @@ public class JTune extends JScoreElement {
 							elmtEnd.getSlurDownAnchor().getY()+ m_metrics.getNoteWidth()/4);
 			
 			else {
-				SNote lowestNoteGlyph = (SNote)m_scoreElements.get(lowestNote);
+				JNote lowestNoteGlyph = (JNote)m_scoreElements.get(lowestNote);
 				controlPoint = new Point2D.Double(lowestNoteGlyph.getSlurDownAnchor().getX(), 
 						lowestNoteGlyph.getSlurDownAnchor().getY() + m_metrics.getNoteWidth()/2);
 			}
@@ -446,7 +413,7 @@ public class JTune extends JScoreElement {
 		Note[] notes = (Note[])lessThanQuarter.toArray(new Note[lessThanQuarter.size()]);
 		double width = 0;
 		if (notes.length==1) {
-			renditionResult = new SNote(notes[0], cursor, m_metrics);
+			renditionResult = new JNote(notes[0], cursor, m_metrics);
 			//width = renditionResultsn.render(context);
 		}
 		else {
@@ -466,24 +433,24 @@ public class JTune extends JScoreElement {
 		StaffLine sl = new StaffLine(cursor, metrix);
 		//Vector initElements = new Vector();
 		cursor.setLocation(0, cursor.getY() + m_staffLinesOffset);
-		SClef clef = new SClef(cursor, metrix);
+		JClef clef = new JClef(cursor, metrix);
 		sl.addElement(clef);
 		//initElements.addElement(clef);
 		double width = clef.getWidth();
 		cursor.setLocation(cursor.getX()+width, cursor.getY());
-		if (ts!=null) {
-			STimeSignature sig = new STimeSignature(ts, cursor, metrix);
-			sl.addElement(sig);
-			//initElements.addElement(sig);
-			width = (int)sig.getWidth();
-			int cursorNewLocationX = (int)(cursor.getX() + width + metrix.getNotesSpacing());
-			cursor.setLocation(cursorNewLocationX, cursor.getY());
-		}
 		if (key!=null) {
-			SKeySignature sk = new SKeySignature(key, cursor, metrix);
+			JKeySignature sk = new JKeySignature(key, cursor, metrix);
 			sl.addElement(sk);
 			//initElements.addElement(sk);
 			width = sk.getWidth();
+			int cursorNewLocationX = (int)(cursor.getX() + width + metrix.getNotesSpacing());
+			cursor.setLocation(cursorNewLocationX, cursor.getY());
+		}
+		if (ts!=null) {
+			JTimeSignature sig = new JTimeSignature(ts, cursor, metrix);
+			sl.addElement(sig);
+			//initElements.addElement(sig);
+			width = (int)sig.getWidth();
 			int cursorNewLocationX = (int)(cursor.getX() + width + metrix.getNotesSpacing());
 			cursor.setLocation(cursorNewLocationX, cursor.getY());
 		}

@@ -8,7 +8,7 @@ import abc.notation.BarLine;
 import abc.notation.ScoreElementInterface;
 import abc.ui.swing.JScoreElement;
 
-public class SBar extends JScoreElement{
+public class JBar extends JScoreElement{
 	/** The encapsulated abc notation bar element */
 	protected BarLine m_barLine = null;
 
@@ -19,10 +19,10 @@ public class SBar extends JScoreElement{
 	protected int m_topDotY = -1;
 	protected int m_bottomDotY = -1;
 	
-	public SBar(BarLine barLine, Point2D base, ScoreMetrics c) {
-		super (base, c);
+	public JBar(BarLine barLine, Point2D base, ScoreMetrics c) {
+		super (c);
 		m_barLine = barLine; 
-		onBaseChanged();
+		setBase(base);
 	}
 	
 	public ScoreElementInterface getScoreElement() {
