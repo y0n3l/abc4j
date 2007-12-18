@@ -14,6 +14,8 @@ public class MultiNote extends NoteAbstract
   {
     super();
     m_notes = notes;
+    if (getLongestNote().getStrictDuration()>=Note.QUARTER)
+    	setIsLastOfGroup(true);
   }
 
   /** Returns the longest note of this multi note.

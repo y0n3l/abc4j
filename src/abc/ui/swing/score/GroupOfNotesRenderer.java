@@ -10,6 +10,7 @@ import abc.notation.Note;
 import abc.notation.ScoreElementInterface;
 import abc.ui.swing.JScoreElement;
 
+/** This class is in charge of rendering a group of notes whose stems should be linked. */
 public class GroupOfNotesRenderer extends JScoreElement {
 	
 	public static final char[] DIGITS = {
@@ -45,6 +46,14 @@ public class GroupOfNotesRenderer extends JScoreElement {
 	
 	public ScoreElementInterface getScoreElement() {
 		return null;
+	}
+	
+	public void setStaffLine(StaffLine staffLine) {
+		//If a group of notes if displayed on a staff line, all notes
+		//composing the group are then part of this staff line as well. 
+		for (int i=0; i<m_sNoteInstances.length; i++) 
+			m_sNoteInstances[i].setStaffLine(staffLine);
+		super.setStaffLine(staffLine);
 	}
 	
 	Note[] getScoreElements() {

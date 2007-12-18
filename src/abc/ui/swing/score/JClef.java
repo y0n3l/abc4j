@@ -6,6 +6,7 @@ import java.awt.geom.Point2D;
 import abc.notation.ScoreElementInterface;
 import abc.ui.swing.JScoreElement;
 
+/** This class is in charge of rendering a staff clef. */
 public class JClef extends JScoreElement {
 	
 	public static final char G_CLEF = '\uF026';

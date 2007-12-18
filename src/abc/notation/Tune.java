@@ -386,16 +386,29 @@ public class Tune implements Cloneable
   Score createScore()
   { return new Score(); }
 
-  public class Score extends Vector
-  {
+  public class Score extends Vector {
+	  
+	  protected NoteAbstract lastNote = null; 
     public Score ()
     { super (); }
 
-    public void addElement(KeySignature key)
-    {
+    public void addElement(KeySignature key) {
       if (Tune.this.getKey()==null)
         Tune.this.setKey(key);
       super.addElement(key);
+    }
+    
+    public void addElement(NoteAbstract note) {
+    	//System.out.println("adding note " + note + " to " + this);
+        lastNote = note;
+        super.addElement(note);
+    }
+    
+    /* Returns the last note that has been added to this score.
+     * @return The last note that has been added to this score. <TT>null</TT>
+     * if no note in this score. */
+    public NoteAbstract getLastNote() {
+    	return lastNote;
     }
     
     /** Returns the score element location at the specified offset.

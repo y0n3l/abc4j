@@ -5,7 +5,6 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.Vector;
 
-import abc.notation.Note;
 import abc.notation.ScoreElementInterface;
 import abc.ui.swing.JScoreElement;
 
@@ -35,6 +34,7 @@ public class StaffLine extends JScoreElement {
 	
 	public void addElement(JScoreElement r) {
 		m_staffElements.addElement(r);
+		r.setStaffLine(this);
 		computeWidth();
 	}
 	

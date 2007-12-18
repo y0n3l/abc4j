@@ -11,6 +11,7 @@ import abc.notation.Note;
 import abc.notation.ScoreElementInterface;
 import abc.ui.swing.JScoreElement;
 
+/** This class is in charge of rendering a single note. */
 public class JNote extends JScoreElement {
 	private static final double SPACE_RATIO_FOR_ACCIDENTALS = 1.3;
 	
@@ -69,7 +70,7 @@ public class JNote extends JScoreElement {
 		if (note.isRest()){
 			//System.out.println("duration of the rest is " + noteDuration);
 			switch (noteDuration) {
-			//Note.SIXTY_FOURTH: chars[0] = ScoreRenditionContext.
+				//Note.SIXTY_FOURTH: chars[0] = ScoreRenditionContext.
 				case Note.THIRTY_SECOND : noteChars = THIRTY_SECOND_REST; break;
 				case Note.SIXTEENTH : noteChars = SIXTEENTH_REST; break;
 				case Note.EIGHTH : noteChars = EIGHTH_REST; break;
@@ -81,28 +82,6 @@ public class JNote extends JScoreElement {
 		}
 		else {
 			setStemUp(isStemUp);
-			/*if (isStemUp) 
-				switch (noteDuration) {
-					//Note.SIXTY_FOURTH: chars[0] = ScoreRenditionContext.
-					case Note.THIRTY_SECOND : noteChars = THIRTY_SECOND_NOTE; break;
-					case Note.SIXTEENTH : noteChars = SIXTEENTH_NOTE; break;
-					case Note.EIGHTH : noteChars = EIGHTH_NOTE; break;
-					case Note.QUARTER: noteChars = QUARTER_NOTE; break;
-					case Note.HALF: noteChars = HALF_NOTE; break;
-					case Note.WHOLE: noteChars = WHOLE_NOTE; break;
-					default : noteChars = UNKNWON;
-				}
-			else
-				switch (noteDuration) {
-					//Note.SIXTY_FOURTH: chars[0] = ScoreRenditionContext.
-					case Note.THIRTY_SECOND : noteChars = THIRTY_SECOND_NOTE_STEM_DOWN; break;
-					case Note.SIXTEENTH : noteChars = SIXTEENTH_NOTE_STEM_DOWN; break;
-					case Note.EIGHTH : noteChars = EIGHTH_NOTE_STEM_DOWN; break;
-					case Note.QUARTER: noteChars = QUARTER_NOTE_STEM_DOWN; break;
-					case Note.HALF: noteChars = HALF_NOTE_STEM_DOWN; break;
-					case Note.WHOLE: noteChars = WHOLE_NOTE_STEM_DOWN; break;
-					default : noteChars = UNKNWON;
-			}*/
 		}
 		setBase(base);
 	}

@@ -8,6 +8,7 @@ import abc.notation.BarLine;
 import abc.notation.ScoreElementInterface;
 import abc.ui.swing.JScoreElement;
 
+/** This class renders a simple bar line. */
 public class JBar extends JScoreElement{
 	/** The encapsulated abc notation bar element */
 	protected BarLine m_barLine = null;

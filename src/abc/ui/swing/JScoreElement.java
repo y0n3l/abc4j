@@ -9,6 +9,7 @@ import java.awt.geom.Rectangle2D;
 import abc.notation.ScoreElementInterface;
 import abc.notation.Tune;
 import abc.ui.swing.score.ScoreMetrics;
+import abc.ui.swing.score.StaffLine;
 
 /** This class defines a score rendition element. Rendition scores elements
  * are graphical representations of tune score elements objects retrieved 
@@ -32,10 +33,7 @@ public abstract class JScoreElement {
 	
 	protected Color m_color = null;
 	
-	/*protected JScoreElement(Point2D base, ScoreMetrics c) {
-		this (c);
-		m_base = (Point2D)base.clone();
-	}*/
+	protected StaffLine staffLine = null; 
 	
 	protected JScoreElement(ScoreMetrics c) {
 		m_metrics = c;
@@ -45,8 +43,17 @@ public abstract class JScoreElement {
 		return m_width;
 	}
 	
+	public StaffLine getStaffLine() {
+		return staffLine;
+	}
+	
+	public void setStaffLine(StaffLine staffLine) {
+		this.staffLine = staffLine;
+	}
+	
 	/** Returns the tune score element represented by this graphical score element.
-	 * @return The tune score element represented by this graphical score element. */ 
+	 * @return The tune score element represented by this graphical score element. <TT>null</TT>
+	 * if this graphical score element is not related to any score element. */ 
 	public abstract ScoreElementInterface getScoreElement();
 	
 	public Rectangle2D getBoundingBox() {
@@ -84,6 +91,8 @@ public abstract class JScoreElement {
 		onBaseChanged();
 	}
 	
+	/** Sets the color used for the rendition of this score element.
+	 * @param color The color used for the rendition of this score element. */
 	public void setColor(Color color) {
 		m_color = color;
 	}

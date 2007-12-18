@@ -5,6 +5,7 @@ import java.awt.geom.Point2D;
 
 import abc.notation.RepeatBarLine;
 
+/** This class is in charge of rendering a repeat bar. */
 public class JRepeatBar extends JBar{
 	
 	public static final char[][] DIGITS = {

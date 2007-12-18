@@ -1,6 +1,5 @@
 package abc.notation;
 
-import abc.ui.swing.score.ScoreMetrics;
 
 /**
  * This class defines a (single) Note : height, rhythm, part of tuplet, rest etc...
@@ -193,6 +192,8 @@ public class Note extends NoteAbstract
 	  if (strictHeight<0 && strictHeight!=REST)
 		  throw new IllegalArgumentException("negative : " + strictHeight);
 	  octaveTransposition = getOctaveTransposition(heightValue);
+	  if (isRest())
+		  setIsLastOfGroup(false);
 	  //System.out.println(heightValue + " decomposed into " + strictHeight + ", "+ octaveTransposition);
   }
 
@@ -219,6 +220,11 @@ public class Note extends NoteAbstract
 	  return (byte)(strictHeight + octaveTransposition*12);
   }
   
+  /** Returns <TT>true</TT> if the given note is strictly higher than this one.
+   * @param aNote A note instance. 
+   * @return <TT>true</TT> if the given note is strictly higher than this one, 
+   * <TT>false</TT> otherwise. 
+   * @see #isLowerThan(Note) */
   public boolean isHigherThan (Note aNote) {
 	  return getMidiLikeHeight()>aNote.getMidiLikeHeight();
   }
@@ -291,7 +297,7 @@ public class Note extends NoteAbstract
    * @deprecated use getStrictHeight() instead 
    * @see #getStrictHeight() */
   public byte toRootOctaveHeigth()
-  { return (byte)Math.abs(strictHeight%12); }
+  { return getStrictHeight(); }
 
   /** Sets the octave transposition for this note.
    * @param octaveTranspositionValue The octave transposition for this note :
@@ -339,8 +345,11 @@ public class Note extends NoteAbstract
    * @exception IllegalArgumentException Thrown if the given duration does not 
    * match the excepted ones. */
   public void setStrictDuration(short strictDuration) throws IllegalArgumentException {
-	  if (isStrictDuration(strictDuration))
+	  if (isStrictDuration(strictDuration)) {
 		  m_strictDuration = strictDuration;
+		  if (m_strictDuration==Note.WHOLE || m_strictDuration==Note.HALF || m_strictDuration==Note.QUARTER)
+			  setIsLastOfGroup(true);
+	  }
 	  else
 		  throw new IllegalArgumentException("The note duration " + strictDuration + " is not equals to " +
 				  "Note.WHOLE, Note.HALF, Note.QUARTER, Note.EIGHTH, Note.SIXTEENTH, " + 
@@ -403,8 +412,9 @@ public class Note extends NoteAbstract
 	  accidental == AccidentalType.NATURAL;
   }
 
-  /** Sets if this note is tied, wheter or not.
-   * @param isTied <TT>true</TT> if this note is tied, <TT>false</TT> otherwise.
+  /** Sets the tie definition for this note.
+   * @param tieDef The definition of the tie if this note is tied. <TT>NULL</TT> if the
+   * note should not be tied.
    * @see #isTied() */
   public void setTieDefinition(TieDefinition tieDef) { 
 	  //m_isTied = isTied;
@@ -416,10 +426,16 @@ public class Note extends NoteAbstract
 	  return tieDefinition;
   }
   
+  /** Returns <TT>true</TT> if this note is beginning a tie.
+   * @return <TT>true</TT> if this note is beginning a tie, <TT>false</TT>
+   * otherwise. */ 
   public boolean isBeginningTie() { 
 	  return tieDefinition!=null && this.equals(tieDefinition.getStart());
   }
   
+  /** Returns <TT>true</TT> if this note is ending a tie.
+   * @return <TT>true</TT> if this note is ending a tie, <TT>false</TT>
+   * otherwise. */
   public boolean isEndingTie() { 
 	  return tieDefinition!=null && this.equals(tieDefinition.getEnd());
   }

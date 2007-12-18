@@ -9,6 +9,7 @@ import abc.notation.Note;
 import abc.notation.ScoreElementInterface;
 import abc.ui.swing.JScoreElement;
 
+/** This class is in charge of rendering a key signature. */
 public class JKeySignature extends JScoreElement {
 	KeySignature key = null;
 	Point2D FPosition = null; 

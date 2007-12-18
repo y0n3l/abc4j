@@ -19,6 +19,8 @@ public class NoteAbstract implements ScoreElementInterface
   /** The number of dots for this note. */
   private byte m_dotted = 0;
   
+  protected boolean isLastOfGroup = false;
+  
   protected SlurDefinition slurDefinition = null;
   
   //protected boolean isBeginningSlur = false;
@@ -175,6 +177,14 @@ public class NoteAbstract implements ScoreElementInterface
    */
   public void setSlurDefinition(SlurDefinition slurDefinition) {
   	this.slurDefinition = slurDefinition;
+  }
+  
+  public boolean isLastOfGroup() {
+	  return isLastOfGroup;
+  }
+  
+  public void setIsLastOfGroup(boolean isLastOfGroup) {
+	  this.isLastOfGroup = isLastOfGroup;
   }
 
   /** Returns a String representation of this Object.

@@ -8,10 +8,10 @@ import java.awt.geom.Point2D;
 
 import abc.notation.MultiNote;
 import abc.notation.Note;
-import abc.notation.AccidentalType;
 import abc.notation.ScoreElementInterface;
 import abc.ui.swing.JScoreElement;
 
+/** This class is in charge of rendering a chord. */
 public class JChord extends JScoreElement {
 	
 	protected MultiNote multiNote = null;

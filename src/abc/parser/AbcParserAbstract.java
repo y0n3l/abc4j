@@ -1106,8 +1106,11 @@ public class AbcParserAbstract
         //m_isPartOfSlur = false;
       }
       else
-      if (m_tokenType.equals(AbcTokenType.SPACE))
-        accept(AbcTokenType.SPACE, null, follow);
+    	  if (m_tokenType.equals(AbcTokenType.SPACE)) {
+    		  accept(AbcTokenType.SPACE, null, follow);
+    		  m_score.getLastNote().setIsLastOfGroup(true);
+    		  //System.out.println(this.getClass().getName() + " end of group marker");
+    	  }
     }
 
     /** tuplet-element ::= tuplet-spec 1*note-element

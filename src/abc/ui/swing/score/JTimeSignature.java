@@ -7,6 +7,7 @@ import abc.notation.ScoreElementInterface;
 import abc.notation.TimeSignature;
 import abc.ui.swing.JScoreElement;
 
+/** This class is in charge of rendering a time signature. */
 public class JTimeSignature extends JScoreElement {
 	
 	public static final char[][] DIGITS = {
@@ -39,6 +40,7 @@ public class JTimeSignature extends JScoreElement {
 	}
 	
 	protected void onBaseChanged() {
+		//FIXME what if the signature numbers are not supported ? => arrayOutOfBounds ! :/
 		m_numChars = DIGITS[m_ts.getNumerator()-1];
 		m_denomChars = DIGITS[m_ts.getDenominator()-1];
 		m_topNumY = (int)(m_base.getY()-m_metrics.getNoteHeigth()*3.0);

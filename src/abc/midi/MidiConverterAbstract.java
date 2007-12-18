@@ -59,7 +59,10 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   						}
   						else
   							//==================================================================== NOTE
-  							if (staff.elementAt(i) instanceof abc.notation.Note) {
+  							if (staff.elementAt(i) instanceof abc.notation.Note
+  									// Notes ending ties should be ignored. Already taken into 
+  									// account in getNoteLengthInTicks(Note)
+  									&& !((abc.notation.Note)staff.elementAt(i)).isEndingTie()) {
   								PositionableNote note = (PositionableNote)staff.elementAt(i);
   								long noteDuration;
   								//The note duration if the note isn't part of a tuplet.
