@@ -174,8 +174,6 @@ public class JTune extends JScoreElement {
 					else
 					if (s instanceof Note) {
 						Note note = (Note)s;
-						if (note.isLastOfGroup())
-							System.out.println("the note " + s + " is the last of the group");
 						if (note.isBeginingSlur() || note.isBeginningTie())
 							m_beginningNotesLinkElements.addElement(note);
 						short strictDur = note.getStrictDuration();
@@ -282,6 +280,7 @@ public class JTune extends JScoreElement {
 	}
 	
 	private void appendToScore(ArrayList lessThanQuarterGroup){
+		if (lessThanQuarterGroup.size()>0) {
 		JScoreElement renditionResult = null;
 		JScoreElement[] renditionResultRootsElmts = new JScoreElement[lessThanQuarterGroup.size()];
 		Note[] notes = (Note[])lessThanQuarterGroup.toArray(new Note[lessThanQuarterGroup.size()]);
@@ -295,6 +294,7 @@ public class JTune extends JScoreElement {
 				renditionResultRootsElmts = ((GroupOfNotesRenderer)renditionResult).getRenditionElements();
 			}
 		appendToScore(renditionResult);
+		}
 	}
 	
 	public double render(Graphics2D g2) {

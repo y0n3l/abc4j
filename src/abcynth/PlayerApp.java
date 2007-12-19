@@ -219,7 +219,7 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
 	    			// Dumping element properties
 					if (elmnt instanceof NoteAbstract) {
 						NoteAbstract note = (NoteAbstract)elmnt;
-						System.out.println("properties for " + elmnt + " : slur?="+ note.isPartOfSlur());
+						System.out.println("properties for " + elmnt + " : slur?="+ note.isPartOfSlur() + " isLastOfGroup?=" + note.isLastOfGroup());
 						String test = (note.getSlurDefinition()==null)?"no slur":"start:"+note.getSlurDefinition().getStart()+" end:"+note.getSlurDefinition().getEnd();
 						System.out.println(test);
 					}
