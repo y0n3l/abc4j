@@ -127,9 +127,9 @@ public class JTune extends JScoreElement {
 		cursor = new Point(XOffset, 0);
 		double componentWidth =0, componentHeight = 0;
 		ArrayList lessThanQuarter = new ArrayList();
-		int durationInGroup = 0;
+		//int durationInGroup = 0;
 		int maxDurationInGroup = Note.QUARTER;
-		int durationInCurrentMeasure = 0;
+		//int durationInCurrentMeasure = 0;
 		Tuplet tupletContainer = null;
 		int staffLineNb = 0;
 		//init attributes that are for iterating through the score of the tune.
@@ -140,7 +140,6 @@ public class JTune extends JScoreElement {
 		for (int i=0; i<score.size(); i++) {
 			ScoreElementInterface s = (ScoreElementInterface)score.elementAt(i);
 			if (
-					//detects the end of a group.
 					(!(s instanceof Note)  
 					|| (s instanceof Note && ((Note)s).isRest()) 
 					//if we were in a tuplet and the current note isn't part of tuplet anymore or part of another tuplet
@@ -148,14 +147,12 @@ public class JTune extends JScoreElement {
 					//if we weren't in a tuplet and the new note is part of a tuplet.
 					|| (s instanceof NoteAbstract && tupletContainer==null && ((NoteAbstract)s).isPartOfTuplet())
 					|| (s instanceof Note && ((Note)s).getStrictDuration()>=Note.QUARTER)
-					|| (durationInCurrentMeasure!=0 && durationInCurrentMeasure%maxDurationInGroup==0)
 					//TODO limitation for now, chords cannot be part of groups.
 					|| (s instanceof MultiNote))
 					&& lessThanQuarter.size()!=0) {
 				//this is is the end of the group, append the current group content to the score.
 				appendToScore(lessThanQuarter);
 				lessThanQuarter.clear();
-				durationInGroup = 0;
 			}
 			if (s instanceof KeySignature) 
 				currentKey = (KeySignature)s;
@@ -172,11 +169,11 @@ public class JTune extends JScoreElement {
 						if (((MultiNote)s).isLastOfGroup())
 							System.out.println("the note " + s + " is the last of the group");
 						appendToScore(new JChord((MultiNote)s, m_metrics,cursor));
-						durationInCurrentMeasure+=((MultiNote)s).getLongestNote().getDuration();
+						//durationInCurrentMeasure+=((MultiNote)s).getLongestNote().getDuration();
 					}
 					else
 					if (s instanceof Note) {
-						Note note = note = ((Note)s);
+						Note note = (Note)s;
 						if (note.isLastOfGroup())
 							System.out.println("the note " + s + " is the last of the group");
 						if (note.isBeginingSlur() || note.isBeginningTie())
@@ -185,32 +182,33 @@ public class JTune extends JScoreElement {
 						tupletContainer = note.getTuplet();
 						// checks if this note should be part of a group.
 						if (strictDur<Note.QUARTER && !note.isRest()) {
-							durationInGroup+=(note).getDuration();
+							//durationInGroup+=(note).getDuration();
 							//System.out.println("duration in group " + durationInGroup);
 							lessThanQuarter.add(note);
-							if (durationInGroup>=maxDurationInGroup) {
+							/*if (durationInGroup>=maxDurationInGroup) {
 								appendToScore(lessThanQuarter);
 								lessThanQuarter.clear();
 								durationInGroup = 0;
-							}
+							}*/
 						}
 						else {
+							
 							JNote noteR = new JNote(note, cursor, m_metrics);
 							if (note.getHeight()>Note.c)
 								noteR.setStemUp(false);
 							appendToScore(noteR);
 						}
-						durationInCurrentMeasure+=note.getDuration();
+						//durationInCurrentMeasure+=note.getDuration();
 					}
 					else
 						if (s instanceof RepeatBarLine) {
 							appendToScore(new JRepeatBar((RepeatBarLine)s, cursor, m_metrics));
-							durationInCurrentMeasure=0;
+							//durationInCurrentMeasure=0;
 						}
 						else
 						if (s instanceof BarLine) {
 							appendToScore(new JBar((BarLine)s, cursor, m_metrics));
-							durationInCurrentMeasure=0;
+							//durationInCurrentMeasure=0;
 						}
 						else
 							if (s instanceof StaffEndOfLine) {
@@ -222,11 +220,31 @@ public class JTune extends JScoreElement {
 								//initNewStaffLine(currentKey, cursor, m_metrics);
 								currentStaffLineInitialized = false;
 							}
+			if (/*
+					//detects the end of a group.
+					(!(s instanceof Note)  
+					|| (s instanceof Note && ((Note)s).isRest()) 
+					//if we were in a tuplet and the current note isn't part of tuplet anymore or part of another tuplet
+					|| (s instanceof NoteAbstract && tupletContainer!=null && (!tupletContainer.equals(((NoteAbstract)s).getTuplet())))
+					//if we weren't in a tuplet and the new note is part of a tuplet.
+					|| (s instanceof NoteAbstract && tupletContainer==null && ((NoteAbstract)s).isPartOfTuplet())
+					|| (s instanceof Note && ((Note)s).getStrictDuration()>=Note.QUARTER)
+					|| (durationInCurrentMeasure!=0 && durationInCurrentMeasure%maxDurationInGroup==0)
+					//TODO limitation for now, chords cannot be part of groups.
+					|| (s instanceof MultiNote))
+					&& lessThanQuarter.size()!=0*/
+					(s instanceof NoteAbstract) && ((NoteAbstract)s).isLastOfGroup()
+				) {
+				//this is is the end of the group, append the current group content to the score.
+				appendToScore(lessThanQuarter);
+				lessThanQuarter.clear();
+				//durationInGroup = 0;
+			}
 		}// Enf of score elements iteration.
 		if (lessThanQuarter.size()!=0) {
 			appendToScore(lessThanQuarter);
 			lessThanQuarter.clear();
-			durationInGroup = 0;
+			//durationInGroup = 0;
 		}
 		if (cursor.getX()>componentWidth)
 			componentWidth = (int)cursor.getX();
@@ -267,14 +285,15 @@ public class JTune extends JScoreElement {
 		JScoreElement renditionResult = null;
 		JScoreElement[] renditionResultRootsElmts = new JScoreElement[lessThanQuarterGroup.size()];
 		Note[] notes = (Note[])lessThanQuarterGroup.toArray(new Note[lessThanQuarterGroup.size()]);
-		if (notes.length==1) {
-			renditionResult = new JNote(notes[0], cursor, m_metrics);
-			renditionResultRootsElmts[0] = renditionResult;
-		}
-		else {
-			renditionResult = new GroupOfNotesRenderer(m_metrics, cursor, notes);
-			renditionResultRootsElmts = ((GroupOfNotesRenderer)renditionResult).getRenditionElements();
-		}
+		
+			if (notes.length==1) {
+				renditionResult = new JNote(notes[0], cursor, m_metrics);
+				renditionResultRootsElmts[0] = renditionResult;
+			}
+			else {
+				renditionResult = new GroupOfNotesRenderer(m_metrics, cursor, notes);
+				renditionResultRootsElmts = ((GroupOfNotesRenderer)renditionResult).getRenditionElements();
+			}
 		appendToScore(renditionResult);
 	}
 	

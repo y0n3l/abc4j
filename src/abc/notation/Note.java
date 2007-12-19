@@ -192,8 +192,8 @@ public class Note extends NoteAbstract
 	  if (strictHeight<0 && strictHeight!=REST)
 		  throw new IllegalArgumentException("negative : " + strictHeight);
 	  octaveTransposition = getOctaveTransposition(heightValue);
-	  if (isRest())
-		  setIsLastOfGroup(false);
+	  //if (isRest())
+		//  setIsLastOfGroup(false);
 	  //System.out.println(heightValue + " decomposed into " + strictHeight + ", "+ octaveTransposition);
   }
 
@@ -347,8 +347,8 @@ public class Note extends NoteAbstract
   public void setStrictDuration(short strictDuration) throws IllegalArgumentException {
 	  if (isStrictDuration(strictDuration)) {
 		  m_strictDuration = strictDuration;
-		  if (m_strictDuration==Note.WHOLE || m_strictDuration==Note.HALF || m_strictDuration==Note.QUARTER)
-			  setIsLastOfGroup(true);
+		  //if (m_strictDuration==Note.WHOLE || m_strictDuration==Note.HALF || m_strictDuration==Note.QUARTER)
+		//	  setIsLastOfGroup(true);
 	  }
 	  else
 		  throw new IllegalArgumentException("The note duration " + strictDuration + " is not equals to " +

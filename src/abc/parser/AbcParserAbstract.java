@@ -1108,7 +1108,8 @@ public class AbcParserAbstract
       else
     	  if (m_tokenType.equals(AbcTokenType.SPACE)) {
     		  accept(AbcTokenType.SPACE, null, follow);
-    		  m_score.getLastNote().setIsLastOfGroup(true);
+    		  if (m_score.getLastNote()!=null)
+    			  m_score.getLastNote().setIsLastOfGroup(true);
     		  //System.out.println(this.getClass().getName() + " end of group marker");
     	  }
     }
