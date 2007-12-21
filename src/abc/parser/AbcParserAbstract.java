@@ -19,12 +19,13 @@ import abc.notation.KeySignature;
 import abc.notation.MultiPartsDefinition;
 import abc.notation.Note;
 import abc.notation.NoteAbstract;
+import abc.notation.NotesSeparator;
 import abc.notation.SlurDefinition;
 import abc.notation.RepeatBarLine;
 import abc.notation.RepeatedPart;
 import abc.notation.RepeatedPartAbstract;
 import abc.notation.ScorePresentationElementInterface;
-import abc.notation.StaffEndOfLine;
+import abc.notation.EndOfStaffLine;
 import abc.notation.Tempo;
 import abc.notation.TieDefinition;
 import abc.notation.TimeSignature;
@@ -167,9 +168,13 @@ public class AbcParserAbstract
     private Vector slursDefinitionStack = null;
     /** Keep track of the last parsed note. Used for instance to value the
      * end slur in case of slur */
-    private NoteAbstract lastParsedNote =null;
+    private NoteAbstract lastParsedNote = null;
     
-    private Note tieStartingNote = null;
+    protected NoteAbstract lastNoteFlaggedAsEndOfGroup = null;
+    
+    private Vector notesStartingTies = null;
+    
+    //private Note tieStartingNote = null;
     /** The current default note length. */
     private short m_defaultNoteLength = Note.EIGHTH;
 
@@ -200,6 +205,7 @@ public class AbcParserAbstract
       };
       m_scanner.addListener(m_scannerListener);
       m_listeners = new Vector();
+      notesStartingTies = new Vector();
       slursDefinitionStack = new Vector();
     }
 
@@ -1108,8 +1114,10 @@ public class AbcParserAbstract
       else
     	  if (m_tokenType.equals(AbcTokenType.SPACE)) {
     		  accept(AbcTokenType.SPACE, null, follow);
-    		  if (m_score.getLastNote()!=null)
-    			  m_score.getLastNote().setIsLastOfGroup(true);
+    		  NoteAbstract lastScoreNote = m_score.getLastNote();
+    		  if (lastScoreNote!=null && !lastScoreNote.equals(lastNoteFlaggedAsEndOfGroup))
+    			  m_score.addElement(new NotesSeparator());
+    			  //m_score.getLastNote().setIsLastOfGroup(true);
     		  //System.out.println(this.getClass().getName() + " end of group marker");
     	  }
     }
@@ -1323,6 +1331,7 @@ public class AbcParserAbstract
           	note = new PositionableMultiNote(notes);
       }
       else {
+    	  //This a normal note, not a multinote/chord.
         note = parseNote(current.createUnion(follow));
         if (note!=null) {
           if (staccato) note.setStaccato(true);
@@ -1341,14 +1350,15 @@ public class AbcParserAbstract
           		note.setSlurDefinition(currentSlurDef);
           	}
           }
-          if (tieStartingNote!=null && note!=tieStartingNote && ((Note)note).getHeight()==tieStartingNote.getHeight()) {
+          /*if (tieStartingNote!=null && note!=tieStartingNote && ((Note)note).getHeight()==tieStartingNote.getHeight()) {
+          //Note startTieNote = getNoteStartingTieFor(note);
+          //if (getNoteStartingTieFor(noteaNote)!=null
         	  //This is the end of the tie, the two notes are the same.
         	  //FIXME needs to be improved: accidentals ?
         	  tieStartingNote.getTieDefinition().setEnd(note);
         	  ((Note)note).setTieDefinition(tieStartingNote.getTieDefinition());
         	  tieStartingNote=null;
-        	  
-          }
+          }*/
           lastParsedNote = note;
         }
       }
@@ -1444,25 +1454,37 @@ public class AbcParserAbstract
         	//The note duration is equal to the default note duration.
         	note.setStrictDuration(m_defaultNoteLength);
       current.remove(FIRST_TIE);
-      if (m_tokenType.equals(AbcTokenType.TIE))
-      {
+      if (m_tokenType.equals(AbcTokenType.TIE)) {
         accept(AbcTokenType.TIE, current, follow);
         isTied = true;
       }
       else
       	isTied=false;
+      //==end of pure parsing phasis.
       if (note!=null)
       {
         CharStreamPosition endPosition = m_scanner.getPosition();
-        int length = endPosition.getCharactersOffset() -
-            startPosition.getCharactersOffset();
+        int length = endPosition.getCharactersOffset()-startPosition.getCharactersOffset();
         note.setBeginPosition(startPosition);
         note.setLength(length);
+        //TODO needs to be improved if a note can start a tie and end a tie at 
+        // the same time.
         if (isTied) {
         	TieDefinition tieDef = new TieDefinition();
         	tieDef.setStart(note);
         	note.setTieDefinition(tieDef);
-        	tieStartingNote = note;
+        	addNoteStartingTieFor(note);
+        	//tieStartingNote = note;
+        }
+        else {
+        	//if (tieStartingNote!=null && note!=tieStartingNote && ((Note)note).getHeight()==tieStartingNote.getHeight()) {
+            Note startTieNote = getNoteStartingTieFor(note);
+            if (startTieNote!=null) {
+              	startTieNote.getTieDefinition().setEnd(note);
+              	((Note)note).setTieDefinition(startTieNote.getTieDefinition());
+              	removeNoteStartingTieFor(startTieNote);
+              	//tieStartingNote=null;
+            }
         }
       }
       return note;
@@ -1520,12 +1542,12 @@ public class AbcParserAbstract
     		parseComment(follow);
     	else
     		if (m_tokenType.equals(AbcTokenType.LINE_BREAK))
-    			lineEnder=(accept(AbcTokenType.LINE_BREAK, null, follow)==null)?null:new StaffEndOfLine();
+    			lineEnder=(accept(AbcTokenType.LINE_BREAK, null, follow)==null)?null:new EndOfStaffLine();
     		else
     			if (m_tokenType.equals(AbcTokenType.NO_LINE_BREAK))
     				accept(AbcTokenType.NO_LINE_BREAK, null, follow);
     			else//if (m_tokenType.equals(AbcTokenType.LINE_FEED))
-    				lineEnder=(accept(AbcTokenType.LINE_FEED, null, follow)==null)?null:new StaffEndOfLine();
+    				lineEnder=(accept(AbcTokenType.LINE_FEED, null, follow)==null)?null:new EndOfStaffLine();
     				//accept(AbcTokenType.LINE_FEED, null, follow);
     	return lineEnder; 
     }
@@ -1539,6 +1561,25 @@ public class AbcParserAbstract
       current.remove(AbcTokenType.LINE_FEED);
       accept(AbcTokenType.LINE_FEED, current, follow);
     }*/
+    // HELP METHODS
+    //==================================================================================
+    protected Note getNoteStartingTieFor(Note aNote){
+    	for (int i=0; i<notesStartingTies.size(); i++){
+        	//This is the end of the tie, the two notes are the same.
+    		if (((Note)notesStartingTies.elementAt(i)).getHeight()==aNote.getHeight())
+    			return (Note)notesStartingTies.elementAt(i);
+        	//if (tieStartingNote!=null && note!=tieStartingNote && ((Note)note).getHeight()==tieStartingNote.getHeight()) {
+    	}
+    	return null;
+    }
+    
+    protected boolean removeNoteStartingTieFor(Note aNote){
+    	return notesStartingTies.removeElement(aNote);
+    }
+    
+    protected void addNoteStartingTieFor(Note aNote){
+    	notesStartingTies.addElement(aNote);
+    }
 
 
     //==================================================================================

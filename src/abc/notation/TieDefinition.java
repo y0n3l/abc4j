@@ -1,12 +1,5 @@
 package abc.notation;
 
-
-/**
- */
-public class TieDefinition extends TwoNotesLink {
-
-	
-	public TieDefinition(){
-		
-	}
+/** A tagging class to represent ties between notes. */
+public class TieDefinition extends TwoNotesLink implements ScoreElementInterface {
 }

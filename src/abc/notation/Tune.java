@@ -431,7 +431,23 @@ public class Tune implements Cloneable
     	return foundElement;
     }
     
-    public Note getHighestNoteBewteen(int scoreElmntIndexBegin, int ScoreElmtIndexEnd) throws IllegalArgumentException {
+    public int indexOf(ScoreElementInterface elmnt) {
+    	Object elmntIt = null;
+    	boolean isLooking4Note = elmnt instanceof Note;
+    	for (int i=0; i<size(); i++){
+    		elmntIt = elementAt(i);
+    		if (elementAt(i) instanceof MultiNote && isLooking4Note) {
+    			if (((MultiNote)elmntIt).contains((Note)elmnt))
+    					return i;
+    		}
+    		else
+    			if (elementAt(i).equals(elmnt))
+    				return i;
+    	}
+    	return -1;
+    }
+    
+    /*public Note getHighestNoteBewteen(int scoreElmntIndexBegin, int ScoreElmtIndexEnd) throws IllegalArgumentException {
     	if (scoreElmntIndexBegin>ScoreElmtIndexEnd)
     		throw new IllegalArgumentException("First parameter " + scoreElmntIndexBegin + " must be located before " + ScoreElmtIndexEnd + " in the score");
     	Note highestNote = null;
@@ -442,25 +458,85 @@ public class Tune implements Cloneable
     			highestNote = (Note)currentScoreEl;
     	}
     	return highestNote;
-    }
+    }*/
     
-    public Note getHighestNoteBewteen(ScoreElementInterface noteBegin, ScoreElementInterface noteEnd)
-    	throws IllegalArgumentException
-    {
-    	int indexBegin = this.indexOf(noteBegin);
-    	int indexEnd = this.indexOf(noteEnd);
-    	if (indexBegin==-1)
-    		throw new IllegalArgumentException("Note " + noteBegin + " hasn't been found in tune");
-    	if (indexEnd==-1)
-        	throw new IllegalArgumentException("Note " + noteEnd + " hasn't been found in tune");
-    	if (indexBegin>indexEnd)
-    		throw new IllegalArgumentException("Note " + noteBegin + " is located after " + noteEnd + " in the score");
-    	return getHighestNoteBewteen(indexBegin, indexEnd);
+    /** Returns the highest note between two score elements. <TT>MultiNote</TT> instances
+     * are ignored.  
+     * @param elmtBegin The score element where to start (included) the search
+     * of the highest note.
+     * @param elmtEnd The score element where to end (included) the search
+     * of the highest note.
+     * @return The highest note between two score elements. <TT>null</TT> if
+     * no note has been found between the two score elements.
+     * @throws IllegalArgumentException Thrown if one of the score elements hasn't been found 
+     * in the score or if the <TT>elmtEnd</TT> param is located before the <TT>elmntBegin</TT> 
+     * param in the score. */
+    public Note getHighestNoteBewteen(ScoreElementInterface elmtBegin, ScoreElementInterface elmtEnd)
+    	throws IllegalArgumentException {
+    	Note highestNote = null;
+    	//init
+    	if (elmtBegin instanceof Note)
+    		highestNote=(Note)elmtBegin;
+    	else
+    		if (elmtBegin instanceof MultiNote)
+    			highestNote = ((MultiNote)elmtBegin).getHighestNote();
+    	int idxBegin = indexOf(elmtBegin);
+    	int idxEnd = this.indexOf(elmtEnd);
+    	if (idxBegin==-1)
+    		throw new IllegalArgumentException("Note " + elmtBegin + " hasn't been found in tune");
+    	if (idxEnd==-1)
+        	throw new IllegalArgumentException("Note " + elmtEnd + " hasn't been found in tune");
+    	if (idxBegin>idxEnd)
+    		throw new IllegalArgumentException("Note " + elmtBegin + " is located after " + elmtEnd + " in the score");
+    	ScoreElementInterface currentScoreEl;
+    	for (int i=idxBegin+1; i<=idxEnd; i++) {
+    		currentScoreEl=(ScoreElementInterface)elementAt(i);
+    		if (currentScoreEl instanceof Note && ((Note)currentScoreEl).isHigherThan(highestNote))
+    			highestNote = (Note)currentScoreEl;
+    		/*else
+    			if (currentScoreEl instanceof MultiNote && ((MultiNote)currentScoreEl).getLowestNote().isHigherThan(highestNote))
+    					highestNote = ((MultiNote)currentScoreEl).getLowestNote();*/
+    	}
+    	return highestNote;
     }
-    
+
+    /** <TT>MultiNote</TT> instances are ignored.  
+     * @param noteBegin (included)
+     * @param noteEnd (included)
+     * @return
+     * @throws IllegalArgumentException
+     */
     public Note getLowestNoteBewteen(ScoreElementInterface noteBegin, ScoreElementInterface noteEnd)
-		throws IllegalArgumentException
-	{
+		throws IllegalArgumentException {
+    	Note lowestNote = null;
+    	//init
+    	if (noteBegin instanceof Note)
+    		lowestNote=(Note)noteBegin;
+    	else
+    		if (noteBegin instanceof MultiNote)
+    			lowestNote = ((MultiNote)noteBegin).getLowestNote();
+    	int idxBegin = indexOf(noteBegin);
+    	int idxEnd = this.indexOf(noteEnd);
+    	if (idxBegin==-1)
+    		throw new IllegalArgumentException("Note " + noteBegin + " hasn't been found in tune");
+    	if (idxEnd==-1)
+        	throw new IllegalArgumentException("Note " + noteEnd + " hasn't been found in tune");
+    	if (idxBegin>idxEnd)
+    		throw new IllegalArgumentException("Note " + noteBegin + " is located after " + noteEnd + " in the score");
+    	ScoreElementInterface currentScoreEl;
+    	for (int i=idxBegin+1; i<=idxEnd; i++) {
+    		currentScoreEl=(ScoreElementInterface)elementAt(i);
+    		if (currentScoreEl instanceof Note && ((Note)currentScoreEl).isLowerThan(lowestNote))
+    			lowestNote = (Note)currentScoreEl;
+    		/* else
+    			if (currentScoreEl instanceof MultiNote && ((MultiNote)currentScoreEl).getLowestNote().isLowerThan(lowestNote))
+    					lowestNote = ((MultiNote)currentScoreEl).getLowestNote();*/
+    	}
+    	return lowestNote;
+    	/*
+    	
+    		
+    	//FIXME does not take into account multi notes !
     	int indexBegin = this.indexOf(noteBegin);
     	int indexEnd = this.indexOf(noteEnd);
     	if (indexBegin==-1)
@@ -469,10 +545,10 @@ public class Tune implements Cloneable
     		throw new IllegalArgumentException("Note " + noteEnd + " hasn't been found in tune");
     	if (indexBegin>indexEnd)
     		throw new IllegalArgumentException("Note " + noteBegin + " is located after " + noteEnd + " in the score");
-    	return getLowestNoteBewteen(indexBegin, indexEnd);
+    	return getLowestNoteBewteen(indexBegin, indexEnd);*/
 	}
     
-    public Note getLowestNoteBewteen(int scoreElmntIndexBegin, int ScoreElmtIndexEnd) throws IllegalArgumentException {
+    /*public Note getLowestNoteBewteen(int scoreElmntIndexBegin, int ScoreElmtIndexEnd) throws IllegalArgumentException {
     	if (scoreElmntIndexBegin>ScoreElmtIndexEnd)
     		throw new IllegalArgumentException("First parameter " + scoreElmntIndexBegin + " must be located before " + ScoreElmtIndexEnd + " in the score");
     	Note lowestNote = null;
@@ -481,8 +557,12 @@ public class Tune implements Cloneable
     		currentScoreEl=(ScoreElementInterface)elementAt(i);
     		if (currentScoreEl instanceof Note && (lowestNote==null || ((Note)currentScoreEl).isLowerThan(lowestNote)))
     			lowestNote = (Note)currentScoreEl;
+    		else
+    			if (currentScoreEl instanceof MultiNote 
+    					&& (lowestNote==null || ((MultiNote)currentScoreEl).getLowestNote().isLowerThan(lowestNote)))
+    					lowestNote = ((MultiNote)currentScoreEl).getLowestNote();
     	}
     	return lowestNote;
-    }
+    }*/
   }
 }

@@ -31,7 +31,6 @@ public class JChord extends JScoreElement {
 		multiNote.getNotesAsVector().toArray(m_notes);
 		//create JNotePartOfGroup instances. Those instances should stay the same
 		//when the base is changed.
-		//m_sNoteInstances = new JScoreElement[m_notes.length];
 		if (multiNote.hasUniqueStrictDuration()) {
 			m_sNoteInstances = new JNote[m_notes.length];
 			for (int i=0; i<m_notes.length; i++) {
@@ -70,11 +69,17 @@ public class JChord extends JScoreElement {
 	}
 	
 	public ScoreElementInterface getScoreElement() {
-		return null;
+		return multiNote;
 	}
 	
-	Note[] getScoreElements() {
-		return m_notes; 
+	public JNote[] getScoreElements() {
+		return m_sNoteInstances; 
+	}
+	
+	public void setStaffLine(StaffLine staffLine) {
+		for (int i=0; i<m_sNoteInstances.length; i++)
+			m_sNoteInstances[i].setStaffLine(staffLine);
+		super.setStaffLine(staffLine);
 	}
 	
 	/*JNotePartOfGroup[] getRenditionElements() {
@@ -82,16 +87,6 @@ public class JChord extends JScoreElement {
 	}*/
 	
 	protected void onBaseChanged() {
-		//m_sNoteInstances = new JNotePartOfGroup[m_notes.length];
-		//Point2D currentBase =(Point2D)m_base.clone();
-		//Note highestNote = Note.getHighestNote(m_notes);
-		//JNotePartOfGroup sn = new JNotePartOfGroup(highestNote, m_base, m_metrics);
-		//m_stemYend = sn.getStemYBegin()-m_metrics.getStemLength();
-		//JNotePartOfGroup firstNote = null;
-		//JNotePartOfGroup lastNote = null;
-		
-		//double width = 0;
-		//boolean hasAccidental = multiNote.hasAccidental();
 		double biggestStemX = -1;
 		for (int i=0; i<m_sNoteInstances.length; i++) {
 			m_sNoteInstances[i].setBase(m_base);

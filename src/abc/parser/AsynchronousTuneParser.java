@@ -6,7 +6,7 @@ import java.util.Vector;
 
 import abc.notation.Tune;
 
-/**  */
+/** A parser that parses abc gammar into its own thread context. */
 public class AsynchronousTuneParser extends TuneParser
 {
   private Object m_mutex = new Object();

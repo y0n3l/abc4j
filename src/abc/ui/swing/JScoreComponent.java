@@ -30,9 +30,6 @@ import abc.ui.swing.score.ScoreMetrics;
  * 
  */
 public class JScoreComponent extends JComponent {
-	/** The tune to be displayed. */
-	//protected Tune m_tune = null;
-	
 	private static final Color SELECTED_ITEM_COLOR = Color.RED;
 	/** The graphical representation of the tune currently set.
 	 * <TT>null</TT> if no tune is set. */
@@ -171,7 +168,10 @@ public class JScoreComponent extends JComponent {
 	 * @return The graphical score element found at the specified location.
 	 * <TT>null</TT> is returned if no item is found at the given location. */
 	public JScoreElement getScoreElementAt(Point location) {
-		return m_jTune.getScoreElementAt(location);
+		if (m_jTune!=null)
+			return m_jTune.getScoreElementAt(location);
+		else
+			return null;
 	}
 	
 	/** Highlights the given score element in the score.

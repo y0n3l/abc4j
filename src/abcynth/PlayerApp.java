@@ -52,12 +52,6 @@ import abcynth.ui.AddTuneAction;
 import abcynth.ui.RemoveTuneAction;
 import abcynth.ui.TuneBookActionAbstract;
 
-//import com.birosoft.liquid.LiquidLookAndFeel;
-
-//import jm.music.data.*;
-//import jm.gui.show.*;
-//import jm.gui.cpn.*;
-
 
 /** A simple user interface to display abc files content and play
  * tunes. */
@@ -219,7 +213,7 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
 	    			// Dumping element properties
 					if (elmnt instanceof NoteAbstract) {
 						NoteAbstract note = (NoteAbstract)elmnt;
-						System.out.println("properties for " + elmnt + " : slur?="+ note.isPartOfSlur() + " isLastOfGroup?=" + note.isLastOfGroup());
+						System.out.println("properties for " + elmnt + " : slur?="+ note.isPartOfSlur() + " isLastOfGroup?=");
 						String test = (note.getSlurDefinition()==null)?"no slur":"start:"+note.getSlurDefinition().getStart()+" end:"+note.getSlurDefinition().getEnd();
 						System.out.println(test);
 					}

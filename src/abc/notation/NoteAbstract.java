@@ -23,8 +23,6 @@ public class NoteAbstract implements ScoreElementInterface
   
   protected SlurDefinition slurDefinition = null;
   
-  //protected boolean isBeginningSlur = false;
-  
   private boolean m_isPartOfSlur = false;
   /** The tuplet this note may belongs to. <TT>null</TT>
    * if this note does not belong to any tuplet. */
@@ -179,14 +177,6 @@ public class NoteAbstract implements ScoreElementInterface
   	this.slurDefinition = slurDefinition;
   }
   
-  public boolean isLastOfGroup() {
-	  return isLastOfGroup;
-  }
-  
-  public void setIsLastOfGroup(boolean isLastOfGroup) {
-	  this.isLastOfGroup = isLastOfGroup;
-  }
-
   /** Returns a String representation of this Object.
    * @return a String representation of this Object. */
   public String toString()

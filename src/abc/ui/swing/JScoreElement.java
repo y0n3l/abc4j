@@ -31,18 +31,25 @@ public abstract class JScoreElement {
 	 * this graphical score element. */
 	protected Rectangle2D m_boundingBox = null;
 	
-	protected Color m_color = null;
-	
+	//protected Color m_color = null;
+	/** The staff line that contains this score element. */ 
 	protected StaffLine staffLine = null; 
 	
-	protected JScoreElement(ScoreMetrics c) {
-		m_metrics = c;
+	/** Constructor 
+	 * @param mtrx The score metrics needed 
+	 */
+	protected JScoreElement(ScoreMetrics mtrx) {
+		m_metrics = mtrx;
 	}
 	
+	/** Returns the width of this score element.
+	 * @return The width of this score element. */
 	public double getWidth() {
 		return m_width;
 	}
 	
+	/** Returns the staff line containing this score element. 
+	 * @return The staff line containing this score element. */
 	public StaffLine getStaffLine() {
 		return staffLine;
 	}
@@ -56,6 +63,8 @@ public abstract class JScoreElement {
 	 * if this graphical score element is not related to any score element. */ 
 	public abstract ScoreElementInterface getScoreElement();
 	
+	/** Returns the bounding box for this score element. 
+	 * @return the bounding box for this score element. */
 	public Rectangle2D getBoundingBox() {
 		Rectangle2D bb = new Rectangle2D.Double(m_base.getX(), m_base.getY()-50, m_width, 50);
 		return bb;
@@ -93,9 +102,9 @@ public abstract class JScoreElement {
 	
 	/** Sets the color used for the rendition of this score element.
 	 * @param color The color used for the rendition of this score element. */
-	public void setColor(Color color) {
+	/*public void setColor(Color color) {
 		m_color = color;
-	}
+	}*/
 	
 	/** Callback invoked when the base has changed for this object. */
 	protected abstract void onBaseChanged();

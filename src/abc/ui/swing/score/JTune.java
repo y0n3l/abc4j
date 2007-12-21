@@ -16,9 +16,10 @@ import abc.notation.KeySignature;
 import abc.notation.MultiNote;
 import abc.notation.Note;
 import abc.notation.NoteAbstract;
+import abc.notation.NotesSeparator;
 import abc.notation.RepeatBarLine;
 import abc.notation.ScoreElementInterface;
-import abc.notation.StaffEndOfLine;
+import abc.notation.EndOfStaffLine;
 import abc.notation.TimeSignature;
 import abc.notation.Tune;
 import abc.notation.Tuplet;
@@ -33,7 +34,9 @@ import abc.ui.swing.JScoreElement;
 public class JTune extends JScoreElement {
 	/** The tune to be displayed. */
 	protected Tune m_tune = null; 
-	/** Hashmap that associates ScoreElement instances (key) and JScoreElement instances(value) */
+	/** Hashmap that associates ScoreElement instances (key) and JScoreElement instances(value).
+	 * It contains : JChord, JNote, JNotePartOfGroup, JChordNote instances.
+	 * */
 	protected Hashtable m_scoreElements = null;
 	/** Note instances starting Slurs and ties. */
 	protected Vector m_beginningNotesLinkElements = null;
@@ -128,7 +131,7 @@ public class JTune extends JScoreElement {
 		double componentWidth =0, componentHeight = 0;
 		ArrayList lessThanQuarter = new ArrayList();
 		//int durationInGroup = 0;
-		int maxDurationInGroup = Note.QUARTER;
+		//int maxDurationInGroup = Note.QUARTER;
 		//int durationInCurrentMeasure = 0;
 		Tuplet tupletContainer = null;
 		int staffLineNb = 0;
@@ -159,16 +162,18 @@ public class JTune extends JScoreElement {
 			else
 				if (s instanceof TimeSignature) {
 					currentTime = (TimeSignature)s;
-					if(s.equals(TimeSignature.SIGNATURE_4_4)) maxDurationInGroup = 2*Note.QUARTER;
+					/*if(s.equals(TimeSignature.SIGNATURE_4_4)) maxDurationInGroup = 2*Note.QUARTER;
 					else if(((TimeSignature)s).getDenominator()==8) maxDurationInGroup = 3*Note.EIGHTH;
-						else if(((TimeSignature)s).getDenominator()==4) maxDurationInGroup = Note.QUARTER;
+						else if(((TimeSignature)s).getDenominator()==4) maxDurationInGroup = Note.QUARTER;*/
 						/*else if(s.equals(TimeSignature.SIGNATURE_3_4)) maxDurationInGroup = Note.QUARTER;*/
 				}
 				else
 					if (s instanceof MultiNote) {
-						if (((MultiNote)s).isLastOfGroup())
-							System.out.println("the note " + s + " is the last of the group");
 						appendToScore(new JChord((MultiNote)s, m_metrics,cursor));
+						Note[] tiesStart = ((MultiNote)s).getNotesBeginningTie();
+						if (tiesStart!=null)
+						for (int j=0; j<tiesStart.length; j++)
+							m_beginningNotesLinkElements.addElement(tiesStart[j]);
 						//durationInCurrentMeasure+=((MultiNote)s).getLongestNote().getDuration();
 					}
 					else
@@ -209,7 +214,7 @@ public class JTune extends JScoreElement {
 							//durationInCurrentMeasure=0;
 						}
 						else
-							if (s instanceof StaffEndOfLine) {
+							if (s instanceof EndOfStaffLine) {
 								//renderStaffLines(g2, cursor);
 								staffLineNb++;
 								if (cursor.getX()>componentWidth)
@@ -218,7 +223,12 @@ public class JTune extends JScoreElement {
 								//initNewStaffLine(currentKey, cursor, m_metrics);
 								currentStaffLineInitialized = false;
 							}
-			if (/*
+							else
+								if (s instanceof NotesSeparator) {
+									appendToScore(lessThanQuarter);
+									lessThanQuarter.clear();
+								}
+			/*if (
 					//detects the end of a group.
 					(!(s instanceof Note)  
 					|| (s instanceof Note && ((Note)s).isRest()) 
@@ -230,14 +240,14 @@ public class JTune extends JScoreElement {
 					|| (durationInCurrentMeasure!=0 && durationInCurrentMeasure%maxDurationInGroup==0)
 					//TODO limitation for now, chords cannot be part of groups.
 					|| (s instanceof MultiNote))
-					&& lessThanQuarter.size()!=0*/
+					&& lessThanQuarter.size()!=0
 					(s instanceof NoteAbstract) && ((NoteAbstract)s).isLastOfGroup()
 				) {
 				//this is is the end of the group, append the current group content to the score.
 				appendToScore(lessThanQuarter);
 				lessThanQuarter.clear();
 				//durationInGroup = 0;
-			}
+			}*/
 		}// Enf of score elements iteration.
 		if (lessThanQuarter.size()!=0) {
 			appendToScore(lessThanQuarter);
@@ -270,13 +280,25 @@ public class JTune extends JScoreElement {
 		int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
 		cursor.setLocation(cursorNewLocationX, cursor.getY());
 		if (element instanceof JNote)
-			m_scoreElements.put(((JNote)element).getScoreElement(), element);
+			m_scoreElements.put(((JScoreElement)element).getScoreElement(), element);
 		else
-			if (element instanceof GroupOfNotesRenderer) {
-				GroupOfNotesRenderer g = (GroupOfNotesRenderer)element;
+			if (element instanceof JGroupOfNotes) {
+				JGroupOfNotes g = (JGroupOfNotes)element;
 				for (int j=0; j<g.getScoreElements().length; j++)
 					m_scoreElements.put(g.getScoreElements()[j], g.getRenditionElements()[j]);
 			}
+			else
+				if (element instanceof JChord) {
+					JNote[] jnotes = ((JChord)element).getScoreElements();
+					Vector notes = ((MultiNote)((JChord)element).getScoreElement()).getNotesAsVector();
+					//adds all the notes of the chords into the hashtable
+					//TODO the ordering of the get notes as vector and the jnotes should be the same...
+					//System.out.println("Warning - abc4j - current limitation prevents you from using chords with different notes lengths.");
+					for (int i=0; i<jnotes.length; i++)
+						m_scoreElements.put(notes.elementAt(i), jnotes[i]);
+					//adds also the chords itself
+					m_scoreElements.put(((JScoreElement)element).getScoreElement(), element);
+				}
 	}
 	
 	private void appendToScore(ArrayList lessThanQuarterGroup){
@@ -290,8 +312,8 @@ public class JTune extends JScoreElement {
 				renditionResultRootsElmts[0] = renditionResult;
 			}
 			else {
-				renditionResult = new GroupOfNotesRenderer(m_metrics, cursor, notes);
-				renditionResultRootsElmts = ((GroupOfNotesRenderer)renditionResult).getRenditionElements();
+				renditionResult = new JGroupOfNotes(m_metrics, cursor, notes);
+				renditionResultRootsElmts = ((JGroupOfNotes)renditionResult).getRenditionElements();
 			}
 		appendToScore(renditionResult);
 		}
@@ -347,14 +369,15 @@ public class JTune extends JScoreElement {
 				drawLinkDown(g2, link);
 		}
 	}
-	
+	//FIXME : well, slurs and ties shouldn't be drawn the same way :
+	// slurs, should be drawn under/upper all the notes that are part of the slur
+	// ties, should consider notes between the 2 notes tied.
 	protected void drawLinkDown(Graphics2D g2, TwoNotesLink slurDef) {
 		JNote elmtStart =  (JNote)m_scoreElements.get(slurDef.getStart());
 		if (slurDef.getEnd()!=null){
 			JNote elmtEnd =  (JNote)m_scoreElements.get(slurDef.getEnd());
 			if (elmtStart.getStaffLine().equals(elmtEnd.getStaffLine())) {
 				Point2D controlPoint = null;
-				
 				Note lowestNote = m_tune.getScore().getLowestNoteBewteen(slurDef.getStart(), slurDef.getEnd());
 				if (lowestNote.equals(slurDef.getStart()))
 					controlPoint = new Point2D.Double(

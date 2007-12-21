@@ -219,7 +219,7 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   	 * resolution and the default note length. */
   	protected static long getNoteLengthInTicks(Note note) {
   		short noteLength = note.getDuration();
-  		if (note.isBeginningTie())
+  		if (note.isBeginningTie() && note.getTieDefinition().getEnd()!=null)
   			noteLength+= ((Note)note.getTieDefinition().getEnd()).getDuration();
   		float numberOfQuarterNotesInThisNote = (float)noteLength / Note.QUARTER;
   		float lengthInTicks = (float)SEQUENCE_RESOLUTION * numberOfQuarterNotesInThisNote;

@@ -12,6 +12,6 @@ public class JChordPartOfGroup extends JChord {
 	}
 	
 	protected JNote createAnchorNote(Note note, Point2D base, ScoreMetrics metrics) {
-		return new JChordNote(note, new Point2D.Double(), m_metrics);
+		return new JNotePartOfGroup(note, new Point2D.Double(), m_metrics);
 	}
 }

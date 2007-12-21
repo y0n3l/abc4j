@@ -1,37 +1,45 @@
 package abc.notation;
 
-public class TwoNotesLink implements ScoreElementInterface {
-
-	protected NoteAbstract start = null;
+/** This class abstracts any kind of relationship  between two notes. */
+public class TwoNotesLink {
 	
+	/** The note starting the link between the two notes. */	
+	protected NoteAbstract start = null;
+	/** The ending the link between the two notes. */
 	protected NoteAbstract end = null;
 	
-	//protected Vector m_content = null;
-	
+	/** Default constructor. */
 	protected TwoNotesLink(){
 	}
 	
-	/**
-	 * @return Returns the end.
-	 */
+	/** Returns the end of the two notes link.
+	 * @return Returns the end of the two notes link. 
+	 * <TT>null</TT> if not specified.
+	 * @see #getStart() */
 	public NoteAbstract getEnd() {
 		return end;
 	}
-	/**
-	 * @param end The end to set.
-	 */
+	
+	/** Sets the end of the two notes link.
+	 * @param end The note ending the relation between the two notes. 
+	 * @see #getEnd() 
+	 * @see #setStart(NoteAbstract) */
 	public void setEnd(NoteAbstract end) {
 		this.end = end;
 	}
-	/**
-	 * @return Returns the start.
-	 */
+	
+	/** Returns the start of the two notes link.
+	 * @return Returns the start of the two notes link. 
+	 * <TT>null</TT> if not specified. 
+	 * @see #getEnd() */
 	public NoteAbstract getStart() {
 		return start;
 	}
-	/**
-	 * @param start The start to set.
-	 */
+	
+	/** Sets the start of the two notes link.
+	 * @param start The note starting the relation between the two notes. 
+	 * @see #getStart() 
+	 * @see #setEnd(NoteAbstract) */
 	public void setStart(NoteAbstract start) {
 		this.start = start;
 	}
