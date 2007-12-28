@@ -33,7 +33,7 @@ public class JKeySignature extends JScoreElementAbstract {
 		setBase(base);
 	}
 	
-	public ScoreElementInterface getScoreElement() {
+	public ScoreElementInterface getMusicElement() {
 		return key;
 	}
 	

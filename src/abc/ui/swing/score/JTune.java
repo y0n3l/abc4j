@@ -79,7 +79,7 @@ public class JTune extends JScoreElementAbstract {
 		
 	}
 	
-	public ScoreElementInterface getScoreElement() {
+	public ScoreElementInterface getMusicElement() {
 		return null;
 	}
 	
@@ -151,7 +151,6 @@ public class JTune extends JScoreElementAbstract {
 					//if we weren't in a tuplet and the new note is part of a tuplet.
 					|| (s instanceof NoteAbstract && tupletContainer==null && ((NoteAbstract)s).isPartOfTuplet())
 					|| (s instanceof Note && ((Note)s).getStrictDuration()>=Note.QUARTER)
-					//TODO limitation for now, chords cannot be part of groups.
 					|| (s instanceof MultiNote && (  !((MultiNote)s).hasUniqueStrictDuration() || 
 														((MultiNote)s).getLongestNote().getStrictDuration()>=Note.QUARTER)))
 
@@ -165,10 +164,6 @@ public class JTune extends JScoreElementAbstract {
 			else
 				if (s instanceof TimeSignature) {
 					currentTime = (TimeSignature)s;
-					/*if(s.equals(TimeSignature.SIGNATURE_4_4)) maxDurationInGroup = 2*Note.QUARTER;
-					else if(((TimeSignature)s).getDenominator()==8) maxDurationInGroup = 3*Note.EIGHTH;
-						else if(((TimeSignature)s).getDenominator()==4) maxDurationInGroup = Note.QUARTER;*/
-						/*else if(s.equals(TimeSignature.SIGNATURE_3_4)) maxDurationInGroup = Note.QUARTER;*/
 				}
 				else
 					if (s instanceof MultiNote) {
@@ -238,26 +233,6 @@ public class JTune extends JScoreElementAbstract {
 									appendToScore(lessThanQuarter);
 									lessThanQuarter.clear();
 								}
-			/*if (
-					//detects the end of a group.
-					(!(s instanceof Note)  
-					|| (s instanceof Note && ((Note)s).isRest()) 
-					//if we were in a tuplet and the current note isn't part of tuplet anymore or part of another tuplet
-					|| (s instanceof NoteAbstract && tupletContainer!=null && (!tupletContainer.equals(((NoteAbstract)s).getTuplet())))
-					//if we weren't in a tuplet and the new note is part of a tuplet.
-					|| (s instanceof NoteAbstract && tupletContainer==null && ((NoteAbstract)s).isPartOfTuplet())
-					|| (s instanceof Note && ((Note)s).getStrictDuration()>=Note.QUARTER)
-					|| (durationInCurrentMeasure!=0 && durationInCurrentMeasure%maxDurationInGroup==0)
-					//TODO limitation for now, chords cannot be part of groups.
-					|| (s instanceof MultiNote))
-					&& lessThanQuarter.size()!=0
-					(s instanceof NoteAbstract) && ((NoteAbstract)s).isLastOfGroup()
-				) {
-				//this is is the end of the group, append the current group content to the score.
-				appendToScore(lessThanQuarter);
-				lessThanQuarter.clear();
-				//durationInGroup = 0;
-			}*/
 		}// Enf of score elements iteration.
 		if (lessThanQuarter.size()!=0) {
 			appendToScore(lessThanQuarter);
@@ -290,7 +265,7 @@ public class JTune extends JScoreElementAbstract {
 		int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
 		cursor.setLocation(cursorNewLocationX, cursor.getY());
 		if (element instanceof JNote)
-			m_scoreElements.put(((JScoreElementAbstract)element).getScoreElement(), element);
+			m_scoreElements.put(((JScoreElementAbstract)element).getMusicElement(), element);
 		else
 			if (element instanceof JGroupOfNotes) {
 				JGroupOfNotes g = (JGroupOfNotes)element;
@@ -300,27 +275,27 @@ public class JTune extends JScoreElementAbstract {
 					else
 						if (g.getRenditionElements()[j] instanceof JChord){
 							JNote[] jnotes = ((JChord)g.getRenditionElements()[j]).getScoreElements();
-							Vector notes = ((MultiNote)((JChord)g.getRenditionElements()[j]).getScoreElement()).getNotesAsVector();
+							Vector notes = ((MultiNote)((JChord)g.getRenditionElements()[j]).getMusicElement()).getNotesAsVector();
 							//adds all the notes of the chords into the hashtable
 							//TODO the ordering of the get notes as vector and the jnotes should be the same...
 							//System.out.println("Warning - abc4j - current limitation prevents you from using chords with different notes lengths.");
 							for (int i=0; i<jnotes.length; i++)
 								m_scoreElements.put(notes.elementAt(i), jnotes[i]);
 							//adds also the chords itself
-							m_scoreElements.put(g.getRenditionElements()[j].getScoreElement(), element);
+							m_scoreElements.put(g.getRenditionElements()[j].getMusicElement(), g.getRenditionElements()[j]);
 						}
 			}
 			else
 				if (element instanceof JChord) {
 					JNote[] jnotes = ((JChord)element).getScoreElements();
-					Vector notes = ((MultiNote)((JChord)element).getScoreElement()).getNotesAsVector();
+					Vector notes = ((MultiNote)((JChord)element).getMusicElement()).getNotesAsVector();
 					//adds all the notes of the chords into the hashtable
 					//TODO the ordering of the get notes as vector and the jnotes should be the same...
 					//System.out.println("Warning - abc4j - current limitation prevents you from using chords with different notes lengths.");
 					for (int i=0; i<jnotes.length; i++)
 						m_scoreElements.put(notes.elementAt(i), jnotes[i]);
 					//adds also the chords itself
-					m_scoreElements.put(((JScoreElementAbstract)element).getScoreElement(), element);
+					m_scoreElements.put(((JScoreElementAbstract)element).getMusicElement(), element);
 				}
 	}
 	
@@ -403,7 +378,6 @@ public class JTune extends JScoreElementAbstract {
 	//FIXME : well, slurs and ties shouldn't be drawn the same way :
 	// slurs, should be drawn under/upper all the notes that are part of the slur
 	// ties, should consider notes between the 2 notes tied.
-	//FIXME Doees not support ties between 2 chords.
 	protected void drawLinkDown(Graphics2D g2, TwoNotesLink slurDef) {
 		JNote elmtStart =  (JNote)m_scoreElements.get(slurDef.getStart());
 		if (slurDef.getEnd()!=null){
@@ -468,12 +442,18 @@ public class JTune extends JScoreElementAbstract {
 			cursor.setLocation(cursorNewLocationX, cursor.getY());
 		}
 		if (currentTime!=null && m_staffLines.size()==0) {
-			JTimeSignature sig = new JTimeSignature(currentTime, cursor, m_metrics);
-			sl.addElement(sig);
-			//initElements.addElement(sig);
-			width = (int)sig.getWidth();
-			int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
-			cursor.setLocation(cursorNewLocationX, cursor.getY());
+			try {
+				JTimeSignature sig = new JTimeSignature(currentTime, cursor, m_metrics);
+				sl.addElement(sig);
+				//initElements.addElement(sig);
+				width = (int)sig.getWidth();
+				int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
+				cursor.setLocation(cursorNewLocationX, cursor.getY());
+			}
+			catch (Exception e) {
+				// This happens when the time signature is a bit "exotic", the exception 
+				// will lead the time signature not be displayed.
+			}
 		}
 		//SRenderer[] initElementsAsArray = new SRenderer[initElements.size()];
 		//initElements.toArray(initElementsAsArray);

@@ -26,7 +26,7 @@ public class JBar extends JScoreElementAbstract{
 		setBase(base);
 	}
 	
-	public ScoreElementInterface getScoreElement() {
+	public ScoreElementInterface getMusicElement() {
 		return m_barLine;
 	}
 	

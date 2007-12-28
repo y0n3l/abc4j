@@ -5,7 +5,7 @@ import java.awt.geom.Point2D;
 import abc.notation.MultiNote;
 import abc.notation.Note;
 
-public class JChordPartOfGroup extends JChord implements GroupableNote {
+public class JChordPartOfGroup extends JChord implements JGroupableNote {
 
 	public JChordPartOfGroup(MultiNote multiNote, ScoreMetrics metrics, Point2D base){
 		super(multiNote, metrics, base);

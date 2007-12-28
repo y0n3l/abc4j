@@ -1365,15 +1365,6 @@ public class AbcParserAbstract
           		note.setSlurDefinition(currentSlurDef);
           	}
           }
-          /*if (tieStartingNote!=null && note!=tieStartingNote && ((Note)note).getHeight()==tieStartingNote.getHeight()) {
-          //Note startTieNote = getNoteStartingTieFor(note);
-          //if (getNoteStartingTieFor(noteaNote)!=null
-        	  //This is the end of the tie, the two notes are the same.
-        	  //FIXME needs to be improved: accidentals ?
-        	  tieStartingNote.getTieDefinition().setEnd(note);
-        	  ((Note)note).setTieDefinition(tieStartingNote.getTieDefinition());
-        	  tieStartingNote=null;
-          }*/
           lastParsedNote = note;
         }
       }
@@ -1445,9 +1436,10 @@ public class AbcParserAbstract
       Set current = new Set().union(FIRST_NOTE_LENGTH).union(FIRST_TIE);
       boolean isTied = false;
       PositionableNote note = null;
-      //FIXME a nullpointer occurs sometimes here, check why !
-      //This can be reproduced with X:0\nT:\nK:C\n(3
-      CharStreamPosition startPosition = m_token.getPosition();
+      //TODO The start position is based on token info but the end pos is based on scanner info : check why.
+      CharStreamPosition startPosition = null;
+      if (m_token!=null)
+    	  startPosition = m_token.getPosition();
       note = (PositionableNote)parseNoteOrRest(current.createUnion(follow));
       current.remove(FIRST_NOTE_LENGTH);
       if (FIRST_NOTE_LENGTH.contains(m_tokenType)) {
@@ -1483,8 +1475,7 @@ public class AbcParserAbstract
         int length = endPosition.getCharactersOffset()-startPosition.getCharactersOffset();
         note.setBeginPosition(startPosition);
         note.setLength(length);
-        //TODO needs to be improved if a note can start a tie and end a tie at 
-        // the same time.
+        //TODO needs to be improved if a note starts a tie and ends a tie at the same time.
         if (isTied) {
         	TieDefinition tieDef = new TieDefinition();
         	tieDef.setStart(note);

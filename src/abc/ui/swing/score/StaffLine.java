@@ -24,7 +24,7 @@ public class StaffLine extends JScoreElementAbstract {
 		return ((JScoreElementAbstract)m_staffElements.elementAt(0)).getBase();
 	}
 	
-	public ScoreElementInterface getScoreElement() {
+	public ScoreElementInterface getMusicElement() {
 		return null;
 	}
 	

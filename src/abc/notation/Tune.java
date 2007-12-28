@@ -412,7 +412,7 @@ public class Tune implements Cloneable
     }
     
     /** Returns the score element location at the specified offset.
-     * @param An offset.  
+     * @param offset An offset in a char stream.  
      * @return The score element location at the specified offset.
      */  
     public ScoreElementInterface getElementAt(int offset) {
@@ -533,19 +533,7 @@ public class Tune implements Cloneable
     					lowestNote = ((MultiNote)currentScoreEl).getLowestNote();*/
     	}
     	return lowestNote;
-    	/*
-    	
-    		
-    	//FIXME does not take into account multi notes !
-    	int indexBegin = this.indexOf(noteBegin);
-    	int indexEnd = this.indexOf(noteEnd);
-    	if (indexBegin==-1)
-    		throw new IllegalArgumentException("Note " + noteBegin + " hasn't been found in tune");
-    	if (indexEnd==-1)
-    		throw new IllegalArgumentException("Note " + noteEnd + " hasn't been found in tune");
-    	if (indexBegin>indexEnd)
-    		throw new IllegalArgumentException("Note " + noteBegin + " is located after " + noteEnd + " in the score");
-    	return getLowestNoteBewteen(indexBegin, indexEnd);*/
+
 	}
     
     /*public Note getLowestNoteBewteen(int scoreElmntIndexBegin, int ScoreElmtIndexEnd) throws IllegalArgumentException {

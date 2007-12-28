@@ -22,7 +22,7 @@ public class JClef extends JScoreElementAbstract {
 	protected void onBaseChanged() {
 	}
 	
-	public ScoreElementInterface getScoreElement() {
+	public ScoreElementInterface getMusicElement() {
 		return null;
 	}
 	

@@ -31,7 +31,7 @@ public class JGroupOfNotes extends JScoreElementAbstract {
 	/** notes that are grouped */
 	//protected Note[] anchorNotes = null;
 	/** All the notes rendition elements that are part of the group. chords and / or notes*/
-	protected GroupableNote[] m_jNotes = null;
+	protected JGroupableNote[] m_jNotes = null;
 	/** The Y coordinate where the line linking all the notes is put. */
 	protected int m_stemYend = -1;
 	
@@ -44,7 +44,7 @@ public class JGroupOfNotes extends JScoreElementAbstract {
 		m_notes = new Note[notes.length];
 		//create JNotePartOfGroup instances. Those instance should stay the same
 		//when the base is changed.
-		m_jNotes = new GroupableNote[m_notes.length];
+		m_jNotes = new JGroupableNote[m_notes.length];
 		for (int i=0; i<notes.length; i++)
 			if (notes[i] instanceof Note) {
 				m_notes[i] = (Note)notes[i];
@@ -54,7 +54,7 @@ public class JGroupOfNotes extends JScoreElementAbstract {
 			else {
 				//This is a multiNote
 				m_jNotes[i] = new JChordPartOfGroup((MultiNote)notes[i], m_metrics, new Point2D.Double());
-				m_notes[i] = (Note)((JChordPartOfGroup)m_jNotes[i]).getReferenceNoteForGroup().getScoreElement();
+				m_notes[i] = (Note)((JChordPartOfGroup)m_jNotes[i]).getReferenceNoteForGroup().getMusicElement();
 				
 			}
 		//m_jNotes[i]=n;
@@ -63,7 +63,7 @@ public class JGroupOfNotes extends JScoreElementAbstract {
 		setBase(base);
 	}
 	
-	public ScoreElementInterface getScoreElement() {
+	public ScoreElementInterface getMusicElement() {
 		return null;
 	}
 	
@@ -91,8 +91,8 @@ public class JGroupOfNotes extends JScoreElementAbstract {
 		Note highestNote = Note.getHighestNote(m_notes);
 		JNotePartOfGroup sn = new JNotePartOfGroup(highestNote, m_base, m_metrics);
 		m_stemYend = sn.getStemYBegin()-m_metrics.getStemLength();
-		GroupableNote firstNote = null;
-		GroupableNote lastNote = null;
+		JGroupableNote firstNote = null;
+		JGroupableNote lastNote = null;
 		for (int i=0; i<m_jNotes.length; i++) {
 			//short noteStrictDuration = m_notes[i].getStrictDuration();
 			//if (noteStrictDuration==Note.THIRTY_SECOND || noteStrictDuration==Note.SIXTEENTH || noteStrictDuration==Note.EIGHTH
@@ -126,7 +126,7 @@ public class JGroupOfNotes extends JScoreElementAbstract {
 		//super.render(context);
 		Stroke defaultStroke = context.getStroke();
 		for (int i=0; i<m_jNotes.length; i++) {
-			GroupableNote n = m_jNotes[i];
+			JGroupableNote n = m_jNotes[i];
 			n.render(context);
 			BasicStroke notesLinkStroke = m_metrics.getNotesLinkStroke();
 			context.setStroke(notesLinkStroke);
@@ -162,7 +162,7 @@ public class JGroupOfNotes extends JScoreElementAbstract {
 				if (hasPrevious) {
 					if (previousNoteIsShorterOrEquals)
 						//the end is the stem of the previous note.
-						noteLinkEnd = ((GroupableNote)m_jNotes[i-1]).getStemX();//getE (int)(stemX-2*context.getNoteWidth()); 
+						noteLinkEnd = ((JGroupableNote)m_jNotes[i-1]).getStemX();//getE (int)(stemX-2*context.getNoteWidth()); 
 					else
 						if (!(hasNext && nextNoteIsShorterOrEquals))
 							noteLinkEnd = (int)(m_jNotes[i].getStemX()-m_metrics.getNoteWidth()/2);

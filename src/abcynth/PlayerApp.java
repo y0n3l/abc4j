@@ -48,6 +48,7 @@ import abc.notation.ScoreElementInterface;
 import abc.notation.Tune;
 import abc.parser.TuneBook;
 import abc.ui.swing.JScoreElement;
+import abc.ui.swing.JScoreElementAbstract;
 import abcynth.ui.AddTuneAction;
 import abcynth.ui.RemoveTuneAction;
 import abcynth.ui.TuneBookActionAbstract;
@@ -201,12 +202,12 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
     m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().addMouseListener( new MouseAdapter() {
 		public void mouseClicked(MouseEvent e) {
 			
-			JScoreElement sel = m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().getScoreElementAt(e.getPoint());
+			JScoreElementAbstract sel = m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().getScoreElementAt(e.getPoint());
 			//if (sel!=null)
 			//	System.out.println("Score element at " + e.getX() + " / " + e.getY() + " : " + sel + "@" + sel.getBase());
 			//SRenderer sel = getScoreElementAt(e.getPoint());
 			if (sel!=null) {
-				ScoreElementInterface elmnt = sel.getScoreElement();
+				ScoreElementInterface elmnt = sel.getMusicElement();
 				m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().setSelectedItem(sel);
 				if (elmnt!=null && elmnt instanceof PositionableInCharStream){
 					m_tuneBookEditorPanel.getTuneEditArea().setSelectedItem((PositionableInCharStream)elmnt);

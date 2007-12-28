@@ -11,15 +11,21 @@ import abc.ui.swing.JScoreElementAbstract;
 public class JTimeSignature extends JScoreElementAbstract {
 	
 	public static final char[][] DIGITS = {
-			{'\uF031'},
-			{'\uF032'},
-			{'\uF033'},
-			{'\uF034'},
-			{'\uF035'},
-			{'\uF036'},
-			{'\uF037'},
-			{'\uF038'},
-			{'\uF039'}};
+			{'\uF030'}, //0
+			{'\uF031'}, //1
+			{'\uF032'}, //2
+			{'\uF033'}, //3
+			{'\uF034'}, //4
+			{'\uF035'}, //5
+			{'\uF036'}, //6
+			{'\uF037'}, //7
+			{'\uF038'}, //8
+			{'\uF039'}, //9
+			{'\uF031','\uF030'}, //10
+			{'\uF031','\uF031'}, //11
+			{'\uF031','\uF032'}, //12
+			{'\uF031','\uF033'}  //13
+			};
 	
 	
 	protected TimeSignature m_ts = null;
@@ -32,26 +38,29 @@ public class JTimeSignature extends JScoreElementAbstract {
 	public JTimeSignature(TimeSignature ts, Point2D base, ScoreMetrics c) {
 		super(c);
 		m_ts = ts;
+		m_numChars = DIGITS[m_ts.getNumerator()];
+		m_denomChars = DIGITS[m_ts.getDenominator()];
+		if (m_ts.getNumerator()>=10 || m_ts.getDenominator()>=10)
+			m_width = 2*m_metrics.getNoteWidth();
+		else
+			m_width = m_metrics.getNoteWidth();
 		setBase(base);
 	}
 	
-	public ScoreElementInterface getScoreElement() {
+	public ScoreElementInterface getMusicElement() {
 		return m_ts;
 	}
 	
 	protected void onBaseChanged() {
 		//FIXME what if the signature numbers are not supported ? => arrayOutOfBounds ! :/
-		m_numChars = DIGITS[m_ts.getNumerator()-1];
-		m_denomChars = DIGITS[m_ts.getDenominator()-1];
 		m_topNumY = (int)(m_base.getY()-m_metrics.getNoteHeigth()*3.0);
 		m_bottomNumY = (int)(m_base.getY()-m_metrics.getNoteHeigth()*0.9);
-		m_width = m_metrics.getNoteWidth();
 	}
 	
 	public double render(Graphics2D context){
 		super.render(context);
-		context.drawChars(m_numChars, 0, 1, (int)m_base.getX(), m_topNumY);
-		context.drawChars(m_denomChars, 0, 1, (int)m_base.getX(), m_bottomNumY);
+		context.drawChars(m_numChars, 0, m_numChars.length, (int)m_base.getX(), m_topNumY);
+		context.drawChars(m_denomChars, 0, m_denomChars.length, (int)m_base.getX(), m_bottomNumY);
 		return m_width;
 	}
 }

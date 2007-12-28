@@ -36,8 +36,7 @@ public class JChord extends JScoreElementAbstract {
 			m_sNoteInstances = new JNote[m_notes.length];
 			for (int i=0; i<m_notes.length; i++) {
 				if (m_notes[i].equals(multiNote.getHighestNote())) {
-					//TODO The anchor note is the highest one but it can also be the 
-					// lowest one when grouping notes with chords with stem down 
+					//TODO The anchor note is the highest one but it can also be the lowest one when grouping notes with chords with stem down 
 					anchor = createAnchorNote(m_notes[i], new Point2D.Double(), m_metrics);
 					highestElement = anchor;
 					m_sNoteInstances[i] = highestElement; 
@@ -72,7 +71,7 @@ public class JChord extends JScoreElementAbstract {
 		return new JNote(note, new Point2D.Double(), m_metrics);
 	}
 	
-	public ScoreElementInterface getScoreElement() {
+	public ScoreElementInterface getMusicElement() {
 		return multiNote;
 	}
 	

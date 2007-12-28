@@ -86,7 +86,7 @@ public class JNote extends JScoreElementAbstract {
 		setBase(base);
 	}
 	
-	public ScoreElementInterface getScoreElement() {
+	public ScoreElementInterface getMusicElement() {
 		return note;
 	}
 	

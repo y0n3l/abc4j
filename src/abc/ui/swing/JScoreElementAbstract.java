@@ -61,7 +61,7 @@ public abstract class JScoreElementAbstract {
 	/** Returns the tune score element represented by this graphical score element.
 	 * @return The tune score element represented by this graphical score element. <TT>null</TT>
 	 * if this graphical score element is not related to any score element. */ 
-	public abstract ScoreElementInterface getScoreElement();
+	public abstract ScoreElementInterface getMusicElement();
 	
 	/** Returns the bounding box for this score element. 
 	 * @return the bounding box for this score element. */
