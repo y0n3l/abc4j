@@ -71,13 +71,15 @@ public class HeightTest extends TestCase {
 		String tuneAsString = "X:1\nT:test\nK:c\nabcdef\n";
 		TuneParser tuneParser = new TuneParser();
 		Tune tune = tuneParser.parse(tuneAsString);
+		Note firstNote = (Note)tune.getScore().elementAt(1);
+		Note lastNote = (Note)tune.getScore().elementAt(6);
 		//System.out.println("highest note : " + tune.getScore().getHighestNoteBewteen(0, tune.getScore().size()-1));
-		assertEquals(Note.b, tune.getScore().getHighestNoteBewteen(0, tune.getScore().size()-1).getHeight());
+		assertEquals(Note.b, tune.getScore().getHighestNoteBewteen(firstNote, lastNote).getHeight());
 	}
 	
 	/** */
 	public void test2(){
-		String tuneAsString = "X:1\nT:test\nK:c\nb/2 b2 b b4 b8 \n";
+		String tuneAsString = "X:1\nT:test\nK:c\nb/2b2bb4b8\n";
 		Tune tune = new TuneParser().parse(tuneAsString);
 		Note firstNote = (Note)tune.getScore().elementAt(1);
 		Note secondNote = (Note)tune.getScore().elementAt(2);

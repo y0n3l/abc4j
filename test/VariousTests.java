@@ -1,6 +1,7 @@
 import java.io.StringReader;
 
 import junit.framework.TestCase;
+import abc.notation.MultiNote;
 import abc.notation.Note;
 import abc.notation.Tune;
 import abc.parser.AbcHeadersParser;
@@ -13,7 +14,7 @@ public class VariousTests extends TestCase {
 	private static final String line02 = "T:" + TUNE_TITLE + "\n";
 	private static final String line03 = "L:1/8\n"; //default length is the "crotchet"
 	private static final String line04 = "K:D\n";
-	private static final String line05 = "d>A FA/d/\n";
+	private static final String line05 = "d>AFA/d/\n";
 	private static final String line051 = "C2->Aa\n";
 	private static final String line052 = "abcd\n";
 	private static final String line06 = "efg\n";
@@ -29,7 +30,7 @@ public class VariousTests extends TestCase {
 	
 	/**
 	 * L:1/8
-	 * d>A FA/d/
+	 * d>AFA/d/
 	 *
 	 */
 	public void test1(){
@@ -112,6 +113,13 @@ public class VariousTests extends TestCase {
 		}
 		);*/
 		tparser.parseFile(new StringReader(abcTune));
+	}
+	
+	/** this was crashing the parser with a null pointer position
+	 * when trying ot get the token position when parsing a note. */
+	public void test4(){
+		String tuneAsString = "X:0\nT:test\nL:1/8\nK:C\n(3";
+		Tune tune = new TuneParser().parse(tuneAsString);
 	}
 	
 	protected void tearDown() throws Exception {

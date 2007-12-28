@@ -1,5 +1,6 @@
 import junit.framework.TestCase;
 import abc.notation.Note;
+import abc.notation.NoteAbstract;
 import abc.notation.Tune;
 import abc.parser.TuneParser;
 
@@ -76,6 +77,13 @@ public class RhythmsTest extends TestCase {
 		Note secondNote = (Note)tuneResult.getScore().elementAt(2);
 		assertEquals(Note.SIXTEENTH, secondNote.getStrictDuration());
 		assertEquals(0, secondNote.countDots());
+	}
+	
+	public void test5(){
+		String tuneAsString = "X:1\nT:test\nM:2/4\nL:1/8\nK:C\na\n";
+		Tune tune = new TuneParser().parse(tuneAsString);
+		Note firstNote = (Note)tune.getScore().elementAt(2);
+		assertEquals(firstNote.getStrictDuration(), Note.EIGHTH);
 	}
 
 	protected void tearDown() throws Exception {
