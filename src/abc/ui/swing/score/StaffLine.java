@@ -6,9 +6,9 @@ import java.awt.geom.Point2D;
 import java.util.Vector;
 
 import abc.notation.ScoreElementInterface;
-import abc.ui.swing.JScoreElement;
+import abc.ui.swing.JScoreElementAbstract;
 
-public class StaffLine extends JScoreElement {
+public class StaffLine extends JScoreElementAbstract {
 
 	protected Vector m_staffElements = null;
 	
@@ -21,7 +21,7 @@ public class StaffLine extends JScoreElement {
 	}
 	
 	public Point2D getBase() {
-		return ((JScoreElement)m_staffElements.elementAt(0)).getBase();
+		return ((JScoreElementAbstract)m_staffElements.elementAt(0)).getBase();
 	}
 	
 	public ScoreElementInterface getScoreElement() {
@@ -32,7 +32,7 @@ public class StaffLine extends JScoreElement {
 		
 	}
 	
-	public void addElement(JScoreElement r) {
+	public void addElement(JScoreElementAbstract r) {
 		m_staffElements.addElement(r);
 		r.setStaffLine(this);
 		computeWidth();
@@ -42,16 +42,16 @@ public class StaffLine extends JScoreElement {
 		return m_beginningSlurElements;
 	}*/
 	
-	public JScoreElement[] toArray() {
-		JScoreElement[] r = new JScoreElement[m_staffElements.size()];
+	public JScoreElementAbstract[] toArray() {
+		JScoreElementAbstract[] r = new JScoreElementAbstract[m_staffElements.size()];
 		m_staffElements.toArray(r);
 		return r;
 	}
 	
-	public JScoreElement getScoreElementAt(Point point) {
-		JScoreElement scoreEl = null;
+	public JScoreElementAbstract getScoreElementAt(Point point) {
+		JScoreElementAbstract scoreEl = null;
 		for (int i=0; i<m_staffElements.size(); i++) {
-			scoreEl = ((JScoreElement)m_staffElements.elementAt(i)).getScoreElementAt(point);
+			scoreEl = ((JScoreElementAbstract)m_staffElements.elementAt(i)).getScoreElementAt(point);
 			if (scoreEl!=null)
 				return scoreEl;
 		}
@@ -65,7 +65,7 @@ public class StaffLine extends JScoreElement {
 		g.fillRect((int)(getBase().getX()), (int)(getBase().getY()-m_metrics.getStaffCharBounds().getHeight()), 
 				(int)getWidth(), (int)(m_metrics.getStaffCharBounds().getHeight()));
 		g.setColor(previousColor);*/
-		JScoreElement[] elmts = toArray();
+		JScoreElementAbstract[] elmts = toArray();
 		for (int j=0; j<elmts.length; j++) {
 			elmts[j].render((Graphics2D)g);
 			/*if (elmts[j] instanceof SNote) {
@@ -86,7 +86,7 @@ public class StaffLine extends JScoreElement {
 	
 	public void scaleToWidth(double newWidth) {
 		for (int i=0; i<m_staffElements.size(); i++){
-			JScoreElement elmt = (JScoreElement)m_staffElements.elementAt(i);
+			JScoreElementAbstract elmt = (JScoreElementAbstract)m_staffElements.elementAt(i);
 			if ( (!(elmt instanceof JClef)) && (!(elmt instanceof JKeySignature))
 					&& (!(elmt instanceof JTimeSignature))
 					)  {
@@ -101,7 +101,7 @@ public class StaffLine extends JScoreElement {
 	}
 	
 	private void computeWidth() {
-		JScoreElement lastElmt = (JScoreElement)m_staffElements.lastElement();
+		JScoreElementAbstract lastElmt = (JScoreElementAbstract)m_staffElements.lastElement();
 		m_width = lastElmt.getBase().getX()+lastElmt.getWidth();
 	}
 

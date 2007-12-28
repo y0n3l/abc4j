@@ -5,10 +5,10 @@ import java.awt.geom.Point2D;
 
 import abc.notation.ScoreElementInterface;
 import abc.notation.TimeSignature;
-import abc.ui.swing.JScoreElement;
+import abc.ui.swing.JScoreElementAbstract;
 
 /** This class is in charge of rendering a time signature. */
-public class JTimeSignature extends JScoreElement {
+public class JTimeSignature extends JScoreElementAbstract {
 	
 	public static final char[][] DIGITS = {
 			{'\uF031'},

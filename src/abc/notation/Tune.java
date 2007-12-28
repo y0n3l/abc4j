@@ -503,7 +503,7 @@ public class Tune implements Cloneable
     /** <TT>MultiNote</TT> instances are ignored.  
      * @param noteBegin (included)
      * @param noteEnd (included)
-     * @return
+     * @return The lowest note between the two given score elements if found.
      * @throws IllegalArgumentException
      */
     public Note getLowestNoteBewteen(ScoreElementInterface noteBegin, ScoreElementInterface noteEnd)

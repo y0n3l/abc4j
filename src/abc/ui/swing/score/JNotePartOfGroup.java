@@ -9,7 +9,7 @@ import java.awt.geom.Rectangle2D;
 
 import abc.notation.Note;
 
-public class JNotePartOfGroup extends JNote {
+public class JNotePartOfGroup extends JNote implements GroupableNote {
 	protected int stemX = -1;
 	protected int stemYBegin = -1;  
 	protected int stemYEnd = -1;

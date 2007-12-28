@@ -91,6 +91,7 @@ public class AbcFileParser extends AbcParserAbstract {
 	public void parseFile(Reader abcCharStream) {
 		try {
 			Set current = new Set();
+			init();
 			m_scanner.init(abcCharStream);
 			notifyListenersForFileBegin();
 			parseAbcFile(current);

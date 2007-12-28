@@ -4,10 +4,10 @@ import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
 import abc.notation.ScoreElementInterface;
-import abc.ui.swing.JScoreElement;
+import abc.ui.swing.JScoreElementAbstract;
 
 /** This class is in charge of rendering a staff clef. */
-public class JClef extends JScoreElement {
+public class JClef extends JScoreElementAbstract {
 	
 	public static final char G_CLEF = '\uF026';
 	

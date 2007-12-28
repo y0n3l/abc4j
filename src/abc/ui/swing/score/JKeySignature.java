@@ -7,10 +7,10 @@ import abc.notation.AccidentalType;
 import abc.notation.KeySignature;
 import abc.notation.Note;
 import abc.notation.ScoreElementInterface;
-import abc.ui.swing.JScoreElement;
+import abc.ui.swing.JScoreElementAbstract;
 
 /** This class is in charge of rendering a key signature. */
-public class JKeySignature extends JScoreElement {
+public class JKeySignature extends JScoreElementAbstract {
 	KeySignature key = null;
 	Point2D FPosition = null; 
 	char[] Fchar = null;

@@ -9,10 +9,10 @@ import java.awt.geom.Point2D;
 import abc.notation.MultiNote;
 import abc.notation.Note;
 import abc.notation.ScoreElementInterface;
-import abc.ui.swing.JScoreElement;
+import abc.ui.swing.JScoreElementAbstract;
 
 /** This class is in charge of rendering a chord. */
-public class JChord extends JScoreElement {
+public class JChord extends JScoreElementAbstract {
 	
 	protected MultiNote multiNote = null;
 	
@@ -23,6 +23,7 @@ public class JChord extends JScoreElement {
 	
 	protected JNote highestElement = null;
 	protected JNotePartOfGroup lowestElement = null;
+	protected JNote anchor = null;
 	
 	public JChord(MultiNote multiNote, ScoreMetrics metrics, Point2D base){
 		super(metrics);
@@ -35,7 +36,10 @@ public class JChord extends JScoreElement {
 			m_sNoteInstances = new JNote[m_notes.length];
 			for (int i=0; i<m_notes.length; i++) {
 				if (m_notes[i].equals(multiNote.getHighestNote())) {
-					highestElement = createAnchorNote(m_notes[i], new Point2D.Double(), m_metrics);
+					//TODO The anchor note is the highest one but it can also be the 
+					// lowest one when grouping notes with chords with stem down 
+					anchor = createAnchorNote(m_notes[i], new Point2D.Double(), m_metrics);
+					highestElement = anchor;
 					m_sNoteInstances[i] = highestElement; 
 				}
 				else{
@@ -108,7 +112,7 @@ public class JChord extends JScoreElement {
 		//super.render(context);
 		//Stroke defaultStroke = context.getStroke();
 		for (int i=0; i<m_sNoteInstances.length; i++) {
-			JScoreElement n = m_sNoteInstances[i];
+			JScoreElementAbstract n = m_sNoteInstances[i];
 			n.render(context);
 		}
 		Stroke defaultStroke = context.getStroke();
@@ -121,8 +125,8 @@ public class JChord extends JScoreElement {
 		return m_width;
 	}
 	
-	public JScoreElement getScoreElementAt(Point point) {
-		JScoreElement scoreEl = null;
+	public JScoreElementAbstract getScoreElementAt(Point point) {
+		JScoreElementAbstract scoreEl = null;
 		for (int i=0; i<m_sNoteInstances.length; i++) {
 			scoreEl = m_sNoteInstances[i].getScoreElementAt(point);
 			if (scoreEl!=null)

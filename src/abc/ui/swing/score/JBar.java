@@ -6,10 +6,10 @@ import java.awt.geom.Point2D;
 
 import abc.notation.BarLine;
 import abc.notation.ScoreElementInterface;
-import abc.ui.swing.JScoreElement;
+import abc.ui.swing.JScoreElementAbstract;
 
 /** This class renders a simple bar line. */
-public class JBar extends JScoreElement{
+public class JBar extends JScoreElementAbstract{
 	/** The encapsulated abc notation bar element */
 	protected BarLine m_barLine = null;
 

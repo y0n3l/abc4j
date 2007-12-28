@@ -223,6 +223,21 @@ public class AbcParserAbstract
      * @param listener The listener to be removed. */
     public void removeListener (TuneParserListenerInterface listener)
     { m_listeners.removeElement(listener); }
+    
+    /** Inits all attributes that are related to one parsing sequence ONLY. */
+    protected void init() {
+    	m_token = null;
+        m_tokenType = TokenType.UNKNOWN;
+        brknRthmDotsCorrection = 0;
+        slursDefinitionStack.removeAllElements();
+        lastParsedNote = null;
+        lastNoteFlaggedAsEndOfGroup = null;
+        notesStartingTies.removeAllElements();
+        m_defaultNoteLength = Note.EIGHTH;
+        m_timeSignature = null;
+        m_score = null;
+        m_tune = null;
+    }
 
     /** abc-file ::= *(abc-tune / comment / linefeed / tex-command / file-fields) */
 	protected void parseAbcFile(Set follow) {
@@ -1431,6 +1446,7 @@ public class AbcParserAbstract
       boolean isTied = false;
       PositionableNote note = null;
       //FIXME a nullpointer occurs sometimes here, check why !
+      //This can be reproduced with X:0\nT:\nK:C\n(3
       CharStreamPosition startPosition = m_token.getPosition();
       note = (PositionableNote)parseNoteOrRest(current.createUnion(follow));
       current.remove(FIRST_NOTE_LENGTH);

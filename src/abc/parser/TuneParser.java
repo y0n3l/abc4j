@@ -31,7 +31,9 @@ public class TuneParser extends AbcParserAbstract {
 	public Tune parse(Reader charStream) {
 		try {
 			Set current = null;
+			init();
 			m_scanner.init(charStream);
+			
 			current = new Set().union(FIRST_ABCHEADER).union(FIRST_FIELD_KEY);
 			//m_scanner.setFinaleStateAutomata(getAutomataFor(current.getTypes()));
 			m_automata.setDefinition(DefinitionFactory.getDefinition(current
@@ -71,6 +73,7 @@ public class TuneParser extends AbcParserAbstract {
 	public Tune parseHeader(Reader charStream) {
 		notifyListenersForTuneBegin();
 		try {
+			init();
 			m_scanner.init(charStream);
 			Set current = new Set().union(FIRST_ABCHEADER).union(
 					FIRST_FIELD_KEY);

@@ -63,6 +63,11 @@ public class AbcToolkit {
     		absoluteDuration = defaultDuration * relativeDuration.getNumerator();
     		absoluteDuration = absoluteDuration / relativeDuration.getDenominator();
     		int remainingDurTmp = 0;
+    		if (absoluteDuration>=2*Note.WHOLE)
+	    		throw new IllegalArgumentException ("Cannot calculate the dots for " + relativeDuration +
+	    				" with a default duration equals to " + defaultDuration + 
+	    				" : absolute note length was equal to " + absoluteDuration);
+    		else
     		if (absoluteDuration>=Note.WHOLE) {
     			remainingDurTmp = absoluteDuration - Note.WHOLE; absoluteDuration = Note.WHOLE;
     		} else

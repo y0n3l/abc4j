@@ -25,13 +25,13 @@ import abc.notation.Tune;
 import abc.notation.Tuplet;
 import abc.notation.TwoNotesLink;
 import abc.notation.Tune.Score;
-import abc.ui.swing.JScoreElement;
+import abc.ui.swing.JScoreElementAbstract;
 
 /**
  * This class role is to render properly a tune using Java 2D.
  * @see #setTune(Tune)   
  */
-public class JTune extends JScoreElement {
+public class JTune extends JScoreElementAbstract {
 	/** The tune to be displayed. */
 	protected Tune m_tune = null; 
 	/** Hashmap that associates ScoreElement instances (key) and JScoreElement instances(value).
@@ -107,8 +107,8 @@ public class JTune extends JScoreElement {
 	 * at a given point. <TT>NULL</NULL> is returned if not JScoreElement is 
 	 * matching the location.
 	 */
-	public JScoreElement getScoreElementAt(Point location) {
-		JScoreElement scoreEl = null;
+	public JScoreElementAbstract getScoreElementAt(Point location) {
+		JScoreElementAbstract scoreEl = null;
 		for (int i=0; i<m_staffLines.size(); i++) {
 			scoreEl = ((StaffLine)m_staffLines.elementAt(i)).getScoreElementAt(location);
 			if (scoreEl!=null)
@@ -143,7 +143,8 @@ public class JTune extends JScoreElement {
 		for (int i=0; i<score.size(); i++) {
 			ScoreElementInterface s = (ScoreElementInterface)score.elementAt(i);
 			if (
-					(!(s instanceof Note)  
+					(
+						!(s instanceof Note  || s instanceof MultiNote)  
 					|| (s instanceof Note && ((Note)s).isRest()) 
 					//if we were in a tuplet and the current note isn't part of tuplet anymore or part of another tuplet
 					|| (s instanceof NoteAbstract && tupletContainer!=null && (!tupletContainer.equals(((NoteAbstract)s).getTuplet())))
@@ -151,7 +152,9 @@ public class JTune extends JScoreElement {
 					|| (s instanceof NoteAbstract && tupletContainer==null && ((NoteAbstract)s).isPartOfTuplet())
 					|| (s instanceof Note && ((Note)s).getStrictDuration()>=Note.QUARTER)
 					//TODO limitation for now, chords cannot be part of groups.
-					|| (s instanceof MultiNote))
+					|| (s instanceof MultiNote && (  !((MultiNote)s).hasUniqueStrictDuration() || 
+														((MultiNote)s).getLongestNote().getStrictDuration()>=Note.QUARTER)))
+
 					&& lessThanQuarter.size()!=0) {
 				//this is is the end of the group, append the current group content to the score.
 				appendToScore(lessThanQuarter);
@@ -169,11 +172,18 @@ public class JTune extends JScoreElement {
 				}
 				else
 					if (s instanceof MultiNote) {
-						appendToScore(new JChord((MultiNote)s, m_metrics,cursor));
+						tupletContainer = ((MultiNote)s).getTuplet();
 						Note[] tiesStart = ((MultiNote)s).getNotesBeginningTie();
 						if (tiesStart!=null)
-						for (int j=0; j<tiesStart.length; j++)
+							for (int j=0; j<tiesStart.length; j++)
 							m_beginningNotesLinkElements.addElement(tiesStart[j]);
+						if (((MultiNote)s).hasUniqueStrictDuration() && 
+								((MultiNote)s).getLongestNote().getStrictDuration()<Note.QUARTER)
+							lessThanQuarter.add(s);
+						else {
+							appendToScore(new JChord((MultiNote)s, m_metrics,cursor));
+						}
+						
 						//durationInCurrentMeasure+=((MultiNote)s).getLongestNote().getDuration();
 					}
 					else
@@ -266,7 +276,7 @@ public class JTune extends JScoreElement {
 		
 	}
 	
-	protected void appendToScore(JScoreElement element) {
+	protected void appendToScore(JScoreElementAbstract element) {
 		if (!currentStaffLineInitialized) {
 			currentStaffLine=initNewStaffLine();
 			m_staffLines.addElement(currentStaffLine);
@@ -280,12 +290,25 @@ public class JTune extends JScoreElement {
 		int cursorNewLocationX = (int)(cursor.getX() + width + m_metrics.getNotesSpacing());
 		cursor.setLocation(cursorNewLocationX, cursor.getY());
 		if (element instanceof JNote)
-			m_scoreElements.put(((JScoreElement)element).getScoreElement(), element);
+			m_scoreElements.put(((JScoreElementAbstract)element).getScoreElement(), element);
 		else
 			if (element instanceof JGroupOfNotes) {
 				JGroupOfNotes g = (JGroupOfNotes)element;
-				for (int j=0; j<g.getScoreElements().length; j++)
-					m_scoreElements.put(g.getScoreElements()[j], g.getRenditionElements()[j]);
+				for (int j=0; j<g.getRenditionElements().length; j++) 
+					if ((g.getRenditionElements()[j]) instanceof JNote)
+						m_scoreElements.put(g.getMusicElements()[j], g.getRenditionElements()[j]);
+					else
+						if (g.getRenditionElements()[j] instanceof JChord){
+							JNote[] jnotes = ((JChord)g.getRenditionElements()[j]).getScoreElements();
+							Vector notes = ((MultiNote)((JChord)g.getRenditionElements()[j]).getScoreElement()).getNotesAsVector();
+							//adds all the notes of the chords into the hashtable
+							//TODO the ordering of the get notes as vector and the jnotes should be the same...
+							//System.out.println("Warning - abc4j - current limitation prevents you from using chords with different notes lengths.");
+							for (int i=0; i<jnotes.length; i++)
+								m_scoreElements.put(notes.elementAt(i), jnotes[i]);
+							//adds also the chords itself
+							m_scoreElements.put(g.getRenditionElements()[j].getScoreElement(), element);
+						}
 			}
 			else
 				if (element instanceof JChord) {
@@ -297,19 +320,27 @@ public class JTune extends JScoreElement {
 					for (int i=0; i<jnotes.length; i++)
 						m_scoreElements.put(notes.elementAt(i), jnotes[i]);
 					//adds also the chords itself
-					m_scoreElements.put(((JScoreElement)element).getScoreElement(), element);
+					m_scoreElements.put(((JScoreElementAbstract)element).getScoreElement(), element);
 				}
 	}
 	
 	private void appendToScore(ArrayList lessThanQuarterGroup){
 		if (lessThanQuarterGroup.size()>0) {
-		JScoreElement renditionResult = null;
-		JScoreElement[] renditionResultRootsElmts = new JScoreElement[lessThanQuarterGroup.size()];
-		Note[] notes = (Note[])lessThanQuarterGroup.toArray(new Note[lessThanQuarterGroup.size()]);
+		JScoreElementAbstract renditionResult = null;
+		JScoreElementAbstract[] renditionResultRootsElmts = new JScoreElementAbstract[lessThanQuarterGroup.size()];
+		NoteAbstract[] notes = (NoteAbstract[])lessThanQuarterGroup.toArray(new NoteAbstract[lessThanQuarterGroup.size()]);
 		
 			if (notes.length==1) {
-				renditionResult = new JNote(notes[0], cursor, m_metrics);
-				renditionResultRootsElmts[0] = renditionResult;
+				if (notes[0] instanceof Note) {
+					renditionResult = new JNote((Note)notes[0], cursor, m_metrics);
+					renditionResultRootsElmts[0] = renditionResult;
+				}
+				else {
+					//This is a multi note
+					renditionResult = new JChord((MultiNote)notes[0], m_metrics, cursor);
+						renditionResultRootsElmts[0] = renditionResult;
+				}
+					
 			}
 			else {
 				renditionResult = new JGroupOfNotes(m_metrics, cursor, notes);
@@ -372,6 +403,7 @@ public class JTune extends JScoreElement {
 	//FIXME : well, slurs and ties shouldn't be drawn the same way :
 	// slurs, should be drawn under/upper all the notes that are part of the slur
 	// ties, should consider notes between the 2 notes tied.
+	//FIXME Doees not support ties between 2 chords.
 	protected void drawLinkDown(Graphics2D g2, TwoNotesLink slurDef) {
 		JNote elmtStart =  (JNote)m_scoreElements.get(slurDef.getStart());
 		if (slurDef.getEnd()!=null){

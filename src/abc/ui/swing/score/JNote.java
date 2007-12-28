@@ -9,10 +9,10 @@ import java.awt.geom.Rectangle2D;
 import abc.notation.AccidentalType;
 import abc.notation.Note;
 import abc.notation.ScoreElementInterface;
-import abc.ui.swing.JScoreElement;
+import abc.ui.swing.JScoreElementAbstract;
 
 /** This class is in charge of rendering a single note. */
-public class JNote extends JScoreElement {
+public class JNote extends JScoreElementAbstract {
 	private static final double SPACE_RATIO_FOR_ACCIDENTALS = 1.3;
 	
 	protected Note note = null;
