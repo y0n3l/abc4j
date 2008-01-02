@@ -24,13 +24,25 @@ public class MultiNote extends NoteAbstract
    * same longest length, the first one is returned.
    * @see Note#getDuration() */
   public Note getLongestNote() {
-	  float length = 0;
+	  /*float length = 0;
 	  float currentNoteLength = 0;
 	  Note maxNote = null;
 	  for (int i=0; i<m_notes.size() && maxNote==null; i++) {
 		  currentNoteLength = ((Note)(m_notes.elementAt(i))).getDuration();
 		  if (currentNoteLength > length)
 			  maxNote = (Note)m_notes.elementAt(i);
+	  }
+	  return maxNote;*/return getLongestNote(this.toArray());
+  }
+  
+  public static Note getLongestNote(Note[] notes) {
+	  float length = 0;
+	  float currentNoteLength = 0;
+	  Note maxNote = null;
+	  for (int i=0; i<notes.length && maxNote==null; i++) {
+		  currentNoteLength = notes[i].getDuration();
+		  if (currentNoteLength > length)
+			  maxNote = notes[i];
 	  }
 	  return maxNote;
   }
@@ -79,6 +91,20 @@ public class MultiNote extends NoteAbstract
 		  return null;
   }
   
+  public static Note[] excludeTiesEndings(Note[] notes) {
+	  Vector withoutTiesEnding = new Vector();
+	  Note[] withoutTiesEndingArray = null;
+	  for (int i=0; i<notes.length; i++) {
+		  if (!notes[i].isEndingTie())
+			  withoutTiesEnding.addElement(notes[i]);
+	  }
+	  if (withoutTiesEnding.size()>0) {
+		  withoutTiesEndingArray = new Note[withoutTiesEnding.size()];
+		  withoutTiesEnding.toArray(withoutTiesEndingArray);
+	  }
+	  return withoutTiesEndingArray;
+  }
+  
   /** 
    * @see #getHighestNote()
    * @see Note#isLowerThan(Note) */
@@ -124,4 +150,13 @@ public class MultiNote extends NoteAbstract
    * this multi note. */
   public Vector getNotesAsVector()
   { return (Vector)m_notes.clone(); }
+  
+  public Note[] toArray() {
+	  if (m_notes.size()>0) {
+		  Note[] notes = new Note[m_notes.size()];
+		  return (Note[])m_notes.toArray(notes);
+	  }
+	  else
+		  return null;
+  }
 }

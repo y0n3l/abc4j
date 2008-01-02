@@ -146,14 +146,14 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
     for (int j=0; j<notesVector.size(); j++)
     {
       Note note = (Note)(notesVector.elementAt(j));
-      if (!note.isRest())
+      if (!note.isRest() && !note.isEndingTie())
         addNoteOnEventsFor(track, reference, getNoteOneMessageFor(note, currentKey));
     }
     for (int j=0; j<notesVector.size(); j++)
     {
       Note note = (Note)(notesVector.elementAt(j));
       long noteDuration = getNoteLengthInTicks(note);
-      if (!note.isRest())
+      if (!note.isRest() && !note.isEndingTie())
         addNoteOffEventsFor(track, reference+noteDuration, getNoteOffMessageFor(note, currentKey));
     }
     for (int j=0; j<notesVector.size(); j++)
@@ -231,9 +231,16 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
    * manipulated internally.
    * @return The length of the multi note in ticks : this is equal to the length
    * of the longest note of the multi note. */
-  public static long getNoteLengthInTicks(MultiNote note)
-  {
-	  return getNoteLengthInTicks(note.getLongestNote());
+  public static long getNoteLengthInTicks(MultiNote note) {
+	  Note[] notes = note.toArray();
+	  //if (notes!=null) {
+		  notes = MultiNote.excludeTiesEndings(notes);
+		  if (notes!=null)
+		  return getNoteLengthInTicks(MultiNote.getLongestNote(notes));
+	  //}
+	  else
+		  return 0;
+	  //return getNoteLengthInTicks(note.getLongestNote());
     /*float numberOfQuarterNotesInThisNote =  (float)longestLength / Note.QUARTER;
     float lengthInTicks = (float)SEQUENCE_RESOLUTION * numberOfQuarterNotesInThisNote;
     return (long)lengthInTicks;*/
