@@ -1,7 +1,7 @@
 package abc.notation;
 
 /** A special bar line that enables you to repeat part of the score. */
-public class RepeatBarLine extends BarLine implements ScoreElementInterface
+public class RepeatBarLine extends BarLine implements MusicElement
 {
   private byte m_repeatNumber=0;
 

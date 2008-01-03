@@ -35,7 +35,6 @@ import javax.swing.KeyStroke;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
-import scanner.CharStreamPosition;
 import scanner.PositionableInCharStream;
 import abc.midi.BasicMidiConverter;
 import abc.midi.MidiConverterAbstract;
@@ -43,12 +42,11 @@ import abc.midi.PlayerStateChangeEvent;
 import abc.midi.TempoChangeEvent;
 import abc.midi.TunePlayer;
 import abc.midi.TunePlayerListenerInterface;
+import abc.notation.MusicElement;
 import abc.notation.NoteAbstract;
-import abc.notation.ScoreElementInterface;
 import abc.notation.Tune;
 import abc.parser.TuneBook;
 import abc.ui.swing.JScoreElement;
-import abc.ui.swing.JScoreElementAbstract;
 import abcynth.ui.AddTuneAction;
 import abcynth.ui.RemoveTuneAction;
 import abcynth.ui.TuneBookActionAbstract;
@@ -202,12 +200,12 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
     m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().addMouseListener( new MouseAdapter() {
 		public void mouseClicked(MouseEvent e) {
 			
-			JScoreElementAbstract sel = m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().getScoreElementAt(e.getPoint());
+			JScoreElement sel = m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().getScoreElementAt(e.getPoint());
 			//if (sel!=null)
 			//	System.out.println("Score element at " + e.getX() + " / " + e.getY() + " : " + sel + "@" + sel.getBase());
 			//SRenderer sel = getScoreElementAt(e.getPoint());
 			if (sel!=null) {
-				ScoreElementInterface elmnt = sel.getMusicElement();
+				MusicElement elmnt = sel.getMusicElement();
 				m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().setSelectedItem(sel);
 				if (elmnt!=null && elmnt instanceof PositionableInCharStream){
 					m_tuneBookEditorPanel.getTuneEditArea().setSelectedItem((PositionableInCharStream)elmnt);
@@ -225,7 +223,7 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
     m_tuneBookEditorPanel.getTuneEditSplitPane().getTuneEditorPane().addCaretListener(new CaretListener() {
     	public void caretUpdate(CaretEvent e) {
     		//System.out.println("The caret has moved : " + e);
-    		ScoreElementInterface elmnt = null;
+    		MusicElement elmnt = null;
     		Tune tune = m_tuneBookEditorPanel.getTuneEditSplitPane().getTuneEditorPane().getTune();
     		if (tune!=null) {
     			elmnt = tune.getScore().getElementAt(e.getDot());

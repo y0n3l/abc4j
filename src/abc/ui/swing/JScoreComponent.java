@@ -13,10 +13,8 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 
-import abc.notation.ScoreElementInterface;
+import abc.notation.MusicElement;
 import abc.notation.Tune;
-import abc.ui.swing.score.JTune;
-import abc.ui.swing.score.ScoreMetrics;
 
 /**
  * This JComponent displays tunes scores.
@@ -25,7 +23,7 @@ import abc.ui.swing.score.ScoreMetrics;
  * <BR/>
  * To render a tune score, just invoke the <TT>setTune(Tune)</TT> method
  * with your tune.<BR/>
- * Basically, a score if composed of {@link abc.ui.swing.JScoreElementAbstract "score elements"}
+ * Basically, a score if composed of {@link abc.ui.swing.JScoreElementAbstract score elements}
  * @see Tune 
  * 
  */
@@ -56,7 +54,7 @@ public class JScoreComponent extends JComponent {
 	protected boolean m_isJustified = false;
 	/** The selected item in this score. <TT>null</TT> if no 
 	 * item is selected. */
-	protected JScoreElementAbstract m_selectedItem = null;
+	protected JScoreElement m_selectedItem = null;
 	
 	/** Default constructor. */
 	public JScoreComponent() {
@@ -167,7 +165,7 @@ public class JScoreComponent extends JComponent {
 	 * @param location A point in the score.
 	 * @return The graphical score element found at the specified location.
 	 * <TT>null</TT> is returned if no item is found at the given location. */
-	public JScoreElementAbstract getScoreElementAt(Point location) {
+	public JScoreElement getScoreElementAt(Point location) {
 		if (m_jTune!=null)
 			return m_jTune.getScoreElementAt(location);
 		else
@@ -181,7 +179,7 @@ public class JScoreComponent extends JComponent {
 	 * score. <TT>null</TT> can be specified to remove 
 	 * highlighting. 
 	 * @see #setSelectedItem(JScoreElementAbstract) */
-	public void setSelectedItem(ScoreElementInterface elmnt) {
+	public void setSelectedItem(MusicElement elmnt) {
 		JScoreElementAbstract r = null;
 		if (elmnt!=null)
 			r = (JScoreElementAbstract)m_jTune.getRenditionObjectsMapping().get(elmnt);
@@ -196,16 +194,16 @@ public class JScoreComponent extends JComponent {
 	 * @param elmnt The score rendition element to be highlighted in the
 	 * score. <TT>null</TT> can be specified to remove 
 	 * highlighting. 
-	 * @see #setSelectedItem(ScoreElementInterface) */
-	public void setSelectedItem(JScoreElementAbstract elmnt){
+	 * @see #setSelectedItem(MusicElement) */
+	public void setSelectedItem(JScoreElement elmnt){
 		if (m_selectedItem!=null) {
 			m_bufferedImageGfx.setColor(Color.BLACK);
-			m_selectedItem.render(m_bufferedImageGfx);
+			((JScoreElementAbstract)m_selectedItem).render(m_bufferedImageGfx);
 		}
 		if (elmnt!=null) {
 			m_selectedItem = elmnt;
 			m_bufferedImageGfx.setColor(SELECTED_ITEM_COLOR);
-			m_selectedItem.render(m_bufferedImageGfx);
+			((JScoreElementAbstract)m_selectedItem).render(m_bufferedImageGfx);
 		}
 		repaint();
 	}
@@ -215,9 +213,9 @@ public class JScoreComponent extends JComponent {
 	 * @return The graphical score element that corresponds to the given 
 	 * tune element. <TT>null</TT> is returned if the given tune element
 	 * does not have any graphical representation. */
-	public JScoreElementAbstract getRenditionElementFor(ScoreElementInterface elmnt) {
+	public JScoreElement getRenditionElementFor(MusicElement elmnt) {
 		if (m_jTune!=null) 
-			return (JScoreElementAbstract)m_jTune.getRenditionObjectsMapping().get(elmnt);
+			return (JScoreElement)m_jTune.getRenditionObjectsMapping().get(elmnt);
 		else
 			return null;
 	}

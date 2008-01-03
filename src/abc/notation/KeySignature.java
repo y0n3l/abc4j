@@ -10,7 +10,7 @@ package abc.notation;
  * </PRE>
  * If we consider the key namned "Ab aeolian", "A" is the note of this
  * key, "b" is the key accidental and "aeolian" is the mode. */
-public class KeySignature implements ScoreElementInterface, Cloneable
+public class KeySignature implements MusicElement, Cloneable
 {
     private final byte[][] accidentalsRules = {
 //	Flyd C Cmaj Cion Gmix Ddor Amin Am Aeol  Ephr Bloc

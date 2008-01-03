@@ -44,7 +44,7 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   			KeySignature currentKey = null;
 
   			long elapsedTime = 0;
-  			Tune.Score staff = tune.getScore();
+  			Tune.Music staff = tune.getScore();
   			while (i < staff.size()) {
   				if (!inWrongEnding) {
   					//==================================================================== TEMPO
@@ -236,7 +236,8 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 	  //if (notes!=null) {
 		  notes = MultiNote.excludeTiesEndings(notes);
 		  if (notes!=null)
-		  return getNoteLengthInTicks(MultiNote.getLongestNote(notes));
+			  //TODO not sure if this should be the longest note and note the shortest one !!!
+			  return getNoteLengthInTicks(MultiNote.getLongestNote(notes));
 	  //}
 	  else
 		  return 0;

@@ -2,7 +2,7 @@ package abc.notation;
 
 /** The tempo class enables you to define tempo values from a reference note
  * length. */
-public class Tempo implements ScoreElementInterface
+public class Tempo implements MusicElement
 {
   /** The length taken as reference to define the tempo value. */
   private short m_referenceLength = Note.QUARTER;

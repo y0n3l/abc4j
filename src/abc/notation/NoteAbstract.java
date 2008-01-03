@@ -1,7 +1,7 @@
 package abc.notation;
 
 /** This is the abstract class to define notes or multi notes. */
-public class NoteAbstract implements ScoreElementInterface
+public class NoteAbstract implements MusicElement
 {
   /** The none bow type. */
   public static final byte NONE	 = -1;
@@ -19,11 +19,10 @@ public class NoteAbstract implements ScoreElementInterface
   /** The number of dots for this note. */
   private byte m_dotted = 0;
   
-  protected boolean isLastOfGroup = false;
-  
   protected SlurDefinition slurDefinition = null;
-  
-  private boolean m_isPartOfSlur = false;
+  /** <TT>true</TT> if this note is part of a slur, <TT>false</TT>
+   * otherwise. */ 
+  protected boolean m_isPartOfSlur = false;
   /** The tuplet this note may belongs to. <TT>null</TT>
    * if this note does not belong to any tuplet. */
   private Tuplet m_tuplet = null;

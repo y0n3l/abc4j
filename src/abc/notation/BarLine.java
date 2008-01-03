@@ -1,7 +1,7 @@
 package abc.notation;
 
 /** This class defines bar lines used in musical scores. */
-public class BarLine implements ScoreElementInterface
+public class BarLine implements MusicElement
 {
   /** The simple bar line type. Ex: | */
   public static final byte SIMPLE = 0;

@@ -343,20 +343,20 @@ public class Tune implements Cloneable
    * one. If you want to retrieve the score related to each part separatly just
    * do <TT>getPart(char partLabel).getScore()</TT>.
    * @see #getPart(char) */
-  public Score getScore()
+  public Music getScore()
   {
     if (m_multiPartsDef==null)
       return (m_defaultPart.getScore());
     else
     {
-      Score globalScore = new Score();
-      Score defaultScore = m_defaultPart.getScore();
+      Music globalScore = new Music();
+      Music defaultScore = m_defaultPart.getScore();
       for (int i=0; i<defaultScore.size(); i++)
         globalScore.addElement(defaultScore.elementAt(i));
       Part[] parts = m_multiPartsDef.toPartsArray();
       for (int i=0; i<parts.length; i++)
       {
-        Score score = parts[i].getScore();
+        Music score = parts[i].getScore();
         for (int j=0; j<score.size(); j++)
           globalScore.addElement(score.elementAt(j));
       }
@@ -383,13 +383,13 @@ public class Tune implements Cloneable
   /** Creates a new score. 
    * NB : bullshit pattern, why going through a tune to create a score???
    * The reference to the tune is not kept in the score. */
-  Score createScore()
-  { return new Score(); }
+  Music createMusic()
+  { return new Music(); }
 
-  public class Score extends Vector {
+  public class Music extends Vector {
 	  
 	  protected NoteAbstract lastNote = null; 
-    public Score ()
+    public Music ()
     { super (); }
 
     public void addElement(KeySignature key) {
@@ -415,11 +415,11 @@ public class Tune implements Cloneable
      * @param offset An offset in a char stream.  
      * @return The score element location at the specified offset.
      */  
-    public ScoreElementInterface getElementAt(int offset) {
-    	ScoreElementInterface foundElement = null;
-    	ScoreElementInterface current = null;
+    public MusicElement getElementAt(int offset) {
+    	MusicElement foundElement = null;
+    	MusicElement current = null;
     	for (int i=0; i<size(); i++) {
-    		current = (ScoreElementInterface)elementAt(i);
+    		current = (MusicElement)elementAt(i);
     		if (current instanceof PositionableInCharStream) {
     			PositionableInCharStream pos = (PositionableInCharStream)current; 
     			if (pos.getPosition().getCharactersOffset()<=offset && 
@@ -431,7 +431,7 @@ public class Tune implements Cloneable
     	return foundElement;
     }
     
-    public int indexOf(ScoreElementInterface elmnt) {
+    public int indexOf(MusicElement elmnt) {
     	Object elmntIt = null;
     	boolean isLooking4Note = elmnt instanceof Note;
     	for (int i=0; i<size(); i++){
@@ -471,7 +471,7 @@ public class Tune implements Cloneable
      * @throws IllegalArgumentException Thrown if one of the score elements hasn't been found 
      * in the score or if the <TT>elmtEnd</TT> param is located before the <TT>elmntBegin</TT> 
      * param in the score. */
-    public Note getHighestNoteBewteen(ScoreElementInterface elmtBegin, ScoreElementInterface elmtEnd)
+    public Note getHighestNoteBewteen(MusicElement elmtBegin, MusicElement elmtEnd)
     	throws IllegalArgumentException {
     	Note highestNote = null;
     	//init
@@ -488,9 +488,9 @@ public class Tune implements Cloneable
         	throw new IllegalArgumentException("Note " + elmtEnd + " hasn't been found in tune");
     	if (idxBegin>idxEnd)
     		throw new IllegalArgumentException("Note " + elmtBegin + " is located after " + elmtEnd + " in the score");
-    	ScoreElementInterface currentScoreEl;
+    	MusicElement currentScoreEl;
     	for (int i=idxBegin+1; i<=idxEnd; i++) {
-    		currentScoreEl=(ScoreElementInterface)elementAt(i);
+    		currentScoreEl=(MusicElement)elementAt(i);
     		if (currentScoreEl instanceof Note && ((Note)currentScoreEl).isHigherThan(highestNote))
     			highestNote = (Note)currentScoreEl;
     		/*else
@@ -506,7 +506,7 @@ public class Tune implements Cloneable
      * @return The lowest note between the two given score elements if found.
      * @throws IllegalArgumentException
      */
-    public Note getLowestNoteBewteen(ScoreElementInterface noteBegin, ScoreElementInterface noteEnd)
+    public Note getLowestNoteBewteen(MusicElement noteBegin, MusicElement noteEnd)
 		throws IllegalArgumentException {
     	Note lowestNote = null;
     	//init
@@ -523,9 +523,9 @@ public class Tune implements Cloneable
         	throw new IllegalArgumentException("Note " + noteEnd + " hasn't been found in tune");
     	if (idxBegin>idxEnd)
     		throw new IllegalArgumentException("Note " + noteBegin + " is located after " + noteEnd + " in the score");
-    	ScoreElementInterface currentScoreEl;
+    	MusicElement currentScoreEl;
     	for (int i=idxBegin+1; i<=idxEnd; i++) {
-    		currentScoreEl=(ScoreElementInterface)elementAt(i);
+    		currentScoreEl=(MusicElement)elementAt(i);
     		if (currentScoreEl instanceof Note && ((Note)currentScoreEl).isLowerThan(lowestNote))
     			lowestNote = (Note)currentScoreEl;
     		/* else

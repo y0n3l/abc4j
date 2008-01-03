@@ -24,7 +24,7 @@ import abc.notation.SlurDefinition;
 import abc.notation.RepeatBarLine;
 import abc.notation.RepeatedPart;
 import abc.notation.RepeatedPartAbstract;
-import abc.notation.ScorePresentationElementInterface;
+import abc.notation.MusicPresentationElement;
 import abc.notation.EndOfStaffLine;
 import abc.notation.Tempo;
 import abc.notation.TieDefinition;
@@ -180,7 +180,7 @@ public class AbcParserAbstract
 
     private TimeSignature m_timeSignature = null;
     /** The score of the current part. */
-    private Tune.Score m_score = null;
+    private Tune.Music m_score = null;
     /** The tune resulting of the last parsing. */
     protected Tune m_tune = null;
 
@@ -1542,8 +1542,8 @@ public class AbcParserAbstract
     }
 
     /** line-ender ::= comment / linefeed / line-break / no-line-break */
-    private ScorePresentationElementInterface parseLineEnder(Set follow) {
-    	ScorePresentationElementInterface lineEnder = null;
+    private MusicPresentationElement parseLineEnder(Set follow) {
+    	MusicPresentationElement lineEnder = null;
     	//Set current = new Set();
     	if (FIRST_COMMENT.contains(m_tokenType))
     		parseComment(follow);

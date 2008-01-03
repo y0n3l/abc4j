@@ -1,6 +1,6 @@
 package abc.notation;
 
-public class Elemskip implements ScoreElementInterface
+public class Elemskip implements MusicElement
 {
   //private int elemskip;
 

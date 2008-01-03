@@ -3,7 +3,7 @@ package abc.notation;
 /**
  * A class to describe words (lyrics) in a score. 
  */
-public class Words implements ScoreElementInterface {
+public class Words implements MusicElement {
 	/** the content of the words. */
 	private String content = null;
 	

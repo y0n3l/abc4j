@@ -6,10 +6,8 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import abc.notation.ScoreElementInterface;
+import abc.notation.MusicElement;
 import abc.notation.Tune;
-import abc.ui.swing.score.ScoreMetrics;
-import abc.ui.swing.score.StaffLine;
 
 /** This class defines a score rendition element. Rendition scores elements
  * are graphical representations of tune score elements objects retrieved 
@@ -19,7 +17,7 @@ import abc.ui.swing.score.StaffLine;
  * <TT>JScoreElement</TT>. (Composite) 
  * @see Tune#getScore()
  */ 
-public abstract class JScoreElementAbstract {
+abstract class JScoreElementAbstract implements JScoreElement {
 	/** The metrics to be used to calculate this rendition element */ 
 	protected ScoreMetrics m_metrics = null;
 	/** The reference point (bottom, left) that should be used when rendering
@@ -33,7 +31,7 @@ public abstract class JScoreElementAbstract {
 	
 	//protected Color m_color = null;
 	/** The staff line that contains this score element. */ 
-	protected StaffLine staffLine = null; 
+	protected JStaffLine staffLine = null; 
 	
 	/** Constructor 
 	 * @param mtrx The score metrics needed 
@@ -50,18 +48,19 @@ public abstract class JScoreElementAbstract {
 	
 	/** Returns the staff line containing this score element. 
 	 * @return The staff line containing this score element. */
-	public StaffLine getStaffLine() {
+	public JStaffLine getStaffLine() {
 		return staffLine;
 	}
 	
-	public void setStaffLine(StaffLine staffLine) {
+	public void setStaffLine(JStaffLine staffLine) {
 		this.staffLine = staffLine;
 	}
 	
-	/** Returns the tune score element represented by this graphical score element.
-	 * @return The tune score element represented by this graphical score element. <TT>null</TT>
-	 * if this graphical score element is not related to any score element. */ 
-	public abstract ScoreElementInterface getMusicElement();
+	/** Returns the tune's music element represented by this graphical score element.
+	 * @return The tune's music element represented by this graphical score element. <TT>null</TT>
+	 * if this graphical score element is not related to any music element. 
+	 * @see MusicElement  */ 
+	public abstract MusicElement getMusicElement();
 	
 	/** Returns the bounding box for this score element. 
 	 * @return the bounding box for this score element. */

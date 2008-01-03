@@ -46,7 +46,7 @@ public abstract class OldMidiConverterAbstract implements MidiConverterInterface
       KeySignature currentKey = null;
 
       long elapsedTime = 0;
-      Tune.Score staff = tune.getScore();
+      Tune.Music staff = tune.getScore();
       while (i < staff.size())
       {
         if (!inWrongEnding)

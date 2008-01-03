@@ -1,7 +1,7 @@
 package abc.notation;
 
 /** This class enables you to describe any time signatures like 4/4, 6/8 ...*/
-public class TimeSignature extends Fraction implements ScoreElementInterface {
+public class TimeSignature extends Fraction implements MusicElement {
 	
 	/** The 4/4 time signature constant. */
 	public static final TimeSignature SIGNATURE_4_4 = new TimeSignature(4,4);
