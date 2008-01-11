@@ -27,6 +27,7 @@ class JChordNote extends JNotePartOfGroup {
 		renderExtendedStaffLines(context, m_metrics, m_base);
 		renderAccidentals(context);
 		renderDots(context);
+		/*
 		Color previousColor = context.getColor();
 		context.setColor(Color.RED);
 		context.drawLine((int)getStemX(), (int)getStemYBegin(), 

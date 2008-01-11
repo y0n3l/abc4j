@@ -16,17 +16,18 @@ class JChordPartOfGroup extends JChord implements JGroupableNote {
 	}
 	
 	protected JChord createComplexChord(MultiNote mNote, ScoreMetrics mtrx, Point2D base) {
-		
+		//TODO what's the need of override here ?
 		return new JChord(mNote, mtrx, base);
 	}
 	
+	/*
 	public int getStemX() {
 		return ((JNotePartOfGroup)anchor).getStemX();
 	}
 
 	public int getStemYBegin() {
 		return ((JNotePartOfGroup)anchor).getStemYBegin();
-	}
+	}*/
 	
 	public void setStemYEnd(int value) {
 		((JNotePartOfGroup)anchor).setStemYEnd(value);

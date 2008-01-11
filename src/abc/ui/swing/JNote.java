@@ -36,6 +36,11 @@ class JNote extends JScoreElementAbstract {
 	/** Tells if the note should be displayed stem up or down. */
 	protected boolean isStemUp = true;
 	
+	protected Point2D stemBeginPosition = null; 
+	
+	protected Point2D stemUpBeginPosition = null;
+	protected Point2D stemDownBeginPosition = null;
+	
 	public static final char[] WHOLE_NOTE = {'\uF092'};
 	public static final char[] HALF_NOTE = {'\uF068'};
 	public static final char[] QUARTER_NOTE = {'\uF071'};
@@ -94,40 +99,60 @@ class JNote extends JScoreElementAbstract {
 	
 	protected void valuateNoteChars() {
 		short noteDuration = note.getStrictDuration();
-		//TODO put this in another method that can be overriden by sub classes.
-		if (isStemUp) 
+		if (note.isRest()){
+			//System.out.println("duration of the rest is " + noteDuration);
 			switch (noteDuration) {
 				//Note.SIXTY_FOURTH: chars[0] = ScoreRenditionContext.
-				case Note.THIRTY_SECOND : noteChars = THIRTY_SECOND_NOTE; break;
-				case Note.SIXTEENTH : noteChars = SIXTEENTH_NOTE; break;
-				case Note.EIGHTH : noteChars = EIGHTH_NOTE; break;
-				case Note.QUARTER: noteChars = QUARTER_NOTE; break;
-				case Note.HALF: noteChars = HALF_NOTE; break;
-				case Note.WHOLE: noteChars = WHOLE_NOTE; break;
+				case Note.THIRTY_SECOND : noteChars = THIRTY_SECOND_REST; break;
+				case Note.SIXTEENTH : noteChars = SIXTEENTH_REST; break;
+				case Note.EIGHTH : noteChars = EIGHTH_REST; break;
+				case Note.QUARTER: noteChars = QUARTER_REST; break;
+				case Note.HALF: noteChars = HALF_REST; break;
+				case Note.WHOLE: noteChars = WHOLE_REST; break;
 				default : noteChars = UNKNWON;
 			}
-		else
-			switch (noteDuration) {
-				//Note.SIXTY_FOURTH: chars[0] = ScoreRenditionContext.
-				case Note.THIRTY_SECOND : noteChars = THIRTY_SECOND_NOTE_STEM_DOWN; break;
-				case Note.SIXTEENTH : noteChars = SIXTEENTH_NOTE_STEM_DOWN; break;
-				case Note.EIGHTH : noteChars = EIGHTH_NOTE_STEM_DOWN; break;
-				case Note.QUARTER: noteChars = QUARTER_NOTE_STEM_DOWN; break;
-				case Note.HALF: noteChars = HALF_NOTE_STEM_DOWN; break;
-				case Note.WHOLE: noteChars = WHOLE_NOTE_STEM_DOWN; break;
-				default : noteChars = UNKNWON;
 		}
+		else
+			if (isStemUp) 
+				switch (noteDuration) {
+					//Note.SIXTY_FOURTH: chars[0] = ScoreRenditionContext.
+					case Note.THIRTY_SECOND : noteChars = THIRTY_SECOND_NOTE; break;
+					case Note.SIXTEENTH : noteChars = SIXTEENTH_NOTE; break;
+					case Note.EIGHTH : noteChars = EIGHTH_NOTE; break;
+					case Note.QUARTER: noteChars = QUARTER_NOTE; break;
+					case Note.HALF: noteChars = HALF_NOTE; break;
+					case Note.WHOLE: noteChars = WHOLE_NOTE; break;
+					default : noteChars = UNKNWON;
+			}
+			else
+				switch (noteDuration) {
+					//Note.SIXTY_FOURTH: chars[0] = ScoreRenditionContext.
+					case Note.THIRTY_SECOND : noteChars = THIRTY_SECOND_NOTE_STEM_DOWN; break;
+					case Note.SIXTEENTH : noteChars = SIXTEENTH_NOTE_STEM_DOWN; break;
+					case Note.EIGHTH : noteChars = EIGHTH_NOTE_STEM_DOWN; break;
+					case Note.QUARTER: noteChars = QUARTER_NOTE_STEM_DOWN; break;
+					case Note.HALF: noteChars = HALF_NOTE_STEM_DOWN; break;
+					case Note.WHOLE: noteChars = WHOLE_NOTE_STEM_DOWN; break;
+					default : noteChars = UNKNWON;
+				}
 	}
 	
 	public void setStemUp(boolean isUp) {
-		//TODO no callback here to update the JNote once the stem direction has changed ?! 
-		isStemUp = isUp;
-		valuateNoteChars();
+		//TODO no callback here to update the JNote once the stem direction has changed ?!
+		//if (isStemUp!=isUp) {
+			isStemUp = isUp;
+			valuateNoteChars();
+			if (isUp)
+				stemBeginPosition = stemUpBeginPosition;
+			else
+				stemBeginPosition= stemDownBeginPosition;
+		//}
 	}
 	
 	public Point2D getStemBegin() {
-		return new Point2D.Double(notePosition.getX()+ m_metrics.getNoteWidth()*0.93, 
-				notePosition.getY()-m_metrics.getNoteHeigth()/2);
+		return stemBeginPosition;
+		/*new Point2D.Double(notePosition.getX()+ m_metrics.getNoteWidth()*0.93, 
+				notePosition.getY()-m_metrics.getNoteHeigth()/2);*/
 	}
 	
 	/**
@@ -176,6 +201,12 @@ class JNote extends JScoreElementAbstract {
 			notePosition = new Point2D.Double(displayPosition.getX(), displayPosition.getY()+m_metrics.getNoteHeigth()*0.5);
 		else
 			notePosition = (Point2D)displayPosition.clone();
+		stemUpBeginPosition = new Point2D.Double(notePosition.getX()+ m_metrics.getNoteWidth()*0.93, 
+				notePosition.getY()-m_metrics.getNoteHeigth()/2);
+		stemDownBeginPosition = new Point2D.Double(notePosition.getX(), 
+				notePosition.getY()-m_metrics.getNoteHeigth()/2);
+		//reinit stem position
+		setStemUp(isStemUp);
 		if (note.hasAccidental())
 			accidentalsPosition = new Point2D.Double(base.getX(),notePosition.getY()-m_metrics.getNoteHeigth()/2);
 		m_width = (int)(accidentalsWidth+c.getNoteWidth());
@@ -272,7 +303,7 @@ public Note getNote(){
 				(int)getNotePosition().getX(), (int)getNotePosition().getY());
 		g.setColor(Color.GREEN);
 		g.drawLine((int)getStemBegin().getX(), (int)getStemBegin().getY(), 
-				(int)getStemBegin().getX()+10, (int)getStemBegin().getY());
+				(int)getStemBegin().getX(), (int)getStemBegin().getY());
 		g.setColor(previousColor);*/
 		return m_width;
 	}

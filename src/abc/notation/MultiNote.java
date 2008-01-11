@@ -172,6 +172,35 @@ public class MultiNote extends NoteAbstract
 	  return true;
   }
   
+  public short[] getStrictDurations() {
+	  Vector durations = new Vector();
+	  short currentDuration = 0;
+	  for (int i=0; i<m_notes.size(); i++) {
+		  currentDuration = ((Note)(m_notes.elementAt(i))).getStrictDuration();
+		  if (durations.indexOf(new Short(currentDuration))==-1)
+			  durations.addElement(new Short(currentDuration));
+	  }
+	  if (durations.size()==0)
+		  return null;
+	  else {
+		  //sort the durations
+		  Vector sortedDurations = new Vector();
+		  for (int i=0; i<durations.size(); i++) {
+			  int j=0;
+			  while (j<sortedDurations.size() 
+					  && ((Short)sortedDurations.elementAt(j)).shortValue()<
+					  (((Short)durations.elementAt(i)).shortValue())
+					  )
+				  j++;
+			  sortedDurations.insertElementAt(durations.elementAt(i),j);
+		  }
+		  short[] durationsAsArray = new short[sortedDurations.size()];
+		  for (int i=0; i<sortedDurations.size(); i++)
+			  durationsAsArray [i] = ((Short)sortedDurations.elementAt(i)).shortValue();
+		  return durationsAsArray;
+	  }
+  }
+  
   //TODO rework this interface method. 
   public Hashtable splitWithSameStrictDuration() {
 	  Hashtable splitter = new Hashtable();

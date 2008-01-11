@@ -4,9 +4,9 @@ import java.awt.geom.Point2D;
 
 
 interface JGroupableNote extends JScoreElement {
-	public int getStemX() ;
+	/*public int getStemX() ;
 
-	public int getStemYBegin();
+	public int getStemYBegin();*/
 	
 	public void setStemYEnd(int value);
 	

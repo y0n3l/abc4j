@@ -84,32 +84,30 @@ class JGroupOfNotes extends JScoreElementAbstract {
 	}
 	
 	protected void onBaseChanged() {
-		//m_jNotes = new JNotePartOfGroup[m_notes.length];
 		Point2D currentBase =(Point2D)m_base.clone();
-		
-		//Note highestNote = Note.getHighestNote(m_notes);
 		JGroupableNote highestNote = m_jNotes[Note.getHighestNoteIndex(m_notes)];//(m_notes); Notestsn = new JNotePartOfGroup(highestNote, m_base, m_metrics);
-		m_stemYend = highestNote.getStemYBegin()-m_metrics.getStemLength();
-		JGroupableNote firstNote = null;
-		JGroupableNote lastNote = null;
+		//update the highest note to calculate when the stem Y end should be after the base change.
+		Point2D updatedBase = highestNote.getBase();
+		updatedBase.setLocation(currentBase);
+		((JScoreElementAbstract)highestNote).setBase(updatedBase);
+		//based on this, calculate the new stem Y end.
+		m_stemYend = (int)highestNote.getStemBegin().getY()-m_metrics.getStemLength();
+		JGroupableNote firstNote = m_jNotes[0];
+		JGroupableNote lastNote = m_jNotes[m_jNotes.length-1];
+		// apply the new stem y end to the rest of the group of notes.
 		for (int i=0; i<m_jNotes.length; i++) {
-			//short noteStrictDuration = m_notes[i].getStrictDuration();
-			//if (noteStrictDuration==Note.THIRTY_SECOND || noteStrictDuration==Note.SIXTEENTH || noteStrictDuration==Note.EIGHTH
-			//		|| noteStrictDuration==Note.QUARTER){
-				//JNotePartOfGroup n = new JNotePartOfGroup(m_notes[i], currentBase, m_metrics);
-				//m_jNotes[i]=n;
-				Point2D updatedBase = m_jNotes[i].getBase();
+				updatedBase = m_jNotes[i].getBase();
 				updatedBase.setLocation(currentBase);
 				((JScoreElementAbstract)m_jNotes[i]).setBase(updatedBase);
-				if (i==0)
+				/*if (i==0)
 					firstNote = m_jNotes[i];
 				else
 					if (i==m_jNotes.length-1)
-						lastNote = m_jNotes[i];
+						lastNote = m_jNotes[i];*/
 				m_jNotes[i].setStemYEnd(m_stemYend);
 				//int stemX = n.getStemX();
 				//double width = n.render(context);
-				m_width+=m_metrics.getNotesSpacing();
+				//m_width+=m_metrics.getNotesSpacing();
 				currentBase.setLocation(currentBase.getX() + m_jNotes[i].getWidth() + m_metrics.getNotesSpacing(), m_base.getY());
 			//}
 		}
@@ -118,7 +116,7 @@ class JGroupOfNotes extends JScoreElementAbstract {
 		double firstNoteAccidentalWidth = (firstNote.getWidth()-m_metrics.getNoteWidth());
 		//TODO replace with commented line but needs to be improved because of the get display position.
 		//m_width = (int)(lastNote.getStemX()-((JNote)firstNote).getDisplayPosition().getX() + firstNoteAccidentalWidth);
-		m_width = (int)(lastNote.getStemX()-(firstNote).getBase().getX() + firstNoteAccidentalWidth);
+		m_width = (int)(lastNote.getStemBegin().getX()-(firstNote).getBase().getX() + firstNoteAccidentalWidth);
 	}
 	
 	public double render(Graphics2D context){
@@ -161,16 +159,16 @@ class JGroupOfNotes extends JScoreElementAbstract {
 				if (hasPrevious) {
 					if (previousNoteIsShorterOrEquals)
 						//the end is the stem of the previous note.
-						noteLinkEnd = ((JGroupableNote)m_jNotes[i-1]).getStemX();//getE (int)(stemX-2*context.getNoteWidth()); 
+						noteLinkEnd = (int)((JGroupableNote)m_jNotes[i-1]).getStemBegin().getX();//getE (int)(stemX-2*context.getNoteWidth()); 
 					else
 						if (!(hasNext && nextNoteIsShorterOrEquals))
-							noteLinkEnd = (int)(m_jNotes[i].getStemX()-m_metrics.getNoteWidth()/2);
+							noteLinkEnd = (int)(m_jNotes[i].getStemBegin().getX()-m_metrics.getNoteWidth()/2);
 				}
 				else
 					if (!nextNoteIsShorterOrEquals)
-						noteLinkEnd = (int)(m_jNotes[i].getStemX()+m_metrics.getNoteWidth()/2);
+						noteLinkEnd = (int)(m_jNotes[i].getStemBegin().getX()+m_metrics.getNoteWidth()/2);
 				if (noteLinkEnd!=-1)
-					context.drawLine(m_jNotes[i].getStemX(), noteLinkY, noteLinkEnd, noteLinkY);
+					context.drawLine((int)m_jNotes[i].getStemBegin().getX(), noteLinkY, noteLinkEnd, noteLinkY);
 			}
 //			restore defaut stroke.
 			context.setStroke(defaultStroke);

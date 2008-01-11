@@ -10,8 +10,8 @@ import java.awt.geom.Rectangle2D;
 import abc.notation.Note;
 
 class JNotePartOfGroup extends JNote implements JGroupableNote {
-	protected int stemX = -1;
-	protected int stemYBegin = -1;  
+	/*protected int stemX = -1;
+	protected int stemYBegin = -1;  */
 	protected int stemYEnd = -1;
 	
 	public JNotePartOfGroup(Note noteValue, Point2D base, ScoreMetrics c) {
@@ -36,29 +36,34 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 		displayPosition.setLocation(displayPosition.getX(), noteY);
 		double noteX = displayPosition.getX();
 		BasicStroke stemStroke = m_metrics.getNotesLinkStroke();
-		if (isStemUp)
+		/*if (isStemUp)
 			stemX = (int)(noteX + m_metrics.getNoteWidth() - stemStroke.getLineWidth()/10);
 		else
-			stemX = (int)(noteX);
-		stemYBegin = (int)(noteY - m_metrics.getNoteHeigth()/6);
+			stemX = (int)(noteX);*/
+		int stemYBegin = (int)(noteY - m_metrics.getNoteHeigth()/6);
+		
+		stemUpBeginPosition = new Point2D.Double(noteX + m_metrics.getNoteWidth() - stemStroke.getLineWidth()/10,
+			stemYBegin);
+		stemDownBeginPosition = new Point2D.Double(noteX,stemYBegin); 
+		
 		notePosition = new Point2D.Double(displayPosition.getX(), displayPosition.getY()+m_metrics.getNoteHeigth()*0.5);
 		onNotePositionChanged();
 	}
 	
-	public void setStemUp(boolean isUp) {
+	/*public void setStemUp(boolean isUp) {
 		isStemUp = isUp;
 		//TODO separate callbacks when stem direction is changed and when base is changed
 		onBaseChanged();
 		//super.setStemUp(isUp);
-	}
+	}*/
 	
-	public int getStemX(){
+	/*public int getStemX(){
 		return stemX;
 	}
 	
 	public int getStemYBegin(){
 		return stemYBegin;
-	}
+	}*/
 	
 	public void setStemYEnd(int value) {
 		stemYEnd = value;
@@ -68,20 +73,20 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 		return stemYEnd;
 	}
 	
-	public Point2D getStemBegin() {
+	/*public Point2D getStemBegin() {
 		return new Point2D.Double(stemX, stemYBegin);
-	}
+	}*/
 	
 
 	public Rectangle2D getBoundingBox() {
 		Rectangle2D bb = new Rectangle2D.Double((int)(m_base.getX()), (int)(stemYEnd), 
-				m_width, stemYBegin-stemYEnd+m_metrics.getNoteHeigth()/2);
+				m_width, stemBeginPosition.getY()-stemYEnd+m_metrics.getNoteHeigth()/2);
 		return bb;
 	}
 	
 	public Point2D getEndOfStemPosition() {
 		if(stemYEnd!=-1)
-			return new Point2D.Double(stemX, stemYEnd);
+			return new Point2D.Double(stemBeginPosition.getX(), stemYEnd);
 		else
 			throw new IllegalStateException();
 	}
@@ -108,7 +113,8 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 		context.drawChars(noteChars, 0, 1, (int)displayPosition.getX(), (int)displayPosition.getY());
 		Stroke defaultS = context.getStroke();
 		context.setStroke(m_metrics.getStemStroke());
-		context.drawLine((int)stemX, stemYBegin,stemX, stemYEnd);
+		context.drawLine((int)stemBeginPosition.getX(), (int)stemBeginPosition.getY(),
+				(int)stemBeginPosition.getX(), stemYEnd);
 		context.setStroke(defaultS);
 		/*Color previousColor = context.getColor();
 		context.setColor(Color.RED);
