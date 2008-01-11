@@ -1,6 +1,8 @@
 package abc.notation;
 
 import java.util.Vector;
+
+import com.sun.org.apache.xalan.internal.xsltc.runtime.Hashtable;
 /** A multi note is a group of notes that should be played together. */
 public class MultiNote extends NoteAbstract
 {
@@ -12,7 +14,7 @@ public class MultiNote extends NoteAbstract
 	 * <TT>MultiNote</TT>. */
   	public MultiNote (Vector notes) {
 		super();
-		m_notes = notes;
+		m_notes = fromLowestToHighest(notes);
   	}
   	
   	public boolean contains(Note aNote) {
@@ -45,6 +47,43 @@ public class MultiNote extends NoteAbstract
 			  maxNote = notes[i];
 	  }
 	  return maxNote;
+  }
+  
+  /*public static Note[] getNotesLongerThan(int aNoteDuration) {
+	  return null;
+  }*/
+  
+  /**
+   * strictly Shorter than ! and uses strict duration
+   */
+  public static Note[] getNotesShorterThan(Note[] notes, int aNoteDuration) {
+	  Vector shorterNotes = new Vector();
+	  Note[] notesArray =null;
+	  for (int i=0; i<notes.length; i++) {
+		  if (notes[i].getStrictDuration()<aNoteDuration)
+			  shorterNotes.addElement(notes[i]);
+	  }
+	  if (shorterNotes.size()>0) {
+		  notesArray = new Note[shorterNotes.size()];
+		  shorterNotes.toArray(notesArray);
+	  }
+	  return notesArray;
+  }
+  
+  public static Note getLowestNote(Note[] notes) {
+	  Note lowestNote = notes[0];
+	  for (int i=1; i<notes.length; i++)
+		  if (notes[i].isLowerThan(lowestNote))
+			  lowestNote = notes[i];
+	  return lowestNote;
+  }
+  
+  public static Note getHighestNote(Note[] notes) {
+	  Note highestNote = notes[0];
+	  for (int i=1; i<notes.length; i++)
+		  if (notes[i].isHigherThan(highestNote))
+			  highestNote = notes[i];
+	  return highestNote;
   }
   
   /** Returns the shortest note of this multi note, based on its duration.
@@ -109,11 +148,12 @@ public class MultiNote extends NoteAbstract
    * @see #getHighestNote()
    * @see Note#isLowerThan(Note) */
   public Note getLowestNote() {
-	  Note lowestNote = (Note)m_notes.elementAt(0);
+	  /*Note lowestNote = (Note)m_notes.elementAt(0);
 	  for (int i=1; i<m_notes.size(); i++)
 		  if (((Note)(m_notes.elementAt(i))).isLowerThan(lowestNote))
 			  lowestNote = (Note)m_notes.elementAt(i);
-	  return lowestNote;
+	  return lowestNote;*/
+	  return getLowestNote(this.toArray());
   }
   
   /** Returns <TT>true</TT> if the strict durations of all notes composing this 
@@ -132,6 +172,36 @@ public class MultiNote extends NoteAbstract
 	  return true;
   }
   
+  //TODO rework this interface method. 
+  public Hashtable splitWithSameStrictDuration() {
+	  Hashtable splitter = new Hashtable();
+	  for (int i=0; i<m_notes.size(); i++) {
+		  Note note = (Note)m_notes.elementAt(i);
+		  Short key = new Short(note.getStrictDuration()); 
+		  if (splitter.containsKey(key))
+			  ((Vector)splitter.get(key)).addElement(note);
+		  else {
+			  Vector v = new Vector();
+			  v.addElement(note);
+			  splitter.put(key, v);
+		  }
+	  }
+	  return splitter;
+  }
+  
+  private static Vector fromLowestToHighest(Vector original){
+	  //TODO quick sort could be improved..
+	  Vector orderedNotes = new Vector();
+	  for (int i=0; i<original.size(); i++) {
+		  int j=0;
+		  while (j<orderedNotes.size() 
+				  && ((Note)orderedNotes.elementAt(j)).isLowerThan((Note)original.elementAt(i)))
+			  j++;
+		  orderedNotes.insertElementAt(original.elementAt(i),j);
+	  }
+	  return orderedNotes;
+  }
+  
   /** Returns <TT>true</TT> if this multi note some accidentals (for at least one
    * of its note).
    * @return <TT>true</TT> if this multi note some accidentals (for at least one
@@ -143,7 +213,7 @@ public class MultiNote extends NoteAbstract
 			  return true;
 	  return false;
   }
-
+  
   /** Returns a new vector containing all <TT>Note</TT> objects contained in
    * this multi note.
    * @return a new vector containing all <TT>Note</TT> objects contained in

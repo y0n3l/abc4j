@@ -860,7 +860,7 @@ public class AbcParserAbstract
     {
     	//reinit the tune structures
     	m_tune = new Tune();
-        m_score = m_tune.getScore();
+        m_score = m_tune.getMusic();
         brknRthmDotsCorrection = 0;
         slursDefinitionStack.removeAllElements();
         lastParsedNote =null;

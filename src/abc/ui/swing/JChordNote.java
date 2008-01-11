@@ -10,12 +10,15 @@ class JChordNote extends JNotePartOfGroup {
 
 	public JChordNote(Note noteValue, Point2D base, ScoreMetrics c) {
 		super(noteValue, base, c);
-		if (noteValue.getStrictDuration()==Note.HALF || noteValue.getStrictDuration()==Note.WHOLE) {
+		//onBaseChanged();
+	}
+	
+	protected void valuateNoteChars() {
+		if (note.getStrictDuration()==Note.HALF || note.getStrictDuration()==Note.WHOLE) {
 			noteChars = ScoreMetrics.NOTE_LONGER;
 		}
 		else
 			noteChars = ScoreMetrics.NOTE;
-		onBaseChanged();
 	}
 	
 	public double render(Graphics2D context){
@@ -24,6 +27,11 @@ class JChordNote extends JNotePartOfGroup {
 		renderExtendedStaffLines(context, m_metrics, m_base);
 		renderAccidentals(context);
 		renderDots(context);
+		Color previousColor = context.getColor();
+		context.setColor(Color.RED);
+		context.drawLine((int)getStemX(), (int)getStemYBegin(), 
+				(int)getStemX(), (int)getStemYBegin());
+		context.setColor(previousColor);
 		/*Color previousColor = context.getColor();
 		context.setColor(Color.RED);
 		context.drawLine((int)getStemBegin().getX(), (int)getStemBegin().getY(), 

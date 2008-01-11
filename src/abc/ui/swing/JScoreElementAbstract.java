@@ -15,7 +15,7 @@ import abc.notation.Tune;
  * A <TT>JScoreElement</TT> can itself contain <TT>JScoreElement</TT> instances.
  * You should figure out the graphical score representation as a tree of 
  * <TT>JScoreElement</TT>. (Composite) 
- * @see Tune#getScore()
+ * @see Tune#getMusic()
  */ 
 abstract class JScoreElementAbstract implements JScoreElement {
 	/** The metrics to be used to calculate this rendition element */ 

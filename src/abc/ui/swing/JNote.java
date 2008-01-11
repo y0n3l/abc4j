@@ -65,7 +65,8 @@ class JNote extends JScoreElementAbstract {
 	public JNote(Note noteValue, Point2D base, ScoreMetrics c) {
 		super(c);
 		note = noteValue;
-		short noteDuration = note.getStrictDuration();
+		valuateNoteChars();
+		/*short noteDuration = note.getStrictDuration();
 		if (note.isRest()){
 			//System.out.println("duration of the rest is " + noteDuration);
 			switch (noteDuration) {
@@ -81,17 +82,19 @@ class JNote extends JScoreElementAbstract {
 		}
 		else {
 			setStemUp(isStemUp);
-		}
+		}*/
 		setBase(base);
+		if (!note.isRest())
+			setStemUp(isStemUp);
 	}
 	
 	public MusicElement getMusicElement() {
 		return note;
 	}
 	
-	public void setStemUp(boolean isUp) {
-		isStemUp = isUp;
+	protected void valuateNoteChars() {
 		short noteDuration = note.getStrictDuration();
+		//TODO put this in another method that can be overriden by sub classes.
 		if (isStemUp) 
 			switch (noteDuration) {
 				//Note.SIXTY_FOURTH: chars[0] = ScoreRenditionContext.
@@ -114,6 +117,12 @@ class JNote extends JScoreElementAbstract {
 				case Note.WHOLE: noteChars = WHOLE_NOTE_STEM_DOWN; break;
 				default : noteChars = UNKNWON;
 		}
+	}
+	
+	public void setStemUp(boolean isUp) {
+		//TODO no callback here to update the JNote once the stem direction has changed ?! 
+		isStemUp = isUp;
+		valuateNoteChars();
 	}
 	
 	public Point2D getStemBegin() {
@@ -226,9 +235,10 @@ class JNote extends JScoreElementAbstract {
 		return displayPosition;
 	}
 	
-	public Note getNote(){
+	/*
+public Note getNote(){
 		return note;
-	}
+	}*/
 	
 	public Point2D getSlurUpAnchor() {
 		return slurUpAnchor;

@@ -156,7 +156,7 @@ public class TunePlayer implements MetaEventListener
 		}
 		else
 			if (meta.getType()==MidiMessageType.NOTE_INDEX_MARKER) {
-				notifyNotePlayedChanged((NoteAbstract)m_tune.getScore().elementAt(NoteIndexMessage.getIndex(meta.getData())));
+				notifyNotePlayedChanged((NoteAbstract)m_tune.getMusic().elementAt(NoteIndexMessage.getIndex(meta.getData())));
 			}
 			else
 				if (MetaMessageWA.isNotationMarker(meta)) {

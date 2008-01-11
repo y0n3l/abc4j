@@ -86,9 +86,10 @@ class JGroupOfNotes extends JScoreElementAbstract {
 	protected void onBaseChanged() {
 		//m_jNotes = new JNotePartOfGroup[m_notes.length];
 		Point2D currentBase =(Point2D)m_base.clone();
-		Note highestNote = Note.getHighestNote(m_notes);
-		JNotePartOfGroup sn = new JNotePartOfGroup(highestNote, m_base, m_metrics);
-		m_stemYend = sn.getStemYBegin()-m_metrics.getStemLength();
+		
+		//Note highestNote = Note.getHighestNote(m_notes);
+		JGroupableNote highestNote = m_jNotes[Note.getHighestNoteIndex(m_notes)];//(m_notes); Notestsn = new JNotePartOfGroup(highestNote, m_base, m_metrics);
+		m_stemYend = highestNote.getStemYBegin()-m_metrics.getStemLength();
 		JGroupableNote firstNote = null;
 		JGroupableNote lastNote = null;
 		for (int i=0; i<m_jNotes.length; i++) {

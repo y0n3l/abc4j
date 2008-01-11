@@ -16,10 +16,13 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 	
 	public JNotePartOfGroup(Note noteValue, Point2D base, ScoreMetrics c) {
 		super(noteValue, base, c);
+		//onBaseChanged();
+	}
+	
+	protected void valuateNoteChars() {
 		//correct what differs from SNote...
 		//The displayed character is not the same.
-		noteChars = ScoreMetrics.NOTE; 
-		onBaseChanged();
+		noteChars = ScoreMetrics.NOTE;
 	}
 	
 	protected void onBaseChanged() {
@@ -33,10 +36,20 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 		displayPosition.setLocation(displayPosition.getX(), noteY);
 		double noteX = displayPosition.getX();
 		BasicStroke stemStroke = m_metrics.getNotesLinkStroke();
-		stemX = (int)(noteX + m_metrics.getNoteWidth() - stemStroke.getLineWidth()/10);
+		if (isStemUp)
+			stemX = (int)(noteX + m_metrics.getNoteWidth() - stemStroke.getLineWidth()/10);
+		else
+			stemX = (int)(noteX);
 		stemYBegin = (int)(noteY - m_metrics.getNoteHeigth()/6);
 		notePosition = new Point2D.Double(displayPosition.getX(), displayPosition.getY()+m_metrics.getNoteHeigth()*0.5);
 		onNotePositionChanged();
+	}
+	
+	public void setStemUp(boolean isUp) {
+		isStemUp = isUp;
+		//TODO separate callbacks when stem direction is changed and when base is changed
+		onBaseChanged();
+		//super.setStemUp(isUp);
 	}
 	
 	public int getStemX(){
@@ -99,8 +112,9 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 		context.setStroke(defaultS);
 		/*Color previousColor = context.getColor();
 		context.setColor(Color.RED);
-		context.drawLine((int)getNotePosition().getX(), (int)getNotePosition().getY(), 
-				(int)getNotePosition().getX(), (int)getNotePosition().getY());
+		context.drawLine((int)getStemX(), (int)getStemYBegin(), 
+				(int)getStemX(), (int)getStemYBegin());
+				//(int)getNotePosition().getX(), (int)getNotePosition().getY());
 		context.setColor(Color.GREEN);
 		context.drawLine((int)m_base.getX(), (int)m_base.getY(), 
 				(int)m_base.getX(), (int)m_base.getY());

@@ -343,7 +343,7 @@ public class Tune implements Cloneable
    * one. If you want to retrieve the score related to each part separatly just
    * do <TT>getPart(char partLabel).getScore()</TT>.
    * @see #getPart(char) */
-  public Music getScore()
+  public Music getMusic()
   {
     if (m_multiPartsDef==null)
       return (m_defaultPart.getScore());

@@ -585,6 +585,19 @@ public class Note extends NoteAbstract
 		}
 		return highestNote;
 	}
+  	
+  	public static int getHighestNoteIndex(Note[] notes) {
+		Note highestNote = notes[0];
+		int index = 0;
+		for (int i=0; i<notes.length; i++) {
+			if(notes[i].getHeight()>highestNote.getHeight()) {
+				highestNote =notes[i];
+				index = i;
+				//System.out.println("highest note is" + i);
+			}
+		}
+		return index;
+	}
 	
 	public static Note getLowestNote(Note[] notes) {
 		Note lowestNote = notes[0];

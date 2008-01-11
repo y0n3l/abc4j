@@ -15,6 +15,11 @@ class JChordPartOfGroup extends JChord implements JGroupableNote {
 		return new JNotePartOfGroup(note, new Point2D.Double(), m_metrics);
 	}
 	
+	protected JChord createComplexChord(MultiNote mNote, ScoreMetrics mtrx, Point2D base) {
+		
+		return new JChord(mNote, mtrx, base);
+	}
+	
 	public int getStemX() {
 		return ((JNotePartOfGroup)anchor).getStemX();
 	}

@@ -123,7 +123,7 @@ class JTune extends JScoreElementAbstract {
 		m_tune = tune;
 		m_scoreElements.clear();
 		m_staffLines.removeAllElements();
-		Music score = tune.getScore();
+		Music score = tune.getMusic();
 		//The spacing between two staff lines
 		m_staffLinesOffset = (int)(m_metrics.getStaffCharBounds().getHeight()*2.5);
 		cursor = new Point(XOffset, 0);
@@ -300,10 +300,9 @@ class JTune extends JScoreElementAbstract {
 	
 	private void appendToScore(ArrayList lessThanQuarterGroup){
 		if (lessThanQuarterGroup.size()>0) {
-		JScoreElementAbstract renditionResult = null;
-		JScoreElementAbstract[] renditionResultRootsElmts = new JScoreElementAbstract[lessThanQuarterGroup.size()];
-		NoteAbstract[] notes = (NoteAbstract[])lessThanQuarterGroup.toArray(new NoteAbstract[lessThanQuarterGroup.size()]);
-		
+			JScoreElementAbstract renditionResult = null;
+			JScoreElementAbstract[] renditionResultRootsElmts = new JScoreElementAbstract[lessThanQuarterGroup.size()];
+			NoteAbstract[] notes = (NoteAbstract[])lessThanQuarterGroup.toArray(new NoteAbstract[lessThanQuarterGroup.size()]);
 			if (notes.length==1) {
 				if (notes[0] instanceof Note) {
 					renditionResult = new JNote((Note)notes[0], cursor, m_metrics);
@@ -312,9 +311,8 @@ class JTune extends JScoreElementAbstract {
 				else {
 					//This is a multi note
 					renditionResult = new JChord((MultiNote)notes[0], m_metrics, cursor);
-						renditionResultRootsElmts[0] = renditionResult;
+					renditionResultRootsElmts[0] = renditionResult;
 				}
-					
 			}
 			else {
 				renditionResult = new JGroupOfNotes(m_metrics, cursor, notes);
@@ -383,7 +381,7 @@ class JTune extends JScoreElementAbstract {
 			JNote elmtEnd =  (JNote)m_scoreElements.get(slurDef.getEnd());
 			if (elmtStart.getStaffLine().equals(elmtEnd.getStaffLine())) {
 				Point2D controlPoint = null;
-				Note lowestNote = m_tune.getScore().getLowestNoteBewteen(slurDef.getStart(), slurDef.getEnd());
+				Note lowestNote = m_tune.getMusic().getLowestNoteBewteen(slurDef.getStart(), slurDef.getEnd());
 				if (lowestNote.equals(slurDef.getStart()))
 					controlPoint = new Point2D.Double(
 							elmtStart.getSlurDownAnchor().getX()+ (elmtEnd.getSlurDownAnchor().getX()-elmtStart.getSlurDownAnchor().getX())/2,
