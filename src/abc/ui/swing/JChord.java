@@ -65,21 +65,7 @@ class JChord extends JScoreElementAbstract {
 			jChord = createComplexChord(slowest, metrics, base);
 			m_complexChords[1] = jChord;
 			m_complexChords[1].setStemUp(false);
-			
-			/*
-			Enumeration en = h.keys();
-			Vector compositeChord = new Vector();
-			while (en.hasMoreElements()) {
-				Short value = (Short)en.nextElement();
-				Vector notes = (Vector)h.get(value);
-				MultiNote mn = new MultiNote(notes);
-				JChord jChord = createComplexChord(mn, metrics, base);
-				compositeChord.addElement(jChord);
-			}
-			m_complexChords = new JChord [compositeChord.size()];
-			compositeChord.toArray(m_complexChords);*/
 		}
-		//m_sNoteInstances[i]=n;
 		setBase(base);
 	}
 	

@@ -16,20 +16,12 @@ class JChordPartOfGroup extends JChord implements JGroupableNote {
 	}
 	
 	protected JChord createComplexChord(MultiNote mNote, ScoreMetrics mtrx, Point2D base) {
-		if (mNote.getStrictDurations()[0]<Note.QUARTER)
+		//Is this the fastest chord resulting from the decomposition of the original chord ?
+		if (multiNote.getStrictDurations()[0]==mNote.getStrictDurations()[0])
 			return new JChordPartOfGroup(mNote, mtrx, base);
 		else
 			return new JChord(mNote, mtrx, base);
 	}
-	
-	/*
-	public int getStemX() {
-		return ((JNotePartOfGroup)anchor).getStemX();
-	}
-
-	public int getStemYBegin() {
-		return ((JNotePartOfGroup)anchor).getStemYBegin();
-	}*/
 	
 	public void setStemYEnd(int value) {
 		if (m_complexChords!=null)
@@ -40,7 +32,7 @@ class JChordPartOfGroup extends JChord implements JGroupableNote {
 	
 	public int getStemYEnd() {
 		if (m_complexChords!=null)
-			((JChordPartOfGroup)m_complexChords[0]).getStemYEnd();
+			return ((JChordPartOfGroup)m_complexChords[0]).getStemYEnd();
 		else
 			return ((JNotePartOfGroup)anchor).getStemYEnd();
 	}
