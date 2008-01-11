@@ -71,23 +71,6 @@ class JNote extends JScoreElementAbstract {
 		super(c);
 		note = noteValue;
 		valuateNoteChars();
-		/*short noteDuration = note.getStrictDuration();
-		if (note.isRest()){
-			//System.out.println("duration of the rest is " + noteDuration);
-			switch (noteDuration) {
-				//Note.SIXTY_FOURTH: chars[0] = ScoreRenditionContext.
-				case Note.THIRTY_SECOND : noteChars = THIRTY_SECOND_REST; break;
-				case Note.SIXTEENTH : noteChars = SIXTEENTH_REST; break;
-				case Note.EIGHTH : noteChars = EIGHTH_REST; break;
-				case Note.QUARTER: noteChars = QUARTER_REST; break;
-				case Note.HALF: noteChars = HALF_REST; break;
-				case Note.WHOLE: noteChars = WHOLE_REST; break;
-				default : noteChars = UNKNWON;
-			}
-		}
-		else {
-			setStemUp(isStemUp);
-		}*/
 		setBase(base);
 		if (!note.isRest())
 			setStemUp(isStemUp);
@@ -138,15 +121,12 @@ class JNote extends JScoreElementAbstract {
 	}
 	
 	public void setStemUp(boolean isUp) {
-		//TODO no callback here to update the JNote once the stem direction has changed ?!
-		//if (isStemUp!=isUp) {
-			isStemUp = isUp;
-			valuateNoteChars();
-			if (isUp)
-				stemBeginPosition = stemUpBeginPosition;
-			else
-				stemBeginPosition= stemDownBeginPosition;
-		//}
+		isStemUp = isUp;
+		valuateNoteChars();
+		if (isUp)
+			stemBeginPosition = stemUpBeginPosition;
+		else
+			stemBeginPosition= stemDownBeginPosition;
 	}
 	
 	public Point2D getStemBegin() {

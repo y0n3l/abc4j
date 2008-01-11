@@ -16,8 +16,10 @@ class JChordPartOfGroup extends JChord implements JGroupableNote {
 	}
 	
 	protected JChord createComplexChord(MultiNote mNote, ScoreMetrics mtrx, Point2D base) {
-		//TODO what's the need of override here ?
-		return new JChord(mNote, mtrx, base);
+		if (mNote.getStrictDurations()[0]<Note.QUARTER)
+			return new JChordPartOfGroup(mNote, mtrx, base);
+		else
+			return new JChord(mNote, mtrx, base);
 	}
 	
 	/*
@@ -30,18 +32,30 @@ class JChordPartOfGroup extends JChord implements JGroupableNote {
 	}*/
 	
 	public void setStemYEnd(int value) {
-		((JNotePartOfGroup)anchor).setStemYEnd(value);
+		if (m_complexChords!=null)
+			((JChordPartOfGroup)m_complexChords[0]).setStemYEnd(value);
+		else
+			((JNotePartOfGroup)anchor).setStemYEnd(value);
 	}
 	
 	public int getStemYEnd() {
-		return ((JNotePartOfGroup)anchor).getStemYEnd();
+		if (m_complexChords!=null)
+			((JChordPartOfGroup)m_complexChords[0]).getStemYEnd();
+		else
+			return ((JNotePartOfGroup)anchor).getStemYEnd();
 	}
 	
 	public Point2D getStemBegin() {
-		return ((JNotePartOfGroup)anchor).getStemBegin();
+		if (m_complexChords!=null)
+			return ((JChordPartOfGroup)m_complexChords[0]).getStemBegin();
+		else
+			return ((JNotePartOfGroup)anchor).getStemBegin();
 	}
 	
 	public JNotePartOfGroup getReferenceNoteForGroup () {
-		return (JNotePartOfGroup)anchor;
+		if (m_complexChords!=null)
+			return ((JChordPartOfGroup)m_complexChords[0]).getReferenceNoteForGroup();
+		else
+			return (JNotePartOfGroup)anchor;
 	}
 }

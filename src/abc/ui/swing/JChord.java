@@ -27,7 +27,7 @@ class JChord extends JScoreElementAbstract {
 	protected JNote anchor = null;
 	
 	protected boolean isStemUp = true;
-	
+	/** ordered by multi notes ascend strict durations */  
 	protected JChord[] m_complexChords = null;
 	
 	public JChord(MultiNote multiNote, ScoreMetrics metrics, Point2D base){

@@ -171,8 +171,9 @@ class JTune extends JScoreElementAbstract {
 						if (tiesStart!=null)
 							for (int j=0; j<tiesStart.length; j++)
 							m_beginningNotesLinkElements.addElement(tiesStart[j]);
-						if (((MultiNote)s).hasUniqueStrictDuration() && 
-								((MultiNote)s).getLongestNote().getStrictDuration()<Note.QUARTER)
+						//checks if the shortest durations of the multi note is less than a quarter note.
+						// if yes, this multi note will be put into a group.
+						if (((MultiNote)s).getStrictDurations()[0]<Note.QUARTER)
 							lessThanQuarter.add(s);
 						else {
 							appendToScore(new JChord((MultiNote)s, m_metrics,cursor));
