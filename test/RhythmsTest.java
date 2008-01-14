@@ -93,6 +93,8 @@ public class RhythmsTest extends TestCase {
 		MultiNote firstNote = (MultiNote)tune.getMusic().elementAt(2);
 		assertEquals(firstNote.getStrictDurations()[0], Note.EIGHTH);
 		assertEquals(firstNote.getStrictDurations()[1], Note.QUARTER);
+		assertEquals(firstNote.getShortestNote().getOctaveTransposition(), 1);
+		assertEquals(firstNote.getLongestNote().getOctaveTransposition(), 0);
 	}
 
 	protected void tearDown() throws Exception {
