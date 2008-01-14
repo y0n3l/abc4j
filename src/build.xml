@@ -54,7 +54,7 @@
 	<taskdef name="jdiff" classname="jdiff.JDiffAntTask" classpath="${JDIFF_HOME}/antjdiff.jar"/>
 	
 	<!-- Makes all -->
-	<target name="all" depends="clean, sources.compile, libs, javadoc, jdiff.oldAPI, jdiff.compare, unittests" />
+	<target name="all" depends="clean, sources.compile, libs, javadoc, jdiff.oldAPI, jdiff.newAPI, jdiff.compare, unittests" />
 	<!-- Makes unit tests -->
 	<target name="unittests" depends="sources.compile, unittests.compile, instrument, unittests.run, unittests.report" description="unit tests" />
 
@@ -76,7 +76,7 @@
 			<mkdir dir="${libdir}" />
 			<echo>Generating jars to ${libdir}</echo>
 			<copy file="../ressources/LGtunes.abc" todir="../classes/abcynth"/>
-			<copy file="../ressources/SONORA.TTF" todir="../classes/abc/ui/swing/score"/>
+			<copy file="../ressources/SONORA.TTF" todir="../classes/abc/ui/swing"/>
 			<jar destfile="${libdir}/abc4j.jar" basedir="${classesdir}"
 				includes="abc/**,abcynth/**,check/**,scanner/**"
 				manifest="${srcdir}/manifest.mf">
@@ -212,6 +212,17 @@
 	    		</packageset>
 			</javadoc>
 		</target>
+	
+	<target name="jdiff.newAPI">
+				<javadoc >
+					<doclet name="jdiff.JDiff" path="${JDIFF_HOME}/jdiff.jar:${JDIFF_HOME}/xerces.jar">
+						<param name="-apiname" value="v0.4"/>
+					</doclet>
+					<packageset dir="${srcdir}" defaultexcludes="yes">
+		      			<patternset refid="doc.patternset"/>
+		    		</packageset>
+				</javadoc>
+			</target>
 	
 	<target name="jdiff.compare">
 			<javadoc destdir="${docdir}/diff">

@@ -226,7 +226,7 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
     		MusicElement elmnt = null;
     		Tune tune = m_tuneBookEditorPanel.getTuneEditSplitPane().getTuneEditorPane().getTune();
     		if (tune!=null) {
-    			elmnt = tune.getScore().getElementAt(e.getDot());
+    			elmnt = tune.getMusic().getElementAt(e.getDot());
     		}
     		m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().setSelectedItem(elmnt);
     	}

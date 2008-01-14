@@ -122,8 +122,8 @@ public class Main  {
 	public static void main (String[] arg) {
 		Tune tune = new Tune();
 		KeySignature key = new KeySignature(Note.D, KeySignature.MAJOR);
-		tune.getScore().addElement(key);
-		Tune.Music score = tune.getScore();
+		tune.getMusic().addElement(key);
+		Tune.Music score = tune.getMusic();
 		score.addElement(TimeSignature.SIGNATURE_4_4);
 		score.addElement(new Note(Note.C));
 		score.addElement(new Note(Note.D));

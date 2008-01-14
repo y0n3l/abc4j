@@ -15,7 +15,7 @@ class JChordPartOfGroup extends JChord implements JGroupableNote {
 		return new JNotePartOfGroup(note, new Point2D.Double(), m_metrics);
 	}
 	
-	protected JChord createComplexChord(MultiNote mNote, ScoreMetrics mtrx, Point2D base) {
+	protected JChord createNormalizedChord(MultiNote mNote, ScoreMetrics mtrx, Point2D base) {
 		//Is this the fastest chord resulting from the decomposition of the original chord ?
 		if (multiNote.getStrictDurations()[0]==mNote.getStrictDurations()[0])
 			return new JChordPartOfGroup(mNote, mtrx, base);
@@ -24,29 +24,29 @@ class JChordPartOfGroup extends JChord implements JGroupableNote {
 	}
 	
 	public void setStemYEnd(int value) {
-		if (m_complexChords!=null)
-			((JChordPartOfGroup)m_complexChords[0]).setStemYEnd(value);
+		if (m_normalizedChords!=null)
+			((JChordPartOfGroup)m_normalizedChords[0]).setStemYEnd(value);
 		else
 			((JNotePartOfGroup)anchor).setStemYEnd(value);
 	}
 	
 	public int getStemYEnd() {
-		if (m_complexChords!=null)
-			return ((JChordPartOfGroup)m_complexChords[0]).getStemYEnd();
+		if (m_normalizedChords!=null)
+			return ((JChordPartOfGroup)m_normalizedChords[0]).getStemYEnd();
 		else
 			return ((JNotePartOfGroup)anchor).getStemYEnd();
 	}
 	
 	public Point2D getStemBegin() {
-		if (m_complexChords!=null)
-			return ((JChordPartOfGroup)m_complexChords[0]).getStemBegin();
+		if (m_normalizedChords!=null)
+			return ((JChordPartOfGroup)m_normalizedChords[0]).getStemBegin();
 		else
 			return ((JNotePartOfGroup)anchor).getStemBegin();
 	}
 	
 	public JNotePartOfGroup getReferenceNoteForGroup () {
-		if (m_complexChords!=null)
-			return ((JChordPartOfGroup)m_complexChords[0]).getReferenceNoteForGroup();
+		if (m_normalizedChords!=null)
+			return ((JChordPartOfGroup)m_normalizedChords[0]).getReferenceNoteForGroup();
 		else
 			return (JNotePartOfGroup)anchor;
 	}
