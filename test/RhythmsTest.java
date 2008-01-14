@@ -1,4 +1,5 @@
 import junit.framework.TestCase;
+import abc.notation.MultiNote;
 import abc.notation.Note;
 import abc.notation.NoteAbstract;
 import abc.notation.Tune;
@@ -29,10 +30,10 @@ public class RhythmsTest extends TestCase {
 		TuneParser myParser = new TuneParser();
 		Tune tuneResult = myParser.parse(abcTune);
 		assertEquals(TUNE_TITLE, tuneResult.getTitles()[0]);
-		Note firstNote = (Note)tuneResult.getScore().elementAt(1);
+		Note firstNote = (Note)tuneResult.getMusic().elementAt(1);
 		assertEquals(Note.EIGHTH, firstNote.getStrictDuration());
 		assertEquals(1, firstNote.countDots());
-		Note secondNote = (Note)tuneResult.getScore().elementAt(2);
+		Note secondNote = (Note)tuneResult.getMusic().elementAt(2);
 		assertEquals(Note.SIXTEENTH, secondNote.getStrictDuration());
 		assertEquals(0, secondNote.countDots());
 	}
@@ -43,10 +44,10 @@ public class RhythmsTest extends TestCase {
 		TuneParser myParser = new TuneParser();
 		Tune tuneResult = myParser.parse(abcTune);
 		assertEquals(TUNE_TITLE, tuneResult.getTitles()[0]);
-		Note firstNote = (Note)tuneResult.getScore().elementAt(1);
+		Note firstNote = (Note)tuneResult.getMusic().elementAt(1);
 		assertEquals(Note.EIGHTH, firstNote.getStrictDuration());
 		assertEquals(2, firstNote.countDots());
-		Note secondNote = (Note)tuneResult.getScore().elementAt(2);
+		Note secondNote = (Note)tuneResult.getMusic().elementAt(2);
 		assertEquals(Note.THIRTY_SECOND, secondNote.getStrictDuration());
 		assertEquals(0, secondNote.countDots());
 	}
@@ -57,10 +58,10 @@ public class RhythmsTest extends TestCase {
 		TuneParser myParser = new TuneParser();
 		Tune tuneResult = myParser.parse(abcTune);
 		assertEquals(TUNE_TITLE, tuneResult.getTitles()[0]);
-		Note firstNote = (Note)tuneResult.getScore().elementAt(1);
+		Note firstNote = (Note)tuneResult.getMusic().elementAt(1);
 		assertEquals(Note.QUARTER, firstNote.getStrictDuration());
 		assertEquals(1, firstNote.countDots());
-		Note secondNote = (Note)tuneResult.getScore().elementAt(2);
+		Note secondNote = (Note)tuneResult.getMusic().elementAt(2);
 		assertEquals(Note.EIGHTH, secondNote.getStrictDuration());
 		assertEquals(0, secondNote.countDots());
 	}
@@ -71,10 +72,10 @@ public class RhythmsTest extends TestCase {
 		TuneParser myParser = new TuneParser();
 		Tune tuneResult = myParser.parse(abcTune);
 		assertEquals(TUNE_TITLE, tuneResult.getTitles()[0]);
-		Note firstNote = (Note)tuneResult.getScore().elementAt(1);
+		Note firstNote = (Note)tuneResult.getMusic().elementAt(1);
 		assertEquals(Note.QUARTER, firstNote.getStrictDuration());
 		assertEquals(2, firstNote.countDots());
-		Note secondNote = (Note)tuneResult.getScore().elementAt(2);
+		Note secondNote = (Note)tuneResult.getMusic().elementAt(2);
 		assertEquals(Note.SIXTEENTH, secondNote.getStrictDuration());
 		assertEquals(0, secondNote.countDots());
 	}
@@ -82,8 +83,16 @@ public class RhythmsTest extends TestCase {
 	public void test5(){
 		String tuneAsString = "X:1\nT:test\nM:2/4\nL:1/8\nK:C\na\n";
 		Tune tune = new TuneParser().parse(tuneAsString);
-		Note firstNote = (Note)tune.getScore().elementAt(2);
+		Note firstNote = (Note)tune.getMusic().elementAt(2);
 		assertEquals(firstNote.getStrictDuration(), Note.EIGHTH);
+	}
+	
+	public void test6(){
+		String tuneAsString = "X:1\nT:test\nM:2/4\nL:1/8\nK:C\n[A2a]\n";
+		Tune tune = new TuneParser().parse(tuneAsString);
+		MultiNote firstNote = (MultiNote)tune.getMusic().elementAt(2);
+		assertEquals(firstNote.getStrictDurations()[0], Note.EIGHTH);
+		assertEquals(firstNote.getStrictDurations()[1], Note.QUARTER);
 	}
 
 	protected void tearDown() throws Exception {

@@ -1,3 +1,5 @@
+import java.util.Vector;
+
 import junit.framework.TestCase;
 import abc.midi.MidiConverterAbstract;
 import abc.notation.AccidentalType;
@@ -71,20 +73,20 @@ public class HeightTest extends TestCase {
 		String tuneAsString = "X:1\nT:test\nK:c\nabcdef\n";
 		TuneParser tuneParser = new TuneParser();
 		Tune tune = tuneParser.parse(tuneAsString);
-		Note firstNote = (Note)tune.getScore().elementAt(1);
-		Note lastNote = (Note)tune.getScore().elementAt(6);
-		//System.out.println("highest note : " + tune.getScore().getHighestNoteBewteen(0, tune.getScore().size()-1));
-		assertEquals(Note.b, tune.getScore().getHighestNoteBewteen(firstNote, lastNote).getHeight());
+		Note firstNote = (Note)tune.getMusic().elementAt(1);
+		Note lastNote = (Note)tune.getMusic().elementAt(6);
+		//System.out.println("highest note : " + tune.getMusic().getHighestNoteBewteen(0, tune.getMusic().size()-1));
+		assertEquals(Note.b, tune.getMusic().getHighestNoteBewteen(firstNote, lastNote).getHeight());
 	}
 	
 	/** */
 	public void test2(){
 		String tuneAsString = "X:1\nT:test\nK:c\nb/2b2bb4b8\n";
 		Tune tune = new TuneParser().parse(tuneAsString);
-		Note firstNote = (Note)tune.getScore().elementAt(1);
-		Note secondNote = (Note)tune.getScore().elementAt(2);
-		Note thirdNote = (Note)tune.getScore().elementAt(3);
-		Note fourthNote = (Note)tune.getScore().elementAt(4);
+		Note firstNote = (Note)tune.getMusic().elementAt(1);
+		Note secondNote = (Note)tune.getMusic().elementAt(2);
+		Note thirdNote = (Note)tune.getMusic().elementAt(3);
+		Note fourthNote = (Note)tune.getMusic().elementAt(4);
 		assertEquals(firstNote.getHeight(), Note.b);
 		assertEquals(secondNote.getHeight(), Note.b);
 		assertEquals(thirdNote.getHeight(), Note.b);
@@ -94,18 +96,18 @@ public class HeightTest extends TestCase {
 	/** */
 	public void test3(){
 		Tune tune = new TuneParser().parse("X:1\nT:test\nK:c\naFc\n");
-		Note firstNote = (Note)tune.getScore().elementAt(1);
-		Note secondNote = (Note)tune.getScore().elementAt(2);
-		Note thirdNote = (Note)tune.getScore().elementAt(3);
-		assertEquals(tune.getScore().getLowestNoteBewteen(firstNote, thirdNote), secondNote);
-		assertEquals(tune.getScore().getHighestNoteBewteen(firstNote, thirdNote), firstNote);
+		Note firstNote = (Note)tune.getMusic().elementAt(1);
+		Note secondNote = (Note)tune.getMusic().elementAt(2);
+		Note thirdNote = (Note)tune.getMusic().elementAt(3);
+		assertEquals(tune.getMusic().getLowestNoteBewteen(firstNote, thirdNote), secondNote);
+		assertEquals(tune.getMusic().getHighestNoteBewteen(firstNote, thirdNote), firstNote);
 	}
 	
 	public void test4(){
 		Tune tune = new TuneParser().parse("X:1\nT:test\nK:c\n[aFc]\n");
-		MultiNote firstNote = (MultiNote)tune.getScore().elementAt(1);
-		//Note secondNote = (Note)tune.getScore().elementAt(2);
-		//Note thirdNote = (Note)tune.getScore().elementAt(3);
+		MultiNote firstNote = (MultiNote)tune.getMusic().elementAt(1);
+		//Note secondNote = (Note)tune.getMusic().elementAt(2);
+		//Note thirdNote = (Note)tune.getMusic().elementAt(3);
 		assertEquals(firstNote.getHighestNote().getStrictHeight(), Note.A);
 		assertEquals(firstNote.getLowestNote().getStrictHeight(), Note.F);
 	}
@@ -113,9 +115,44 @@ public class HeightTest extends TestCase {
 	public void testNoteVariousHeightComparison() {
 		String tuneAsString = "X:1\nT:test\nK:c\nA,B,CDEFa,b,cdef\n";
 		Tune tune = new TuneParser().parse(tuneAsString);
-		for (int i=0; i<tune.getScore().size()-1; i++)
-			if (tune.getScore().elementAt(i) instanceof Note && tune.getScore().elementAt(i+1) instanceof Note)
-				assertFalse(((Note)tune.getScore().elementAt(i)).isHigherThan((Note)tune.getScore().elementAt(i+1)));
+		for (int i=0; i<tune.getMusic().size()-1; i++)
+			if (tune.getMusic().elementAt(i) instanceof Note && tune.getMusic().elementAt(i+1) instanceof Note)
+				assertFalse(((Note)tune.getMusic().elementAt(i)).isHigherThan((Note)tune.getMusic().elementAt(i+1)));
+	}
+	
+	public void test5() {
+		String tuneAsString = "X:1\nT:test\nM:4/4\nL:1/4\nK:c\n[A2a]\n";
+		Tune tune = new TuneParser().parse(tuneAsString);
+		MultiNote n = (MultiNote)tune.getMusic().elementAt(2);
+		assertEquals(n.getLowestNote().getHeight(), Note.A);
+		assertEquals(n.getHighestNote().getHeight(), Note.a);
+		Note[] shorterNotes = MultiNote.getNotesShorterThan(n.toArray(), Note.HALF);
+		assertEquals(shorterNotes.length, 1);
+		assertEquals(shorterNotes[0].getHeight(), Note.a);
+	}
+	
+	public void test6() {
+		String tuneAsString = "X:1\nT:test\nM:4/4\nL:1/4\nK:c\n[aAa']\n";
+		Tune tune = new TuneParser().parse(tuneAsString);
+		MultiNote n = (MultiNote)tune.getMusic().elementAt(2);
+		Vector v = n.getNotesAsVector();
+		assertEquals(((Note)v.elementAt(0)).getHeight(), Note.A);
+		assertEquals(((Note)v.elementAt(1)).getHeight(), Note.a);
+		assertEquals(((Note)v.elementAt(2)).getStrictHeight(), Note.A);
+		assertEquals(((Note)v.elementAt(2)).getOctaveTransposition(), 2);
+	}
+	
+	public void test7() {
+		String tuneAsString = "X:1\nT:test\nM:4/4\nL:1/4\nK:c\n[a'AaA,]\n";
+		Tune tune = new TuneParser().parse(tuneAsString);
+		MultiNote n = (MultiNote)tune.getMusic().elementAt(2);
+		Vector v = n.getNotesAsVector();
+		assertEquals(((Note)v.elementAt(0)).getStrictHeight(), Note.A);
+		assertEquals(((Note)v.elementAt(0)).getOctaveTransposition(), -1);
+		assertEquals(((Note)v.elementAt(1)).getHeight(), Note.A);
+		assertEquals(((Note)v.elementAt(2)).getHeight(), Note.a);
+		assertEquals(((Note)v.elementAt(3)).getStrictHeight(), Note.A);
+		assertEquals(((Note)v.elementAt(3)).getOctaveTransposition(), 2);
 	}
 	
 	protected void tearDown() throws Exception {

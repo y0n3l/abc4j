@@ -31,7 +31,7 @@ public class TuneBookTest extends TestCase {
 			TuneBook tb = new TuneBook(f);
 			Tune t = tb.getTune(0);
 			//Checks the empty score that contains only the time signature and the key
-			assertEquals(2, t.getScore().size());
+			assertEquals(2, t.getMusic().size());
 			//Checks if in-file tune header are properly parsed.
 			assertNotNull(tb.getTuneHeader(0));
 
@@ -40,60 +40,60 @@ public class TuneBookTest extends TestCase {
 			//Checks if in-file tune header are properly parsed.
 			assertNotNull(tb.getTuneHeader(1));
 			PositionableNote n = null;
-			System.out.println(t.getScore());
-			n = (PositionableNote)t.getScore().elementAt(2);
+			System.out.println(t.getMusic());
+			n = (PositionableNote)t.getMusic().elementAt(2);
 			assertEquals(Note.C, n.getStrictHeight());
 			assertEquals(1, n.getPosition().getColumn());
 			assertEquals(5, n.getPosition().getLine());
 			assertEquals(2, n.getLength());
 			
-			n = (PositionableNote)t.getScore().elementAt(3);
+			n = (PositionableNote)t.getMusic().elementAt(3);
 			assertEquals(Note.D, n.getStrictHeight());
 			assertEquals(3, n.getPosition().getColumn());
 			assertEquals(5, n.getPosition().getLine());
 			assertEquals(2, n.getLength());
 			
-			n = (PositionableNote)t.getScore().elementAt(4);
+			n = (PositionableNote)t.getMusic().elementAt(4);
 			assertEquals(Note.E, n.getStrictHeight());
 			assertEquals(5, n.getPosition().getColumn());
 			assertEquals(5, n.getPosition().getLine());
 			assertEquals(2, n.getLength());
 			
-			n = (PositionableNote)t.getScore().elementAt(5);
+			n = (PositionableNote)t.getMusic().elementAt(5);
 			assertEquals(Note.F, n.getStrictHeight());
 			assertEquals(7, n.getPosition().getColumn());
 			assertEquals(5, n.getPosition().getLine());
 			assertEquals(2, n.getLength());
 			
-			assertEquals(BarLine.SIMPLE, ((BarLine)t.getScore().elementAt(6)).getType());
+			assertEquals(BarLine.SIMPLE, ((BarLine)t.getMusic().elementAt(6)).getType());
 			
 			
-			n = (PositionableNote)t.getScore().elementAt(7);
+			n = (PositionableNote)t.getMusic().elementAt(7);
 			assertEquals(Note.G, n.getStrictHeight());
 			assertEquals(1, n.getPosition().getColumn());
 			assertEquals(6, n.getPosition().getLine());
 			assertEquals(2, n.getLength());
 			
-			n = (PositionableNote)t.getScore().elementAt(8);
+			n = (PositionableNote)t.getMusic().elementAt(8);
 			assertEquals(Note.A, n.getStrictHeight());
 			assertEquals(3, n.getPosition().getColumn());
 			assertEquals(6, n.getPosition().getLine());
 			assertEquals(2, n.getLength());
 			
-			n = (PositionableNote)t.getScore().elementAt(9);
+			n = (PositionableNote)t.getMusic().elementAt(9);
 			assertEquals(Note.B, n.getStrictHeight());
 			assertEquals(5, n.getPosition().getColumn());
 			assertEquals(6, n.getPosition().getLine());
 			assertEquals(2, n.getLength());
 			
-			n = (PositionableNote)t.getScore().elementAt(10);
+			n = (PositionableNote)t.getMusic().elementAt(10);
 			assertEquals(Note.C, n.getStrictHeight());
 			assertEquals(7, n.getPosition().getColumn());
 			assertEquals(6, n.getPosition().getLine());
 			assertEquals(1, n.getLength());
 			
 			
-			assertEquals(BarLine.SIMPLE, ((BarLine)t.getScore().elementAt(11)).getType());
+			assertEquals(BarLine.SIMPLE, ((BarLine)t.getMusic().elementAt(11)).getType());
 			
 			
 		}

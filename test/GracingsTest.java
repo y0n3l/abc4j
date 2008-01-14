@@ -18,9 +18,9 @@ public class GracingsTest extends TestCase {
 	public void test1(){
 		String tuneAsString = "X:1\nT:test\nK:c\nvAuBC\n";
 		Tune tune = new TuneParser().parse(tuneAsString);
-		Note firstNote = (Note)tune.getScore().elementAt(1);
-		Note secondNote = (Note)tune.getScore().elementAt(2);
-		Note thirdNote = (Note)tune.getScore().elementAt(3);
+		Note firstNote = (Note)tune.getMusic().elementAt(1);
+		Note secondNote = (Note)tune.getMusic().elementAt(2);
+		Note thirdNote = (Note)tune.getMusic().elementAt(3);
 		assertTrue(firstNote.getBow()==NoteAbstract.DOWN);
 		assertTrue(secondNote.getBow()==NoteAbstract.UP);
 		assertTrue(thirdNote.getBow()==NoteAbstract.NONE);
@@ -29,9 +29,9 @@ public class GracingsTest extends TestCase {
 	public void test2(){
 		String tuneAsString = "X:1\nT:test\nK:c\nv_Au=Bv^c\n";
 		Tune tune = new TuneParser().parse(tuneAsString);
-		Note firstNote = (Note)tune.getScore().elementAt(1);
-		Note secondNote = (Note)tune.getScore().elementAt(2);
-		Note thirdNote = (Note)tune.getScore().elementAt(3);
+		Note firstNote = (Note)tune.getMusic().elementAt(1);
+		Note secondNote = (Note)tune.getMusic().elementAt(2);
+		Note thirdNote = (Note)tune.getMusic().elementAt(3);
 		assertEquals(firstNote.getBow(), NoteAbstract.DOWN);
 		assertEquals(firstNote.getAccidental(), AccidentalType.FLAT);
 		assertEquals(secondNote.getBow(), NoteAbstract.UP);

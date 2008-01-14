@@ -37,26 +37,26 @@ public class VariousTests extends TestCase {
 		String abcTune = line01.concat(line02).concat(line03).concat(line04).concat(line05);
 		TuneParser tparser = new TuneParser();
 		Tune tuneResult = tparser.parse(abcTune);
-		Note firstNote = (Note)tuneResult.getScore().elementAt(1);
+		Note firstNote = (Note)tuneResult.getMusic().elementAt(1);
 		assertEquals(Note.EIGHTH, firstNote.getStrictDuration());
 		assertEquals(Note.DOTTED_EIGHTH, firstNote.getDuration());
 		assertEquals(1, firstNote.countDots());
 		
-		Note secondNote = (Note)tuneResult.getScore().elementAt(2);
+		Note secondNote = (Note)tuneResult.getMusic().elementAt(2);
 		assertEquals(Note.SIXTEENTH, secondNote.getStrictDuration());
 		assertEquals(0, secondNote.countDots());
 		
-		Note thirdNote = (Note)tuneResult.getScore().elementAt(3);
+		Note thirdNote = (Note)tuneResult.getMusic().elementAt(3);
 		assertEquals(0, thirdNote.countDots());
 		assertEquals(Note.EIGHTH, thirdNote.getStrictDuration());
 		assertEquals(Note.EIGHTH, thirdNote.getDuration());
 		
-		Note fourthNote = (Note)tuneResult.getScore().elementAt(4);
+		Note fourthNote = (Note)tuneResult.getMusic().elementAt(4);
 		assertEquals(0, fourthNote.countDots());
 		assertEquals(Note.SIXTEENTH, fourthNote.getStrictDuration());
 		assertEquals(Note.SIXTEENTH, fourthNote.getDuration());
 		
-		Note fifthNote = (Note)tuneResult.getScore().elementAt(5);
+		Note fifthNote = (Note)tuneResult.getMusic().elementAt(5);
 		assertEquals(0, fifthNote.countDots());
 		assertEquals(Note.SIXTEENTH, fifthNote.getStrictDuration());
 		assertEquals(Note.SIXTEENTH, fifthNote.getDuration());
@@ -77,18 +77,18 @@ public class VariousTests extends TestCase {
 		String abcTune = line01.concat(line02).concat(line03).concat(line04).concat(line051);
 		TuneParser tparser = new TuneParser();
 		Tune tuneResult = tparser.parse(abcTune);
-		Note firstNote = (Note)tuneResult.getScore().elementAt(1);
+		Note firstNote = (Note)tuneResult.getMusic().elementAt(1);
 		assertEquals(Note.QUARTER, firstNote.getStrictDuration());
 		assertEquals(Note.DOTTED_QUARTER, firstNote.getDuration());
 		assertEquals(1, firstNote.countDots());
 		assertEquals(true, firstNote.isTied());
 		
-		Note secondNote = (Note)tuneResult.getScore().elementAt(2);
+		Note secondNote = (Note)tuneResult.getMusic().elementAt(2);
 		assertEquals(Note.SIXTEENTH, secondNote.getStrictDuration());
 		assertEquals(0, secondNote.countDots());
 		assertEquals(true, firstNote.isTied());
 		
-		Note thirdNote = (Note)tuneResult.getScore().elementAt(3);
+		Note thirdNote = (Note)tuneResult.getMusic().elementAt(3);
 		assertEquals(Note.EIGHTH, thirdNote.getStrictDuration());
 		assertEquals(0, thirdNote.countDots());
 		assertEquals(false, thirdNote.isTied());
@@ -119,7 +119,7 @@ public class VariousTests extends TestCase {
 	 * when trying ot get the token position when parsing a note. */
 	public void test4(){
 		String tuneAsString = "X:0\nT:test\nL:1/8\nK:C\n(3";
-		Tune tune = new TuneParser().parse(tuneAsString);
+		new TuneParser().parse(tuneAsString);
 	}
 	
 	protected void tearDown() throws Exception {

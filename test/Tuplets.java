@@ -18,9 +18,9 @@ public class Tuplets extends TestCase {
 	public void test1(){
 		String tuneAsString = "X:1\nT:test\nK:c\n(3abc\n";
 		Tune tune = new TuneParser().parse(tuneAsString);
-		Note firstNote = (Note)tune.getScore().elementAt(1);
-		Note secondNote = (Note)tune.getScore().elementAt(2);
-		Note thirdNote = (Note)tune.getScore().elementAt(3);
+		Note firstNote = (Note)tune.getMusic().elementAt(1);
+		Note secondNote = (Note)tune.getMusic().elementAt(2);
+		Note thirdNote = (Note)tune.getMusic().elementAt(3);
 		assertTrue(firstNote.isPartOfTuplet());
 		assertTrue(secondNote.isPartOfTuplet());
 		assertTrue(thirdNote.isPartOfTuplet());
@@ -32,9 +32,9 @@ public class Tuplets extends TestCase {
 	public void test2(){
 		String tuneAsString = "X:1\nT:test\nK:c\n(3[ae]bc\n";
 		Tune tune = new TuneParser().parse(tuneAsString);
-		MultiNote firstNote = (MultiNote)tune.getScore().elementAt(1);
-		Note secondNote = (Note)tune.getScore().elementAt(2);
-		Note thirdNote = (Note)tune.getScore().elementAt(3);
+		MultiNote firstNote = (MultiNote)tune.getMusic().elementAt(1);
+		Note secondNote = (Note)tune.getMusic().elementAt(2);
+		Note thirdNote = (Note)tune.getMusic().elementAt(3);
 		assertTrue(firstNote.isPartOfTuplet());
 		assertTrue(secondNote.isPartOfTuplet());
 		assertTrue(thirdNote.isPartOfTuplet());
