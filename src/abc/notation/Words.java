@@ -1,7 +1,7 @@
 package abc.notation;
 
 /**
- * A class to describe words (lyrics) in a score. 
+ * A class to describe words (lyrics) for a tune. 
  */
 public class Words implements MusicElement {
 	/** the content of the words. */

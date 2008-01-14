@@ -15,8 +15,8 @@ public interface JScoreElement {
 	 * @return The staff line containing this score element. */
 	//public JStaffLine getStaffLine();
 	
-	/** Returns the tune's music element represented by this graphical score element.
-	 * @return The tune's music element represented by this graphical score element. <TT>null</TT>
+	/** Returns the music element represented by this graphical score element.
+	 * @return The music element represented by this graphical score element. <TT>null</TT>
 	 * if this graphical score element is not related to any music element. 
 	 * @see MusicElement  */ 
 	public abstract MusicElement getMusicElement();
@@ -29,15 +29,13 @@ public interface JScoreElement {
 	 * given location.
 	 * @param location A location.
 	 * @return The score element whose bouding box contains the
-	 * given location. <TT>this</TT> can be returned or one of the 
-	 * sub <TT>JScoreElement</TT> contained in this one. <TT>null</TT>
-	 * is returned if no matching element has been found. */ 
+	 * given location. <TT>null</TT> is returned if no matching element 
+	 * has been found. */ 
 	public JScoreElement getScoreElementAt(Point location);
 	
 	/** Return the base of this element.
 	 * @return The base of this element. The base is the point that is used 
-	 * as a reference to draw the element at this location. 
-	 * @see #setBase(Point2D) */
+	 * as a reference to draw the element at this location. */
 	public Point2D getBase();
 	
 }

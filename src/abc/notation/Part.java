@@ -4,17 +4,17 @@ package abc.notation;
 public class Part implements Cloneable {
   private char m_label;
   //private Tune m_tune = null;
-  private Tune.Music m_score = null;
+  private Tune.Music m_music = null;
 
   Part (Tune tune, char labelValue) {
     //m_tune = tune;
     m_label = labelValue;
-    m_score = tune.createMusic();
+    m_music = tune.createMusic();
   }
   
   Part (Part root) {
 	  m_label = root.m_label;
-	  m_score = (Tune.Music)root.m_score.clone();
+	  m_music = (Tune.Music)root.m_music.clone();
   }
 
   /** Sets the label that identifies this part.
@@ -27,13 +27,13 @@ public class Part implements Cloneable {
   public char getLabel()
   { return m_label; }
 
-  /** Returns the score associated to this part.
-   * @return The score associated to this part. */
-  public Tune.Music getScore()
-  {return m_score;}
+  /** Returns the music to this part.
+   * @return The music associated to this part. */
+  public Tune.Music getMusic()
+  {return m_music;}
 
-  void setScore(Tune.Music score)
-  {m_score = score;}
+  void setMusic(Tune.Music score)
+  {m_music = score;}
   	
   	public Object clone(){
   		return new Part(this);

@@ -64,7 +64,7 @@ public class TuneParser extends AbcParserAbstract {
 		return parseHeader(new StringReader(tune));
 	}
 
-	/** Parse the given string and creates a <TT>Tune</TT> object with no score
+	/** Parse the given string and creates a <TT>Tune</TT> object with no music
 	 * as parsing result. This purpose of this method method is to provide a
 	 * faster parsing when just abc header fields are needed.
 	 * @param charStream The stream to be parsed.

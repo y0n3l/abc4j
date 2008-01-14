@@ -179,8 +179,8 @@ public class AbcParserAbstract
     private short m_defaultNoteLength = Note.EIGHTH;
 
     private TimeSignature m_timeSignature = null;
-    /** The score of the current part. */
-    private Tune.Music m_score = null;
+    /** The music of the current tune. */
+    private Tune.Music m_music = null;
     /** The tune resulting of the last parsing. */
     protected Tune m_tune = null;
 
@@ -235,7 +235,7 @@ public class AbcParserAbstract
         notesStartingTies.removeAllElements();
         m_defaultNoteLength = Note.EIGHTH;
         m_timeSignature = null;
-        m_score = null;
+        m_music = null;
         m_tune = null;
     }
 
@@ -334,7 +334,7 @@ public class AbcParserAbstract
           TimeSignature meter = parseFieldMeter(follow);
           if (meter!=null)
           {
-            m_score.addElement(meter);
+            m_music.addElement(meter);
             m_defaultNoteLength = meter.getDefaultNoteLength();
             m_timeSignature = meter;
           }
@@ -349,7 +349,7 @@ public class AbcParserAbstract
         if (m_tokenType.equals(AbcTokenType.FIELD_TEMPO))
         {
           Tempo tempo = parseFieldTempo(follow);
-          if (tempo!=null) m_score.addElement(tempo);
+          if (tempo!=null) m_music.addElement(tempo);
         }
         else
         if (m_tokenType.equals(AbcTokenType.COMMENT))
@@ -860,7 +860,7 @@ public class AbcParserAbstract
     {
     	//reinit the tune structures
     	m_tune = new Tune();
-        m_score = m_tune.getMusic();
+        m_music = m_tune.getMusic();
         brknRthmDotsCorrection = 0;
         slursDefinitionStack.removeAllElements();
         lastParsedNote =null;
@@ -898,7 +898,7 @@ public class AbcParserAbstract
       current.remove(FIRST_FIELD_KEY);
       //current = current.createUnion(FIRST_ABC_MUSIC);
       KeySignature key = parseFieldKey(current.createUnion(follow));
-      if (key!=null) m_score.addElement(key);
+      if (key!=null) m_music.addElement(key);
       return m_tune;
     }
 
@@ -987,7 +987,7 @@ public class AbcParserAbstract
         current.remove(FIRST_LINE_ENDER);
         Object lineEnder = parseLineEnder(current.createUnion(follow));
         if (lineEnder!=null)
-        	m_score.addElement(lineEnder);
+        	m_music.addElement(lineEnder);
       }
       else
         if (FIRST_MID_TUNE_FIELD.contains(m_tokenType))
@@ -1018,7 +1018,7 @@ public class AbcParserAbstract
       if (FIRST_FIELD_KEY.contains(m_tokenType))
       {
         KeySignature key = parseFieldKey(follow);
-        if (key!=null) m_score.addElement(key);
+        if (key!=null) m_music.addElement(key);
       }
       else
       if (FIRST_FIELD_DEFAULT_LENGTH.contains(m_tokenType))
@@ -1033,7 +1033,7 @@ public class AbcParserAbstract
         TimeSignature meter = parseFieldMeter(follow);
         if (meter!=null)
         {
-          m_score.addElement(meter);
+          m_music.addElement(meter);
           m_defaultNoteLength = meter.getDefaultNoteLength();
           m_timeSignature = meter;
         }
@@ -1043,22 +1043,22 @@ public class AbcParserAbstract
       {
         char partLabel = parseFieldPart(follow);
         if (m_tune.getPart(partLabel)!=null)
-          m_score= m_tune.getPart(partLabel).getScore();
+          m_music= m_tune.getPart(partLabel).getMusic();
         else
           // this part hasn't been used in the multi part definition but it's defined.
-          m_score = m_tune.createPart(partLabel).getScore();
+          m_music = m_tune.createPart(partLabel).getMusic();
       }
       else
       if (FIRST_FIELD_TEMPO.contains(m_tokenType))
       {
         Tempo tempo = parseFieldTempo(follow);
-        if (tempo!=null) m_score.addElement(tempo);
+        if (tempo!=null) m_music.addElement(tempo);
       }
       else
       if (FIRST_FIELD_WORDS.contains(m_tokenType)) {
         AbcTextField text = parseField(AbcTokenType.FIELD_WORDS, follow);
         if (text!=null)
-        	m_score.addElement(new Words(text.getText()));
+        	m_music.addElement(new Words(text.getText()));
       }
       else
         parseField(AbcTokenType.FIELD_TITLE, follow);
@@ -1080,7 +1080,7 @@ public class AbcParserAbstract
         	if (currentSlurDef.getStart()==null)
         		currentSlurDef.setStart(note);
         }*/
-        m_score.addElement(note);
+        m_music.addElement(note);
       }
       else
       if (FIRST_TUPLET_ELEMENT.contains(m_tokenType))
@@ -1091,20 +1091,20 @@ public class AbcParserAbstract
         // tuplet is not put in the score itself, but notes composing the tuplet
         Vector notes = tuplet.getNotesAsVector();
         for (int i=0; i<notes.size(); i++)
-          m_score.addElement(notes.elementAt(i));
+          m_music.addElement(notes.elementAt(i));
       }
       else
       if (FIRST_BARLINE.contains(m_tokenType))
       {
         byte[] barLineTypes = BarLine.convertToBarLine(accept(AbcTokenType.BARLINE, null, follow));
         for (int i=0; i<barLineTypes.length; i++)
-          m_score.addElement(new BarLine(barLineTypes[i]));
+          m_music.addElement(new BarLine(barLineTypes[i]));
       }
       else
       if (FIRST_NTH_REPEAT.contains(m_tokenType))
       {
         byte repeatNumber = convertToRepeatBarLine(accept(AbcTokenType.NTH_REPEAT, null, follow));
-        m_score.addElement(new RepeatBarLine(repeatNumber));
+        m_music.addElement(new RepeatBarLine(repeatNumber));
       }
       else
       if (m_tokenType.equals(AbcTokenType.BEGIN_SLUR))
@@ -1129,9 +1129,9 @@ public class AbcParserAbstract
       else
     	  if (m_tokenType.equals(AbcTokenType.SPACE)) {
     		  accept(AbcTokenType.SPACE, null, follow);
-    		  NoteAbstract lastScoreNote = m_score.getLastNote();
+    		  NoteAbstract lastScoreNote = m_music.getLastNote();
     		  if (lastScoreNote!=null && !lastScoreNote.equals(lastNoteFlaggedAsEndOfGroup))
-    			  m_score.addElement(new NotesSeparator());
+    			  m_music.addElement(new NotesSeparator());
     			  //m_score.getLastNote().setIsLastOfGroup(true);
     		  //System.out.println(this.getClass().getName() + " end of group marker");
     	  }

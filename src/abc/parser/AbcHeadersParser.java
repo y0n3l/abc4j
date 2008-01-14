@@ -9,7 +9,7 @@ import scanner.Set;
  * build up tunes indexes fastly.<BR/>
  * Just invoke the usual methods {@link #parseFile(java.io.File)} or 
  * {@link #parseFile(java.io.Reader)} and you'll get in return instances of 
- * Tune without any Score part. */
+ * Tune without any music part. */
 public class AbcHeadersParser extends AbcFileParser {
 
 	/** Default constructor. */

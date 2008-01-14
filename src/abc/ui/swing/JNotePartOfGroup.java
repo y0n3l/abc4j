@@ -50,21 +50,6 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 		onNotePositionChanged();
 	}
 	
-	/*public void setStemUp(boolean isUp) {
-		isStemUp = isUp;
-		//TODO separate callbacks when stem direction is changed and when base is changed
-		onBaseChanged();
-		//super.setStemUp(isUp);
-	}*/
-	
-	/*public int getStemX(){
-		return stemX;
-	}
-	
-	public int getStemYBegin(){
-		return stemYBegin;
-	}*/
-	
 	public void setStemYEnd(int value) {
 		stemYEnd = value;
 	}

@@ -19,7 +19,7 @@ public class HelpAction extends AbstractAction
   }
 
   public void actionPerformed(ActionEvent e)
-  { JOptionPane.showMessageDialog(m_parent, "ABCynth - The abc4j demonstrator\n2003-2007 by Lionel GUEGANTON\nFor feedback, "
+  { JOptionPane.showMessageDialog(m_parent, "ABCynth - The abc4j demonstrator\n2003-2008 by Lionel GUEGANTON\nFor feedback, "
                                   + "help or whatever...\nlionel.gueganton@libertysurf.fr\n"
                                   + "http://abc4j.googlecode.com\n" 
                                   + "http://groups.google.com/group/abc4j" , "About ABCynth", JOptionPane.INFORMATION_MESSAGE); }

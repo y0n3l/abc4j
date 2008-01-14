@@ -94,7 +94,7 @@ public class MultiNote extends NoteAbstract
 	  Note shortNote = (Note)m_notes.elementAt(0);
 	  float length = shortNote.getDuration();
 	  float currentNoteLength = 0;
-	  for (int i=0; i<m_notes.size() && shortNote==null; i++) {
+	  for (int i=1; i<m_notes.size(); i++) {
 		  currentNoteLength = ((Note)(m_notes.elementAt(i))).getDuration();
 		  if (currentNoteLength < length)
 			  shortNote = (Note)m_notes.elementAt(i);
@@ -219,7 +219,6 @@ public class MultiNote extends NoteAbstract
   }
   
   private static Vector fromLowestToHighest(Vector original){
-	  //TODO quick sort could be improved..
 	  Vector orderedNotes = new Vector();
 	  for (int i=0; i<original.size(); i++) {
 		  int j=0;

@@ -1,6 +1,6 @@
 package abc.notation;
 
-/** Abstract class that defines the number of times a part in the score should
+/** Abstract class that defines the number of times a part in a tune's music should
  * be repeated. */
 public abstract class RepeatedPartAbstract
 {

@@ -2,7 +2,7 @@ package abc.notation;
 
 import java.util.Vector;
 
-/** This class describes the way a multipart score is defined. */
+/** This class describes the way a multipart music tune is defined. */
 public class MultiPartsDefinition extends RepeatedPartAbstract implements Cloneable
 {
   private Vector m_parts = new Vector();

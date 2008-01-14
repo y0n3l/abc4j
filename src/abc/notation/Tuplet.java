@@ -2,7 +2,7 @@ package abc.notation;
 
 import java.util.Vector;
 
-/** A class to define tuplets in a score. */
+/** A class to define tuplets. */
 public class Tuplet
 {
   /** Notes composing the tuplet. */

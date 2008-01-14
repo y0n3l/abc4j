@@ -152,7 +152,8 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
     for (int j=0; j<notesVector.size(); j++)
     {
       Note note = (Note)(notesVector.elementAt(j));
-      long noteDuration = getNoteLengthInTicks(note);
+      //TODO needs to be improved to take into account multi notes with different notes length
+      long noteDuration = getNoteLengthInTicks(multiNote);
       if (!note.isRest() && !note.isEndingTie())
         addNoteOffEventsFor(track, reference+noteDuration, getNoteOffMessageFor(note, currentKey));
     }
@@ -236,8 +237,7 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 	  //if (notes!=null) {
 		  notes = MultiNote.excludeTiesEndings(notes);
 		  if (notes!=null)
-			  //TODO not sure if this should be the longest note and note the shortest one !!!
-			  return getNoteLengthInTicks(MultiNote.getLongestNote(notes));
+			  return getNoteLengthInTicks(note.getShortestNote());
 	  //}
 	  else
 		  return 0;

@@ -1,6 +1,6 @@
 package abc.notation;
 
-/** A special bar line that enables you to repeat part of the score. */
+/** A special bar line that enables you to repeat part of music from a tune. */
 public class RepeatBarLine extends BarLine implements MusicElement
 {
   private byte m_repeatNumber=0;

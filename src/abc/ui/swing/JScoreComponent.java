@@ -178,7 +178,7 @@ public class JScoreComponent extends JComponent {
 	 * @param elmnt The music element to be highlighted in the
 	 * score. <TT>null</TT> can be specified to remove 
 	 * highlighting. 
-	 * @see #setSelectedItem(JScoreElementAbstract) */
+	 * @see #setSelectedItem(JScoreElement) */
 	public void setSelectedItem(MusicElement elmnt) {
 		JScoreElementAbstract r = null;
 		if (elmnt!=null)

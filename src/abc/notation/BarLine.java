@@ -1,6 +1,6 @@
 package abc.notation;
 
-/** This class defines bar lines used in musical scores. */
+/** This class defines bar lines. */
 public class BarLine implements MusicElement
 {
   /** The simple bar line type. Ex: | */

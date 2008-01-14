@@ -336,27 +336,27 @@ public class Tune implements Cloneable
   public String getTranscriptionNotes()
   { return m_transcriptionNotes; }
 
-  /** Returns the score of this tune.
-   * @return The score of this tune. If this tune isn't composed of several parts
-   * this method returns the "normal" score. If this tune is composed of several
-   * parts the returned is generated so that the tune looks like a "single-part"
-   * one. If you want to retrieve the score related to each part separatly just
+  /** Returns the music part of this tune.
+   * @return The music part of this tune. If this tune isn't composed of several parts
+   * this method returns the "normal" music part. If this tune is composed of several
+   * parts the returned music is generated so that the tune looks like a "single-part"
+   * one. If you want to retrieve the music related to each part separatly just
    * do <TT>getPart(char partLabel).getScore()</TT>.
    * @see #getPart(char) */
   public Music getMusic()
   {
     if (m_multiPartsDef==null)
-      return (m_defaultPart.getScore());
+      return (m_defaultPart.getMusic());
     else
     {
       Music globalScore = new Music();
-      Music defaultScore = m_defaultPart.getScore();
+      Music defaultScore = m_defaultPart.getMusic();
       for (int i=0; i<defaultScore.size(); i++)
         globalScore.addElement(defaultScore.elementAt(i));
       Part[] parts = m_multiPartsDef.toPartsArray();
       for (int i=0; i<parts.length; i++)
       {
-        Music score = parts[i].getScore();
+        Music score = parts[i].getMusic();
         for (int j=0; j<score.size(); j++)
           globalScore.addElement(score.elementAt(j));
       }
@@ -460,17 +460,17 @@ public class Tune implements Cloneable
     	return highestNote;
     }*/
     
-    /** Returns the highest note between two score elements. <TT>MultiNote</TT> instances
+    /** Returns the highest note between two music elements. <TT>MultiNote</TT> instances
      * are ignored.  
-     * @param elmtBegin The score element where to start (included) the search
+     * @param elmtBegin The music element where to start (included) the search
      * of the highest note.
-     * @param elmtEnd The score element where to end (included) the search
+     * @param elmtEnd The music element where to end (included) the search
      * of the highest note.
-     * @return The highest note between two score elements. <TT>null</TT> if
-     * no note has been found between the two score elements.
-     * @throws IllegalArgumentException Thrown if one of the score elements hasn't been found 
-     * in the score or if the <TT>elmtEnd</TT> param is located before the <TT>elmntBegin</TT> 
-     * param in the score. */
+     * @return The highest note between two music elements. <TT>null</TT> if
+     * no note has been found between the two music elements.
+     * @throws IllegalArgumentException Thrown if one of the music elements hasn't been found 
+     * in the music or if the <TT>elmtEnd</TT> param is located before the <TT>elmntBegin</TT> 
+     * param in the music. */
     public Note getHighestNoteBewteen(MusicElement elmtBegin, MusicElement elmtEnd)
     	throws IllegalArgumentException {
     	Note highestNote = null;
