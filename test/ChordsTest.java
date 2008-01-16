@@ -35,4 +35,17 @@ public class ChordsTest extends TestCase {
 		assertEquals(firstNote.getHighestNote(), firstNote.getNotesAsVector().lastElement());
 	}
 	
+	public void test3(){
+		String tuneAsString = "X:1\nT:test\nK:c\n[e4^fa]\n";
+		Tune tune = new TuneParser().parse(tuneAsString);
+		MultiNote firstNote = (MultiNote)tune.getMusic().elementAt(1);
+		//Note secondNote = (Note)tune.getMusic().elementAt(2);
+		//Note thirdNote = (Note)tune.getMusic().elementAt(3);
+		assertFalse(firstNote.hasUniqueStrictDuration());
+		assertEquals(firstNote.getLowestNote(), firstNote.getNotesAsVector().firstElement());
+		assertEquals(firstNote.getHighestNote(), firstNote.getNotesAsVector().lastElement());
+		assertEquals(firstNote.getLongestNote(), firstNote.getNotesAsVector().firstElement());
+		assertEquals(firstNote.getHighestNote(), firstNote.getNotesAsVector().lastElement());
+	}
+	
 }

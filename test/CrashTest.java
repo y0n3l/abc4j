@@ -22,12 +22,12 @@ public class CrashTest extends TestCase {
 	
 
 	public void test1(){
+		try {
 		File f = new File(FILE_NAME);
 		System.out.println((new File(".")).getAbsolutePath());
 		AbcHeadersParser hparser = new AbcHeadersParser();
 		//hparser.addListener(new ParsingDumper());
 		long headersParsingTime = 0;
-		try { 
 			long start = System.currentTimeMillis();
 			hparser.parseFile(f);
 			long end = System.currentTimeMillis();
