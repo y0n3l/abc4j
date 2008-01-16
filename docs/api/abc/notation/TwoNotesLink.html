@@ -3,17 +3,17 @@
 <HTML>
 <HEAD>
 <TITLE>
-Tuplet (abc4j API Documentation)
+TwoNotesLink (abc4j API Documentation)
 </TITLE>
 
-<META NAME="keywords" CONTENT="abc.notation.Tuplet class">
+<META NAME="keywords" CONTENT="abc.notation.TwoNotesLink class">
 
 <LINK REL ="stylesheet" TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
 
 <SCRIPT type="text/javascript">
 function windowTitle()
 {
-    parent.document.title="Tuplet (abc4j API Documentation)";
+    parent.document.title="TwoNotesLink (abc4j API Documentation)";
 }
 </SCRIPT>
 <NOSCRIPT>
@@ -36,7 +36,7 @@ function windowTitle()
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/Tuplet.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/TwoNotesLink.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
@@ -51,11 +51,11 @@ abc4j API Specification</EM>
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../abc/notation/Tune.Music.html" title="class in abc.notation"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../abc/notation/TwoNotesLink.html" title="class in abc.notation"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../abc/notation/Tuplet.html" title="class in abc.notation"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../abc/notation/Words.html" title="class in abc.notation"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../index.html?abc/notation/Tuplet.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="Tuplet.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../index.html?abc/notation/TwoNotesLink.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="TwoNotesLink.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!--
   if(window==top) {
@@ -72,9 +72,9 @@ abc4j API Specification</EM>
 </TR>
 <TR>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+DETAIL:&nbsp;FIELD&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
 </TR>
 </TABLE>
 <A NAME="skip-navbar_top"></A>
@@ -86,18 +86,21 @@ DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&n
 <FONT SIZE="-1">
 abc.notation</FONT>
 <BR>
-Class Tuplet</H2>
+Class TwoNotesLink</H2>
 <PRE>
 java.lang.Object
-  <IMG SRC="../../resources/inherit.gif" ALT="extended by "><B>abc.notation.Tuplet</B>
+  <IMG SRC="../../resources/inherit.gif" ALT="extended by "><B>abc.notation.TwoNotesLink</B>
 </PRE>
+<DL>
+<DT><B>Direct Known Subclasses:</B> <DD><A HREF="../../abc/notation/SlurDefinition.html" title="class in abc.notation">SlurDefinition</A>, <A HREF="../../abc/notation/TieDefinition.html" title="class in abc.notation">TieDefinition</A></DD>
+</DL>
 <HR>
 <DL>
-<DT><PRE>public class <B>Tuplet</B><DT>extends java.lang.Object</DL>
+<DT><PRE>public class <B>TwoNotesLink</B><DT>extends java.lang.Object</DL>
 </PRE>
 
 <P>
-A class to define tuplets.
+This class abstracts any kind of relationship  between two notes.
 <P>
 
 <P>
@@ -105,24 +108,6 @@ A class to define tuplets.
 
 <P>
 
-<!-- ======== CONSTRUCTOR SUMMARY ======== -->
-
-<A NAME="constructor_summary"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
-<B>Constructor Summary</B></FONT></TH>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><B><A HREF="../../abc/notation/Tuplet.html#Tuplet(java.util.Vector, int, short)">Tuplet</A></B>(java.util.Vector&nbsp;notes,
-       int&nbsp;totalRelativeLength,
-       short&nbsp;defaultNoteLength)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a new tuplet composed of the specified notes.</TD>
-</TR>
-</TABLE>
-&nbsp;
 <!-- ========== METHOD SUMMARY =========== -->
 
 <A NAME="method_summary"><!-- --></A>
@@ -133,28 +118,35 @@ A class to define tuplets.
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;java.util.Vector</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../abc/notation/Tuplet.html#getNotesAsVector()">getNotesAsVector</A></B>()</CODE>
+<CODE>&nbsp;<A HREF="../../abc/notation/NoteAbstract.html" title="class in abc.notation">NoteAbstract</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/TwoNotesLink.html#getEnd()">getEnd</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns a new vector containing all notes of this multi note.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the end of the two notes link.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;short</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../abc/notation/Tuplet.html#getTotalDuration()">getTotalDuration</A></B>()</CODE>
+<CODE>&nbsp;<A HREF="../../abc/notation/NoteAbstract.html" title="class in abc.notation">NoteAbstract</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/TwoNotesLink.html#getStart()">getStart</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the total duration of this tuplet.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the start of the two notes link.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;int</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../abc/notation/Tuplet.html#getTotalRelativeLength()">getTotalRelativeLength</A></B>()</CODE>
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/TwoNotesLink.html#setEnd(abc.notation.NoteAbstract)">setEnd</A></B>(<A HREF="../../abc/notation/NoteAbstract.html" title="class in abc.notation">NoteAbstract</A>&nbsp;end)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Deprecated.</B>&nbsp;<I>use totalDuration() instead. Reference to relative length should
- be avoided in the API bacause this is only related to the "abc world".</I></TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sets the end of the two notes link.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/TwoNotesLink.html#setStart(abc.notation.NoteAbstract)">setStart</A></B>(<A HREF="../../abc/notation/NoteAbstract.html" title="class in abc.notation">NoteAbstract</A>&nbsp;start)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sets the start of the two notes link.</TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
@@ -169,33 +161,6 @@ A class to define tuplets.
 &nbsp;
 <P>
 
-<!-- ========= CONSTRUCTOR DETAIL ======== -->
-
-<A NAME="constructor_detail"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
-<B>Constructor Detail</B></FONT></TH>
-</TR>
-</TABLE>
-
-<A NAME="Tuplet(java.util.Vector, int, short)"><!-- --></A><H3>
-Tuplet</H3>
-<PRE>
-public <B>Tuplet</B>(java.util.Vector&nbsp;notes,
-              int&nbsp;totalRelativeLength,
-              short&nbsp;defaultNoteLength)</PRE>
-<DL>
-<DD>Creates a new tuplet composed of the specified notes. The total length
- of this tuplet will be equals to the totalRelativeLength * defaultLength.
-<P>
-<DL>
-<DT><B>Parameters:</B><DD><CODE>notes</CODE> - The <TT>NoteAbstract</TT> obejcts composing this tuplet,
- encapsulated inside a <TT>Vector</TT>.<DD><CODE>totalRelativeLength</CODE> - The total relative length of this tuplet
- multiplied by the delfault relative length gives the total absolute length
- of this tuplet.</DL>
-</DL>
-
 <!-- ============ METHOD DETAIL ========== -->
 
 <A NAME="method_detail"><!-- --></A>
@@ -206,49 +171,60 @@ public <B>Tuplet</B>(java.util.Vector&nbsp;notes,
 </TR>
 </TABLE>
 
-<A NAME="getTotalRelativeLength()"><!-- --></A><H3>
-getTotalRelativeLength</H3>
+<A NAME="getEnd()"><!-- --></A><H3>
+getEnd</H3>
 <PRE>
-public int <B>getTotalRelativeLength</B>()</PRE>
+public <A HREF="../../abc/notation/NoteAbstract.html" title="class in abc.notation">NoteAbstract</A> <B>getEnd</B>()</PRE>
 <DL>
-<DD><B>Deprecated.</B>&nbsp;<I>use totalDuration() instead. Reference to relative length should
- be avoided in the API bacause this is only related to the "abc world".</I>
-<P>
-<DD>Returns the total relative length of this tuplet.
+<DD>Returns the end of the two notes link.
 <P>
 <DD><DL>
 
-<DT><B>Returns:</B><DD>The total relative length of this tuplet. The total relative length
- of this tuplet multiplied by the default relative length gives the total
- absolute length of this tuplet.<DT><B>See Also:</B><DD><A HREF="../../abc/notation/Tuplet.html#getTotalDuration()"><CODE>getTotalDuration()</CODE></A></DL>
+<DT><B>Returns:</B><DD>Returns the end of the two notes link. 
+ <TT>null</TT> if not specified.<DT><B>See Also:</B><DD><A HREF="../../abc/notation/TwoNotesLink.html#getStart()"><CODE>getStart()</CODE></A></DL>
 </DD>
 </DL>
 <HR>
 
-<A NAME="getTotalDuration()"><!-- --></A><H3>
-getTotalDuration</H3>
+<A NAME="setEnd(abc.notation.NoteAbstract)"><!-- --></A><H3>
+setEnd</H3>
 <PRE>
-public short <B>getTotalDuration</B>()</PRE>
+public void <B>setEnd</B>(<A HREF="../../abc/notation/NoteAbstract.html" title="class in abc.notation">NoteAbstract</A>&nbsp;end)</PRE>
 <DL>
-<DD>Returns the total duration of this tuplet.
+<DD>Sets the end of the two notes link.
 <P>
 <DD><DL>
-
-<DT><B>Returns:</B><DD>The total duration of this tuplet.</DL>
+<DT><B>Parameters:</B><DD><CODE>end</CODE> - The note ending the relation between the two notes.<DT><B>See Also:</B><DD><A HREF="../../abc/notation/TwoNotesLink.html#getEnd()"><CODE>getEnd()</CODE></A>, 
+<A HREF="../../abc/notation/TwoNotesLink.html#setStart(abc.notation.NoteAbstract)"><CODE>setStart(NoteAbstract)</CODE></A></DL>
 </DD>
 </DL>
 <HR>
 
-<A NAME="getNotesAsVector()"><!-- --></A><H3>
-getNotesAsVector</H3>
+<A NAME="getStart()"><!-- --></A><H3>
+getStart</H3>
 <PRE>
-public java.util.Vector <B>getNotesAsVector</B>()</PRE>
+public <A HREF="../../abc/notation/NoteAbstract.html" title="class in abc.notation">NoteAbstract</A> <B>getStart</B>()</PRE>
 <DL>
-<DD>Returns a new vector containing all notes of this multi note.
+<DD>Returns the start of the two notes link.
 <P>
 <DD><DL>
 
-<DT><B>Returns:</B><DD>A new vector containing all notes of this multi note.</DL>
+<DT><B>Returns:</B><DD>Returns the start of the two notes link. 
+ <TT>null</TT> if not specified.<DT><B>See Also:</B><DD><A HREF="../../abc/notation/TwoNotesLink.html#getEnd()"><CODE>getEnd()</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setStart(abc.notation.NoteAbstract)"><!-- --></A><H3>
+setStart</H3>
+<PRE>
+public void <B>setStart</B>(<A HREF="../../abc/notation/NoteAbstract.html" title="class in abc.notation">NoteAbstract</A>&nbsp;start)</PRE>
+<DL>
+<DD>Sets the start of the two notes link.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>start</CODE> - The note starting the relation between the two notes.<DT><B>See Also:</B><DD><A HREF="../../abc/notation/TwoNotesLink.html#getStart()"><CODE>getStart()</CODE></A>, 
+<A HREF="../../abc/notation/TwoNotesLink.html#setEnd(abc.notation.NoteAbstract)"><CODE>setEnd(NoteAbstract)</CODE></A></DL>
 </DD>
 </DL>
 <!-- ========= END OF CLASS DATA ========= -->
@@ -267,7 +243,7 @@ public java.util.Vector <B>getNotesAsVector</B>()</PRE>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/Tuplet.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/TwoNotesLink.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
@@ -282,11 +258,11 @@ abc4j API Specification</EM>
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../abc/notation/Tune.Music.html" title="class in abc.notation"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../abc/notation/TwoNotesLink.html" title="class in abc.notation"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../abc/notation/Tuplet.html" title="class in abc.notation"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../abc/notation/Words.html" title="class in abc.notation"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../index.html?abc/notation/Tuplet.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="Tuplet.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../index.html?abc/notation/TwoNotesLink.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="TwoNotesLink.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!--
   if(window==top) {
@@ -303,9 +279,9 @@ abc4j API Specification</EM>
 </TR>
 <TR>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
+DETAIL:&nbsp;FIELD&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
 </TR>
 </TABLE>
 <A NAME="skip-navbar_bottom"></A>

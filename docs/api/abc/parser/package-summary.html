@@ -149,7 +149,7 @@ This package contains classes for parsing tunes in abc notation.
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD WIDTH="15%"><B><A HREF="../../abc/parser/AsynchronousTuneParser.html" title="class in abc.parser">AsynchronousTuneParser</A></B></TD>
-<TD>&nbsp;</TD>
+<TD>A parser that parses abc gammar into its own thread context.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD WIDTH="15%"><B><A HREF="../../abc/parser/InvalidTokenEvent.html" title="class in abc.parser">InvalidTokenEvent</A></B></TD>
@@ -235,7 +235,7 @@ X:2
 T:dots example
 L:1/4
 K:D
-d>d
+d&gt;d
 </PRE>
 describe the same melody : a dotted quarter note followed by eighth note. The consequence of this is that their 
 representation in <TT>Note</TT> objects will be the same : the first note is a <TT>Note</TT> instance 
@@ -256,7 +256,7 @@ in standard music notation with one single note : a quarter note is 4 times a ei
 quarter is 6 times a eighth note.<BR/>
 For now, the resulting note will be an instance of the <TT>Note</TT> class but with an "exotic" duration.
 One possible alternative would be to decompose this duration into several notes, but for now, the 
-translation sticks to the approach "one abc note -> one <TT>Note</TT> instance".
+translation sticks to the approach "one abc note -&gt; one <TT>Note</TT> instance".
 </LI>
 </OL>
 <P>

@@ -51,7 +51,7 @@ abc4j API Specification</EM>
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../abc/ui/swing/JScoreComponent.html" title="class in abc.ui.swing"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing"><B>PREV CLASS</B></A>&nbsp;
 &nbsp;NEXT CLASS</FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../../index.html?abc/ui/swing/TuneEditorPane.html" target="_top"><B>FRAMES</B></A>  &nbsp;
@@ -98,11 +98,11 @@ java.lang.Object
                           <IMG SRC="../../../resources/inherit.gif" ALT="extended by "><B>abc.ui.swing.TuneEditorPane</B>
 </PRE>
 <DL>
-<DT><B>All Implemented Interfaces:</B> <DD>java.awt.event.ActionListener, java.awt.image.ImageObserver, java.awt.MenuContainer, java.io.Serializable, java.util.EventListener, javax.accessibility.Accessible, javax.swing.Scrollable</DD>
+<DT><B>All Implemented Interfaces:</B> <DD>java.awt.image.ImageObserver, java.awt.MenuContainer, java.io.Serializable, javax.accessibility.Accessible, javax.swing.Scrollable</DD>
 </DL>
 <HR>
 <DL>
-<DT><PRE>public class <B>TuneEditorPane</B><DT>extends javax.swing.JTextPane<DT>implements java.awt.event.ActionListener</DL>
+<DT><PRE>public class <B>TuneEditorPane</B><DT>extends javax.swing.JTextPane</DL>
 </PRE>
 
 <P>
@@ -156,79 +156,7 @@ A JTextPane to display and edit abc tunes. This pane handles copy/paste.
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>static&nbsp;java.lang.String</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#BARS_STYLE">BARS_STYLE</A></B></CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>static&nbsp;java.lang.String</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#COMMENT_STYLE">COMMENT_STYLE</A></B></CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>static&nbsp;java.lang.String</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#DEFAULT_STYLE">DEFAULT_STYLE</A></B></CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>static&nbsp;java.lang.String</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#ERROR_STYLE">ERROR_STYLE</A></B></CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>static&nbsp;java.lang.String</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#FIELD_STYLE">FIELD_STYLE</A></B></CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>static&nbsp;java.lang.String</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#GRACING_STYLE">GRACING_STYLE</A></B></CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>static&nbsp;java.lang.String</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#NOTE_STYLE">NOTE_STYLE</A></B></CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>static&nbsp;java.lang.String</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#REFRESHER_THREAD_NAME">REFRESHER_THREAD_NAME</A></B></CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>static&nbsp;java.lang.String</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#RHYTHM_STYLE">RHYTHM_STYLE</A></B></CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>static&nbsp;java.lang.String</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#TEXT_STYLE">TEXT_STYLE</A></B></CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -292,26 +220,27 @@ A JTextPane to display and edit abc tunes. This pane handles copy/paste.
 <TD><CODE><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#TuneEditorPane()">TuneEditorPane</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Default constructor.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD><CODE><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#TuneEditorPane(int)">TuneEditorPane</A></B>(int&nbsp;idleTimeBeforeRefresh)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a new TuneEditorPane with the given idle time before refresh.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD><CODE><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#TuneEditorPane(abc.parser.TuneParser)">TuneEditorPane</A></B>(<A HREF="../../../abc/parser/TuneParser.html" title="class in abc.parser">TuneParser</A>&nbsp;parser)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a new TuneEditorPane with the given parser.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD><CODE><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#TuneEditorPane(abc.parser.TuneParser, int)">TuneEditorPane</A></B>(<A HREF="../../../abc/parser/TuneParser.html" title="class in abc.parser">TuneParser</A>&nbsp;parser,
                int&nbsp;idleTimeBeforeRefresh)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a new TuneEditorPane with the given parser and
+ idle time before refresh.</TD>
 </TR>
 </TABLE>
 &nbsp;
@@ -325,20 +254,12 @@ A JTextPane to display and edit abc tunes. This pane handles copy/paste.
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#actionPerformed(java.awt.event.ActionEvent)">actionPerformed</A></B>(java.awt.event.ActionEvent&nbsp;e)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This method is activated on the Keystrokes we are listening to
- in this implementation.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../../abc/parser/TuneParser.html" title="class in abc.parser">TuneParser</A></CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#getParser()">getParser</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the parser used to build up the tune from the 
+ abc text written in this pane.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -354,7 +275,7 @@ A JTextPane to display and edit abc tunes. This pane handles copy/paste.
 <TD><CODE><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#getTune()">getTune</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the tune that is currently described in this tune editor.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -362,7 +283,8 @@ A JTextPane to display and edit abc tunes. This pane handles copy/paste.
 <TD><CODE><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#isColoringEnabled()">isColoringEnabled</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <TT>true</TT> if text coloring has been enabled, <TT>false</TT>
+ otherwise.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -370,15 +292,15 @@ A JTextPane to display and edit abc tunes. This pane handles copy/paste.
 <TD><CODE><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#setColoringEnable(boolean)">setColoringEnable</A></B>(boolean&nbsp;coloring)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Enables/disables coloring of the text.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#setDocument(javax.swing.text.Document)">setDocument</A></B>(javax.swing.text.Document&nbsp;doc)</CODE>
+<TD><CODE><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#setSelectedItem(scanner.PositionableInCharStream)">setSelectedItem</A></B>(<A HREF="../../../scanner/PositionableInCharStream.html" title="interface in scanner">PositionableInCharStream</A>&nbsp;elmnt)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Highlights the specified element in the abc tune notation.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -403,7 +325,7 @@ A JTextPane to display and edit abc tunes. This pane handles copy/paste.
 <TH ALIGN="left"><B>Methods inherited from class javax.swing.JTextPane</B></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE>addStyle, getCharacterAttributes, getInputAttributes, getLogicalStyle, getParagraphAttributes, getStyle, getStyledDocument, getUIClassID, insertComponent, insertIcon, removeStyle, replaceSelection, setCharacterAttributes, setEditorKit, setLogicalStyle, setParagraphAttributes, setStyledDocument</CODE></TD>
+<TD><CODE>addStyle, getCharacterAttributes, getInputAttributes, getLogicalStyle, getParagraphAttributes, getStyle, getStyledDocument, getUIClassID, insertComponent, insertIcon, removeStyle, replaceSelection, setCharacterAttributes, setDocument, setEditorKit, setLogicalStyle, setParagraphAttributes, setStyledDocument</CODE></TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_javax.swing.JEditorPane"><!-- --></A>
@@ -473,96 +395,6 @@ A JTextPane to display and edit abc tunes. This pane handles copy/paste.
 </TR>
 </TABLE>
 
-<A NAME="ERROR_STYLE"><!-- --></A><H3>
-ERROR_STYLE</H3>
-<PRE>
-public static final java.lang.String <B>ERROR_STYLE</B></PRE>
-<DL>
-<DL>
-<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#abc.ui.swing.TuneEditorPane.ERROR_STYLE">Constant Field Values</A></DL>
-</DL>
-<HR>
-
-<A NAME="BARS_STYLE"><!-- --></A><H3>
-BARS_STYLE</H3>
-<PRE>
-public static final java.lang.String <B>BARS_STYLE</B></PRE>
-<DL>
-<DL>
-<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#abc.ui.swing.TuneEditorPane.BARS_STYLE">Constant Field Values</A></DL>
-</DL>
-<HR>
-
-<A NAME="TEXT_STYLE"><!-- --></A><H3>
-TEXT_STYLE</H3>
-<PRE>
-public static final java.lang.String <B>TEXT_STYLE</B></PRE>
-<DL>
-<DL>
-<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#abc.ui.swing.TuneEditorPane.TEXT_STYLE">Constant Field Values</A></DL>
-</DL>
-<HR>
-
-<A NAME="COMMENT_STYLE"><!-- --></A><H3>
-COMMENT_STYLE</H3>
-<PRE>
-public static final java.lang.String <B>COMMENT_STYLE</B></PRE>
-<DL>
-<DL>
-<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#abc.ui.swing.TuneEditorPane.COMMENT_STYLE">Constant Field Values</A></DL>
-</DL>
-<HR>
-
-<A NAME="NOTE_STYLE"><!-- --></A><H3>
-NOTE_STYLE</H3>
-<PRE>
-public static final java.lang.String <B>NOTE_STYLE</B></PRE>
-<DL>
-<DL>
-<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#abc.ui.swing.TuneEditorPane.NOTE_STYLE">Constant Field Values</A></DL>
-</DL>
-<HR>
-
-<A NAME="GRACING_STYLE"><!-- --></A><H3>
-GRACING_STYLE</H3>
-<PRE>
-public static final java.lang.String <B>GRACING_STYLE</B></PRE>
-<DL>
-<DL>
-<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#abc.ui.swing.TuneEditorPane.GRACING_STYLE">Constant Field Values</A></DL>
-</DL>
-<HR>
-
-<A NAME="FIELD_STYLE"><!-- --></A><H3>
-FIELD_STYLE</H3>
-<PRE>
-public static final java.lang.String <B>FIELD_STYLE</B></PRE>
-<DL>
-<DL>
-<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#abc.ui.swing.TuneEditorPane.FIELD_STYLE">Constant Field Values</A></DL>
-</DL>
-<HR>
-
-<A NAME="RHYTHM_STYLE"><!-- --></A><H3>
-RHYTHM_STYLE</H3>
-<PRE>
-public static final java.lang.String <B>RHYTHM_STYLE</B></PRE>
-<DL>
-<DL>
-<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#abc.ui.swing.TuneEditorPane.RHYTHM_STYLE">Constant Field Values</A></DL>
-</DL>
-<HR>
-
-<A NAME="DEFAULT_STYLE"><!-- --></A><H3>
-DEFAULT_STYLE</H3>
-<PRE>
-public static final java.lang.String <B>DEFAULT_STYLE</B></PRE>
-<DL>
-<DL>
-<DT><B>See Also:</B><DD><A HREF="../../../constant-values.html#abc.ui.swing.TuneEditorPane.DEFAULT_STYLE">Constant Field Values</A></DL>
-</DL>
-<HR>
-
 <A NAME="REFRESHER_THREAD_NAME"><!-- --></A><H3>
 REFRESHER_THREAD_NAME</H3>
 <PRE>
@@ -587,6 +419,8 @@ TuneEditorPane</H3>
 <PRE>
 public <B>TuneEditorPane</B>()</PRE>
 <DL>
+<DD>Default constructor.
+<P>
 </DL>
 <HR>
 
@@ -595,6 +429,11 @@ TuneEditorPane</H3>
 <PRE>
 public <B>TuneEditorPane</B>(<A HREF="../../../abc/parser/TuneParser.html" title="class in abc.parser">TuneParser</A>&nbsp;parser)</PRE>
 <DL>
+<DD>Creates a new TuneEditorPane with the given parser.
+<P>
+<DL>
+<DT><B>Parameters:</B><DD><CODE>parser</CODE> - The parser to be used to parse the abc notation 
+ written in the TuneEditorPane and to give the resulting <A HREF="../../../abc/notation/Tune.html" title="class in abc.notation"><CODE>tune</CODE></A></DL>
 </DL>
 <HR>
 
@@ -603,6 +442,12 @@ TuneEditorPane</H3>
 <PRE>
 public <B>TuneEditorPane</B>(int&nbsp;idleTimeBeforeRefresh)</PRE>
 <DL>
+<DD>Creates a new TuneEditorPane with the given idle time before refresh.
+<P>
+<DL>
+<DT><B>Parameters:</B><DD><CODE>idleTimeBeforeRefresh</CODE> - The idle time after any text update
+ before triggering the parsing of the abc text written in this pane.
+ This is used to avoid perpetual parsing of the text at each text update</DL>
 </DL>
 <HR>
 
@@ -612,6 +457,14 @@ TuneEditorPane</H3>
 public <B>TuneEditorPane</B>(<A HREF="../../../abc/parser/TuneParser.html" title="class in abc.parser">TuneParser</A>&nbsp;parser,
                       int&nbsp;idleTimeBeforeRefresh)</PRE>
 <DL>
+<DD>Creates a new TuneEditorPane with the given parser and
+ idle time before refresh.
+<P>
+<DL>
+<DT><B>Parameters:</B><DD><CODE>parser</CODE> - The parser to be used to parse the abc notation 
+ written in the TuneEditorPane and to give the resulting <A HREF="../../../abc/notation/Tune.html" title="class in abc.notation"><CODE>tune</CODE></A><DD><CODE>idleTimeBeforeRefresh</CODE> - The idle time after any text update
+ before triggering the parsing of the abc text written in this pane.
+ This is used to avoid perpetual parsing of the text at each text update</DL>
 </DL>
 
 <!-- ============ METHOD DETAIL ========== -->
@@ -643,11 +496,13 @@ getParser</H3>
 <PRE>
 public <A HREF="../../../abc/parser/TuneParser.html" title="class in abc.parser">TuneParser</A> <B>getParser</B>()</PRE>
 <DL>
+<DD>Returns the parser used to build up the tune from the 
+ abc text written in this pane.
+<P>
 <DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
+
+<DT><B>Returns:</B><DD>the parser used to build up the tune from the 
+ abc text written in this pane.</DL>
 </DD>
 </DL>
 <HR>
@@ -657,11 +512,14 @@ isColoringEnabled</H3>
 <PRE>
 public boolean <B>isColoringEnabled</B>()</PRE>
 <DL>
+<DD>Returns <TT>true</TT> if text coloring has been enabled, <TT>false</TT>
+ otherwise.
+<P>
 <DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
+
+<DT><B>Returns:</B><DD><TT>true</TT> if text coloring has been enabled, <TT>false</TT>
+ otherwise. Text coloring enables user to distinguish abc tokens detected in 
+ the text of this pane.<DT><B>See Also:</B><DD><A HREF="../../../abc/ui/swing/TuneEditorPane.html#setColoringEnable(boolean)"><CODE>setColoringEnable(boolean)</CODE></A></DL>
 </DD>
 </DL>
 <HR>
@@ -671,11 +529,24 @@ setColoringEnable</H3>
 <PRE>
 public void <B>setColoringEnable</B>(boolean&nbsp;coloring)</PRE>
 <DL>
+<DD>Enables/disables coloring of the text.
+<P>
 <DD><DL>
-</DL>
+<DT><B>Parameters:</B><DD><CODE>coloring</CODE> - <TT>true</TT> if text coloring should be enabled, 
+ <TT>false</TT> otherwise.<DT><B>See Also:</B><DD><A HREF="../../../abc/ui/swing/TuneEditorPane.html#isColoringEnabled()"><CODE>isColoringEnabled()</CODE></A></DL>
 </DD>
-<DD><DL>
 </DL>
+<HR>
+
+<A NAME="setSelectedItem(scanner.PositionableInCharStream)"><!-- --></A><H3>
+setSelectedItem</H3>
+<PRE>
+public void <B>setSelectedItem</B>(<A HREF="../../../scanner/PositionableInCharStream.html" title="interface in scanner">PositionableInCharStream</A>&nbsp;elmnt)</PRE>
+<DL>
+<DD>Highlights the specified element in the abc tune notation.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>elmnt</CODE> - The element to be highlighted in the abc tune notation.</DL>
 </DD>
 </DL>
 <HR>
@@ -699,25 +570,11 @@ getTune</H3>
 <PRE>
 public <A HREF="../../../abc/notation/Tune.html" title="class in abc.notation">Tune</A> <B>getTune</B>()</PRE>
 <DL>
+<DD>Returns the tune that is currently described in this tune editor.
+<P>
 <DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
 
-<A NAME="setDocument(javax.swing.text.Document)"><!-- --></A><H3>
-setDocument</H3>
-<PRE>
-public void <B>setDocument</B>(javax.swing.text.Document&nbsp;doc)</PRE>
-<DL>
-<DD><DL>
-<DT><B>Overrides:</B><DD><CODE>setDocument</CODE> in class <CODE>javax.swing.JTextPane</CODE></DL>
-</DD>
-<DD><DL>
-</DL>
+<DT><B>Returns:</B><DD>The tune that is currently described in this tune editor.</DL>
 </DD>
 </DL>
 <HR>
@@ -729,23 +586,6 @@ public void <B>setText</B>(java.lang.String&nbsp;text)</PRE>
 <DL>
 <DD><DL>
 <DT><B>Overrides:</B><DD><CODE>setText</CODE> in class <CODE>javax.swing.JEditorPane</CODE></DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="actionPerformed(java.awt.event.ActionEvent)"><!-- --></A><H3>
-actionPerformed</H3>
-<PRE>
-public void <B>actionPerformed</B>(java.awt.event.ActionEvent&nbsp;e)</PRE>
-<DL>
-<DD>This method is activated on the Keystrokes we are listening to
- in this implementation. Here it listens for Copy and Paste ActionCommands.
-<P>
-<DD><DL>
-<DT><B>Specified by:</B><DD><CODE>actionPerformed</CODE> in interface <CODE>java.awt.event.ActionListener</CODE></DL>
 </DD>
 <DD><DL>
 </DL>
@@ -782,7 +622,7 @@ abc4j API Specification</EM>
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../abc/ui/swing/JScoreComponent.html" title="class in abc.ui.swing"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing"><B>PREV CLASS</B></A>&nbsp;
 &nbsp;NEXT CLASS</FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../../index.html?abc/ui/swing/TuneEditorPane.html" target="_top"><B>FRAMES</B></A>  &nbsp;

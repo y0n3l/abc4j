@@ -102,7 +102,10 @@ Packages that use <A HREF="../../../abc/notation/Tune.html" title="class in abc.
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD><A HREF="#abc.ui.swing"><B>abc.ui.swing</B></A></TD>
-<TD>This package contains classes for displaying abc related objects in swing UI components.&nbsp;</TD>
+<TD>This package contains classes for displaying abc related objects in swing UI components.<BR/>
+        Such components are closely linked to music abstractions defined in package abc.notation and
+        propose advanced UI components that take advantage of information offered by objects 
+        such as <TT>Tune</TT>, <TT>Tune.Music</TT> etc...&nbsp;</TD>
 </TR>
 </TABLE>
 &nbsp;
@@ -271,7 +274,7 @@ Uses of <A HREF="../../../abc/notation/Tune.html" title="class in abc.notation">
 <TD><CODE><B>TuneParser.</B><B><A HREF="../../../abc/parser/TuneParser.html#parseHeader(java.io.Reader)">parseHeader</A></B>(java.io.Reader&nbsp;charStream)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Parse the given string and creates a <TT>Tune</TT> object with no score
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Parse the given string and creates a <TT>Tune</TT> object with no music
  as parsing result.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
@@ -411,7 +414,7 @@ Uses of <A HREF="../../../abc/notation/Tune.html" title="class in abc.notation">
 <TD><CODE><B>TuneEditorPane.</B><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#getTune()">getTune</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the tune that is currently described in this tune editor.</TD>
 </TR>
 </TABLE>
 &nbsp;

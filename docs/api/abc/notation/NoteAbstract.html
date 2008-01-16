@@ -52,7 +52,7 @@ abc4j API Specification</EM>
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
 &nbsp;<A HREF="../../abc/notation/Note.html" title="class in abc.notation"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../abc/notation/Part.html" title="class in abc.notation"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../abc/notation/NotesSeparator.html" title="class in abc.notation"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../index.html?abc/notation/NoteAbstract.html" target="_top"><B>FRAMES</B></A>  &nbsp;
 &nbsp;<A HREF="NoteAbstract.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
@@ -92,14 +92,14 @@ java.lang.Object
   <IMG SRC="../../resources/inherit.gif" ALT="extended by "><B>abc.notation.NoteAbstract</B>
 </PRE>
 <DL>
-<DT><B>All Implemented Interfaces:</B> <DD><A HREF="../../abc/notation/ScoreElementInterface.html" title="interface in abc.notation">ScoreElementInterface</A></DD>
+<DT><B>All Implemented Interfaces:</B> <DD><A HREF="../../abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A></DD>
 </DL>
 <DL>
 <DT><B>Direct Known Subclasses:</B> <DD><A HREF="../../abc/notation/MultiNote.html" title="class in abc.notation">MultiNote</A>, <A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A></DD>
 </DL>
 <HR>
 <DL>
-<DT><PRE>public class <B>NoteAbstract</B><DT>extends java.lang.Object<DT>implements <A HREF="../../abc/notation/ScoreElementInterface.html" title="interface in abc.notation">ScoreElementInterface</A></DL>
+<DT><PRE>public class <B>NoteAbstract</B><DT>extends java.lang.Object<DT>implements <A HREF="../../abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A></DL>
 </PRE>
 
 <P>
@@ -218,6 +218,14 @@ This is the abstract class to define notes or multi notes.
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../abc/notation/SlurDefinition.html" title="class in abc.notation">SlurDefinition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/NoteAbstract.html#getSlurDefinition()">getSlurDefinition</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../abc/notation/Tuplet.html" title="class in abc.notation">Tuplet</A></CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../abc/notation/NoteAbstract.html#getTuplet()">getTuplet</A></B>()</CODE>
 
@@ -247,6 +255,22 @@ This is the abstract class to define notes or multi notes.
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <TT>true</TT> if this note should be played with staccato.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/NoteAbstract.html#isBeginingSlur()">isBeginingSlur</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/NoteAbstract.html#isEndingSlur()">isEndingSlur</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -311,6 +335,14 @@ This is the abstract class to define notes or multi notes.
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sets if this note is part of a slur or not.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/NoteAbstract.html#setSlurDefinition(abc.notation.SlurDefinition)">setSlurDefinition</A></B>(<A HREF="../../abc/notation/SlurDefinition.html" title="class in abc.notation">SlurDefinition</A>&nbsp;slurDefinition)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -738,6 +770,63 @@ public int <B>getGracingNotesLength</B>(short&nbsp;defaultNoteLength)</PRE>
 </DL>
 <HR>
 
+<A NAME="getSlurDefinition()"><!-- --></A><H3>
+getSlurDefinition</H3>
+<PRE>
+public <A HREF="../../abc/notation/SlurDefinition.html" title="class in abc.notation">SlurDefinition</A> <B>getSlurDefinition</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>Returns the slurDefinition.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isBeginingSlur()"><!-- --></A><H3>
+isBeginingSlur</H3>
+<PRE>
+public boolean <B>isBeginingSlur</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isEndingSlur()"><!-- --></A><H3>
+isEndingSlur</H3>
+<PRE>
+public boolean <B>isEndingSlur</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setSlurDefinition(abc.notation.SlurDefinition)"><!-- --></A><H3>
+setSlurDefinition</H3>
+<PRE>
+public void <B>setSlurDefinition</B>(<A HREF="../../abc/notation/SlurDefinition.html" title="class in abc.notation">SlurDefinition</A>&nbsp;slurDefinition)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>slurDefinition</CODE> - The slurDefinition to set.</DL>
+</DD>
+</DL>
+<HR>
+
 <A NAME="toString()"><!-- --></A><H3>
 toString</H3>
 <PRE>
@@ -785,7 +874,7 @@ abc4j API Specification</EM>
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
 &nbsp;<A HREF="../../abc/notation/Note.html" title="class in abc.notation"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../abc/notation/Part.html" title="class in abc.notation"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../abc/notation/NotesSeparator.html" title="class in abc.notation"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../index.html?abc/notation/NoteAbstract.html" target="_top"><B>FRAMES</B></A>  &nbsp;
 &nbsp;<A HREF="NoteAbstract.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;

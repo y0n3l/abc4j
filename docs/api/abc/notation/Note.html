@@ -93,7 +93,7 @@ java.lang.Object
       <IMG SRC="../../resources/inherit.gif" ALT="extended by "><B>abc.notation.Note</B>
 </PRE>
 <DL>
-<DT><B>All Implemented Interfaces:</B> <DD><A HREF="../../abc/notation/ScoreElementInterface.html" title="interface in abc.notation">ScoreElementInterface</A></DD>
+<DT><B>All Implemented Interfaces:</B> <DD><A HREF="../../abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A></DD>
 </DL>
 <DL>
 <DT><B>Direct Known Subclasses:</B> <DD><A HREF="../../abc/parser/PositionableNote.html" title="class in abc.parser">PositionableNote</A></DD>
@@ -507,6 +507,14 @@ This class defines a (single) Note : height, rhythm, part of tuplet, rest etc...
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/Note.html#getHighestNoteIndex(abc.notation.Note[])">getHighestNoteIndex</A></B>(<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>static&nbsp;<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A></CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../abc/notation/Note.html#getLowestNote(abc.notation.Note[])">getLowestNote</A></B>(<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes)</CODE>
 
@@ -553,6 +561,54 @@ This class defines a (single) Note : height, rhythm, part of tuplet, rest etc...
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns this note absolute height.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../abc/notation/TieDefinition.html" title="class in abc.notation">TieDefinition</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/Note.html#getTieDefinition()">getTieDefinition</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/Note.html#hasAccidental()">hasAccidental</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/Note.html#isBeginningTie()">isBeginningTie</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <TT>true</TT> if this note is beginning a tie.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/Note.html#isEndingTie()">isEndingTie</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <TT>true</TT> if this note is ending a tie.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/Note.html#isHigherThan(abc.notation.Note)">isHigherThan</A></B>(<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>&nbsp;aNote)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <TT>true</TT> if the given note is strictly higher than this one.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/Note.html#isLowerThan(abc.notation.Note)">isLowerThan</A></B>(<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>&nbsp;aNote)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -624,14 +680,6 @@ This class defines a (single) Note : height, rhythm, part of tuplet, rest etc...
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../abc/notation/Note.html#setIsTied(boolean)">setIsTied</A></B>(boolean&nbsp;isTied)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sets if this note is tied, wheter or not.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;void</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../abc/notation/Note.html#setLength(short)">setLength</A></B>(short&nbsp;length)</CODE>
 
 <BR>
@@ -652,6 +700,14 @@ This class defines a (single) Note : height, rhythm, part of tuplet, rest etc...
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sets the strict duration of this note.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/Note.html#setTieDefinition(abc.notation.TieDefinition)">setTieDefinition</A></B>(<A HREF="../../abc/notation/TieDefinition.html" title="class in abc.notation">TieDefinition</A>&nbsp;tieDef)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sets the tie definition for this note.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -676,7 +732,7 @@ This class defines a (single) Note : height, rhythm, part of tuplet, rest etc...
 <TH ALIGN="left"><B>Methods inherited from class abc.notation.<A HREF="../../abc/notation/NoteAbstract.html" title="class in abc.notation">NoteAbstract</A></B></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><A HREF="../../abc/notation/NoteAbstract.html#countDots()">countDots</A>, <A HREF="../../abc/notation/NoteAbstract.html#getBow()">getBow</A>, <A HREF="../../abc/notation/NoteAbstract.html#getChordName()">getChordName</A>, <A HREF="../../abc/notation/NoteAbstract.html#getDotted()">getDotted</A>, <A HREF="../../abc/notation/NoteAbstract.html#getGracingNotes()">getGracingNotes</A>, <A HREF="../../abc/notation/NoteAbstract.html#getGracingNotesLength(short)">getGracingNotesLength</A>, <A HREF="../../abc/notation/NoteAbstract.html#getTuplet()">getTuplet</A>, <A HREF="../../abc/notation/NoteAbstract.html#hasGeneralGracing()">hasGeneralGracing</A>, <A HREF="../../abc/notation/NoteAbstract.html#hasGracingNotes()">hasGracingNotes</A>, <A HREF="../../abc/notation/NoteAbstract.html#hasStaccato()">hasStaccato</A>, <A HREF="../../abc/notation/NoteAbstract.html#isPartOfSlur()">isPartOfSlur</A>, <A HREF="../../abc/notation/NoteAbstract.html#isPartOfTuplet()">isPartOfTuplet</A>, <A HREF="../../abc/notation/NoteAbstract.html#setBow(byte)">setBow</A>, <A HREF="../../abc/notation/NoteAbstract.html#setChordName(java.lang.String)">setChordName</A>, <A HREF="../../abc/notation/NoteAbstract.html#setGeneralGracing(boolean)">setGeneralGracing</A>, <A HREF="../../abc/notation/NoteAbstract.html#setGracingNotes(abc.notation.Note[])">setGracingNotes</A>, <A HREF="../../abc/notation/NoteAbstract.html#setPartOfSlur(boolean)">setPartOfSlur</A>, <A HREF="../../abc/notation/NoteAbstract.html#setStaccato(boolean)">setStaccato</A></CODE></TD>
+<TD><CODE><A HREF="../../abc/notation/NoteAbstract.html#countDots()">countDots</A>, <A HREF="../../abc/notation/NoteAbstract.html#getBow()">getBow</A>, <A HREF="../../abc/notation/NoteAbstract.html#getChordName()">getChordName</A>, <A HREF="../../abc/notation/NoteAbstract.html#getDotted()">getDotted</A>, <A HREF="../../abc/notation/NoteAbstract.html#getGracingNotes()">getGracingNotes</A>, <A HREF="../../abc/notation/NoteAbstract.html#getGracingNotesLength(short)">getGracingNotesLength</A>, <A HREF="../../abc/notation/NoteAbstract.html#getSlurDefinition()">getSlurDefinition</A>, <A HREF="../../abc/notation/NoteAbstract.html#getTuplet()">getTuplet</A>, <A HREF="../../abc/notation/NoteAbstract.html#hasGeneralGracing()">hasGeneralGracing</A>, <A HREF="../../abc/notation/NoteAbstract.html#hasGracingNotes()">hasGracingNotes</A>, <A HREF="../../abc/notation/NoteAbstract.html#hasStaccato()">hasStaccato</A>, <A HREF="../../abc/notation/NoteAbstract.html#isBeginingSlur()">isBeginingSlur</A>, <A HREF="../../abc/notation/NoteAbstract.html#isEndingSlur()">isEndingSlur</A>, <A HREF="../../abc/notation/NoteAbstract.html#isPartOfSlur()">isPartOfSlur</A>, <A HREF="../../abc/notation/NoteAbstract.html#isPartOfTuplet()">isPartOfTuplet</A>, <A HREF="../../abc/notation/NoteAbstract.html#setBow(byte)">setBow</A>, <A HREF="../../abc/notation/NoteAbstract.html#setChordName(java.lang.String)">setChordName</A>, <A HREF="../../abc/notation/NoteAbstract.html#setGeneralGracing(boolean)">setGeneralGracing</A>, <A HREF="../../abc/notation/NoteAbstract.html#setGracingNotes(abc.notation.Note[])">setGracingNotes</A>, <A HREF="../../abc/notation/NoteAbstract.html#setPartOfSlur(boolean)">setPartOfSlur</A>, <A HREF="../../abc/notation/NoteAbstract.html#setSlurDefinition(abc.notation.SlurDefinition)">setSlurDefinition</A>, <A HREF="../../abc/notation/NoteAbstract.html#setStaccato(boolean)">setStaccato</A></CODE></TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
@@ -1199,6 +1255,32 @@ public byte <B>getHeight</B>()</PRE>
 </DL>
 <HR>
 
+<A NAME="isHigherThan(abc.notation.Note)"><!-- --></A><H3>
+isHigherThan</H3>
+<PRE>
+public boolean <B>isHigherThan</B>(<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>&nbsp;aNote)</PRE>
+<DL>
+<DD>Returns <TT>true</TT> if the given note is strictly higher than this one.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>aNote</CODE> - A note instance.
+<DT><B>Returns:</B><DD><TT>true</TT> if the given note is strictly higher than this one, 
+ <TT>false</TT> otherwise.<DT><B>See Also:</B><DD><A HREF="../../abc/notation/Note.html#isLowerThan(abc.notation.Note)"><CODE>isLowerThan(Note)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isLowerThan(abc.notation.Note)"><!-- --></A><H3>
+isLowerThan</H3>
+<PRE>
+public boolean <B>isLowerThan</B>(<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>&nbsp;aNote)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
 <A NAME="getStrictHeight()"><!-- --></A><H3>
 getStrictHeight</H3>
 <PRE>
@@ -1425,15 +1507,68 @@ public byte <B>getAccidental</B>()</PRE>
 </DL>
 <HR>
 
-<A NAME="setIsTied(boolean)"><!-- --></A><H3>
-setIsTied</H3>
+<A NAME="hasAccidental()"><!-- --></A><H3>
+hasAccidental</H3>
 <PRE>
-public void <B>setIsTied</B>(boolean&nbsp;isTied)</PRE>
+public boolean <B>hasAccidental</B>()</PRE>
 <DL>
-<DD>Sets if this note is tied, wheter or not.
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setTieDefinition(abc.notation.TieDefinition)"><!-- --></A><H3>
+setTieDefinition</H3>
+<PRE>
+public void <B>setTieDefinition</B>(<A HREF="../../abc/notation/TieDefinition.html" title="class in abc.notation">TieDefinition</A>&nbsp;tieDef)</PRE>
+<DL>
+<DD>Sets the tie definition for this note.
 <P>
 <DD><DL>
-<DT><B>Parameters:</B><DD><CODE>isTied</CODE> - <TT>true</TT> if this note is tied, <TT>false</TT> otherwise.<DT><B>See Also:</B><DD><A HREF="../../abc/notation/Note.html#isTied()"><CODE>isTied()</CODE></A></DL>
+<DT><B>Parameters:</B><DD><CODE>tieDef</CODE> - The definition of the tie if this note is tied. <TT>NULL</TT> if the
+ note should not be tied.<DT><B>See Also:</B><DD><A HREF="../../abc/notation/Note.html#isTied()"><CODE>isTied()</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getTieDefinition()"><!-- --></A><H3>
+getTieDefinition</H3>
+<PRE>
+public <A HREF="../../abc/notation/TieDefinition.html" title="class in abc.notation">TieDefinition</A> <B>getTieDefinition</B>()</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isBeginningTie()"><!-- --></A><H3>
+isBeginningTie</H3>
+<PRE>
+public boolean <B>isBeginningTie</B>()</PRE>
+<DL>
+<DD>Returns <TT>true</TT> if this note is beginning a tie.
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><TT>true</TT> if this note is beginning a tie, <TT>false</TT>
+ otherwise.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="isEndingTie()"><!-- --></A><H3>
+isEndingTie</H3>
+<PRE>
+public boolean <B>isEndingTie</B>()</PRE>
+<DL>
+<DD>Returns <TT>true</TT> if this note is ending a tie.
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><TT>true</TT> if this note is ending a tie, <TT>false</TT>
+ otherwise.</DL>
 </DD>
 </DL>
 <HR>
@@ -1447,7 +1582,7 @@ public boolean <B>isTied</B>()</PRE>
 <P>
 <DD><DL>
 
-<DT><B>Returns:</B><DD><TT>true</TT> if this note is tied, <TT>false</TT> otherwise.<DT><B>See Also:</B><DD><A HREF="../../abc/notation/Note.html#setIsTied(boolean)"><CODE>setIsTied(boolean)</CODE></A></DL>
+<DT><B>Returns:</B><DD><TT>true</TT> if this note is tied, <TT>false</TT> otherwise.<DT><B>See Also:</B><DD><A HREF="../../abc/notation/Note.html#setTieDefinition(abc.notation.TieDefinition)"><CODE>setTieDefinition(TieDefinition)</CODE></A></DL>
 </DD>
 </DL>
 <HR>
@@ -1567,6 +1702,17 @@ public static boolean <B>isStrictDuration</B>(short&nbsp;noteDuration)</PRE>
 getHighestNote</H3>
 <PRE>
 public static <A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A> <B>getHighestNote</B>(<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getHighestNoteIndex(abc.notation.Note[])"><!-- --></A><H3>
+getHighestNoteIndex</H3>
+<PRE>
+public static int <B>getHighestNoteIndex</B>(<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes)</PRE>
 <DL>
 <DD><DL>
 </DL>

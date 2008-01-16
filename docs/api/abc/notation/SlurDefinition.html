@@ -3,17 +3,17 @@
 <HTML>
 <HEAD>
 <TITLE>
-ScoreElementInterface (abc4j API Documentation)
+SlurDefinition (abc4j API Documentation)
 </TITLE>
 
-<META NAME="keywords" CONTENT="abc.notation.ScoreElementInterface interface">
+<META NAME="keywords" CONTENT="abc.notation.SlurDefinition class">
 
 <LINK REL ="stylesheet" TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
 
 <SCRIPT type="text/javascript">
 function windowTitle()
 {
-    parent.document.title="ScoreElementInterface (abc4j API Documentation)";
+    parent.document.title="SlurDefinition (abc4j API Documentation)";
 }
 </SCRIPT>
 <NOSCRIPT>
@@ -36,7 +36,7 @@ function windowTitle()
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/ScoreElementInterface.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/SlurDefinition.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
@@ -52,10 +52,10 @@ abc4j API Specification</EM>
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
 &nbsp;<A HREF="../../abc/notation/RepeatedPartAbstract.html" title="class in abc.notation"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../abc/notation/ScorePresentationElementInterface.html" title="interface in abc.notation"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../abc/notation/Tempo.html" title="class in abc.notation"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../index.html?abc/notation/ScoreElementInterface.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="ScoreElementInterface.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../index.html?abc/notation/SlurDefinition.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="SlurDefinition.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!--
   if(window==top) {
@@ -72,9 +72,9 @@ abc4j API Specification</EM>
 </TR>
 <TR>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;METHOD</FONT></TD>
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#methods_inherited_from_class_abc.notation.TwoNotesLink">METHOD</A></FONT></TD>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-DETAIL:&nbsp;FIELD&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;METHOD</FONT></TD>
+DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;METHOD</FONT></TD>
 </TR>
 </TABLE>
 <A NAME="skip-navbar_top"></A>
@@ -86,20 +86,22 @@ DETAIL:&nbsp;FIELD&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;METHOD</FONT></TD>
 <FONT SIZE="-1">
 abc.notation</FONT>
 <BR>
-Interface ScoreElementInterface</H2>
+Class SlurDefinition</H2>
+<PRE>
+java.lang.Object
+  <IMG SRC="../../resources/inherit.gif" ALT="extended by "><A HREF="../../abc/notation/TwoNotesLink.html" title="class in abc.notation">abc.notation.TwoNotesLink</A>
+      <IMG SRC="../../resources/inherit.gif" ALT="extended by "><B>abc.notation.SlurDefinition</B>
+</PRE>
 <DL>
-<DT><B>All Known Subinterfaces:</B> <DD><A HREF="../../abc/notation/ScorePresentationElementInterface.html" title="interface in abc.notation">ScorePresentationElementInterface</A></DD>
-</DL>
-<DL>
-<DT><B>All Known Implementing Classes:</B> <DD><A HREF="../../abc/notation/BarLine.html" title="class in abc.notation">BarLine</A>, <A HREF="../../abc/notation/Elemskip.html" title="class in abc.notation">Elemskip</A>, <A HREF="../../abc/notation/KeySignature.html" title="class in abc.notation">KeySignature</A>, <A HREF="../../abc/notation/MultiNote.html" title="class in abc.notation">MultiNote</A>, <A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>, <A HREF="../../abc/notation/NoteAbstract.html" title="class in abc.notation">NoteAbstract</A>, <A HREF="../../abc/parser/PositionableMultiNote.html" title="class in abc.parser">PositionableMultiNote</A>, <A HREF="../../abc/parser/PositionableNote.html" title="class in abc.parser">PositionableNote</A>, <A HREF="../../abc/notation/RepeatBarLine.html" title="class in abc.notation">RepeatBarLine</A>, <A HREF="../../abc/notation/StaffEndOfLine.html" title="class in abc.notation">StaffEndOfLine</A>, <A HREF="../../abc/notation/Tempo.html" title="class in abc.notation">Tempo</A>, <A HREF="../../abc/notation/TimeSignature.html" title="class in abc.notation">TimeSignature</A>, <A HREF="../../abc/notation/Words.html" title="class in abc.notation">Words</A></DD>
+<DT><B>All Implemented Interfaces:</B> <DD><A HREF="../../abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A></DD>
 </DL>
 <HR>
 <DL>
-<DT><PRE>public interface <B>ScoreElementInterface</B></DL>
+<DT><PRE>public class <B>SlurDefinition</B><DT>extends <A HREF="../../abc/notation/TwoNotesLink.html" title="class in abc.notation">TwoNotesLink</A><DT>implements <A HREF="../../abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A></DL>
 </PRE>
 
 <P>
-A tagging interface for all elements that are part of a tune score .
+A tagging class to represent slurs between notes.
 <P>
 
 <P>
@@ -107,7 +109,68 @@ A tagging interface for all elements that are part of a tune score .
 
 <P>
 
+<!-- ======== CONSTRUCTOR SUMMARY ======== -->
+
+<A NAME="constructor_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Constructor Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><B><A HREF="../../abc/notation/SlurDefinition.html#SlurDefinition()">SlurDefinition</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+</TABLE>
+&nbsp;
+<!-- ========== METHOD SUMMARY =========== -->
+
+<A NAME="method_summary"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Method Summary</B></FONT></TH>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_abc.notation.TwoNotesLink"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from class abc.notation.<A HREF="../../abc/notation/TwoNotesLink.html" title="class in abc.notation">TwoNotesLink</A></B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE><A HREF="../../abc/notation/TwoNotesLink.html#getEnd()">getEnd</A>, <A HREF="../../abc/notation/TwoNotesLink.html#getStart()">getStart</A>, <A HREF="../../abc/notation/TwoNotesLink.html#setEnd(abc.notation.NoteAbstract)">setEnd</A>, <A HREF="../../abc/notation/TwoNotesLink.html#setStart(abc.notation.NoteAbstract)">setStart</A></CODE></TD>
+</TR>
+</TABLE>
+&nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
+<TH ALIGN="left"><B>Methods inherited from class java.lang.Object</B></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><CODE>equals, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</CODE></TD>
+</TR>
+</TABLE>
+&nbsp;
 <P>
+
+<!-- ========= CONSTRUCTOR DETAIL ======== -->
+
+<A NAME="constructor_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Constructor Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="SlurDefinition()"><!-- --></A><H3>
+SlurDefinition</H3>
+<PRE>
+public <B>SlurDefinition</B>()</PRE>
+<DL>
+</DL>
 <!-- ========= END OF CLASS DATA ========= -->
 <HR>
 
@@ -124,7 +187,7 @@ A tagging interface for all elements that are part of a tune score .
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/ScoreElementInterface.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/SlurDefinition.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
@@ -140,10 +203,10 @@ abc4j API Specification</EM>
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
 &nbsp;<A HREF="../../abc/notation/RepeatedPartAbstract.html" title="class in abc.notation"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../abc/notation/ScorePresentationElementInterface.html" title="interface in abc.notation"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../abc/notation/Tempo.html" title="class in abc.notation"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../index.html?abc/notation/ScoreElementInterface.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="ScoreElementInterface.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../index.html?abc/notation/SlurDefinition.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="SlurDefinition.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!--
   if(window==top) {
@@ -160,9 +223,9 @@ abc4j API Specification</EM>
 </TR>
 <TR>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;METHOD</FONT></TD>
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#methods_inherited_from_class_abc.notation.TwoNotesLink">METHOD</A></FONT></TD>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-DETAIL:&nbsp;FIELD&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;METHOD</FONT></TD>
+DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;METHOD</FONT></TD>
 </TR>
 </TABLE>
 <A NAME="skip-navbar_bottom"></A>

@@ -93,7 +93,7 @@ java.lang.Object
       <IMG SRC="../../resources/inherit.gif" ALT="extended by "><B>abc.notation.MultiNote</B>
 </PRE>
 <DL>
-<DT><B>All Implemented Interfaces:</B> <DD><A HREF="../../abc/notation/ScoreElementInterface.html" title="interface in abc.notation">ScoreElementInterface</A></DD>
+<DT><B>All Implemented Interfaces:</B> <DD><A HREF="../../abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A></DD>
 </DL>
 <DL>
 <DT><B>Direct Known Subclasses:</B> <DD><A HREF="../../abc/parser/PositionableMultiNote.html" title="class in abc.parser">PositionableMultiNote</A></DD>
@@ -156,11 +156,67 @@ A multi note is a group of notes that should be played together.
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/MultiNote.html#contains(abc.notation.Note)">contains</A></B>(<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>&nbsp;aNote)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <TT>true</TT> if this chord contains the specified note.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/MultiNote.html#excludeTiesEndings(abc.notation.Note[])">excludeTiesEndings</A></B>(<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/MultiNote.html#getHighestNote()">getHighestNote</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the highest note among the notes composing this multi note.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/MultiNote.html#getHighestNote(abc.notation.Note[])">getHighestNote</A></B>(<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the highest note from the given array of notes.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A></CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../abc/notation/MultiNote.html#getLongestNote()">getLongestNote</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the longest note of this multi note.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the longest note of this multi note, based on its duration.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/MultiNote.html#getLongestNote(abc.notation.Note[])">getLongestNote</A></B>(<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the note with the biggest duration from the given array of notes.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/MultiNote.html#getLowestNote()">getLowestNote</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the lowest note among the notes composing this multi note.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/MultiNote.html#getLowestNote(abc.notation.Note[])">getLowestNote</A></B>(<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the lowest note from the given array of notes.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -173,11 +229,72 @@ A multi note is a group of notes that should be played together.
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/MultiNote.html#getNotesBeginningTie()">getNotesBeginningTie</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the notes from this multinote that begin a tie.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/MultiNote.html#getNotesShorterThan(abc.notation.Note[], int)">getNotesShorterThan</A></B>(<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes,
+                    int&nbsp;aStrictDuration)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns all notes strictly shorter than the given strict duration.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A></CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../abc/notation/MultiNote.html#getShortestNote()">getShortestNote</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the shortest note of this multi note.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the shortest note of this multi note, based on its duration.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;short[]</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/MultiNote.html#getStrictDurations()">getStrictDurations</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the strict durations composing this multi notes.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/MultiNote.html#hasAccidental()">hasAccidental</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <TT>true</TT> if this multi note some accidentals (for at least one
+ of its note).</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/MultiNote.html#hasUniqueStrictDuration()">hasUniqueStrictDuration</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <TT>true</TT> if the strict durations of all notes composing this 
+ multi note have the same value.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../abc/notation/MultiNote.html" title="class in abc.notation">MultiNote</A>[]</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/MultiNote.html#normalize()">normalize</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Normalizes this multi note by decomposing it into multinotes with 
+ same strict duration.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/notation/MultiNote.html#toArray()">toArray</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns notes composing this multinote as an array of notes, sorted 
+ from the lowest note to the highest one.</TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_abc.notation.NoteAbstract"><!-- --></A>
@@ -186,7 +303,7 @@ A multi note is a group of notes that should be played together.
 <TH ALIGN="left"><B>Methods inherited from class abc.notation.<A HREF="../../abc/notation/NoteAbstract.html" title="class in abc.notation">NoteAbstract</A></B></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><A HREF="../../abc/notation/NoteAbstract.html#countDots()">countDots</A>, <A HREF="../../abc/notation/NoteAbstract.html#getBow()">getBow</A>, <A HREF="../../abc/notation/NoteAbstract.html#getChordName()">getChordName</A>, <A HREF="../../abc/notation/NoteAbstract.html#getDotted()">getDotted</A>, <A HREF="../../abc/notation/NoteAbstract.html#getGracingNotes()">getGracingNotes</A>, <A HREF="../../abc/notation/NoteAbstract.html#getGracingNotesLength(short)">getGracingNotesLength</A>, <A HREF="../../abc/notation/NoteAbstract.html#getTuplet()">getTuplet</A>, <A HREF="../../abc/notation/NoteAbstract.html#hasGeneralGracing()">hasGeneralGracing</A>, <A HREF="../../abc/notation/NoteAbstract.html#hasGracingNotes()">hasGracingNotes</A>, <A HREF="../../abc/notation/NoteAbstract.html#hasStaccato()">hasStaccato</A>, <A HREF="../../abc/notation/NoteAbstract.html#isPartOfSlur()">isPartOfSlur</A>, <A HREF="../../abc/notation/NoteAbstract.html#isPartOfTuplet()">isPartOfTuplet</A>, <A HREF="../../abc/notation/NoteAbstract.html#setBow(byte)">setBow</A>, <A HREF="../../abc/notation/NoteAbstract.html#setChordName(java.lang.String)">setChordName</A>, <A HREF="../../abc/notation/NoteAbstract.html#setDotted(byte)">setDotted</A>, <A HREF="../../abc/notation/NoteAbstract.html#setGeneralGracing(boolean)">setGeneralGracing</A>, <A HREF="../../abc/notation/NoteAbstract.html#setGracingNotes(abc.notation.Note[])">setGracingNotes</A>, <A HREF="../../abc/notation/NoteAbstract.html#setPartOfSlur(boolean)">setPartOfSlur</A>, <A HREF="../../abc/notation/NoteAbstract.html#setStaccato(boolean)">setStaccato</A>, <A HREF="../../abc/notation/NoteAbstract.html#toString()">toString</A></CODE></TD>
+<TD><CODE><A HREF="../../abc/notation/NoteAbstract.html#countDots()">countDots</A>, <A HREF="../../abc/notation/NoteAbstract.html#getBow()">getBow</A>, <A HREF="../../abc/notation/NoteAbstract.html#getChordName()">getChordName</A>, <A HREF="../../abc/notation/NoteAbstract.html#getDotted()">getDotted</A>, <A HREF="../../abc/notation/NoteAbstract.html#getGracingNotes()">getGracingNotes</A>, <A HREF="../../abc/notation/NoteAbstract.html#getGracingNotesLength(short)">getGracingNotesLength</A>, <A HREF="../../abc/notation/NoteAbstract.html#getSlurDefinition()">getSlurDefinition</A>, <A HREF="../../abc/notation/NoteAbstract.html#getTuplet()">getTuplet</A>, <A HREF="../../abc/notation/NoteAbstract.html#hasGeneralGracing()">hasGeneralGracing</A>, <A HREF="../../abc/notation/NoteAbstract.html#hasGracingNotes()">hasGracingNotes</A>, <A HREF="../../abc/notation/NoteAbstract.html#hasStaccato()">hasStaccato</A>, <A HREF="../../abc/notation/NoteAbstract.html#isBeginingSlur()">isBeginingSlur</A>, <A HREF="../../abc/notation/NoteAbstract.html#isEndingSlur()">isEndingSlur</A>, <A HREF="../../abc/notation/NoteAbstract.html#isPartOfSlur()">isPartOfSlur</A>, <A HREF="../../abc/notation/NoteAbstract.html#isPartOfTuplet()">isPartOfTuplet</A>, <A HREF="../../abc/notation/NoteAbstract.html#setBow(byte)">setBow</A>, <A HREF="../../abc/notation/NoteAbstract.html#setChordName(java.lang.String)">setChordName</A>, <A HREF="../../abc/notation/NoteAbstract.html#setDotted(byte)">setDotted</A>, <A HREF="../../abc/notation/NoteAbstract.html#setGeneralGracing(boolean)">setGeneralGracing</A>, <A HREF="../../abc/notation/NoteAbstract.html#setGracingNotes(abc.notation.Note[])">setGracingNotes</A>, <A HREF="../../abc/notation/NoteAbstract.html#setPartOfSlur(boolean)">setPartOfSlur</A>, <A HREF="../../abc/notation/NoteAbstract.html#setSlurDefinition(abc.notation.SlurDefinition)">setSlurDefinition</A>, <A HREF="../../abc/notation/NoteAbstract.html#setStaccato(boolean)">setStaccato</A>, <A HREF="../../abc/notation/NoteAbstract.html#toString()">toString</A></CODE></TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
@@ -233,17 +350,90 @@ public <B>MultiNote</B>(java.util.Vector&nbsp;notes)</PRE>
 </TR>
 </TABLE>
 
+<A NAME="contains(abc.notation.Note)"><!-- --></A><H3>
+contains</H3>
+<PRE>
+public boolean <B>contains</B>(<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>&nbsp;aNote)</PRE>
+<DL>
+<DD>Returns <TT>true</TT> if this chord contains the specified note.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>aNote</CODE> - A note instance.
+<DT><B>Returns:</B><DD><TT>true</TT> if this chord contains the specified note.
+ <TT>false</TT> otherwise.</DL>
+</DD>
+</DL>
+<HR>
+
 <A NAME="getLongestNote()"><!-- --></A><H3>
 getLongestNote</H3>
 <PRE>
 public <A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A> <B>getLongestNote</B>()</PRE>
 <DL>
-<DD>Returns the longest note of this multi note.
+<DD>Returns the longest note of this multi note, based on its duration.
 <P>
 <DD><DL>
 
 <DT><B>Returns:</B><DD>The longest note of this multi note. If several notes have the
- same longest length, the first one is returned.</DL>
+ same longest length, the first one is returned.<DT><B>See Also:</B><DD><A HREF="../../abc/notation/Note.html#getDuration()"><CODE>Note.getDuration()</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getLongestNote(abc.notation.Note[])"><!-- --></A><H3>
+getLongestNote</H3>
+<PRE>
+public static <A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A> <B>getLongestNote</B>(<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes)</PRE>
+<DL>
+<DD>Returns the note with the biggest duration from the given array of notes.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>notes</CODE> - An array of notes.
+<DT><B>Returns:</B><DD>The note with the biggest duration from the given array of notes.<DT><B>See Also:</B><DD><A HREF="../../abc/notation/Note.html#getDuration()"><CODE>Note.getDuration()</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getNotesShorterThan(abc.notation.Note[], int)"><!-- --></A><H3>
+getNotesShorterThan</H3>
+<PRE>
+public static <A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>[] <B>getNotesShorterThan</B>(<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes,
+                                         int&nbsp;aStrictDuration)</PRE>
+<DL>
+<DD>Returns all notes strictly shorter than the given strict duration.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>notes</CODE> - An arry of notes.<DD><CODE>aStrictDuration</CODE> - A strict duration (use constants defined class Note)
+<DT><B>Returns:</B><DD>All notes strictly shorter than the given strict duration. <TT>null</TT>
+ is returned is no note if shorter than the given strict duration.<DT><B>See Also:</B><DD><A HREF="../../abc/notation/Note.html#getStrictDuration()"><CODE>Note.getStrictDuration()</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getLowestNote(abc.notation.Note[])"><!-- --></A><H3>
+getLowestNote</H3>
+<PRE>
+public static <A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A> <B>getLowestNote</B>(<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes)</PRE>
+<DL>
+<DD>Returns the lowest note from the given array of notes.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>notes</CODE> - An array of notes.
+<DT><B>Returns:</B><DD>The lowest note from the given array of notes.<DT><B>See Also:</B><DD><A HREF="../../abc/notation/Note.html#isLowerThan(abc.notation.Note)"><CODE>Note.isLowerThan(Note)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getHighestNote(abc.notation.Note[])"><!-- --></A><H3>
+getHighestNote</H3>
+<PRE>
+public static <A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A> <B>getHighestNote</B>(<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes)</PRE>
+<DL>
+<DD>Returns the highest note from the given array of notes.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>notes</CODE> - An array of notes.
+<DT><B>Returns:</B><DD>The highes note from the given array of notes.<DT><B>See Also:</B><DD><A HREF="../../abc/notation/Note.html#isHigherThan(abc.notation.Note)"><CODE>Note.isHigherThan(Note)</CODE></A></DL>
 </DD>
 </DL>
 <HR>
@@ -253,12 +443,131 @@ getShortestNote</H3>
 <PRE>
 public <A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A> <B>getShortestNote</B>()</PRE>
 <DL>
-<DD>Returns the shortest note of this multi note.
+<DD>Returns the shortest note of this multi note, based on its duration.
 <P>
 <DD><DL>
 
 <DT><B>Returns:</B><DD>The shortest note of this multi note. If several notes have the
- same shortest length, the first one is returned.</DL>
+ same shortest length, the first one is returned.<DT><B>See Also:</B><DD><A HREF="../../abc/notation/Note.html#getDuration()"><CODE>Note.getDuration()</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getHighestNote()"><!-- --></A><H3>
+getHighestNote</H3>
+<PRE>
+public <A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A> <B>getHighestNote</B>()</PRE>
+<DL>
+<DD>Returns the highest note among the notes composing this multi note.
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>The highest note among the notes composing this multi note.<DT><B>See Also:</B><DD><A HREF="../../abc/notation/MultiNote.html#getLowestNote()"><CODE>getLowestNote()</CODE></A>, 
+<A HREF="../../abc/notation/Note.html#isHigherThan(abc.notation.Note)"><CODE>Note.isHigherThan(Note)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getNotesBeginningTie()"><!-- --></A><H3>
+getNotesBeginningTie</H3>
+<PRE>
+public <A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>[] <B>getNotesBeginningTie</B>()</PRE>
+<DL>
+<DD>Returns the notes from this multinote that begin a tie.
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>Te notes from this multinote that begin a tie. <TT>null</TT> is 
+ returned if no note begins a tie.<DT><B>See Also:</B><DD><A HREF="../../abc/notation/Note.html#isBeginningTie()"><CODE>Note.isBeginningTie()</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="excludeTiesEndings(abc.notation.Note[])"><!-- --></A><H3>
+excludeTiesEndings</H3>
+<PRE>
+public static <A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>[] <B>excludeTiesEndings</B>(<A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes)</PRE>
+<DL>
+<DD><DL>
+</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getLowestNote()"><!-- --></A><H3>
+getLowestNote</H3>
+<PRE>
+public <A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A> <B>getLowestNote</B>()</PRE>
+<DL>
+<DD>Returns the lowest note among the notes composing this multi note.
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>The lowest note among the notes composing this multi note.<DT><B>See Also:</B><DD><A HREF="../../abc/notation/Note.html#isLowerThan(abc.notation.Note)"><CODE>Note.isLowerThan(Note)</CODE></A>, 
+<A HREF="../../abc/notation/MultiNote.html#getHighestNote()"><CODE>getHighestNote()</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="hasUniqueStrictDuration()"><!-- --></A><H3>
+hasUniqueStrictDuration</H3>
+<PRE>
+public boolean <B>hasUniqueStrictDuration</B>()</PRE>
+<DL>
+<DD>Returns <TT>true</TT> if the strict durations of all notes composing this 
+ multi note have the same value.
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><TT>true</TT> if the strict durations of all notes composing this 
+ multi note have the same value, <TT>false</TT> otherwise.<DT><B>See Also:</B><DD><A HREF="../../abc/notation/Note.html#getStrictDuration()"><CODE>Note.getStrictDuration()</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getStrictDurations()"><!-- --></A><H3>
+getStrictDurations</H3>
+<PRE>
+public short[] <B>getStrictDurations</B>()</PRE>
+<DL>
+<DD>Returns the strict durations composing this multi notes.
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>The strict durations composing this multi notes. The array is sorted
+ from shortest durations to longest ones.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="normalize()"><!-- --></A><H3>
+normalize</H3>
+<PRE>
+public <A HREF="../../abc/notation/MultiNote.html" title="class in abc.notation">MultiNote</A>[] <B>normalize</B>()</PRE>
+<DL>
+<DD>Normalizes this multi note by decomposing it into multinotes with 
+ same strict duration.
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>An array of multinotes with unique strict duration. Such strict 
+ durations are sorted by ascent order.<DT><B>See Also:</B><DD><A HREF="../../abc/notation/MultiNote.html#hasUniqueStrictDuration()"><CODE>hasUniqueStrictDuration()</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="hasAccidental()"><!-- --></A><H3>
+hasAccidental</H3>
+<PRE>
+public boolean <B>hasAccidental</B>()</PRE>
+<DL>
+<DD>Returns <TT>true</TT> if this multi note some accidentals (for at least one
+ of its note).
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD><TT>true</TT> if this multi note some accidentals (for at least one
+ of its note), <TT>false</TT> otherwise.<DT><B>See Also:</B><DD><A HREF="../../abc/notation/Note.html#hasAccidental()"><CODE>Note.hasAccidental()</CODE></A></DL>
 </DD>
 </DL>
 <HR>
@@ -275,6 +584,22 @@ public java.util.Vector <B>getNotesAsVector</B>()</PRE>
 
 <DT><B>Returns:</B><DD>a new vector containing all <TT>Note</TT> objects contained in
  this multi note.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="toArray()"><!-- --></A><H3>
+toArray</H3>
+<PRE>
+public <A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A>[] <B>toArray</B>()</PRE>
+<DL>
+<DD>Returns notes composing this multinote as an array of notes, sorted 
+ from the lowest note to the highest one.
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>Notes composing this multinote as an array of notes, sorted 
+ from the lowest note to the highest one.</DL>
 </DD>
 </DL>
 <!-- ========= END OF CLASS DATA ========= -->

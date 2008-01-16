@@ -161,15 +161,31 @@ int <B>m_newTempoValue</B></PRE>
 <P>
 
 <P>
-<A NAME="abc.notation.Tune.Score"><!-- --></A>
+<A NAME="abc.notation.Tune.Music"><!-- --></A>
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
 <TR BGCOLOR="#CCCCFF" CLASS="TableSubHeadingColor">
 <TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
-<B>Class <A HREF="abc/notation/Tune.Score.html" title="class in abc.notation">abc.notation.Tune.Score</A> extends java.util.Vector implements Serializable</B></FONT></TH>
+<B>Class <A HREF="abc/notation/Tune.Music.html" title="class in abc.notation">abc.notation.Tune.Music</A> extends java.util.Vector implements Serializable</B></FONT></TH>
 </TR>
 </TABLE>
 
 <P>
+<A NAME="serializedForm"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Serialized Fields</B></FONT></TH>
+</TR>
+</TABLE>
+
+<H3>
+lastNote</H3>
+<PRE>
+<A HREF="abc/notation/NoteAbstract.html" title="class in abc.notation">NoteAbstract</A> <B>lastNote</B></PRE>
+<DL>
+<DL>
+</DL>
+</DL>
 <HR SIZE="4" NOSHADE>
 
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
@@ -352,21 +368,13 @@ m_tune</H3>
 </TABLE>
 
 <H3>
-m_tune</H3>
+m_jTune</H3>
 <PRE>
-<A HREF="abc/notation/Tune.html" title="class in abc.notation">Tune</A> <B>m_tune</B></PRE>
+abc.ui.swing.JTune <B>m_jTune</B></PRE>
 <DL>
-<DD>The tune to be displayed.
+<DD>The graphical representation of the tune currently set.
+ <TT>null</TT> if no tune is set.
 <P>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-staffLinesOffset</H3>
-<PRE>
-int <B>staffLinesOffset</B></PRE>
-<DL>
 <DL>
 </DL>
 </DL>
@@ -396,7 +404,7 @@ int <B>XOffset</B></PRE>
 <H3>
 m_metrics</H3>
 <PRE>
-abc.ui.swing.score.ScoreMetrics <B>m_metrics</B></PRE>
+abc.ui.swing.ScoreMetrics <B>m_metrics</B></PRE>
 <DL>
 <DD>The place where all spacing dimensions are expressed.
 <P>
@@ -439,17 +447,6 @@ boolean <B>m_isBufferedImageOutdated</B></PRE>
 </DL>
 <HR>
 <H3>
-m_staffLines</H3>
-<PRE>
-java.util.Vector&lt;E&gt; <B>m_staffLines</B></PRE>
-<DL>
-<DD>The staff lines drawings.
-<P>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
 m_size</H3>
 <PRE>
 float <B>m_size</B></PRE>
@@ -467,6 +464,18 @@ boolean <B>m_isJustified</B></PRE>
 <DL>
 <DD><TT>true</TT> if the rendition of the score should be justified, 
  <TT>false</TT> otherwise.
+<P>
+<DL>
+</DL>
+</DL>
+<HR>
+<H3>
+m_selectedItem</H3>
+<PRE>
+<A HREF="abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing">JScoreElement</A> <B>m_selectedItem</B></PRE>
+<DL>
+<DD>The selected item in this score. <TT>null</TT> if no 
+ item is selected.
 <P>
 <DL>
 </DL>
@@ -598,15 +607,6 @@ m_tune</H3>
 <DL>
 <DD>The tune currently represented in this editor pane.
 <P>
-<DL>
-</DL>
-</DL>
-<HR>
-<H3>
-m_tuneParser</H3>
-<PRE>
-<A HREF="abc/parser/TuneParser.html" title="class in abc.parser">TuneParser</A> <B>m_tuneParser</B></PRE>
-<DL>
 <DL>
 </DL>
 </DL>

@@ -99,6 +99,10 @@ java.lang.Object
 </PRE>
 
 <P>
+A parser that parses abc gammar into its own thread context.
+<P>
+
+<P>
 <HR>
 
 <P>
@@ -155,7 +159,7 @@ java.lang.Object
 <TD><CODE><B><A HREF="../../abc/parser/AsynchronousTuneParser.html#parseHeader(java.io.Reader)">parseHeader</A></B>(java.io.Reader&nbsp;charStream)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Parse the given string and creates a <TT>Tune</TT> object with no score
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Parse the given string and creates a <TT>Tune</TT> object with no music
  as parsing result.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
@@ -309,7 +313,7 @@ parseHeader</H3>
 public <A HREF="../../abc/notation/Tune.html" title="class in abc.notation">Tune</A> <B>parseHeader</B>(java.io.Reader&nbsp;charStream)</PRE>
 <DL>
 <DD><B>Description copied from class: <CODE><A HREF="../../abc/parser/TuneParser.html#parseHeader(java.io.Reader)">TuneParser</A></CODE></B></DD>
-<DD>Parse the given string and creates a <TT>Tune</TT> object with no score
+<DD>Parse the given string and creates a <TT>Tune</TT> object with no music
  as parsing result. This purpose of this method method is to provide a
  faster parsing when just abc header fields are needed.
 <P>

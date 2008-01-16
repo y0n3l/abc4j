@@ -94,7 +94,10 @@ Packages that use <A HREF="../../../abc/parser/TuneParser.html" title="class in 
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD><A HREF="#abc.ui.swing"><B>abc.ui.swing</B></A></TD>
-<TD>This package contains classes for displaying abc related objects in swing UI components.&nbsp;</TD>
+<TD>This package contains classes for displaying abc related objects in swing UI components.<BR/>
+        Such components are closely linked to music abstractions defined in package abc.notation and
+        propose advanced UI components that take advantage of information offered by objects 
+        such as <TT>Tune</TT>, <TT>Tune.Music</TT> etc...&nbsp;</TD>
 </TR>
 </TABLE>
 &nbsp;
@@ -119,7 +122,7 @@ Uses of <A HREF="../../../abc/parser/TuneParser.html" title="class in abc.parser
 <TD><CODE><B><A HREF="../../../abc/parser/AsynchronousTuneParser.html" title="class in abc.parser">AsynchronousTuneParser</A></B></CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A parser that parses abc gammar into its own thread context.</TD>
 </TR>
 </TABLE>
 &nbsp;
@@ -183,7 +186,8 @@ Uses of <A HREF="../../../abc/parser/TuneParser.html" title="class in abc.parser
 <TD><CODE><B>TuneEditorPane.</B><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#getParser()">getParser</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the parser used to build up the tune from the 
+ abc text written in this pane.</TD>
 </TR>
 </TABLE>
 &nbsp;
@@ -197,14 +201,15 @@ Uses of <A HREF="../../../abc/parser/TuneParser.html" title="class in abc.parser
 <TD><CODE><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#TuneEditorPane(abc.parser.TuneParser)">TuneEditorPane</A></B>(<A HREF="../../../abc/parser/TuneParser.html" title="class in abc.parser">TuneParser</A>&nbsp;parser)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a new TuneEditorPane with the given parser.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD><CODE><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html#TuneEditorPane(abc.parser.TuneParser, int)">TuneEditorPane</A></B>(<A HREF="../../../abc/parser/TuneParser.html" title="class in abc.parser">TuneParser</A>&nbsp;parser,
                int&nbsp;idleTimeBeforeRefresh)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a new TuneEditorPane with the given parser and
+ idle time before refresh.</TD>
 </TR>
 </TABLE>
 &nbsp;

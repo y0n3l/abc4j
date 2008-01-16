@@ -102,7 +102,10 @@ Packages that use <A HREF="../../abc/notation/package-summary.html">abc.notation
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD><A HREF="#abc.ui.swing"><B>abc.ui.swing</B></A></TD>
-<TD>This package contains classes for displaying abc related objects in swing UI components.&nbsp;</TD>
+<TD>This package contains classes for displaying abc related objects in swing UI components.<BR/>
+        Such components are closely linked to music abstractions defined in package abc.notation and
+        propose advanced UI components that take advantage of information offered by objects 
+        such as <TT>Tune</TT>, <TT>Tune.Music</TT> etc...&nbsp;</TD>
 </TR>
 </TABLE>
 &nbsp;
@@ -161,7 +164,7 @@ Classes in <A HREF="../../abc/notation/package-summary.html">abc.notation</A> us
 <TD><B><A HREF="../../abc/notation/class-use/Tuplet.html#abc.midi"><B>Tuplet</B></A></B>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A class to define tuplets in a score.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A class to define tuplets.</TD>
 </TR>
 </TABLE>
 &nbsp;
@@ -176,7 +179,7 @@ Classes in <A HREF="../../abc/notation/package-summary.html">abc.notation</A> us
 <TD><B><A HREF="../../abc/notation/class-use/BarLine.html#abc.notation"><B>BarLine</B></A></B>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This class defines bar lines used in musical scores.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This class defines bar lines.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD><B><A HREF="../../abc/notation/class-use/Fraction.html#abc.notation"><B>Fraction</B></A></B>
@@ -191,10 +194,29 @@ Classes in <A HREF="../../abc/notation/package-summary.html">abc.notation</A> us
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This class defines key signatures using modes definition like E major, G minor etc etc...</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><B><A HREF="../../abc/notation/class-use/MultiNote.html#abc.notation"><B>MultiNote</B></A></B>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A multi note is a group of notes that should be played together.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
 <TD><B><A HREF="../../abc/notation/class-use/MultiPartsDefinition.html#abc.notation"><B>MultiPartsDefinition</B></A></B>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This class describes the way a multipart score is defined.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This class describes the way a multipart music tune is defined.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><B><A HREF="../../abc/notation/class-use/MusicElement.html#abc.notation"><B>MusicElement</B></A></B>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A tagging interface for all elements that are part of a tune's music.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><B><A HREF="../../abc/notation/class-use/MusicPresentationElement.html#abc.notation"><B>MusicPresentationElement</B></A></B>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A tagging interface for all elements composing a tune's music that are
+ releated to the way this music is rendered graphicaly on a score for instance.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD><B><A HREF="../../abc/notation/class-use/Note.html#abc.notation"><B>Note</B></A></B>
@@ -218,21 +240,20 @@ Classes in <A HREF="../../abc/notation/package-summary.html">abc.notation</A> us
 <TD><B><A HREF="../../abc/notation/class-use/RepeatedPartAbstract.html#abc.notation"><B>RepeatedPartAbstract</B></A></B>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Abstract class that defines the number of times a part in the score should
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Abstract class that defines the number of times a part in a tune's music should
  be repeated.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><B><A HREF="../../abc/notation/class-use/ScoreElementInterface.html#abc.notation"><B>ScoreElementInterface</B></A></B>
+<TD><B><A HREF="../../abc/notation/class-use/SlurDefinition.html#abc.notation"><B>SlurDefinition</B></A></B>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A tagging interface for all elements that are part of a tune score .</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A tagging class to represent slurs between notes.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><B><A HREF="../../abc/notation/class-use/ScorePresentationElementInterface.html#abc.notation"><B>ScorePresentationElementInterface</B></A></B>
+<TD><B><A HREF="../../abc/notation/class-use/TieDefinition.html#abc.notation"><B>TieDefinition</B></A></B>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A tagging interface for all elements composing the score of a tune that are
- releated to score presentation for rendition.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A tagging class to represent ties between notes.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD><B><A HREF="../../abc/notation/class-use/TimeSignature.html#abc.notation"><B>TimeSignature</B></A></B>
@@ -248,7 +269,7 @@ Classes in <A HREF="../../abc/notation/package-summary.html">abc.notation</A> us
  using abc notation : header and music.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><B><A HREF="../../abc/notation/class-use/Tune.Score.html#abc.notation"><B>Tune.Score</B></A></B>
+<TD><B><A HREF="../../abc/notation/class-use/Tune.Music.html#abc.notation"><B>Tune.Music</B></A></B>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -257,7 +278,13 @@ Classes in <A HREF="../../abc/notation/package-summary.html">abc.notation</A> us
 <TD><B><A HREF="../../abc/notation/class-use/Tuplet.html#abc.notation"><B>Tuplet</B></A></B>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A class to define tuplets in a score.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A class to define tuplets.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><B><A HREF="../../abc/notation/class-use/TwoNotesLink.html#abc.notation"><B>TwoNotesLink</B></A></B>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This class abstracts any kind of relationship  between two notes.</TD>
 </TR>
 </TABLE>
 &nbsp;
@@ -281,6 +308,12 @@ Classes in <A HREF="../../abc/notation/package-summary.html">abc.notation</A> us
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A multi note is a group of notes that should be played together.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><B><A HREF="../../abc/notation/class-use/MusicElement.html#abc.parser"><B>MusicElement</B></A></B>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A tagging interface for all elements that are part of a tune's music.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
 <TD><B><A HREF="../../abc/notation/class-use/NoSuchTuneException.html#abc.parser"><B>NoSuchTuneException</B></A></B>
 
 <BR>
@@ -297,12 +330,6 @@ Classes in <A HREF="../../abc/notation/package-summary.html">abc.notation</A> us
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This is the abstract class to define notes or multi notes.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><B><A HREF="../../abc/notation/class-use/ScoreElementInterface.html#abc.parser"><B>ScoreElementInterface</B></A></B>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A tagging interface for all elements that are part of a tune score .</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD><B><A HREF="../../abc/notation/class-use/Tune.html#abc.parser"><B>Tune</B></A></B>
@@ -335,6 +362,12 @@ Classes in <A HREF="../../abc/notation/package-summary.html">abc.notation</A> us
 <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
 <TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
 Classes in <A HREF="../../abc/notation/package-summary.html">abc.notation</A> used by <A HREF="../../abc/ui/swing/package-summary.html">abc.ui.swing</A></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD><B><A HREF="../../abc/notation/class-use/MusicElement.html#abc.ui.swing"><B>MusicElement</B></A></B>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A tagging interface for all elements that are part of a tune's music.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD><B><A HREF="../../abc/notation/class-use/Tune.html#abc.ui.swing"><B>Tune</B></A></B>

@@ -100,12 +100,12 @@ Class Hierarchy
 <UL>
 <LI TYPE="circle">java.util.Vector&lt;E&gt; (implements java.lang.Cloneable, java.util.List&lt;E&gt;, java.util.RandomAccess, java.io.Serializable)
 <UL>
-<LI TYPE="circle">abc.notation.<A HREF="abc/notation/Tune.Score.html" title="class in abc.notation"><B>Tune.Score</B></A></UL>
+<LI TYPE="circle">abc.notation.<A HREF="abc/notation/Tune.Music.html" title="class in abc.notation"><B>Tune.Music</B></A></UL>
 </UL>
 </UL>
-<LI TYPE="circle">scanner.<A HREF="scanner/AutomataDefinition.html" title="class in scanner"><B>AutomataDefinition</B></A><LI TYPE="circle">abc.notation.<A HREF="abc/notation/BarLine.html" title="class in abc.notation"><B>BarLine</B></A> (implements abc.notation.<A HREF="abc/notation/ScoreElementInterface.html" title="interface in abc.notation">ScoreElementInterface</A>)
+<LI TYPE="circle">scanner.<A HREF="scanner/AutomataDefinition.html" title="class in scanner"><B>AutomataDefinition</B></A><LI TYPE="circle">abc.notation.<A HREF="abc/notation/BarLine.html" title="class in abc.notation"><B>BarLine</B></A> (implements abc.notation.<A HREF="abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A>)
 <UL>
-<LI TYPE="circle">abc.notation.<A HREF="abc/notation/RepeatBarLine.html" title="class in abc.notation"><B>RepeatBarLine</B></A> (implements abc.notation.<A HREF="abc/notation/ScoreElementInterface.html" title="interface in abc.notation">ScoreElementInterface</A>)
+<LI TYPE="circle">abc.notation.<A HREF="abc/notation/RepeatBarLine.html" title="class in abc.notation"><B>RepeatBarLine</B></A> (implements abc.notation.<A HREF="abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A>)
 </UL>
 <LI TYPE="circle">scanner.<A HREF="scanner/CharStreamPosition.html" title="class in scanner"><B>CharStreamPosition</B></A> (implements java.lang.Cloneable)
 <LI TYPE="circle">java.awt.Component (implements java.awt.image.ImageObserver, java.awt.MenuContainer, java.io.Serializable)
@@ -117,8 +117,7 @@ Class Hierarchy
 <UL>
 <LI TYPE="circle">javax.swing.JEditorPane<UL>
 <LI TYPE="circle">javax.swing.JTextPane<UL>
-<LI TYPE="circle">abc.ui.swing.<A HREF="abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing"><B>TuneEditorPane</B></A> (implements java.awt.event.ActionListener)
-</UL>
+<LI TYPE="circle">abc.ui.swing.<A HREF="abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing"><B>TuneEditorPane</B></A></UL>
 </UL>
 </UL>
 </UL>
@@ -129,7 +128,8 @@ Class Hierarchy
 <LI TYPE="circle">abc.ui.awt.<A HREF="abc/ui/awt/TuneEditorArea.html" title="class in abc.ui.awt"><B>TuneEditorArea</B></A></UL>
 </UL>
 </UL>
-<LI TYPE="circle">abc.notation.<A HREF="abc/notation/Elemskip.html" title="class in abc.notation"><B>Elemskip</B></A> (implements abc.notation.<A HREF="abc/notation/ScoreElementInterface.html" title="interface in abc.notation">ScoreElementInterface</A>)
+<LI TYPE="circle">abc.notation.<A HREF="abc/notation/Elemskip.html" title="class in abc.notation"><B>Elemskip</B></A> (implements abc.notation.<A HREF="abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A>)
+<LI TYPE="circle">abc.notation.<A HREF="abc/notation/EndOfStaffLine.html" title="class in abc.notation"><B>EndOfStaffLine</B></A> (implements abc.notation.<A HREF="abc/notation/MusicPresentationElement.html" title="interface in abc.notation">MusicPresentationElement</A>)
 <LI TYPE="circle">java.util.EventObject (implements java.io.Serializable)
 <UL>
 <LI TYPE="circle">scanner.<A HREF="scanner/InvalidCharacterEvent.html" title="class in scanner"><B>InvalidCharacterEvent</B></A> (implements scanner.<A HREF="scanner/PositionableInCharStream.html" title="interface in scanner">PositionableInCharStream</A>)
@@ -138,9 +138,9 @@ Class Hierarchy
 <LI TYPE="circle">abc.parser.<A HREF="abc/parser/InvalidTokenEvent.html" title="class in abc.parser"><B>InvalidTokenEvent</B></A></UL>
 <LI TYPE="circle">abc.parser.<A HREF="abc/parser/TuneChangeEvent.html" title="class in abc.parser"><B>TuneChangeEvent</B></A></UL>
 <LI TYPE="circle">scanner.<A HREF="scanner/FinaleStateAutomata.html" title="class in scanner"><B>FinaleStateAutomata</B></A><LI TYPE="circle">abc.notation.<A HREF="abc/notation/Fraction.html" title="class in abc.notation"><B>Fraction</B></A><UL>
-<LI TYPE="circle">abc.notation.<A HREF="abc/notation/TimeSignature.html" title="class in abc.notation"><B>TimeSignature</B></A> (implements abc.notation.<A HREF="abc/notation/ScoreElementInterface.html" title="interface in abc.notation">ScoreElementInterface</A>)
+<LI TYPE="circle">abc.notation.<A HREF="abc/notation/TimeSignature.html" title="class in abc.notation"><B>TimeSignature</B></A> (implements abc.notation.<A HREF="abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A>)
 </UL>
-<LI TYPE="circle">abc.notation.<A HREF="abc/notation/KeySignature.html" title="class in abc.notation"><B>KeySignature</B></A> (implements java.lang.Cloneable, abc.notation.<A HREF="abc/notation/ScoreElementInterface.html" title="interface in abc.notation">ScoreElementInterface</A>)
+<LI TYPE="circle">abc.notation.<A HREF="abc/notation/KeySignature.html" title="class in abc.notation"><B>KeySignature</B></A> (implements java.lang.Cloneable, abc.notation.<A HREF="abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A>)
 <LI TYPE="circle">abc.midi.<A HREF="abc/midi/MidiConverterAbstract.html" title="class in abc.midi"><B>MidiConverterAbstract</B></A> (implements abc.midi.<A HREF="abc/midi/MidiConverterInterface.html" title="interface in abc.midi">MidiConverterInterface</A>)
 <UL>
 <LI TYPE="circle">abc.midi.<A HREF="abc/midi/BasicMidiConverter.html" title="class in abc.midi"><B>BasicMidiConverter</B></A><UL>
@@ -151,7 +151,7 @@ Class Hierarchy
 <LI TYPE="circle">javax.sound.midi.MetaMessage<UL>
 <LI TYPE="circle">abc.midi.<A HREF="abc/midi/KeySignatureMessage.html" title="class in abc.midi"><B>KeySignatureMessage</B></A><LI TYPE="circle">abc.midi.<A HREF="abc/midi/MetaMessageWA.html" title="class in abc.midi"><B>MetaMessageWA</B></A><LI TYPE="circle">abc.midi.<A HREF="abc/midi/NotationMarkerMessage.html" title="class in abc.midi"><B>NotationMarkerMessage</B></A><LI TYPE="circle">abc.midi.<A HREF="abc/midi/NoteIndexMessage.html" title="class in abc.midi"><B>NoteIndexMessage</B></A><LI TYPE="circle">abc.midi.<A HREF="abc/midi/TempoMessage.html" title="class in abc.midi"><B>TempoMessage</B></A><LI TYPE="circle">abc.midi.<A HREF="abc/midi/TimeSignatureMessage.html" title="class in abc.midi"><B>TimeSignatureMessage</B></A></UL>
 </UL>
-<LI TYPE="circle">abc.notation.<A HREF="abc/notation/NoteAbstract.html" title="class in abc.notation"><B>NoteAbstract</B></A> (implements abc.notation.<A HREF="abc/notation/ScoreElementInterface.html" title="interface in abc.notation">ScoreElementInterface</A>)
+<LI TYPE="circle">abc.notation.<A HREF="abc/notation/NoteAbstract.html" title="class in abc.notation"><B>NoteAbstract</B></A> (implements abc.notation.<A HREF="abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A>)
 <UL>
 <LI TYPE="circle">abc.notation.<A HREF="abc/notation/MultiNote.html" title="class in abc.notation"><B>MultiNote</B></A><UL>
 <LI TYPE="circle">abc.parser.<A HREF="abc/parser/PositionableMultiNote.html" title="class in abc.parser"><B>PositionableMultiNote</B></A> (implements scanner.<A HREF="scanner/PositionableInCharStream.html" title="interface in scanner">PositionableInCharStream</A>)
@@ -160,6 +160,7 @@ Class Hierarchy
 <LI TYPE="circle">abc.parser.<A HREF="abc/parser/PositionableNote.html" title="class in abc.parser"><B>PositionableNote</B></A> (implements scanner.<A HREF="scanner/PositionableInCharStream.html" title="interface in scanner">PositionableInCharStream</A>)
 </UL>
 </UL>
+<LI TYPE="circle">abc.notation.<A HREF="abc/notation/NotesSeparator.html" title="class in abc.notation"><B>NotesSeparator</B></A> (implements abc.notation.<A HREF="abc/notation/MusicPresentationElement.html" title="interface in abc.notation">MusicPresentationElement</A>)
 <LI TYPE="circle">abc.midi.<A HREF="abc/midi/OldMidiConverterAbstract.html" title="class in abc.midi"><B>OldMidiConverterAbstract</B></A> (implements abc.midi.<A HREF="abc/midi/MidiConverterInterface.html" title="interface in abc.midi">MidiConverterInterface</A>)
 <UL>
 <LI TYPE="circle">abc.midi.<A HREF="abc/midi/OldBasicMidiConverter.html" title="class in abc.midi"><B>OldBasicMidiConverter</B></A></UL>
@@ -169,9 +170,8 @@ Class Hierarchy
 <LI TYPE="circle">abc.notation.<A HREF="abc/notation/RepeatedPart.html" title="class in abc.notation"><B>RepeatedPart</B></A></UL>
 <LI TYPE="circle">scanner.<A HREF="scanner/Scanner.html" title="class in scanner"><B>Scanner</B></A><LI TYPE="circle">scanner.<A HREF="scanner/ScannerAdapter.html" title="class in scanner"><B>ScannerAdapter</B></A> (implements java.util.EventListener, scanner.<A HREF="scanner/ScannerListenerInterface.html" title="interface in scanner">ScannerListenerInterface</A>)
 <LI TYPE="circle">scanner.<A HREF="scanner/Set.html" title="class in scanner"><B>Set</B></A> (implements java.lang.Cloneable)
-<LI TYPE="circle">abc.notation.<A HREF="abc/notation/StaffEndOfLine.html" title="class in abc.notation"><B>StaffEndOfLine</B></A> (implements abc.notation.<A HREF="abc/notation/ScorePresentationElementInterface.html" title="interface in abc.notation">ScorePresentationElementInterface</A>)
 <LI TYPE="circle">scanner.<A HREF="scanner/State.html" title="class in scanner"><B>State</B></A> (implements java.lang.Cloneable)
-<LI TYPE="circle">abc.notation.<A HREF="abc/notation/Tempo.html" title="class in abc.notation"><B>Tempo</B></A> (implements abc.notation.<A HREF="abc/notation/ScoreElementInterface.html" title="interface in abc.notation">ScoreElementInterface</A>)
+<LI TYPE="circle">abc.notation.<A HREF="abc/notation/Tempo.html" title="class in abc.notation"><B>Tempo</B></A> (implements abc.notation.<A HREF="abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A>)
 <LI TYPE="circle">java.lang.Throwable (implements java.io.Serializable)
 <UL>
 <LI TYPE="circle">java.lang.Exception<UL>
@@ -186,7 +186,11 @@ Class Hierarchy
 <LI TYPE="circle">abc.parser.<A HREF="abc/parser/TuneBook.html" title="class in abc.parser"><B>TuneBook</B></A><LI TYPE="circle">abc.parser.<A HREF="abc/parser/TuneParserAdapter.html" title="class in abc.parser"><B>TuneParserAdapter</B></A> (implements abc.parser.<A HREF="abc/parser/TuneParserListenerInterface.html" title="interface in abc.parser">TuneParserListenerInterface</A>)
 <LI TYPE="circle">abc.midi.<A HREF="abc/midi/TunePlayer.html" title="class in abc.midi"><B>TunePlayer</B></A> (implements javax.sound.midi.MetaEventListener)
 <LI TYPE="circle">abc.midi.<A HREF="abc/midi/TunePlayerAdapter.html" title="class in abc.midi"><B>TunePlayerAdapter</B></A> (implements abc.midi.<A HREF="abc/midi/TunePlayerListenerInterface.html" title="interface in abc.midi">TunePlayerListenerInterface</A>)
-<LI TYPE="circle">abc.notation.<A HREF="abc/notation/Tuplet.html" title="class in abc.notation"><B>Tuplet</B></A><LI TYPE="circle">abc.notation.<A HREF="abc/notation/Words.html" title="class in abc.notation"><B>Words</B></A> (implements abc.notation.<A HREF="abc/notation/ScoreElementInterface.html" title="interface in abc.notation">ScoreElementInterface</A>)
+<LI TYPE="circle">abc.notation.<A HREF="abc/notation/Tuplet.html" title="class in abc.notation"><B>Tuplet</B></A><LI TYPE="circle">abc.notation.<A HREF="abc/notation/TwoNotesLink.html" title="class in abc.notation"><B>TwoNotesLink</B></A><UL>
+<LI TYPE="circle">abc.notation.<A HREF="abc/notation/SlurDefinition.html" title="class in abc.notation"><B>SlurDefinition</B></A> (implements abc.notation.<A HREF="abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A>)
+<LI TYPE="circle">abc.notation.<A HREF="abc/notation/TieDefinition.html" title="class in abc.notation"><B>TieDefinition</B></A> (implements abc.notation.<A HREF="abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A>)
+</UL>
+<LI TYPE="circle">abc.notation.<A HREF="abc/notation/Words.html" title="class in abc.notation"><B>Words</B></A> (implements abc.notation.<A HREF="abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A>)
 </UL>
 </UL>
 <H2>
@@ -197,9 +201,9 @@ Interface Hierarchy
 <LI TYPE="circle">abc.parser.<A HREF="abc/parser/AbcFileParserListenerInterface.html" title="interface in abc.parser"><B>AbcFileParserListenerInterface</B></A><LI TYPE="circle">scanner.<A HREF="scanner/ScannerListenerInterface.html" title="interface in scanner"><B>ScannerListenerInterface</B></A><LI TYPE="circle">abc.parser.<A HREF="abc/parser/TuneBookListenerInterface.html" title="interface in abc.parser"><B>TuneBookListenerInterface</B></A><LI TYPE="circle">abc.parser.<A HREF="abc/parser/TuneParserListenerInterface.html" title="interface in abc.parser"><B>TuneParserListenerInterface</B></A><UL>
 <LI TYPE="circle">abc.parser.<A HREF="abc/parser/AbcFileParserListenerInterface.html" title="interface in abc.parser"><B>AbcFileParserListenerInterface</B></A></UL>
 <LI TYPE="circle">abc.midi.<A HREF="abc/midi/TunePlayerListenerInterface.html" title="interface in abc.midi"><B>TunePlayerListenerInterface</B></A></UL>
-<LI TYPE="circle">abc.midi.<A HREF="abc/midi/MidiConverterInterface.html" title="interface in abc.midi"><B>MidiConverterInterface</B></A><LI TYPE="circle">abc.midi.<A HREF="abc/midi/MidiMessageType.html" title="interface in abc.midi"><B>MidiMessageType</B></A><LI TYPE="circle">scanner.<A HREF="scanner/PositionableInCharStream.html" title="interface in scanner"><B>PositionableInCharStream</B></A><LI TYPE="circle">abc.notation.<A HREF="abc/notation/ScoreElementInterface.html" title="interface in abc.notation"><B>ScoreElementInterface</B></A><UL>
-<LI TYPE="circle">abc.notation.<A HREF="abc/notation/ScorePresentationElementInterface.html" title="interface in abc.notation"><B>ScorePresentationElementInterface</B></A></UL>
-<LI TYPE="circle">scanner.<A HREF="scanner/TokenType.html" title="interface in scanner"><B>TokenType</B></A></UL>
+<LI TYPE="circle">abc.ui.swing.<A HREF="abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing"><B>JScoreElement</B></A><LI TYPE="circle">abc.midi.<A HREF="abc/midi/MidiConverterInterface.html" title="interface in abc.midi"><B>MidiConverterInterface</B></A><LI TYPE="circle">abc.midi.<A HREF="abc/midi/MidiMessageType.html" title="interface in abc.midi"><B>MidiMessageType</B></A><LI TYPE="circle">abc.notation.<A HREF="abc/notation/MusicElement.html" title="interface in abc.notation"><B>MusicElement</B></A><UL>
+<LI TYPE="circle">abc.notation.<A HREF="abc/notation/MusicPresentationElement.html" title="interface in abc.notation"><B>MusicPresentationElement</B></A></UL>
+<LI TYPE="circle">scanner.<A HREF="scanner/PositionableInCharStream.html" title="interface in scanner"><B>PositionableInCharStream</B></A><LI TYPE="circle">scanner.<A HREF="scanner/TokenType.html" title="interface in scanner"><B>TokenType</B></A></UL>
 <HR>
 
 

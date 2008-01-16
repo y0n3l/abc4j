@@ -78,7 +78,10 @@ abc4j API Specification</EM>
 <H2>
 Package abc.ui.swing
 </H2>
-This package contains classes for displaying abc related objects in swing UI components.
+This package contains classes for displaying abc related objects in swing UI components.<BR/>
+        Such components are closely linked to music abstractions defined in package abc.notation and
+        propose advanced UI components that take advantage of information offered by objects 
+        such as <TT>Tune</TT>, <TT>Tune.Music</TT> etc...
 <P>
 <B>See:</B>
 <BR>
@@ -88,11 +91,31 @@ This package contains classes for displaying abc related objects in swing UI com
 <TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
 <TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
 <TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
+<B>Interface Summary</B></FONT></TH>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../../abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing">JScoreElement</A></B></TD>
+<TD>&nbsp;</TD>
+</TR>
+</TABLE>
+&nbsp;
+
+<P>
+
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
 <B>Class Summary</B></FONT></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD WIDTH="15%"><B><A HREF="../../../abc/ui/swing/JScoreComponent.html" title="class in abc.ui.swing">JScoreComponent</A></B></TD>
-<TD>This JComponent displays tunes scores.</TD>
+<TD>This JComponent displays tunes scores such as :<BR/> 
+ 
+ <IMG src="../../../images/scoreEx.jpg"/> 
+ <BR/>
+ To render a tune score, just invoke the <TT>setTune(Tune)</TT> method
+ with your tune as parameter.<BR/>
+ Basically, a score if composed of <A HREF="../../../abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing"><CODE>score elements</CODE></A></TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD WIDTH="15%"><B><A HREF="../../../abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing">TuneEditorPane</A></B></TD>
@@ -107,7 +130,10 @@ Package abc.ui.swing Description
 </H2>
 
 <P>
-This package contains classes for displaying abc related objects in swing UI components.
+This package contains classes for displaying abc related objects in swing UI components.<BR/>
+        Such components are closely linked to music abstractions defined in package abc.notation and
+        propose advanced UI components that take advantage of information offered by objects 
+        such as <TT>Tune</TT>, <TT>Tune.Music</TT> etc...
 <P>
 
 <P>

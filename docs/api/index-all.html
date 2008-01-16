@@ -83,7 +83,10 @@ Static variable in class abc.notation.<A HREF="./abc/notation/Note.html" title="
 <DT><A HREF="./abc/notation/Note.html#a"><B>a</B></A> - 
 Static variable in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in abc.notation">Note</A>
 <DD>The <TT>a</TT> note height type.
-<DT><A HREF="./abc/midi/package-summary.html"><B>abc.midi</B></A> - package abc.midi<DD>This package contains all classes for midi use from abc format.<DT><A HREF="./abc/notation/package-summary.html"><B>abc.notation</B></A> - package abc.notation<DD>This package defines all classes related to tunes in abc notation.<DT><A HREF="./abc/parser/package-summary.html"><B>abc.parser</B></A> - package abc.parser<DD>This package contains classes for parsing tunes in abc notation.<DT><A HREF="./abc/ui/awt/package-summary.html"><B>abc.ui.awt</B></A> - package abc.ui.awt<DD>This package contains classes for displaying abc related objects in awt UI components.<DT><A HREF="./abc/ui/swing/package-summary.html"><B>abc.ui.swing</B></A> - package abc.ui.swing<DD>This package contains classes for displaying abc related objects in swing UI components.<DT><A HREF="./abc/parser/AbcFileParser.html" title="class in abc.parser"><B>AbcFileParser</B></A> - Class in <A HREF="./abc/parser/package-summary.html">abc.parser</A><DD>This class provides instances to parse files and streams using
+<DT><A HREF="./abc/midi/package-summary.html"><B>abc.midi</B></A> - package abc.midi<DD>This package contains all classes for midi use from abc format.<DT><A HREF="./abc/notation/package-summary.html"><B>abc.notation</B></A> - package abc.notation<DD>This package defines all classes related to tunes in abc notation.<DT><A HREF="./abc/parser/package-summary.html"><B>abc.parser</B></A> - package abc.parser<DD>This package contains classes for parsing tunes in abc notation.<DT><A HREF="./abc/ui/awt/package-summary.html"><B>abc.ui.awt</B></A> - package abc.ui.awt<DD>This package contains classes for displaying abc related objects in awt UI components.<DT><A HREF="./abc/ui/swing/package-summary.html"><B>abc.ui.swing</B></A> - package abc.ui.swing<DD>This package contains classes for displaying abc related objects in swing UI components.<BR/>
+        Such components are closely linked to music abstractions defined in package abc.notation and
+        propose advanced UI components that take advantage of information offered by objects 
+        such as <TT>Tune</TT>, <TT>Tune.Music</TT> etc...<DT><A HREF="./abc/parser/AbcFileParser.html" title="class in abc.parser"><B>AbcFileParser</B></A> - Class in <A HREF="./abc/parser/package-summary.html">abc.parser</A><DD>This class provides instances to parse files and streams using
  abc notation.<DT><A HREF="./abc/parser/AbcFileParser.html#AbcFileParser()"><B>AbcFileParser()</B></A> - 
 Constructor for class abc.parser.<A HREF="./abc/parser/AbcFileParser.html" title="class in abc.parser">AbcFileParser</A>
 <DD>Creates a new abc file parser.
@@ -109,18 +112,17 @@ Constructor for class abc.parser.<A HREF="./abc/parser/AbcToolkit.html" title="c
 <DT><A HREF="./abc/parser/AbcToolkit.DurationDescription.html" title="class in abc.parser"><B>AbcToolkit.DurationDescription</B></A> - Class in <A HREF="./abc/parser/package-summary.html">abc.parser</A><DD>&nbsp;<DT><A HREF="./abc/parser/AbcTokenType.html#ACCIDENTAL"><B>ACCIDENTAL</B></A> - 
 Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" title="class in abc.parser">AbcTokenType</A>
 <DD>&nbsp;
-<DT><A HREF="./abc/notation/AccidentalType.html" title="interface in abc.notation"><B>AccidentalType</B></A> - Interface in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>Constants for accidental types.<DT><A HREF="./abc/ui/swing/TuneEditorPane.html#actionPerformed(java.awt.event.ActionEvent)"><B>actionPerformed(ActionEvent)</B></A> - 
-Method in class abc.ui.swing.<A HREF="./abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing">TuneEditorPane</A>
-<DD>This method is activated on the Keystrokes we are listening to
- in this implementation.
-<DT><A HREF="./scanner/Set.html#add(scanner.TokenType)"><B>add(TokenType)</B></A> - 
+<DT><A HREF="./abc/notation/AccidentalType.html" title="interface in abc.notation"><B>AccidentalType</B></A> - Interface in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>Constants for accidental types.<DT><A HREF="./scanner/Set.html#add(scanner.TokenType)"><B>add(TokenType)</B></A> - 
 Method in class scanner.<A HREF="./scanner/Set.html" title="class in scanner">Set</A>
 <DD>Adds the specified token type in the set.
 <DT><A HREF="./scanner/Transition.html#add(char[])"><B>add(char[])</B></A> - 
 Method in class scanner.<A HREF="./scanner/Transition.html" title="class in scanner">Transition</A>
 <DD>Adds new characters to this transition to activate it.
-<DT><A HREF="./abc/notation/Tune.Score.html#addElement(abc.notation.KeySignature)"><B>addElement(KeySignature)</B></A> - 
-Method in class abc.notation.<A HREF="./abc/notation/Tune.Score.html" title="class in abc.notation">Tune.Score</A>
+<DT><A HREF="./abc/notation/Tune.Music.html#addElement(abc.notation.KeySignature)"><B>addElement(KeySignature)</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/Tune.Music.html" title="class in abc.notation">Tune.Music</A>
+<DD>&nbsp;
+<DT><A HREF="./abc/notation/Tune.Music.html#addElement(abc.notation.NoteAbstract)"><B>addElement(NoteAbstract)</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/Tune.Music.html" title="class in abc.notation">Tune.Music</A>
 <DD>&nbsp;
 <DT><A HREF="./abc/notation/Tune.html#addHistory(java.lang.String)"><B>addHistory(String)</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in abc.notation">Tune</A>
@@ -161,7 +163,7 @@ Static variable in class abc.notation.<A HREF="./abc/notation/KeySignature.html"
 <DT><A HREF="./abc/parser/AbcTokenType.html#ALPHA"><B>ALPHA</B></A> - 
 Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" title="class in abc.parser">AbcTokenType</A>
 <DD>The <TT>ALPHA<TT> token type : characters from a to z and A to Z.
-<DT><A HREF="./abc/parser/AsynchronousTuneParser.html" title="class in abc.parser"><B>AsynchronousTuneParser</B></A> - Class in <A HREF="./abc/parser/package-summary.html">abc.parser</A><DD>&nbsp;<DT><A HREF="./abc/parser/AsynchronousTuneParser.html#AsynchronousTuneParser()"><B>AsynchronousTuneParser()</B></A> - 
+<DT><A HREF="./abc/parser/AsynchronousTuneParser.html" title="class in abc.parser"><B>AsynchronousTuneParser</B></A> - Class in <A HREF="./abc/parser/package-summary.html">abc.parser</A><DD>A parser that parses abc gammar into its own thread context.<DT><A HREF="./abc/parser/AsynchronousTuneParser.html#AsynchronousTuneParser()"><B>AsynchronousTuneParser()</B></A> - 
 Constructor for class abc.parser.<A HREF="./abc/parser/AsynchronousTuneParser.html" title="class in abc.parser">AsynchronousTuneParser</A>
 <DD>Constructs a new tune parser.
 <DT><A HREF="./abc/parser/AsynchronousTuneParser.html#AsynchronousTuneParser(boolean)"><B>AsynchronousTuneParser(boolean)</B></A> - 
@@ -184,7 +186,7 @@ Static variable in class abc.notation.<A HREF="./abc/notation/Note.html" title="
 <DT><A HREF="./abc/notation/Note.html#b"><B>b</B></A> - 
 Static variable in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in abc.notation">Note</A>
 <DD>The <TT>b</TT> note height type.
-<DT><A HREF="./abc/notation/BarLine.html" title="class in abc.notation"><B>BarLine</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>This class defines bar lines used in musical scores.<DT><A HREF="./abc/notation/BarLine.html#BarLine()"><B>BarLine()</B></A> - 
+<DT><A HREF="./abc/notation/BarLine.html" title="class in abc.notation"><B>BarLine</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>This class defines bar lines.<DT><A HREF="./abc/notation/BarLine.html#BarLine()"><B>BarLine()</B></A> - 
 Constructor for class abc.notation.<A HREF="./abc/notation/BarLine.html" title="class in abc.notation">BarLine</A>
 <DD>Default constructor.
 <DT><A HREF="./abc/notation/BarLine.html#BarLine(byte)"><B>BarLine(byte)</B></A> - 
@@ -192,9 +194,6 @@ Constructor for class abc.notation.<A HREF="./abc/notation/BarLine.html" title="
 <DD>Creates a new bar line with the corresponding type.
 <DT><A HREF="./abc/parser/AbcTokenType.html#BARLINE"><B>BARLINE</B></A> - 
 Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" title="class in abc.parser">AbcTokenType</A>
-<DD>&nbsp;
-<DT><A HREF="./abc/ui/swing/TuneEditorPane.html#BARS_STYLE"><B>BARS_STYLE</B></A> - 
-Static variable in class abc.ui.swing.<A HREF="./abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing">TuneEditorPane</A>
 <DD>&nbsp;
 <DT><A HREF="./abc/parser/AbcTokenType.html#BASE_NOTE"><B>BASE_NOTE</B></A> - 
 Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" title="class in abc.parser">AbcTokenType</A>
@@ -270,9 +269,9 @@ Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" tit
 <DT><A HREF="./abc/parser/AbcTokenType.html#COMMENT"><B>COMMENT</B></A> - 
 Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" title="class in abc.parser">AbcTokenType</A>
 <DD>The comment token type : character '%'.
-<DT><A HREF="./abc/ui/swing/TuneEditorPane.html#COMMENT_STYLE"><B>COMMENT_STYLE</B></A> - 
-Static variable in class abc.ui.swing.<A HREF="./abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing">TuneEditorPane</A>
-<DD>&nbsp;
+<DT><A HREF="./abc/notation/MultiNote.html#contains(abc.notation.Note)"><B>contains(Note)</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/MultiNote.html" title="class in abc.notation">MultiNote</A>
+<DD>Returns <TT>true</TT> if this chord contains the specified note.
 <DT><A HREF="./scanner/Set.html#contains(scanner.TokenType)"><B>contains(TokenType)</B></A> - 
 Method in class scanner.<A HREF="./scanner/Set.html" title="class in scanner">Set</A>
 <DD>Checks if a token type if contained in this set or not.
@@ -346,9 +345,6 @@ Static variable in class abc.notation.<A HREF="./abc/notation/Note.html" title="
 <DT><A HREF="./abc/notation/Note.html#d"><B>d</B></A> - 
 Static variable in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in abc.notation">Note</A>
 <DD>The <TT>d</TT> note height type.
-<DT><A HREF="./abc/ui/swing/TuneEditorPane.html#DEFAULT_STYLE"><B>DEFAULT_STYLE</B></A> - 
-Static variable in class abc.ui.swing.<A HREF="./abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing">TuneEditorPane</A>
-<DD>&nbsp;
 <DT><A HREF="./abc/parser/AbcTokenType.html#DIGIT"><B>DIGIT</B></A> - 
 Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" title="class in abc.parser">AbcTokenType</A>
 <DD>The digit token type : from 1 to 9.
@@ -402,6 +398,9 @@ Static variable in interface abc.midi.<A HREF="./abc/midi/MidiMessageType.html" 
 <DT><A HREF="./abc/parser/AbcTokenType.html#END_SLUR"><B>END_SLUR</B></A> - 
 Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" title="class in abc.parser">AbcTokenType</A>
 <DD>&nbsp;
+<DT><A HREF="./abc/notation/EndOfStaffLine.html" title="class in abc.notation"><B>EndOfStaffLine</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>A tagging class used to represent an end of staff line.<DT><A HREF="./abc/notation/EndOfStaffLine.html#EndOfStaffLine()"><B>EndOfStaffLine()</B></A> - 
+Constructor for class abc.notation.<A HREF="./abc/notation/EndOfStaffLine.html" title="class in abc.notation">EndOfStaffLine</A>
+<DD>&nbsp;
 <DT><A HREF="./abc/notation/TimeSignature.html#equals(java.lang.Object)"><B>equals(Object)</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/TimeSignature.html" title="class in abc.notation">TimeSignature</A>
 <DD>&nbsp;
@@ -411,8 +410,8 @@ Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" tit
 <DT><A HREF="./scanner/Set.html#equals(java.lang.Object)"><B>equals(Object)</B></A> - 
 Method in class scanner.<A HREF="./scanner/Set.html" title="class in scanner">Set</A>
 <DD>&nbsp;
-<DT><A HREF="./abc/ui/swing/TuneEditorPane.html#ERROR_STYLE"><B>ERROR_STYLE</B></A> - 
-Static variable in class abc.ui.swing.<A HREF="./abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing">TuneEditorPane</A>
+<DT><A HREF="./abc/notation/MultiNote.html#excludeTiesEndings(abc.notation.Note[])"><B>excludeTiesEndings(Note[])</B></A> - 
+Static method in class abc.notation.<A HREF="./abc/notation/MultiNote.html" title="class in abc.notation">MultiNote</A>
 <DD>&nbsp;
 </DL>
 <HR>
@@ -473,9 +472,6 @@ Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" tit
 <DT><A HREF="./abc/parser/AbcTokenType.html#FIELD_SOURCE"><B>FIELD_SOURCE</B></A> - 
 Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" title="class in abc.parser">AbcTokenType</A>
 <DD>The source field token type : <TT>S:</TT>.
-<DT><A HREF="./abc/ui/swing/TuneEditorPane.html#FIELD_STYLE"><B>FIELD_STYLE</B></A> - 
-Static variable in class abc.ui.swing.<A HREF="./abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing">TuneEditorPane</A>
-<DD>&nbsp;
 <DT><A HREF="./abc/parser/AbcTokenType.html#FIELD_TEMPO"><B>FIELD_TEMPO</B></A> - 
 Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" title="class in abc.parser">AbcTokenType</A>
 <DD>The tempo field token type : <TT>Q:</TT>.
@@ -548,6 +544,9 @@ Method in class abc.notation.<A HREF="./abc/notation/KeySignature.html" title="c
 <DT><A HREF="./abc/notation/Tune.html#getArea()"><B>getArea()</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in abc.notation">Tune</A>
 <DD>Returns the area where this tune comes from.
+<DT><A HREF="./abc/ui/swing/JScoreElement.html#getBase()"><B>getBase()</B></A> - 
+Method in interface abc.ui.swing.<A HREF="./abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing">JScoreElement</A>
+<DD>Return the base of this element.
 <DT><A HREF="./abc/midi/NotationMarkerMessage.html#getBeginOffset(byte[])"><B>getBeginOffset(byte[])</B></A> - 
 Static method in class abc.midi.<A HREF="./abc/midi/NotationMarkerMessage.html" title="class in abc.midi">NotationMarkerMessage</A>
 <DD>&nbsp;
@@ -555,6 +554,9 @@ Static method in class abc.midi.<A HREF="./abc/midi/NotationMarkerMessage.html" 
 Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in abc.notation">Tune</A>
 <DD>Returns the list of publications where this
  tune can be found.
+<DT><A HREF="./abc/ui/swing/JScoreElement.html#getBoundingBox()"><B>getBoundingBox()</B></A> - 
+Method in interface abc.ui.swing.<A HREF="./abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing">JScoreElement</A>
+<DD>Returns the bounding box for this score element.
 <DT><A HREF="./abc/notation/NoteAbstract.html#getBow()"><B>getBow()</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/NoteAbstract.html" title="class in abc.notation">NoteAbstract</A>
 <DD>Returns the bow to be used when playing this note.
@@ -606,9 +608,15 @@ Method in class abc.notation.<A HREF="./abc/notation/NoteAbstract.html" title="c
 <DT><A HREF="./abc/notation/Note.html#getDuration()"><B>getDuration()</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in abc.notation">Note</A>
 <DD>Returns the duration of this note.
+<DT><A HREF="./abc/notation/Tune.Music.html#getElementAt(int)"><B>getElementAt(int)</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/Tune.Music.html" title="class in abc.notation">Tune.Music</A>
+<DD>Returns the score element location at the specified offset.
 <DT><A HREF="./abc/notation/Tune.html#getElemskip()"><B>getElemskip()</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in abc.notation">Tune</A>
 <DD>&nbsp;
+<DT><A HREF="./abc/notation/TwoNotesLink.html#getEnd()"><B>getEnd()</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/TwoNotesLink.html" title="class in abc.notation">TwoNotesLink</A>
+<DD>Returns the end of the two notes link.
 <DT><A HREF="./abc/midi/NotationMarkerMessage.html#getEndOffset(byte[])"><B>getEndOffset(byte[])</B></A> - 
 Static method in class abc.midi.<A HREF="./abc/midi/NotationMarkerMessage.html" title="class in abc.midi">NotationMarkerMessage</A>
 <DD>&nbsp;
@@ -637,7 +645,19 @@ Method in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in 
 <DT><A HREF="./abc/notation/Note.html#getHeigth()"><B>getHeigth()</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in abc.notation">Note</A>
 <DD><B>Deprecated.</B>&nbsp;<I>use getHeight() instead. Sorry for the typo....</I>
+<DT><A HREF="./abc/notation/MultiNote.html#getHighestNote(abc.notation.Note[])"><B>getHighestNote(Note[])</B></A> - 
+Static method in class abc.notation.<A HREF="./abc/notation/MultiNote.html" title="class in abc.notation">MultiNote</A>
+<DD>Returns the highest note from the given array of notes.
+<DT><A HREF="./abc/notation/MultiNote.html#getHighestNote()"><B>getHighestNote()</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/MultiNote.html" title="class in abc.notation">MultiNote</A>
+<DD>Returns the highest note among the notes composing this multi note.
 <DT><A HREF="./abc/notation/Note.html#getHighestNote(abc.notation.Note[])"><B>getHighestNote(Note[])</B></A> - 
+Static method in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in abc.notation">Note</A>
+<DD>&nbsp;
+<DT><A HREF="./abc/notation/Tune.Music.html#getHighestNoteBewteen(abc.notation.MusicElement, abc.notation.MusicElement)"><B>getHighestNoteBewteen(MusicElement, MusicElement)</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/Tune.Music.html" title="class in abc.notation">Tune.Music</A>
+<DD>Returns the highest note between two music elements.
+<DT><A HREF="./abc/notation/Note.html#getHighestNoteIndex(abc.notation.Note[])"><B>getHighestNoteIndex(Note[])</B></A> - 
 Static method in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in abc.notation">Note</A>
 <DD>&nbsp;
 <DT><A HREF="./abc/parser/TuneBook.html#getHighestReferenceNumber()"><B>getHighestReferenceNumber()</B></A> - 
@@ -659,6 +679,9 @@ Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in 
 <DT><A HREF="./abc/notation/Part.html#getLabel()"><B>getLabel()</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Part.html" title="class in abc.notation">Part</A>
 <DD>Returns the label that identifies this part.
+<DT><A HREF="./abc/notation/Tune.Music.html#getLastNote()"><B>getLastNote()</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/Tune.Music.html" title="class in abc.notation">Tune.Music</A>
+<DD>&nbsp;
 <DT><A HREF="./abc/parser/InvalidTokenEvent.html#getLength()"><B>getLength()</B></A> - 
 Method in class abc.parser.<A HREF="./abc/parser/InvalidTokenEvent.html" title="class in abc.parser">InvalidTokenEvent</A>
 <DD>&nbsp;
@@ -685,10 +708,22 @@ Method in class scanner.<A HREF="./scanner/CharStreamPosition.html" title="class
 <DD>Returns the line of this position.
 <DT><A HREF="./abc/notation/MultiNote.html#getLongestNote()"><B>getLongestNote()</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/MultiNote.html" title="class in abc.notation">MultiNote</A>
-<DD>Returns the longest note of this multi note.
+<DD>Returns the longest note of this multi note, based on its duration.
+<DT><A HREF="./abc/notation/MultiNote.html#getLongestNote(abc.notation.Note[])"><B>getLongestNote(Note[])</B></A> - 
+Static method in class abc.notation.<A HREF="./abc/notation/MultiNote.html" title="class in abc.notation">MultiNote</A>
+<DD>Returns the note with the biggest duration from the given array of notes.
+<DT><A HREF="./abc/notation/MultiNote.html#getLowestNote(abc.notation.Note[])"><B>getLowestNote(Note[])</B></A> - 
+Static method in class abc.notation.<A HREF="./abc/notation/MultiNote.html" title="class in abc.notation">MultiNote</A>
+<DD>Returns the lowest note from the given array of notes.
+<DT><A HREF="./abc/notation/MultiNote.html#getLowestNote()"><B>getLowestNote()</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/MultiNote.html" title="class in abc.notation">MultiNote</A>
+<DD>Returns the lowest note among the notes composing this multi note.
 <DT><A HREF="./abc/notation/Note.html#getLowestNote(abc.notation.Note[])"><B>getLowestNote(Note[])</B></A> - 
 Static method in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in abc.notation">Note</A>
 <DD>&nbsp;
+<DT><A HREF="./abc/notation/Tune.Music.html#getLowestNoteBewteen(abc.notation.MusicElement, abc.notation.MusicElement)"><B>getLowestNoteBewteen(MusicElement, MusicElement)</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/Tune.Music.html" title="class in abc.notation">Tune.Music</A>
+<DD><TT>MultiNote</TT> instances are ignored.
 <DT><A HREF="./abc/midi/OldBasicMidiConverter.html#getMidiEventsFor(abc.notation.Note, abc.notation.KeySignature, long)"><B>getMidiEventsFor(Note, KeySignature, long)</B></A> - 
 Method in class abc.midi.<A HREF="./abc/midi/OldBasicMidiConverter.html" title="class in abc.midi">OldBasicMidiConverter</A>
 <DD>&nbsp;
@@ -728,6 +763,15 @@ Method in class abc.notation.<A HREF="./abc/notation/KeySignature.html" title="c
 <DT><A HREF="./abc/notation/Tune.html#getMultiPartsDefinition()"><B>getMultiPartsDefinition()</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in abc.notation">Tune</A>
 <DD>Returns the multi parts definition of this tune.
+<DT><A HREF="./abc/notation/Part.html#getMusic()"><B>getMusic()</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/Part.html" title="class in abc.notation">Part</A>
+<DD>Returns the music to this part.
+<DT><A HREF="./abc/notation/Tune.html#getMusic()"><B>getMusic()</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in abc.notation">Tune</A>
+<DD>Returns the music part of this tune.
+<DT><A HREF="./abc/ui/swing/JScoreElement.html#getMusicElement()"><B>getMusicElement()</B></A> - 
+Method in interface abc.ui.swing.<A HREF="./abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing">JScoreElement</A>
+<DD>Returns the music element represented by this graphical score element.
 <DT><A HREF="./abc/midi/TempoChangeEvent.html#getNewTempoValue()"><B>getNewTempoValue()</B></A> - 
 Method in class abc.midi.<A HREF="./abc/midi/TempoChangeEvent.html" title="class in abc.midi">TempoChangeEvent</A>
 <DD>&nbsp;
@@ -759,6 +803,9 @@ Method in class abc.notation.<A HREF="./abc/notation/MultiNote.html" title="clas
 <DT><A HREF="./abc/notation/Tuplet.html#getNotesAsVector()"><B>getNotesAsVector()</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Tuplet.html" title="class in abc.notation">Tuplet</A>
 <DD>Returns a new vector containing all notes of this multi note.
+<DT><A HREF="./abc/notation/MultiNote.html#getNotesBeginningTie()"><B>getNotesBeginningTie()</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/MultiNote.html" title="class in abc.notation">MultiNote</A>
+<DD>Returns the notes from this multinote that begin a tie.
 <DT><A HREF="./abc/notation/Tempo.html#getNotesNumberPerMinute()"><B>getNotesNumberPerMinute()</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Tempo.html" title="class in abc.notation">Tempo</A>
 <DD>Returns the number of note per minutes considering that those notes' length
@@ -766,6 +813,9 @@ Method in class abc.notation.<A HREF="./abc/notation/Tempo.html" title="class in
 <DT><A HREF="./abc/notation/Tempo.html#getNotesNumberPerMinute(short)"><B>getNotesNumberPerMinute(short)</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Tempo.html" title="class in abc.notation">Tempo</A>
 <DD>Returns the tempo for the given length as reference.
+<DT><A HREF="./abc/notation/MultiNote.html#getNotesShorterThan(abc.notation.Note[], int)"><B>getNotesShorterThan(Note[], int)</B></A> - 
+Static method in class abc.notation.<A HREF="./abc/notation/MultiNote.html" title="class in abc.notation">MultiNote</A>
+<DD>Returns all notes strictly shorter than the given strict duration.
 <DT><A HREF="./abc/notation/TimeSignature.html#getNumberOfDefaultNotesPerBeat(short)"><B>getNumberOfDefaultNotesPerBeat(short)</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/TimeSignature.html" title="class in abc.notation">TimeSignature</A>
 <DD>&nbsp;
@@ -790,7 +840,8 @@ Method in class abc.ui.awt.<A HREF="./abc/ui/awt/TuneEditorArea.html" title="cla
 <DD>&nbsp;
 <DT><A HREF="./abc/ui/swing/TuneEditorPane.html#getParser()"><B>getParser()</B></A> - 
 Method in class abc.ui.swing.<A HREF="./abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing">TuneEditorPane</A>
-<DD>&nbsp;
+<DD>Returns the parser used to build up the tune from the 
+ abc text written in this pane.
 <DT><A HREF="./abc/notation/Tune.html#getPart(char)"><B>getPart(char)</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in abc.notation">Tune</A>
 <DD>Returns the part of the tune identified by the given label.
@@ -834,6 +885,9 @@ Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in 
 <DT><A HREF="./abc/parser/TuneBook.html#getReferenceNumbers()"><B>getReferenceNumbers()</B></A> - 
 Method in class abc.parser.<A HREF="./abc/parser/TuneBook.html" title="class in abc.parser">TuneBook</A>
 <DD>Returns the reference numbers of tunes contained in this tunebook.
+<DT><A HREF="./abc/ui/swing/JScoreComponent.html#getRenditionElementFor(abc.notation.MusicElement)"><B>getRenditionElementFor(MusicElement)</B></A> - 
+Method in class abc.ui.swing.<A HREF="./abc/ui/swing/JScoreComponent.html" title="class in abc.ui.swing">JScoreComponent</A>
+<DD>Returns the graphical element that corresponds to a tune element.
 <DT><A HREF="./abc/notation/RepeatBarLine.html#getRepeatNumber()"><B>getRepeatNumber()</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/RepeatBarLine.html" title="class in abc.notation">RepeatBarLine</A>
 <DD>Returns the number of times the repeat should occur.
@@ -843,12 +897,13 @@ Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in 
 <DT><A HREF="./abc/parser/AbcParserAbstract.html#getScanner()"><B>getScanner()</B></A> - 
 Method in class abc.parser.<A HREF="./abc/parser/AbcParserAbstract.html" title="class in abc.parser">AbcParserAbstract</A>
 <DD>Returns the scanner internally used for parsing.
-<DT><A HREF="./abc/notation/Part.html#getScore()"><B>getScore()</B></A> - 
-Method in class abc.notation.<A HREF="./abc/notation/Part.html" title="class in abc.notation">Part</A>
-<DD>Returns the score associated to this part.
-<DT><A HREF="./abc/notation/Tune.html#getScore()"><B>getScore()</B></A> - 
-Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in abc.notation">Tune</A>
-<DD>Returns the score of this tune.
+<DT><A HREF="./abc/ui/swing/JScoreComponent.html#getScoreElementAt(java.awt.Point)"><B>getScoreElementAt(Point)</B></A> - 
+Method in class abc.ui.swing.<A HREF="./abc/ui/swing/JScoreComponent.html" title="class in abc.ui.swing">JScoreComponent</A>
+<DD>Returns the graphical score element fount at the given location.
+<DT><A HREF="./abc/ui/swing/JScoreElement.html#getScoreElementAt(java.awt.Point)"><B>getScoreElementAt(Point)</B></A> - 
+Method in interface abc.ui.swing.<A HREF="./abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing">JScoreElement</A>
+<DD>Returns the score element whose bouding box contains the
+ given location.
 <DT><A HREF="./abc/ui/awt/TuneEditorArea.html#getScrollableTracksViewportWidth()"><B>getScrollableTracksViewportWidth()</B></A> - 
 Method in class abc.ui.awt.<A HREF="./abc/ui/awt/TuneEditorArea.html" title="class in abc.ui.awt">TuneEditorArea</A>
 <DD>&nbsp;
@@ -857,13 +912,19 @@ Method in class abc.ui.swing.<A HREF="./abc/ui/swing/TuneEditorPane.html" title=
 <DD>&nbsp;
 <DT><A HREF="./abc/notation/MultiNote.html#getShortestNote()"><B>getShortestNote()</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/MultiNote.html" title="class in abc.notation">MultiNote</A>
-<DD>Returns the shortest note of this multi note.
+<DD>Returns the shortest note of this multi note, based on its duration.
+<DT><A HREF="./abc/notation/NoteAbstract.html#getSlurDefinition()"><B>getSlurDefinition()</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/NoteAbstract.html" title="class in abc.notation">NoteAbstract</A>
+<DD>&nbsp;
 <DT><A HREF="./abc/notation/Tune.html#getSource()"><B>getSource()</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in abc.notation">Tune</A>
 <DD>Returns the source of this tune.
 <DT><A HREF="./scanner/Transition.html#getSourceState()"><B>getSourceState()</B></A> - 
 Method in class scanner.<A HREF="./scanner/Transition.html" title="class in scanner">Transition</A>
 <DD>Returns the source state of this transition.
+<DT><A HREF="./abc/notation/TwoNotesLink.html#getStart()"><B>getStart()</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/TwoNotesLink.html" title="class in abc.notation">TwoNotesLink</A>
+<DD>Returns the start of the two notes link.
 <DT><A HREF="./scanner/AutomataDefinition.html#getStartingState()"><B>getStartingState()</B></A> - 
 Method in class scanner.<A HREF="./scanner/AutomataDefinition.html" title="class in scanner">AutomataDefinition</A>
 <DD>Returns the starting state of this automata.
@@ -876,6 +937,9 @@ Method in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in 
 <DT><A HREF="./abc/parser/AbcToolkit.DurationDescription.html#getStrictDuration()"><B>getStrictDuration()</B></A> - 
 Method in class abc.parser.<A HREF="./abc/parser/AbcToolkit.DurationDescription.html" title="class in abc.parser">AbcToolkit.DurationDescription</A>
 <DD>&nbsp;
+<DT><A HREF="./abc/notation/MultiNote.html#getStrictDurations()"><B>getStrictDurations()</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/MultiNote.html" title="class in abc.notation">MultiNote</A>
+<DD>Returns the strict durations composing this multi notes.
 <DT><A HREF="./abc/notation/Note.html#getStrictHeight()"><B>getStrictHeight()</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in abc.notation">Note</A>
 <DD>Returns this note absolute height.
@@ -891,6 +955,9 @@ Static method in class abc.midi.<A HREF="./abc/midi/TempoMessage.html" title="cl
 <DT><A HREF="./abc/midi/TunePlayer.html#getTempo()"><B>getTempo()</B></A> - 
 Method in class abc.midi.<A HREF="./abc/midi/TunePlayer.html" title="class in abc.midi">TunePlayer</A>
 <DD>Returns the tempo currently used to play tunes.
+<DT><A HREF="./abc/notation/Note.html#getTieDefinition()"><B>getTieDefinition()</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in abc.notation">Note</A>
+<DD>&nbsp;
 <DT><A HREF="./abc/notation/Tune.html#getTitles()"><B>getTitles()</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in abc.notation">Tune</A>
 <DD>Returns the titles of this tune.
@@ -931,7 +998,7 @@ Method in class abc.ui.awt.<A HREF="./abc/ui/awt/TuneEditorArea.html" title="cla
 <DD>&nbsp;
 <DT><A HREF="./abc/ui/swing/TuneEditorPane.html#getTune()"><B>getTune()</B></A> - 
 Method in class abc.ui.swing.<A HREF="./abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing">TuneEditorPane</A>
-<DD>&nbsp;
+<DD>Returns the tune that is currently described in this tune editor.
 <DT><A HREF="./abc/parser/TuneBook.html#getTuneHeader(int)"><B>getTuneHeader(int)</B></A> - 
 Method in class abc.parser.<A HREF="./abc/parser/TuneBook.html" title="class in abc.parser">TuneBook</A>
 <DD>Returns the text put just before a tune in an ABC file.
@@ -969,6 +1036,9 @@ Method in class scanner.<A HREF="./scanner/Set.html" title="class in scanner">Se
 <DT><A HREF="./scanner/Token.html#getValue()"><B>getValue()</B></A> - 
 Method in class scanner.<A HREF="./scanner/Token.html" title="class in scanner">Token</A>
 <DD>Returns the string of this token.
+<DT><A HREF="./abc/ui/swing/JScoreElement.html#getWidth()"><B>getWidth()</B></A> - 
+Method in interface abc.ui.swing.<A HREF="./abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing">JScoreElement</A>
+<DD>Returns the width of this score element.
 <DT><A HREF="./abc/parser/AbcTokenType.html#GRACING"><B>GRACING</B></A> - 
 Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" title="class in abc.parser">AbcTokenType</A>
 <DD>&nbsp;
@@ -977,9 +1047,6 @@ Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" tit
 <DD>&nbsp;
 <DT><A HREF="./abc/parser/AbcTokenType.html#GRACING_END"><B>GRACING_END</B></A> - 
 Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" title="class in abc.parser">AbcTokenType</A>
-<DD>&nbsp;
-<DT><A HREF="./abc/ui/swing/TuneEditorPane.html#GRACING_STYLE"><B>GRACING_STYLE</B></A> - 
-Static variable in class abc.ui.swing.<A HREF="./abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing">TuneEditorPane</A>
 <DD>&nbsp;
 <DT><A HREF="./abc/parser/AbcTokenType.html#GUITAR_CHORD"><B>GUITAR_CHORD</B></A> - 
 Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" title="class in abc.parser">AbcTokenType</A>
@@ -992,6 +1059,13 @@ Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" tit
 <DT><A HREF="./abc/notation/Note.html#HALF"><B>HALF</B></A> - 
 Static variable in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in abc.notation">Note</A>
 <DD>The <TT>HALF</TT> length type.
+<DT><A HREF="./abc/notation/MultiNote.html#hasAccidental()"><B>hasAccidental()</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/MultiNote.html" title="class in abc.notation">MultiNote</A>
+<DD>Returns <TT>true</TT> if this multi note some accidentals (for at least one
+ of its note).
+<DT><A HREF="./abc/notation/Note.html#hasAccidental()"><B>hasAccidental()</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in abc.notation">Note</A>
+<DD>&nbsp;
 <DT><A HREF="./abc/notation/NoteAbstract.html#hasGeneralGracing()"><B>hasGeneralGracing()</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/NoteAbstract.html" title="class in abc.notation">NoteAbstract</A>
 <DD>Returns <TT>true</TT> if this note has a general gracing, <TT>false</TT> otherwise.
@@ -1013,11 +1087,18 @@ Method in class scanner.<A HREF="./scanner/State.html" title="class in scanner">
 <DT><A HREF="./abc/notation/NoteAbstract.html#hasStaccato()"><B>hasStaccato()</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/NoteAbstract.html" title="class in abc.notation">NoteAbstract</A>
 <DD>Returns <TT>true</TT> if this note should be played with staccato.
+<DT><A HREF="./abc/notation/MultiNote.html#hasUniqueStrictDuration()"><B>hasUniqueStrictDuration()</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/MultiNote.html" title="class in abc.notation">MultiNote</A>
+<DD>Returns <TT>true</TT> if the strict durations of all notes composing this 
+ multi note have the same value.
 </DL>
 <HR>
 <A NAME="_I_"><!-- --></A><H2>
 <B>I</B></H2>
 <DL>
+<DT><A HREF="./abc/notation/Tune.Music.html#indexOf(abc.notation.MusicElement)"><B>indexOf(MusicElement)</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/Tune.Music.html" title="class in abc.notation">Tune.Music</A>
+<DD>&nbsp;
 <DT><A HREF="./scanner/Scanner.html#init(java.lang.String)"><B>init(String)</B></A> - 
 Method in class scanner.<A HREF="./scanner/Scanner.html" title="class in scanner">Scanner</A>
 <DD>Inits this scanner to be able to perform a scan on the given string
@@ -1075,9 +1156,16 @@ Static variable in class abc.notation.<A HREF="./abc/notation/KeySignature.html"
  a letter, upper or lower case.<DT><A HREF="./scanner/IsAlphaTransition.html#IsAlphaTransition(scanner.State)"><B>IsAlphaTransition(State)</B></A> - 
 Constructor for class scanner.<A HREF="./scanner/IsAlphaTransition.html" title="class in scanner">IsAlphaTransition</A>
 <DD>Default constructor.
+<DT><A HREF="./abc/notation/NoteAbstract.html#isBeginingSlur()"><B>isBeginingSlur()</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/NoteAbstract.html" title="class in abc.notation">NoteAbstract</A>
+<DD>&nbsp;
+<DT><A HREF="./abc/notation/Note.html#isBeginningTie()"><B>isBeginningTie()</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in abc.notation">Note</A>
+<DD>Returns <TT>true</TT> if this note is beginning a tie.
 <DT><A HREF="./abc/ui/swing/TuneEditorPane.html#isColoringEnabled()"><B>isColoringEnabled()</B></A> - 
 Method in class abc.ui.swing.<A HREF="./abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing">TuneEditorPane</A>
-<DD>&nbsp;
+<DD>Returns <TT>true</TT> if text coloring has been enabled, <TT>false</TT>
+ otherwise.
 <DT><A HREF="./abc/notation/TimeSignature.html#isCoumpound()"><B>isCoumpound()</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/TimeSignature.html" title="class in abc.notation">TimeSignature</A>
 <DD>Return <TT>true</TT> if this time signature if compound, <TT>false</TT>
@@ -1085,13 +1173,25 @@ Method in class abc.notation.<A HREF="./abc/notation/TimeSignature.html" title="
 <DT><A HREF="./scanner/IsDigitTransition.html" title="class in scanner"><B>IsDigitTransition</B></A> - Class in <A HREF="./scanner/package-summary.html">scanner</A><DD>This class defines a transition that corresponds to a digit character.<DT><A HREF="./scanner/IsDigitTransition.html#IsDigitTransition(scanner.State)"><B>IsDigitTransition(State)</B></A> - 
 Constructor for class scanner.<A HREF="./scanner/IsDigitTransition.html" title="class in scanner">IsDigitTransition</A>
 <DD>Default constructor.
+<DT><A HREF="./abc/notation/NoteAbstract.html#isEndingSlur()"><B>isEndingSlur()</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/NoteAbstract.html" title="class in abc.notation">NoteAbstract</A>
+<DD>&nbsp;
+<DT><A HREF="./abc/notation/Note.html#isEndingTie()"><B>isEndingTie()</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in abc.notation">Note</A>
+<DD>Returns <TT>true</TT> if this note is ending a tie.
 <DT><A HREF="./abc/parser/AbcTokenType.html#isField()"><B>isField()</B></A> - 
 Method in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" title="class in abc.parser">AbcTokenType</A>
 <DD>&nbsp;
+<DT><A HREF="./abc/notation/Note.html#isHigherThan(abc.notation.Note)"><B>isHigherThan(Note)</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in abc.notation">Note</A>
+<DD>Returns <TT>true</TT> if the given note is strictly higher than this one.
 <DT><A HREF="./abc/ui/swing/JScoreComponent.html#isJustified()"><B>isJustified()</B></A> - 
 Method in class abc.ui.swing.<A HREF="./abc/ui/swing/JScoreComponent.html" title="class in abc.ui.swing">JScoreComponent</A>
 <DD>Return <TT>true</TT> if the rendition staff lines alignment is
  justified, <TT>false</TT> otherwise.
+<DT><A HREF="./abc/notation/Note.html#isLowerThan(abc.notation.Note)"><B>isLowerThan(Note)</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in abc.notation">Note</A>
+<DD>&nbsp;
 <DT><A HREF="./abc/midi/MetaMessageWA.html#isNotationMarker(javax.sound.midi.MetaMessage)"><B>isNotationMarker(MetaMessage)</B></A> - 
 Static method in class abc.midi.<A HREF="./abc/midi/MetaMessageWA.html" title="class in abc.midi">MetaMessageWA</A>
 <DD>Checks the first byte of the data part of the message to check 
@@ -1141,10 +1241,16 @@ Method in class scanner.<A HREF="./scanner/State.html" title="class in scanner">
 <A NAME="_J_"><!-- --></A><H2>
 <B>J</B></H2>
 <DL>
-<DT><A HREF="./abc/ui/swing/JScoreComponent.html" title="class in abc.ui.swing"><B>JScoreComponent</B></A> - Class in <A HREF="./abc/ui/swing/package-summary.html">abc.ui.swing</A><DD>This JComponent displays tunes scores.<DT><A HREF="./abc/ui/swing/JScoreComponent.html#JScoreComponent()"><B>JScoreComponent()</B></A> - 
+<DT><A HREF="./abc/ui/swing/JScoreComponent.html" title="class in abc.ui.swing"><B>JScoreComponent</B></A> - Class in <A HREF="./abc/ui/swing/package-summary.html">abc.ui.swing</A><DD>This JComponent displays tunes scores such as :<BR/> 
+ 
+ <IMG src="../../../images/scoreEx.jpg"/> 
+ <BR/>
+ To render a tune score, just invoke the <TT>setTune(Tune)</TT> method
+ with your tune as parameter.<BR/>
+ Basically, a score if composed of <A HREF="./abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing"><CODE>score elements</CODE></A><DT><A HREF="./abc/ui/swing/JScoreComponent.html#JScoreComponent()"><B>JScoreComponent()</B></A> - 
 Constructor for class abc.ui.swing.<A HREF="./abc/ui/swing/JScoreComponent.html" title="class in abc.ui.swing">JScoreComponent</A>
 <DD>Default constructor.
-</DL>
+<DT><A HREF="./abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing"><B>JScoreElement</B></A> - Interface in <A HREF="./abc/ui/swing/package-summary.html">abc.ui.swing</A><DD>&nbsp;</DL>
 <HR>
 <A NAME="_K_"><!-- --></A><H2>
 <B>K</B></H2>
@@ -1241,7 +1347,7 @@ Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" tit
 <DT><A HREF="./abc/notation/MultiNote.html" title="class in abc.notation"><B>MultiNote</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>A multi note is a group of notes that should be played together.<DT><A HREF="./abc/notation/MultiNote.html#MultiNote(java.util.Vector)"><B>MultiNote(Vector)</B></A> - 
 Constructor for class abc.notation.<A HREF="./abc/notation/MultiNote.html" title="class in abc.notation">MultiNote</A>
 <DD>Creates a new <TT>MultiNote</TT> from given notes.
-<DT><A HREF="./abc/notation/MultiPartsDefinition.html" title="class in abc.notation"><B>MultiPartsDefinition</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>This class describes the way a multipart score is defined.<DT><A HREF="./abc/notation/MultiPartsDefinition.html#MultiPartsDefinition()"><B>MultiPartsDefinition()</B></A> - 
+<DT><A HREF="./abc/notation/MultiPartsDefinition.html" title="class in abc.notation"><B>MultiPartsDefinition</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>This class describes the way a multipart music tune is defined.<DT><A HREF="./abc/notation/MultiPartsDefinition.html#MultiPartsDefinition()"><B>MultiPartsDefinition()</B></A> - 
 Constructor for class abc.notation.<A HREF="./abc/notation/MultiPartsDefinition.html" title="class in abc.notation">MultiPartsDefinition</A>
 <DD>Creates a new multi part definition.
 <DT><A HREF="./abc/notation/MultiPartsDefinition.html#MultiPartsDefinition(abc.notation.MultiPartsDefinition)"><B>MultiPartsDefinition(MultiPartsDefinition)</B></A> - 
@@ -1251,7 +1357,8 @@ Constructor for class abc.notation.<A HREF="./abc/notation/MultiPartsDefinition.
 Method in class abc.notation.<A HREF="./abc/notation/Fraction.html" title="class in abc.notation">Fraction</A>
 <DD>Multiplies this fraction by the specified fraction and returns
  the result as a float.
-</DL>
+<DT><A HREF="./abc/notation/MusicElement.html" title="interface in abc.notation"><B>MusicElement</B></A> - Interface in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>A tagging interface for all elements that are part of a tune's music.<DT><A HREF="./abc/notation/MusicPresentationElement.html" title="interface in abc.notation"><B>MusicPresentationElement</B></A> - Interface in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>A tagging interface for all elements composing a tune's music that are
+ releated to the way this music is rendered graphicaly on a score for instance.</DL>
 <HR>
 <A NAME="_N_"><!-- --></A><H2>
 <B>N</B></H2>
@@ -1271,6 +1378,10 @@ Static variable in interface abc.notation.<A HREF="./abc/notation/AccidentalType
 <DT><A HREF="./abc/notation/NoteAbstract.html#NONE"><B>NONE</B></A> - 
 Static variable in class abc.notation.<A HREF="./abc/notation/NoteAbstract.html" title="class in abc.notation">NoteAbstract</A>
 <DD>The none bow type.
+<DT><A HREF="./abc/notation/MultiNote.html#normalize()"><B>normalize()</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/MultiNote.html" title="class in abc.notation">MultiNote</A>
+<DD>Normalizes this multi note by decomposing it into multinotes with 
+ same strict duration.
 <DT><A HREF="./scanner/NoSuchTokenException.html" title="class in scanner"><B>NoSuchTokenException</B></A> - Exception in <A HREF="./scanner/package-summary.html">scanner</A><DD>A runtime exception thrown when no more token can be generated.<DT><A HREF="./scanner/NoSuchTokenException.html#NoSuchTokenException()"><B>NoSuchTokenException()</B></A> - 
 Constructor for exception scanner.<A HREF="./scanner/NoSuchTokenException.html" title="class in scanner">NoSuchTokenException</A>
 <DD>&nbsp;
@@ -1297,9 +1408,6 @@ Constructor for class abc.notation.<A HREF="./abc/notation/Note.html" title="cla
 Static variable in interface abc.midi.<A HREF="./abc/midi/MidiMessageType.html" title="interface in abc.midi">MidiMessageType</A>
 <DD>The message type to give a reference to the note index in the
  score that is being played during a tune playback.
-<DT><A HREF="./abc/ui/swing/TuneEditorPane.html#NOTE_STYLE"><B>NOTE_STYLE</B></A> - 
-Static variable in class abc.ui.swing.<A HREF="./abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing">TuneEditorPane</A>
-<DD>&nbsp;
 <DT><A HREF="./abc/notation/NoteAbstract.html" title="class in abc.notation"><B>NoteAbstract</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>This is the abstract class to define notes or multi notes.<DT><A HREF="./abc/notation/NoteAbstract.html#NoteAbstract()"><B>NoteAbstract()</B></A> - 
 Constructor for class abc.notation.<A HREF="./abc/notation/NoteAbstract.html" title="class in abc.notation">NoteAbstract</A>
 <DD>&nbsp;
@@ -1311,6 +1419,9 @@ Method in class abc.midi.<A HREF="./abc/midi/TunePlayerAdapter.html" title="clas
 <DD>&nbsp;
 <DT><A HREF="./abc/midi/TunePlayerListenerInterface.html#notePlayed(abc.notation.NoteAbstract)"><B>notePlayed(NoteAbstract)</B></A> - 
 Method in interface abc.midi.<A HREF="./abc/midi/TunePlayerListenerInterface.html" title="interface in abc.midi">TunePlayerListenerInterface</A>
+<DD>&nbsp;
+<DT><A HREF="./abc/notation/NotesSeparator.html" title="class in abc.notation"><B>NotesSeparator</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>A tagging class used to delimiter groups of notes in score.<DT><A HREF="./abc/notation/NotesSeparator.html#NotesSeparator()"><B>NotesSeparator()</B></A> - 
+Constructor for class abc.notation.<A HREF="./abc/notation/NotesSeparator.html" title="class in abc.notation">NotesSeparator</A>
 <DD>&nbsp;
 <DT><A HREF="./scanner/NoTransitionFoundException.html" title="class in scanner"><B>NoTransitionFoundException</B></A> - Exception in <A HREF="./scanner/package-summary.html">scanner</A><DD>A runtime exception thrown when no transition is found when sending a
  character in a finale state automata.<DT><A HREF="./scanner/NoTransitionFoundException.html#NoTransitionFoundException()"><B>NoTransitionFoundException()</B></A> - 
@@ -1389,7 +1500,7 @@ Method in class abc.parser.<A HREF="./abc/parser/TuneParser.html" title="class i
 <DD>Parses the header of the specified tune notation.
 <DT><A HREF="./abc/parser/TuneParser.html#parseHeader(java.io.Reader)"><B>parseHeader(Reader)</B></A> - 
 Method in class abc.parser.<A HREF="./abc/parser/TuneParser.html" title="class in abc.parser">TuneParser</A>
-<DD>Parse the given string and creates a <TT>Tune</TT> object with no score
+<DD>Parse the given string and creates a <TT>Tune</TT> object with no music
  as parsing result.
 <DT><A HREF="./abc/notation/Part.html" title="class in abc.notation"><B>Part</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD><TT>Part</TT> objects are used to define parts in tunes.<DT><A HREF="./abc/parser/AbcTokenType.html#PART"><B>PART</B></A> - 
 Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" title="class in abc.parser">AbcTokenType</A>
@@ -1497,13 +1608,13 @@ Static variable in class abc.notation.<A HREF="./abc/notation/BarLine.html" titl
 <DT><A HREF="./abc/parser/AbcTokenType.html#REPEAT_OPEN"><B>REPEAT_OPEN</B></A> - 
 Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" title="class in abc.parser">AbcTokenType</A>
 <DD>&nbsp;
-<DT><A HREF="./abc/notation/RepeatBarLine.html" title="class in abc.notation"><B>RepeatBarLine</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>A special bar line that enables you to repeat part of the score.<DT><A HREF="./abc/notation/RepeatBarLine.html#RepeatBarLine(byte)"><B>RepeatBarLine(byte)</B></A> - 
+<DT><A HREF="./abc/notation/RepeatBarLine.html" title="class in abc.notation"><B>RepeatBarLine</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>A special bar line that enables you to repeat part of music from a tune.<DT><A HREF="./abc/notation/RepeatBarLine.html#RepeatBarLine(byte)"><B>RepeatBarLine(byte)</B></A> - 
 Constructor for class abc.notation.<A HREF="./abc/notation/RepeatBarLine.html" title="class in abc.notation">RepeatBarLine</A>
 <DD>Creates a new repeat bar line.
 <DT><A HREF="./abc/notation/RepeatedPart.html" title="class in abc.notation"><B>RepeatedPart</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>A simple <TT>Part</TT> repeated several times.<DT><A HREF="./abc/notation/RepeatedPart.html#RepeatedPart(abc.notation.Part)"><B>RepeatedPart(Part)</B></A> - 
 Constructor for class abc.notation.<A HREF="./abc/notation/RepeatedPart.html" title="class in abc.notation">RepeatedPart</A>
 <DD>Creates a new repeated part that will repeat the given part.
-<DT><A HREF="./abc/notation/RepeatedPartAbstract.html" title="class in abc.notation"><B>RepeatedPartAbstract</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>Abstract class that defines the number of times a part in the score should
+<DT><A HREF="./abc/notation/RepeatedPartAbstract.html" title="class in abc.notation"><B>RepeatedPartAbstract</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>Abstract class that defines the number of times a part in a tune's music should
  be repeated.<DT><A HREF="./abc/notation/RepeatedPartAbstract.html#RepeatedPartAbstract()"><B>RepeatedPartAbstract()</B></A> - 
 Constructor for class abc.notation.<A HREF="./abc/notation/RepeatedPartAbstract.html" title="class in abc.notation">RepeatedPartAbstract</A>
 <DD>Creates a new repeated part.
@@ -1512,9 +1623,6 @@ Static variable in class abc.notation.<A HREF="./abc/notation/Note.html" title="
 <DD>The <TT>REST</TT> height type.
 <DT><A HREF="./abc/parser/AbcTokenType.html#REST"><B>REST</B></A> - 
 Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" title="class in abc.parser">AbcTokenType</A>
-<DD>&nbsp;
-<DT><A HREF="./abc/ui/swing/TuneEditorPane.html#RHYTHM_STYLE"><B>RHYTHM_STYLE</B></A> - 
-Static variable in class abc.ui.swing.<A HREF="./abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing">TuneEditorPane</A>
 <DD>&nbsp;
 </DL>
 <HR>
@@ -1542,8 +1650,7 @@ Constructor for class scanner.<A HREF="./scanner/Scanner.html" title="class in s
 Constructor for class scanner.<A HREF="./scanner/ScannerAdapter.html" title="class in scanner">ScannerAdapter</A>
 <DD>&nbsp;
 <DT><A HREF="./scanner/ScannerListenerInterface.html" title="interface in scanner"><B>ScannerListenerInterface</B></A> - Interface in <A HREF="./scanner/package-summary.html">scanner</A><DD>This interface should be implemented by any object that wants to listen
- to scanner events thrown during characters stream scanning.<DT><A HREF="./abc/notation/ScoreElementInterface.html" title="interface in abc.notation"><B>ScoreElementInterface</B></A> - Interface in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>A tagging interface for all elements that are part of a tune score .<DT><A HREF="./abc/notation/ScorePresentationElementInterface.html" title="interface in abc.notation"><B>ScorePresentationElementInterface</B></A> - Interface in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>A tagging interface for all elements composing the score of a tune that are
- releated to score presentation for rendition.<DT><A HREF="./scanner/FinaleStateAutomata.html#sendChar(char)"><B>sendChar(char)</B></A> - 
+ to scanner events thrown during characters stream scanning.<DT><A HREF="./scanner/FinaleStateAutomata.html#sendChar(char)"><B>sendChar(char)</B></A> - 
 Method in class scanner.<A HREF="./scanner/FinaleStateAutomata.html" title="class in scanner">FinaleStateAutomata</A>
 <DD>Sends a character to this automata.
 <DT><A HREF="./scanner/Set.html" title="class in scanner"><B>Set</B></A> - Class in <A HREF="./scanner/package-summary.html">scanner</A><DD>This class defines sets used to group token types while parsing.<DT><A HREF="./scanner/Set.html#Set(scanner.TokenType[])"><B>Set(TokenType[])</B></A> - 
@@ -1588,7 +1695,7 @@ Method in class abc.notation.<A HREF="./abc/notation/NoteAbstract.html" title="c
 <DD>Sets the name of the chord.
 <DT><A HREF="./abc/ui/swing/TuneEditorPane.html#setColoringEnable(boolean)"><B>setColoringEnable(boolean)</B></A> - 
 Method in class abc.ui.swing.<A HREF="./abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing">TuneEditorPane</A>
-<DD>&nbsp;
+<DD>Enables/disables coloring of the text.
 <DT><A HREF="./scanner/CharStreamPosition.html#setColumn(int)"><B>setColumn(int)</B></A> - 
 Method in class scanner.<A HREF="./scanner/CharStreamPosition.html" title="class in scanner">CharStreamPosition</A>
 <DD>Sets the column of this position.
@@ -1604,9 +1711,6 @@ Method in class abc.notation.<A HREF="./abc/notation/Fraction.html" title="class
 <DT><A HREF="./abc/notation/Tune.html#setDiscography(java.lang.String)"><B>setDiscography(String)</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in abc.notation">Tune</A>
 <DD>Sets recordings where this tune appears.
-<DT><A HREF="./abc/ui/swing/TuneEditorPane.html#setDocument(javax.swing.text.Document)"><B>setDocument(Document)</B></A> - 
-Method in class abc.ui.swing.<A HREF="./abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing">TuneEditorPane</A>
-<DD>&nbsp;
 <DT><A HREF="./abc/notation/Note.html#setDotted(byte)"><B>setDotted(byte)</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in abc.notation">Note</A>
 <DD>Sets the number of dots for this note.
@@ -1619,6 +1723,9 @@ Method in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in 
 <DT><A HREF="./abc/notation/Tune.html#setElemskip(int)"><B>setElemskip(int)</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in abc.notation">Tune</A>
 <DD>&nbsp;
+<DT><A HREF="./abc/notation/TwoNotesLink.html#setEnd(abc.notation.NoteAbstract)"><B>setEnd(NoteAbstract)</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/TwoNotesLink.html" title="class in abc.notation">TwoNotesLink</A>
+<DD>Sets the end of the two notes link.
 <DT><A HREF="./scanner/Scanner.html#setFinaleStateAutomata(scanner.FinaleStateAutomata)"><B>setFinaleStateAutomata(FinaleStateAutomata)</B></A> - 
 Method in class scanner.<A HREF="./scanner/Scanner.html" title="class in scanner">Scanner</A>
 <DD>&nbsp;
@@ -1640,9 +1747,6 @@ Method in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in 
 <DT><A HREF="./abc/notation/Tune.html#setInformation(java.lang.String)"><B>setInformation(String)</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in abc.notation">Tune</A>
 <DD>Sets additional information about the tune.
-<DT><A HREF="./abc/notation/Note.html#setIsTied(boolean)"><B>setIsTied(boolean)</B></A> - 
-Method in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in abc.notation">Note</A>
-<DD>Sets if this note is tied, wheter or not.
 <DT><A HREF="./abc/ui/swing/JScoreComponent.html#setJustification(boolean)"><B>setJustification(boolean)</B></A> - 
 Method in class abc.ui.swing.<A HREF="./abc/ui/swing/JScoreComponent.html" title="class in abc.ui.swing">JScoreComponent</A>
 <DD>Changes the justification of the rendition score.
@@ -1694,11 +1798,23 @@ Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in 
 <DT><A HREF="./abc/notation/Tune.html#setRhythm(java.lang.String)"><B>setRhythm(String)</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in abc.notation">Tune</A>
 <DD>Sets the rhythm of this tune.
+<DT><A HREF="./abc/ui/swing/JScoreComponent.html#setSelectedItem(abc.notation.MusicElement)"><B>setSelectedItem(MusicElement)</B></A> - 
+Method in class abc.ui.swing.<A HREF="./abc/ui/swing/JScoreComponent.html" title="class in abc.ui.swing">JScoreComponent</A>
+<DD>Highlights the given score element in the score.
+<DT><A HREF="./abc/ui/swing/JScoreComponent.html#setSelectedItem(abc.ui.swing.JScoreElement)"><B>setSelectedItem(JScoreElement)</B></A> - 
+Method in class abc.ui.swing.<A HREF="./abc/ui/swing/JScoreComponent.html" title="class in abc.ui.swing">JScoreComponent</A>
+<DD>Highlights the given score element in the score.
+<DT><A HREF="./abc/ui/swing/TuneEditorPane.html#setSelectedItem(scanner.PositionableInCharStream)"><B>setSelectedItem(PositionableInCharStream)</B></A> - 
+Method in class abc.ui.swing.<A HREF="./abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing">TuneEditorPane</A>
+<DD>Highlights the specified element in the abc tune notation.
 <DT><A HREF="./abc/ui/swing/JScoreComponent.html#setSize(float)"><B>setSize(float)</B></A> - 
 Method in class abc.ui.swing.<A HREF="./abc/ui/swing/JScoreComponent.html" title="class in abc.ui.swing">JScoreComponent</A>
 <DD>The size of the font used to display the music score.
 <DT><A HREF="./abc/ui/swing/TuneEditorPane.html#setSize(java.awt.Dimension)"><B>setSize(Dimension)</B></A> - 
 Method in class abc.ui.swing.<A HREF="./abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing">TuneEditorPane</A>
+<DD>&nbsp;
+<DT><A HREF="./abc/notation/NoteAbstract.html#setSlurDefinition(abc.notation.SlurDefinition)"><B>setSlurDefinition(SlurDefinition)</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/NoteAbstract.html" title="class in abc.notation">NoteAbstract</A>
 <DD>&nbsp;
 <DT><A HREF="./abc/notation/Tune.html#setSource(java.lang.String)"><B>setSource(String)</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in abc.notation">Tune</A>
@@ -1706,6 +1822,9 @@ Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in 
 <DT><A HREF="./abc/notation/NoteAbstract.html#setStaccato(boolean)"><B>setStaccato(boolean)</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/NoteAbstract.html" title="class in abc.notation">NoteAbstract</A>
 <DD>Sets the staccato playing style of this note.
+<DT><A HREF="./abc/notation/TwoNotesLink.html#setStart(abc.notation.NoteAbstract)"><B>setStart(NoteAbstract)</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/TwoNotesLink.html" title="class in abc.notation">TwoNotesLink</A>
+<DD>Sets the start of the two notes link.
 <DT><A HREF="./abc/notation/Note.html#setStrictDuration(short)"><B>setStrictDuration(short)</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in abc.notation">Note</A>
 <DD>Sets the strict duration of this note.
@@ -1718,6 +1837,9 @@ Method in class abc.midi.<A HREF="./abc/midi/TunePlayer.html" title="class in ab
 <DT><A HREF="./abc/ui/swing/TuneEditorPane.html#setText(java.lang.String)"><B>setText(String)</B></A> - 
 Method in class abc.ui.swing.<A HREF="./abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing">TuneEditorPane</A>
 <DD>&nbsp;
+<DT><A HREF="./abc/notation/Note.html#setTieDefinition(abc.notation.TieDefinition)"><B>setTieDefinition(TieDefinition)</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in abc.notation">Note</A>
+<DD>Sets the tie definition for this note.
 <DT><A HREF="./scanner/State.html#setTokenState(boolean)"><B>setTokenState(boolean)</B></A> - 
 Method in class scanner.<A HREF="./scanner/State.html" title="class in scanner">State</A>
 <DD>Sets if this state is a token state or not.
@@ -1754,11 +1876,11 @@ Method in class abc.parser.<A HREF="./abc/parser/TuneBook.html" title="class in 
 <DT><A HREF="./scanner/Set.html#size()"><B>size()</B></A> - 
 Method in class scanner.<A HREF="./scanner/Set.html" title="class in scanner">Set</A>
 <DD>Returns the number of elements in this set.
+<DT><A HREF="./abc/notation/SlurDefinition.html" title="class in abc.notation"><B>SlurDefinition</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>A tagging class to represent slurs between notes.<DT><A HREF="./abc/notation/SlurDefinition.html#SlurDefinition()"><B>SlurDefinition()</B></A> - 
+Constructor for class abc.notation.<A HREF="./abc/notation/SlurDefinition.html" title="class in abc.notation">SlurDefinition</A>
+<DD>&nbsp;
 <DT><A HREF="./abc/parser/AbcTokenType.html#SPACE"><B>SPACE</B></A> - 
 Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" title="class in abc.parser">AbcTokenType</A>
-<DD>&nbsp;
-<DT><A HREF="./abc/notation/StaffEndOfLine.html" title="class in abc.notation"><B>StaffEndOfLine</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>&nbsp;<DT><A HREF="./abc/notation/StaffEndOfLine.html#StaffEndOfLine()"><B>StaffEndOfLine()</B></A> - 
-Constructor for class abc.notation.<A HREF="./abc/notation/StaffEndOfLine.html" title="class in abc.notation">StaffEndOfLine</A>
 <DD>&nbsp;
 <DT><A HREF="./abc/midi/TunePlayer.html#start()"><B>start()</B></A> - 
 Method in class abc.midi.<A HREF="./abc/midi/TunePlayer.html" title="class in abc.midi">TunePlayer</A>
@@ -1813,14 +1935,14 @@ Constructor for class abc.midi.<A HREF="./abc/midi/TempoMessage.html" title="cla
 <DT><A HREF="./abc/parser/AbcTokenType.html#TEXT"><B>TEXT</B></A> - 
 Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" title="class in abc.parser">AbcTokenType</A>
 <DD>The text token type : all characters, excluding '%'.
-<DT><A HREF="./abc/ui/swing/TuneEditorPane.html#TEXT_STYLE"><B>TEXT_STYLE</B></A> - 
-Static variable in class abc.ui.swing.<A HREF="./abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing">TuneEditorPane</A>
-<DD>&nbsp;
 <DT><A HREF="./abc/notation/Note.html#THIRTY_SECOND"><B>THIRTY_SECOND</B></A> - 
 Static variable in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in abc.notation">Note</A>
 <DD>The <TT>THIRTY_SECOND</TT> length type.
 <DT><A HREF="./abc/parser/AbcTokenType.html#TIE"><B>TIE</B></A> - 
 Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" title="class in abc.parser">AbcTokenType</A>
+<DD>&nbsp;
+<DT><A HREF="./abc/notation/TieDefinition.html" title="class in abc.notation"><B>TieDefinition</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>A tagging class to represent ties between notes.<DT><A HREF="./abc/notation/TieDefinition.html#TieDefinition()"><B>TieDefinition()</B></A> - 
+Constructor for class abc.notation.<A HREF="./abc/notation/TieDefinition.html" title="class in abc.notation">TieDefinition</A>
 <DD>&nbsp;
 <DT><A HREF="./abc/notation/TimeSignature.html" title="class in abc.notation"><B>TimeSignature</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>This class enables you to describe any time signatures like 4/4, 6/8 ...<DT><A HREF="./abc/notation/TimeSignature.html#TimeSignature(int, int)"><B>TimeSignature(int, int)</B></A> - 
 Constructor for class abc.notation.<A HREF="./abc/notation/TimeSignature.html" title="class in abc.notation">TimeSignature</A>
@@ -1829,6 +1951,10 @@ Constructor for class abc.notation.<A HREF="./abc/notation/TimeSignature.html" t
 Constructor for class abc.midi.<A HREF="./abc/midi/TimeSignatureMessage.html" title="class in abc.midi">TimeSignatureMessage</A>
 <DD>Creates a midi message to change time signature from an ABC time
  signature.
+<DT><A HREF="./abc/notation/MultiNote.html#toArray()"><B>toArray()</B></A> - 
+Method in class abc.notation.<A HREF="./abc/notation/MultiNote.html" title="class in abc.notation">MultiNote</A>
+<DD>Returns notes composing this multinote as an array of notes, sorted 
+ from the lowest note to the highest one.
 <DT><A HREF="./scanner/Token.html" title="class in scanner"><B>Token</B></A> - Class in <A HREF="./scanner/package-summary.html">scanner</A><DD>Tokens are objects created by a <TT>scanner</TT> while scanning a stream of
  characters.<DT><A HREF="./scanner/Token.html#Token(java.lang.String, scanner.TokenType, scanner.CharStreamPosition)"><B>Token(String, TokenType, CharStreamPosition)</B></A> - 
 Constructor for class scanner.<A HREF="./scanner/Token.html" title="class in scanner">Token</A>
@@ -1949,8 +2075,8 @@ Constructor for class abc.notation.<A HREF="./abc/notation/Tune.html" title="cla
 <DT><A HREF="./abc/notation/Tune.html#Tune(abc.notation.Tune)"><B>Tune(Tune)</B></A> - 
 Constructor for class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in abc.notation">Tune</A>
 <DD>Copy constructor
-<DT><A HREF="./abc/notation/Tune.Score.html" title="class in abc.notation"><B>Tune.Score</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>&nbsp;<DT><A HREF="./abc/notation/Tune.Score.html#Tune.Score()"><B>Tune.Score()</B></A> - 
-Constructor for class abc.notation.<A HREF="./abc/notation/Tune.Score.html" title="class in abc.notation">Tune.Score</A>
+<DT><A HREF="./abc/notation/Tune.Music.html" title="class in abc.notation"><B>Tune.Music</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>&nbsp;<DT><A HREF="./abc/notation/Tune.Music.html#Tune.Music()"><B>Tune.Music()</B></A> - 
+Constructor for class abc.notation.<A HREF="./abc/notation/Tune.Music.html" title="class in abc.notation">Tune.Music</A>
 <DD>&nbsp;
 <DT><A HREF="./abc/parser/TuneChangeEvent.html#TUNE_ADDED"><B>TUNE_ADDED</B></A> - 
 Static variable in class abc.parser.<A HREF="./abc/parser/TuneChangeEvent.html" title="class in abc.parser">TuneChangeEvent</A>
@@ -2008,16 +2134,17 @@ Constructor for class abc.ui.awt.<A HREF="./abc/ui/awt/TuneEditorArea.html" titl
 <DD>&nbsp;
 <DT><A HREF="./abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing"><B>TuneEditorPane</B></A> - Class in <A HREF="./abc/ui/swing/package-summary.html">abc.ui.swing</A><DD>A JTextPane to display and edit abc tunes.<DT><A HREF="./abc/ui/swing/TuneEditorPane.html#TuneEditorPane()"><B>TuneEditorPane()</B></A> - 
 Constructor for class abc.ui.swing.<A HREF="./abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing">TuneEditorPane</A>
-<DD>&nbsp;
+<DD>Default constructor.
 <DT><A HREF="./abc/ui/swing/TuneEditorPane.html#TuneEditorPane(abc.parser.TuneParser)"><B>TuneEditorPane(TuneParser)</B></A> - 
 Constructor for class abc.ui.swing.<A HREF="./abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing">TuneEditorPane</A>
-<DD>&nbsp;
+<DD>Creates a new TuneEditorPane with the given parser.
 <DT><A HREF="./abc/ui/swing/TuneEditorPane.html#TuneEditorPane(int)"><B>TuneEditorPane(int)</B></A> - 
 Constructor for class abc.ui.swing.<A HREF="./abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing">TuneEditorPane</A>
-<DD>&nbsp;
+<DD>Creates a new TuneEditorPane with the given idle time before refresh.
 <DT><A HREF="./abc/ui/swing/TuneEditorPane.html#TuneEditorPane(abc.parser.TuneParser, int)"><B>TuneEditorPane(TuneParser, int)</B></A> - 
 Constructor for class abc.ui.swing.<A HREF="./abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing">TuneEditorPane</A>
-<DD>&nbsp;
+<DD>Creates a new TuneEditorPane with the given parser and
+ idle time before refresh.
 <DT><A HREF="./abc/parser/AbcFileParserAdapter.html#tuneEnd(abc.notation.Tune)"><B>tuneEnd(Tune)</B></A> - 
 Method in class abc.parser.<A HREF="./abc/parser/AbcFileParserAdapter.html" title="class in abc.parser">AbcFileParserAdapter</A>
 <DD>Invoked when the parser reaches the end of a tune.
@@ -2044,13 +2171,13 @@ Constructor for class abc.midi.<A HREF="./abc/midi/TunePlayer.html" title="class
 Constructor for class abc.midi.<A HREF="./abc/midi/TunePlayerAdapter.html" title="class in abc.midi">TunePlayerAdapter</A>
 <DD>&nbsp;
 <DT><A HREF="./abc/midi/TunePlayerListenerInterface.html" title="interface in abc.midi"><B>TunePlayerListenerInterface</B></A> - Interface in <A HREF="./abc/midi/package-summary.html">abc.midi</A><DD>This interface defines methods that should be implemented by any object that
- wants to listen to a tune player.<DT><A HREF="./abc/notation/Tuplet.html" title="class in abc.notation"><B>Tuplet</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>A class to define tuplets in a score.<DT><A HREF="./abc/notation/Tuplet.html#Tuplet(java.util.Vector, int, short)"><B>Tuplet(Vector, int, short)</B></A> - 
+ wants to listen to a tune player.<DT><A HREF="./abc/notation/Tuplet.html" title="class in abc.notation"><B>Tuplet</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>A class to define tuplets.<DT><A HREF="./abc/notation/Tuplet.html#Tuplet(java.util.Vector, int, short)"><B>Tuplet(Vector, int, short)</B></A> - 
 Constructor for class abc.notation.<A HREF="./abc/notation/Tuplet.html" title="class in abc.notation">Tuplet</A>
 <DD>Creates a new tuplet composed of the specified notes.
 <DT><A HREF="./abc/parser/AbcTokenType.html#TUPLET_SPEC"><B>TUPLET_SPEC</B></A> - 
 Static variable in class abc.parser.<A HREF="./abc/parser/AbcTokenType.html" title="class in abc.parser">AbcTokenType</A>
 <DD>&nbsp;
-</DL>
+<DT><A HREF="./abc/notation/TwoNotesLink.html" title="class in abc.notation"><B>TwoNotesLink</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>This class abstracts any kind of relationship  between two notes.</DL>
 <HR>
 <A NAME="_U_"><!-- --></A><H2>
 <B>U</B></H2>
@@ -2100,12 +2227,12 @@ Method in interface abc.parser.<A HREF="./abc/parser/TuneParserListenerInterface
 <DT><A HREF="./abc/notation/Note.html#WHOLE"><B>WHOLE</B></A> - 
 Static variable in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in abc.notation">Note</A>
 <DD>The <TT>WHOLE</TT> length type.
-<DT><A HREF="./abc/notation/Words.html" title="class in abc.notation"><B>Words</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>A class to describe words (lyrics) in a score.<DT><A HREF="./abc/notation/Words.html#Words(java.lang.String)"><B>Words(String)</B></A> - 
+<DT><A HREF="./abc/notation/Words.html" title="class in abc.notation"><B>Words</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>A class to describe words (lyrics) for a tune.<DT><A HREF="./abc/notation/Words.html#Words(java.lang.String)"><B>Words(String)</B></A> - 
 Constructor for class abc.notation.<A HREF="./abc/notation/Words.html" title="class in abc.notation">Words</A>
 <DD>Creates a new word element.
 <DT><A HREF="./abc/ui/swing/JScoreComponent.html#writeScoreTo(java.io.File)"><B>writeScoreTo(File)</B></A> - 
 Method in class abc.ui.swing.<A HREF="./abc/ui/swing/JScoreComponent.html" title="class in abc.ui.swing">JScoreComponent</A>
-<DD>Writes the currently set tune score to a jpg file.
+<DD>Writes the currently set tune score to a PNG file.
 </DL>
 <HR>
 <A HREF="#_A_">A</A> <A HREF="#_B_">B</A> <A HREF="#_C_">C</A> <A HREF="#_D_">D</A> <A HREF="#_E_">E</A> <A HREF="#_F_">F</A> <A HREF="#_G_">G</A> <A HREF="#_H_">H</A> <A HREF="#_I_">I</A> <A HREF="#_J_">J</A> <A HREF="#_K_">K</A> <A HREF="#_L_">L</A> <A HREF="#_M_">M</A> <A HREF="#_N_">N</A> <A HREF="#_O_">O</A> <A HREF="#_P_">P</A> <A HREF="#_Q_">Q</A> <A HREF="#_R_">R</A> <A HREF="#_S_">S</A> <A HREF="#_T_">T</A> <A HREF="#_U_">U</A> <A HREF="#_V_">V</A> <A HREF="#_W_">W</A> 

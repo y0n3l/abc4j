@@ -52,7 +52,7 @@ abc4j API Specification</EM>
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
 &nbsp;PREV CLASS&nbsp;
-&nbsp;<A HREF="../../../abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../../abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../../index.html?abc/ui/swing/JScoreComponent.html" target="_top"><B>FRAMES</B></A>  &nbsp;
 &nbsp;<A HREF="JScoreComponent.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
@@ -103,17 +103,19 @@ java.lang.Object
 </PRE>
 
 <P>
-This JComponent displays tunes scores.
- <BR/> You can get them rendered like :
- <IMG src="../../../images/scoreEx.jpg"/> 
+This JComponent displays tunes scores such as :<BR/> 
+ <CENTER>
+ <IMG src="../../../images/scoreEx.jpg"/> </CENTER>
  <BR/>
  To render a tune score, just invoke the <TT>setTune(Tune)</TT> method
- with your tune.
+ with your tune as parameter.<BR/>
+ Basically, a score if composed of <A HREF="../../../abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing"><CODE>score elements</CODE></A>
 <P>
 
 <P>
 <DL>
-<DT><B>See Also:</B><DD><A HREF="../../../abc/ui/swing/JScoreComponent.html#setTune(abc.notation.Tune)"><CODE>setTune(Tune)</CODE></A>, 
+<DT><B>See Also:</B><DD><A HREF="../../../abc/notation/Tune.html" title="class in abc.notation"><CODE>Tune</CODE></A>, 
+<A HREF="../../../abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing"><CODE>JScoreElement</CODE></A>, 
 <A HREF="../../../serialized-form.html#abc.ui.swing.JScoreComponent">Serialized Form</A></DL>
 <HR>
 
@@ -200,6 +202,22 @@ This JComponent displays tunes scores.
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing">JScoreElement</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../abc/ui/swing/JScoreComponent.html#getRenditionElementFor(abc.notation.MusicElement)">getRenditionElementFor</A></B>(<A HREF="../../../abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A>&nbsp;elmnt)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the graphical element that corresponds to a tune element.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing">JScoreElement</A></CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../abc/ui/swing/JScoreComponent.html#getScoreElementAt(java.awt.Point)">getScoreElementAt</A></B>(java.awt.Point&nbsp;location)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the graphical score element fount at the given location.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;boolean</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../abc/ui/swing/JScoreComponent.html#isJustified()">isJustified</A></B>()</CODE>
 
@@ -226,6 +244,22 @@ This JComponent displays tunes scores.
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../abc/ui/swing/JScoreComponent.html#setSelectedItem(abc.ui.swing.JScoreElement)">setSelectedItem</A></B>(<A HREF="../../../abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing">JScoreElement</A>&nbsp;elmnt)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Highlights the given score element in the score.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../abc/ui/swing/JScoreComponent.html#setSelectedItem(abc.notation.MusicElement)">setSelectedItem</A></B>(<A HREF="../../../abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A>&nbsp;elmnt)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Highlights the given score element in the score.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../../abc/ui/swing/JScoreComponent.html#setSize(float)">setSize</A></B>(float&nbsp;size)</CODE>
 
 <BR>
@@ -245,7 +279,7 @@ This JComponent displays tunes scores.
 <TD><CODE><B><A HREF="../../../abc/ui/swing/JScoreComponent.html#writeScoreTo(java.io.File)">writeScoreTo</A></B>(java.io.File&nbsp;file)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Writes the currently set tune score to a jpg file.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Writes the currently set tune score to a PNG file.</TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_javax.swing.JComponent"><!-- --></A>
@@ -349,10 +383,10 @@ writeScoreTo</H3>
 public void <B>writeScoreTo</B>(java.io.File&nbsp;file)
                   throws java.io.IOException</PRE>
 <DL>
-<DD>Writes the currently set tune score to a jpg file.
+<DD>Writes the currently set tune score to a PNG file.
 <P>
 <DD><DL>
-<DT><B>Parameters:</B><DD><CODE>file</CODE> - The output JPEG file.
+<DT><B>Parameters:</B><DD><CODE>file</CODE> - The PNG output file.
 <DT><B>Throws:</B>
 <DD><CODE>java.io.IOException</CODE> - Thrown if the given file cannot be accessed.</DL>
 </DD>
@@ -402,6 +436,71 @@ public boolean <B>isJustified</B>()</PRE>
  justified, <TT>false</TT> otherwise.<DT><B>See Also:</B><DD><A HREF="../../../abc/ui/swing/JScoreComponent.html#setJustification(boolean)"><CODE>setJustification(boolean)</CODE></A></DL>
 </DD>
 </DL>
+<HR>
+
+<A NAME="getScoreElementAt(java.awt.Point)"><!-- --></A><H3>
+getScoreElementAt</H3>
+<PRE>
+public <A HREF="../../../abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing">JScoreElement</A> <B>getScoreElementAt</B>(java.awt.Point&nbsp;location)</PRE>
+<DL>
+<DD>Returns the graphical score element fount at the given location.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>location</CODE> - A point in the score.
+<DT><B>Returns:</B><DD>The graphical score element found at the specified location.
+ <TT>null</TT> is returned if no item is found at the given location.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setSelectedItem(abc.notation.MusicElement)"><!-- --></A><H3>
+setSelectedItem</H3>
+<PRE>
+public void <B>setSelectedItem</B>(<A HREF="../../../abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A>&nbsp;elmnt)</PRE>
+<DL>
+<DD>Highlights the given score element in the score.
+ If an item was previously selected, this previous item
+ is unselected.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>elmnt</CODE> - The music element to be highlighted in the
+ score. <TT>null</TT> can be specified to remove 
+ highlighting.<DT><B>See Also:</B><DD><A HREF="../../../abc/ui/swing/JScoreComponent.html#setSelectedItem(abc.ui.swing.JScoreElement)"><CODE>setSelectedItem(JScoreElement)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setSelectedItem(abc.ui.swing.JScoreElement)"><!-- --></A><H3>
+setSelectedItem</H3>
+<PRE>
+public void <B>setSelectedItem</B>(<A HREF="../../../abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing">JScoreElement</A>&nbsp;elmnt)</PRE>
+<DL>
+<DD>Highlights the given score element in the score.
+ If an item was previously selected, this previous item
+ is unselected.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>elmnt</CODE> - The score rendition element to be highlighted in the
+ score. <TT>null</TT> can be specified to remove 
+ highlighting.<DT><B>See Also:</B><DD><A HREF="../../../abc/ui/swing/JScoreComponent.html#setSelectedItem(abc.notation.MusicElement)"><CODE>setSelectedItem(MusicElement)</CODE></A></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getRenditionElementFor(abc.notation.MusicElement)"><!-- --></A><H3>
+getRenditionElementFor</H3>
+<PRE>
+public <A HREF="../../../abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing">JScoreElement</A> <B>getRenditionElementFor</B>(<A HREF="../../../abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A>&nbsp;elmnt)</PRE>
+<DL>
+<DD>Returns the graphical element that corresponds to a tune element.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>elmnt</CODE> - A tune element.
+<DT><B>Returns:</B><DD>The graphical score element that corresponds to the given 
+ tune element. <TT>null</TT> is returned if the given tune element
+ does not have any graphical representation.</DL>
+</DD>
+</DL>
 <!-- ========= END OF CLASS DATA ========= -->
 <HR>
 
@@ -434,7 +533,7 @@ abc4j API Specification</EM>
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
 &nbsp;PREV CLASS&nbsp;
-&nbsp;<A HREF="../../../abc/ui/swing/TuneEditorPane.html" title="class in abc.ui.swing"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../../abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
   <A HREF="../../../index.html?abc/ui/swing/JScoreComponent.html" target="_top"><B>FRAMES</B></A>  &nbsp;
 &nbsp;<A HREF="JScoreComponent.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;

@@ -197,11 +197,27 @@ Uses of <A HREF="../../../abc/notation/Note.html" title="class in abc.notation">
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]</CODE></FONT></TD>
+<TD><CODE><B>MultiNote.</B><B><A HREF="../../../abc/notation/MultiNote.html#excludeTiesEndings(abc.notation.Note[])">excludeTiesEndings</A></B>(<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]</CODE></FONT></TD>
 <TD><CODE><B>NoteAbstract.</B><B><A HREF="../../../abc/notation/NoteAbstract.html#getGracingNotes()">getGracingNotes</A></B>()</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the gracing notes to be played with this note.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A></CODE></FONT></TD>
+<TD><CODE><B>MultiNote.</B><B><A HREF="../../../abc/notation/MultiNote.html#getHighestNote()">getHighestNote</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the highest note among the notes composing this multi note.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -213,11 +229,44 @@ Uses of <A HREF="../../../abc/notation/Note.html" title="class in abc.notation">
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A></CODE></FONT></TD>
+<TD><CODE><B>MultiNote.</B><B><A HREF="../../../abc/notation/MultiNote.html#getHighestNote(abc.notation.Note[])">getHighestNote</A></B>(<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the highest note from the given array of notes.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A></CODE></FONT></TD>
+<TD><CODE><B>Tune.Music.</B><B><A HREF="../../../abc/notation/Tune.Music.html#getHighestNoteBewteen(abc.notation.MusicElement, abc.notation.MusicElement)">getHighestNoteBewteen</A></B>(<A HREF="../../../abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A>&nbsp;elmtBegin,
+                      <A HREF="../../../abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A>&nbsp;elmtEnd)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the highest note between two music elements.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A></CODE></FONT></TD>
 <TD><CODE><B>MultiNote.</B><B><A HREF="../../../abc/notation/MultiNote.html#getLongestNote()">getLongestNote</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the longest note of this multi note.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the longest note of this multi note, based on its duration.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A></CODE></FONT></TD>
+<TD><CODE><B>MultiNote.</B><B><A HREF="../../../abc/notation/MultiNote.html#getLongestNote(abc.notation.Note[])">getLongestNote</A></B>(<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the note with the biggest duration from the given array of notes.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A></CODE></FONT></TD>
+<TD><CODE><B>MultiNote.</B><B><A HREF="../../../abc/notation/MultiNote.html#getLowestNote()">getLowestNote</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the lowest note among the notes composing this multi note.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -229,11 +278,54 @@ Uses of <A HREF="../../../abc/notation/Note.html" title="class in abc.notation">
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A></CODE></FONT></TD>
+<TD><CODE><B>MultiNote.</B><B><A HREF="../../../abc/notation/MultiNote.html#getLowestNote(abc.notation.Note[])">getLowestNote</A></B>(<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the lowest note from the given array of notes.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A></CODE></FONT></TD>
+<TD><CODE><B>Tune.Music.</B><B><A HREF="../../../abc/notation/Tune.Music.html#getLowestNoteBewteen(abc.notation.MusicElement, abc.notation.MusicElement)">getLowestNoteBewteen</A></B>(<A HREF="../../../abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A>&nbsp;noteBegin,
+                     <A HREF="../../../abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A>&nbsp;noteEnd)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<TT>MultiNote</TT> instances are ignored.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]</CODE></FONT></TD>
+<TD><CODE><B>MultiNote.</B><B><A HREF="../../../abc/notation/MultiNote.html#getNotesBeginningTie()">getNotesBeginningTie</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the notes from this multinote that begin a tie.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]</CODE></FONT></TD>
+<TD><CODE><B>MultiNote.</B><B><A HREF="../../../abc/notation/MultiNote.html#getNotesShorterThan(abc.notation.Note[], int)">getNotesShorterThan</A></B>(<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes,
+                    int&nbsp;aStrictDuration)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns all notes strictly shorter than the given strict duration.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A></CODE></FONT></TD>
 <TD><CODE><B>MultiNote.</B><B><A HREF="../../../abc/notation/MultiNote.html#getShortestNote()">getShortestNote</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the shortest note of this multi note.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the shortest note of this multi note, based on its duration.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]</CODE></FONT></TD>
+<TD><CODE><B>MultiNote.</B><B><A HREF="../../../abc/notation/MultiNote.html#toArray()">toArray</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns notes composing this multinote as an array of notes, sorted 
+ from the lowest note to the highest one.</TD>
 </TR>
 </TABLE>
 &nbsp;
@@ -245,6 +337,22 @@ Uses of <A HREF="../../../abc/notation/Note.html" title="class in abc.notation">
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B>MultiNote.</B><B><A HREF="../../../abc/notation/MultiNote.html#contains(abc.notation.Note)">contains</A></B>(<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A>&nbsp;aNote)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <TT>true</TT> if this chord contains the specified note.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]</CODE></FONT></TD>
+<TD><CODE><B>MultiNote.</B><B><A HREF="../../../abc/notation/MultiNote.html#excludeTiesEndings(abc.notation.Note[])">excludeTiesEndings</A></B>(<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>static&nbsp;<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A></CODE></FONT></TD>
 <TD><CODE><B>Note.</B><B><A HREF="../../../abc/notation/Note.html#getHighestNote(abc.notation.Note[])">getHighestNote</A></B>(<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes)</CODE>
 
@@ -254,7 +362,64 @@ Uses of <A HREF="../../../abc/notation/Note.html" title="class in abc.notation">
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>static&nbsp;<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A></CODE></FONT></TD>
+<TD><CODE><B>MultiNote.</B><B><A HREF="../../../abc/notation/MultiNote.html#getHighestNote(abc.notation.Note[])">getHighestNote</A></B>(<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the highest note from the given array of notes.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;int</CODE></FONT></TD>
+<TD><CODE><B>Note.</B><B><A HREF="../../../abc/notation/Note.html#getHighestNoteIndex(abc.notation.Note[])">getHighestNoteIndex</A></B>(<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A></CODE></FONT></TD>
+<TD><CODE><B>MultiNote.</B><B><A HREF="../../../abc/notation/MultiNote.html#getLongestNote(abc.notation.Note[])">getLongestNote</A></B>(<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the note with the biggest duration from the given array of notes.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A></CODE></FONT></TD>
 <TD><CODE><B>Note.</B><B><A HREF="../../../abc/notation/Note.html#getLowestNote(abc.notation.Note[])">getLowestNote</A></B>(<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A></CODE></FONT></TD>
+<TD><CODE><B>MultiNote.</B><B><A HREF="../../../abc/notation/MultiNote.html#getLowestNote(abc.notation.Note[])">getLowestNote</A></B>(<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the lowest note from the given array of notes.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]</CODE></FONT></TD>
+<TD><CODE><B>MultiNote.</B><B><A HREF="../../../abc/notation/MultiNote.html#getNotesShorterThan(abc.notation.Note[], int)">getNotesShorterThan</A></B>(<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A>[]&nbsp;notes,
+                    int&nbsp;aStrictDuration)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns all notes strictly shorter than the given strict duration.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B>Note.</B><B><A HREF="../../../abc/notation/Note.html#isHigherThan(abc.notation.Note)">isHigherThan</A></B>(<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A>&nbsp;aNote)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns <TT>true</TT> if the given note is strictly higher than this one.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;boolean</CODE></FONT></TD>
+<TD><CODE><B>Note.</B><B><A HREF="../../../abc/notation/Note.html#isLowerThan(abc.notation.Note)">isLowerThan</A></B>(<A HREF="../../../abc/notation/Note.html" title="class in abc.notation">Note</A>&nbsp;aNote)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>

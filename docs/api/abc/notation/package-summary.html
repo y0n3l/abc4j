@@ -95,13 +95,13 @@ This package defines all classes related to tunes in abc notation.
 <TD>Constants for accidental types.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD WIDTH="15%"><B><A HREF="../../abc/notation/ScoreElementInterface.html" title="interface in abc.notation">ScoreElementInterface</A></B></TD>
-<TD>A tagging interface for all elements that are part of a tune score .</TD>
+<TD WIDTH="15%"><B><A HREF="../../abc/notation/MusicElement.html" title="interface in abc.notation">MusicElement</A></B></TD>
+<TD>A tagging interface for all elements that are part of a tune's music.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD WIDTH="15%"><B><A HREF="../../abc/notation/ScorePresentationElementInterface.html" title="interface in abc.notation">ScorePresentationElementInterface</A></B></TD>
-<TD>A tagging interface for all elements composing the score of a tune that are
- releated to score presentation for rendition.</TD>
+<TD WIDTH="15%"><B><A HREF="../../abc/notation/MusicPresentationElement.html" title="interface in abc.notation">MusicPresentationElement</A></B></TD>
+<TD>A tagging interface for all elements composing a tune's music that are
+ releated to the way this music is rendered graphicaly on a score for instance.</TD>
 </TR>
 </TABLE>
 &nbsp;
@@ -115,11 +115,15 @@ This package defines all classes related to tunes in abc notation.
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD WIDTH="15%"><B><A HREF="../../abc/notation/BarLine.html" title="class in abc.notation">BarLine</A></B></TD>
-<TD>This class defines bar lines used in musical scores.</TD>
+<TD>This class defines bar lines.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD WIDTH="15%"><B><A HREF="../../abc/notation/Elemskip.html" title="class in abc.notation">Elemskip</A></B></TD>
 <TD>&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../abc/notation/EndOfStaffLine.html" title="class in abc.notation">EndOfStaffLine</A></B></TD>
+<TD>A tagging class used to represent an end of staff line.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD WIDTH="15%"><B><A HREF="../../abc/notation/Fraction.html" title="class in abc.notation">Fraction</A></B></TD>
@@ -135,7 +139,7 @@ This package defines all classes related to tunes in abc notation.
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD WIDTH="15%"><B><A HREF="../../abc/notation/MultiPartsDefinition.html" title="class in abc.notation">MultiPartsDefinition</A></B></TD>
-<TD>This class describes the way a multipart score is defined.</TD>
+<TD>This class describes the way a multipart music tune is defined.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD WIDTH="15%"><B><A HREF="../../abc/notation/Note.html" title="class in abc.notation">Note</A></B></TD>
@@ -146,12 +150,16 @@ This package defines all classes related to tunes in abc notation.
 <TD>This is the abstract class to define notes or multi notes.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../abc/notation/NotesSeparator.html" title="class in abc.notation">NotesSeparator</A></B></TD>
+<TD>A tagging class used to delimiter groups of notes in score.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
 <TD WIDTH="15%"><B><A HREF="../../abc/notation/Part.html" title="class in abc.notation">Part</A></B></TD>
 <TD><TT>Part</TT> objects are used to define parts in tunes.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD WIDTH="15%"><B><A HREF="../../abc/notation/RepeatBarLine.html" title="class in abc.notation">RepeatBarLine</A></B></TD>
-<TD>A special bar line that enables you to repeat part of the score.</TD>
+<TD>A special bar line that enables you to repeat part of music from a tune.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD WIDTH="15%"><B><A HREF="../../abc/notation/RepeatedPart.html" title="class in abc.notation">RepeatedPart</A></B></TD>
@@ -159,17 +167,21 @@ This package defines all classes related to tunes in abc notation.
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD WIDTH="15%"><B><A HREF="../../abc/notation/RepeatedPartAbstract.html" title="class in abc.notation">RepeatedPartAbstract</A></B></TD>
-<TD>Abstract class that defines the number of times a part in the score should
+<TD>Abstract class that defines the number of times a part in a tune's music should
  be repeated.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD WIDTH="15%"><B><A HREF="../../abc/notation/StaffEndOfLine.html" title="class in abc.notation">StaffEndOfLine</A></B></TD>
-<TD>&nbsp;</TD>
+<TD WIDTH="15%"><B><A HREF="../../abc/notation/SlurDefinition.html" title="class in abc.notation">SlurDefinition</A></B></TD>
+<TD>A tagging class to represent slurs between notes.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD WIDTH="15%"><B><A HREF="../../abc/notation/Tempo.html" title="class in abc.notation">Tempo</A></B></TD>
 <TD>The tempo class enables you to define tempo values from a reference note
  length.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../abc/notation/TieDefinition.html" title="class in abc.notation">TieDefinition</A></B></TD>
+<TD>A tagging class to represent ties between notes.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD WIDTH="15%"><B><A HREF="../../abc/notation/TimeSignature.html" title="class in abc.notation">TimeSignature</A></B></TD>
@@ -182,11 +194,15 @@ This package defines all classes related to tunes in abc notation.
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD WIDTH="15%"><B><A HREF="../../abc/notation/Tuplet.html" title="class in abc.notation">Tuplet</A></B></TD>
-<TD>A class to define tuplets in a score.</TD>
+<TD>A class to define tuplets.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD WIDTH="15%"><B><A HREF="../../abc/notation/TwoNotesLink.html" title="class in abc.notation">TwoNotesLink</A></B></TD>
+<TD>This class abstracts any kind of relationship  between two notes.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD WIDTH="15%"><B><A HREF="../../abc/notation/Words.html" title="class in abc.notation">Words</A></B></TD>
-<TD>A class to describe words (lyrics) in a score.</TD>
+<TD>A class to describe words (lyrics) for a tune.</TD>
 </TR>
 </TABLE>
 &nbsp;
