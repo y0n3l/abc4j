@@ -47,10 +47,10 @@ class JStaffLine extends JScoreElementAbstract {
 		return r;
 	}
 	
-	public JScoreElementAbstract getScoreElementAt(Point point) {
-		JScoreElementAbstract scoreEl = null;
+	public JScoreElement getScoreElementAt(Point point) {
+		JScoreElement scoreEl = null;
 		for (int i=0; i<m_staffElements.size(); i++) {
-			scoreEl = ((JScoreElementAbstract)m_staffElements.elementAt(i)).getScoreElementAt(point);
+			scoreEl = ((JScoreElement)m_staffElements.elementAt(i)).getScoreElementAt(point);
 			if (scoreEl!=null)
 				return scoreEl;
 		}

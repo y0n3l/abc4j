@@ -76,7 +76,7 @@ abstract class JScoreElementAbstract implements JScoreElement {
 	 * given location. <TT>this</TT> can be returned or one of the 
 	 * sub <TT>JScoreElement</TT> contained in this one. <TT>null</TT>
 	 * is returned if no matching element has been found. */ 
-	public JScoreElementAbstract getScoreElementAt(Point location) {
+	public JScoreElement getScoreElementAt(Point location) {
 		if (getBoundingBox().contains(location))
 			return this;
 		else

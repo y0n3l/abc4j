@@ -5,14 +5,13 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Stroke;
 import java.awt.geom.Point2D;
-import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Vector;
 
 import abc.notation.MultiNote;
 import abc.notation.MusicElement;
 import abc.notation.Note;
 
-import com.sun.org.apache.xalan.internal.xsltc.runtime.Hashtable;
 
 /** This class is in charge of rendering a chord. */
 class JChord extends JScoreElementAbstract {
@@ -53,16 +52,16 @@ class JChord extends JScoreElementAbstract {
 			m_sNoteInstances = new JNote[1];
 			m_sNoteInstances[0] = new JNote(multiNote.getHighestNote(), new Point2D.Double(), m_metrics);
 			m_width = m_sNoteInstances[0].getWidth();
-			Hashtable h = multiNote.splitWithSameStrictDuration();
+			MultiNote[] h = multiNote.normalize();
 			short[] durations = multiNote.getStrictDurations();
 			if (durations.length>2)
 				System.err.println("abc4j - warning : chords with more than 2 differents strict duration aren't supported : only 2 smaller durations are taken into account");
 			m_normalizedChords = new JChord[2]; 
-			MultiNote fastest = new MultiNote((Vector)h.get(new Short(durations[0])));
+			MultiNote fastest = h[0];
 			JChord jChord = createNormalizedChord(fastest, metrics, base);
 			m_normalizedChords[0] = jChord;
 			m_normalizedChords[0].setStemUp(true);
-			MultiNote slowest = new MultiNote((Vector)h.get(new Short(durations[1])));
+			MultiNote slowest = h[1];
 			jChord = createNormalizedChord(slowest, metrics, base);
 			m_normalizedChords[1] = jChord;
 			m_normalizedChords[1].setStemUp(false);
@@ -203,12 +202,16 @@ class JChord extends JScoreElementAbstract {
 			//Apply the stem direction to the rest of the notes composing the chord.
 			for (int i=0; i<m_sNoteInstances.length; i++)
 				m_sNoteInstances[i].setStemUp(false);
-			
 		}
 	}
 	
-	public JScoreElementAbstract getScoreElementAt(Point point) {
-		JScoreElementAbstract scoreEl = null;
+	public JScoreElement getScoreElementAt(Point point) {
+		JScoreElement scoreEl = null;
+		if(m_normalizedChords!=null)
+			for (int i=0; i<m_normalizedChords.length && scoreEl==null; i++) {
+				scoreEl = m_normalizedChords[i].getScoreElementAt(point);
+			}
+		else
 		for (int i=0; i<m_sNoteInstances.length; i++) {
 			scoreEl = m_sNoteInstances[i].getScoreElementAt(point);
 			if (scoreEl!=null)

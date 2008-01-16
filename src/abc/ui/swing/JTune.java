@@ -106,8 +106,8 @@ class JTune extends JScoreElementAbstract {
 	 * at a given point. <TT>NULL</NULL> is returned if not JScoreElement is 
 	 * matching the location.
 	 */
-	public JScoreElementAbstract getScoreElementAt(Point location) {
-		JScoreElementAbstract scoreEl = null;
+	public JScoreElement getScoreElementAt(Point location) {
+		JScoreElement scoreEl = null;
 		for (int i=0; i<m_staffLines.size(); i++) {
 			scoreEl = ((JStaffLine)m_staffLines.elementAt(i)).getScoreElementAt(location);
 			if (scoreEl!=null)

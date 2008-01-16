@@ -183,10 +183,10 @@ class JGroupOfNotes extends JScoreElementAbstract {
 		return m_width;
 	}
 	
-	public JScoreElementAbstract getScoreElementAt(Point point) {
-		JScoreElementAbstract scoreEl = null;
+	public JScoreElement getScoreElementAt(Point point) {
+		JScoreElement scoreEl = null;
 		for (int i=0; i<m_jNotes.length; i++) {
-			scoreEl = ((JScoreElementAbstract)m_jNotes[i]).getScoreElementAt(point);
+			scoreEl = ((JScoreElement)m_jNotes[i]).getScoreElementAt(point);
 			if (scoreEl!=null)
 				return scoreEl;
 		}

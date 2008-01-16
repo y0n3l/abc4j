@@ -17,15 +17,15 @@ import abc.notation.MusicElement;
 import abc.notation.Tune;
 
 /**
- * This JComponent displays tunes scores.
- * <BR/> You can get them rendered like :
- * <IMG src="../../../images/scoreEx.jpg"/> 
+ * This JComponent displays tunes scores such as :<BR/> 
+ * <CENTER>
+ * <IMG src="../../../images/scoreEx.jpg"/> </CENTER>
  * <BR/>
  * To render a tune score, just invoke the <TT>setTune(Tune)</TT> method
- * with your tune.<BR/>
- * Basically, a score if composed of {@link abc.ui.swing.JScoreElementAbstract score elements}
- * @see Tune 
- * 
+ * with your tune as parameter.<BR/>
+ * Basically, a score if composed of {@link abc.ui.swing.JScoreElement score elements}
+ * @see Tune
+ * @see JScoreElement 
  */
 public class JScoreComponent extends JComponent {
 	private static final Color SELECTED_ITEM_COLOR = Color.RED;

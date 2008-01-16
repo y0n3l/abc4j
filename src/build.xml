@@ -63,12 +63,12 @@
 	<target name="sources.compile">
 		<mkdir dir="${classesdir}" />
 		<echo>Compiling files from ${srcdir} to ${classesdir}</echo>
-		<javac srcdir="${srcdir}" destdir="${classesdir}" debuglevel="source,vars,lines" debug="true"/>
+		<javac srcdir="${srcdir}" destdir="${classesdir}" debuglevel="source,vars,lines" debug="true" target="1.4" source="1.4"/>
 	</target>
 	
 	<!-- Compiles the unit tests. -->
 	<target name="unittests.compile">
-		<javac srcdir="${testsdir}" destdir="${classesdir}" classpath="${JUNIT_JAR}" debuglevel="source,vars,lines" debug="true"/>
+		<javac srcdir="${testsdir}" destdir="${classesdir}" classpath="${JUNIT_JAR}" debuglevel="source,vars,lines" debug="true" target="1.4" source="1.4"/>
 	</target>
 	
 	<!-- generates jar -->
@@ -103,11 +103,6 @@
 	<target name="unittests.run">
 		<!-- Run JUnit -->
 		<mkdir dir="${logdir.test}" />
-		<copy todir="${instclassesdir}">
-			<fileset dir="../ressources">
-				<include name="**/*.abc"/>
-			</fileset>
-		</copy>
 		<junit filtertrace="false" showoutput="true" 
 			printsummary="yes" fork="yes" haltonfailure="no" dir="${instclassesdir}">
 			<formatter type="xml" />
@@ -119,9 +114,16 @@
 			
 			<classpath refid="cobertura.classpath" />
 			
+			<test name="ChordsTest" todir="${logdir.test}"/>
 			<test name="CrashTest" todir="${logdir.test}"/>
 			<test name="DurationConversion" todir="${logdir.test}"/>
+			<test name="GracingsTest" todir="${logdir.test}"/>
+			<test name="HeightTest" todir="${logdir.test}"/>
+			<test name="KeySignatureTests" todir="${logdir.test}"/>
 			<test name="PerfTest" todir="${logdir.test}"/>
+			<test name="RhythmsTest" todir="${logdir.test}"/>
+			<test name="SlursTest" todir="${logdir.test}"/>
+			<test name="TieTest" todir="${logdir.test}"/>
 			<test name="TuneBookTest" todir="${logdir.test}"/>
 			<test name="Tuplets" todir="${logdir.test}"/>
 			<test name="VariousTests" todir="${logdir.test}"/>
