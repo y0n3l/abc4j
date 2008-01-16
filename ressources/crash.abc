@@ -332,3 +332,33 @@ X:24
 T:Test Csharp
 K:C#
 C
+
+X:25
+T:Test Tie 1
+K:C
+c-c
+
+X:26
+T:Test Slurs 1
+K:C
+(cd)
+
+X:27
+T:Test Slurs 2
+K:C
+(abcdefg)
+
+X:28
+T:Test Tie 2
+K:C
+a-|b
+
+X:29
+T:Test Slurs 4
+K:C
+(a|b)
+
+X:30
+T:Test Tie 3
+K:C
+a-|a
