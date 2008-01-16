@@ -1,3 +1,29 @@
+Version 0.4
+===========
+* NOT BACKWARD COMPATIBLE, PLEASE UPDATE YOUR CODE FOR THE FOLLOWING CHANGE !!!! :
+ScoreElementInterface and ScorePresentationElementInterface have been renamed to MusicElement and
+MusicPresentationElement. The reason for this is that, since the introduction of graphical score 
+rendition, the term "score" is reserved for the graphical display of music, and the pure music information 
+should not use the term "score" that could lead to mistunderstanding.
+The inner class Tune.Score is also renamed to Tune.Music
+
+* Ties and Slurs are now supported in the music model (package abc.notation) and are taken into account 
+for score rendition and music playback. A limitation is that a note cannot start / end a tie at the same time.
+* Chords are now displayed in music score. The only current limitation is that chord with notes that have different
+duration are not supported (only one note of the chord is displayed).
+* Interface of the JScore has been improved and opened : you can now get access to graphical elements composing the score.
+* The way notes are grouped in the score has changed : in the previous version the way notes shortest than the 1/4 note was
+decided by the JScoreComponent itself, based on the time signature of the tune. This wasn't consistant with the abc approach :
+using abc, it's up to the composer to decide how notes are grouped using spacing between notes. For instance 'abc def' and 'ab cd ef'
+are two ways to group the same notes differently. abc4j now respect this syntax and uses the NotesSeparator abstraction from the music
+model to implement this feature.
+* Issue 5 fix
+* Issue 8 fix : Midi playback error : flat in still taken into account after a barline
+* Issue 9 fix : Time signatures with numbers up to 13 will be supported for score renditions in 0.4.
+(A generic solution for ALL times signatures will be provided later ....)
+* Issue 10 fixed.
+
+
 Version 0.3
 ===========
 * NOT BACKWARD COMPATIBLE, PLEASE UPDATE YOUR CODE FOR THE FOLLOWING CHANGE !!!! :
