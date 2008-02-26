@@ -1,8 +1,7 @@
 import java.io.File;
 
-import abc.notation.KeySignature;
-import abc.notation.Note;
-import abc.notation.TimeSignature;
+import javax.swing.JFrame;
+
 import abc.notation.Tune;
 import abc.parser.TuneBook;
 import abc.ui.swing.JScoreComponent;
@@ -104,50 +103,106 @@ public class Main  {
   	  }
   }*/
 	
-	public static void main2 (String[] arg) {
+	/*public static void main (String[] arg) {
+		String tuneAsString = "X:0\nT:A simple scale exercise\nM:4/4\nK:D\n(CD EF|G)A Bc|de fg-|gf ed|cB A(G|FE DC)\n";
+		Tune tune = new TuneParser().parse(tuneAsString);
+		JScoreComponent scoreUI =new JScoreComponent();
+		scoreUI.setTune(tune);
+		JFrame j = new JFrame();
+		j.add(scoreUI);
+		j.pack();
+		//System.out.println(sp.getSize());
+		j.setVisible(true);
+		}
+	}*/
+	
+	
+	public static void main (String[] arg) {
 		try {
-		File file =new File("D:/Perso/abc/Book2.abc");
-		TuneBook tb = new TuneBook(file);
-		Tune tune = tb.getTune(60);
-		System.out.println(tune);
-		JScoreComponent jscore = new JScoreComponent();
-		jscore.setTune(tune);
-		jscore.setJustification(false);
-		jscore.writeScoreTo(new File("C:/Documents and Settings/uidd0558/Desktop/"+ tune.getTitles()[0]+".png"));
+		TuneBook tb = new TuneBook(new File("D:/Perso/abc/Book4.abc"));
+		Tune tune = tb.getTune(7); 
+		JScoreComponent scoreUI =new JScoreComponent();
+		scoreUI.setTune(tune);
+		scoreUI.writeScoreTo(new File("C:/Documents and Settings/uidd0558/Desktop/kittysGoneMilkingNotjustified.jpg"));
+		scoreUI.setJustification(true);
+		scoreUI.writeScoreTo(new File("C:/Documents and Settings/uidd0558/Desktop/kittysGoneMilkingJustified.jpg"));
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	public static void main (String[] arg) {
+	
+	/*public static void main (String[] arg) {
 		Tune tune = new Tune();
 		KeySignature key = new KeySignature(Note.D, KeySignature.MAJOR);
 		tune.getMusic().addElement(key);
-		Tune.Music score = tune.getMusic();
-		score.addElement(TimeSignature.SIGNATURE_4_4);
-		score.addElement(new Note(Note.C));
-		score.addElement(new Note(Note.D));
-		score.addElement(new Note(Note.E));
-		score.addElement(new Note(Note.F));
-		score.addElement(new Note(Note.G));
-		score.addElement(new Note(Note.A));
-		score.addElement(new Note(Note.B));
-		score.addElement(new Note(Note.c));
+		Tune.Music music = tune.getMusic();
+		music.addElement(TimeSignature.SIGNATURE_4_4);
+		Note noteFirstSlurBegin = new Note(Note.C); 
+		music.addElement(noteFirstSlurBegin);
+		music.addElement(new Note(Note.D));
+		music.addElement(new NotesSeparator());
+		music.addElement(new Note(Note.E));
+		music.addElement(new Note(Note.F));
+		music.addElement(new BarLine());
+		Note noteFirstSlurEnd =  new Note(Note.G);
+		music.addElement(noteFirstSlurEnd);
+		music.addElement(new Note(Note.A));
+		music.addElement(new NotesSeparator());
+		music.addElement(new Note(Note.B));
+		music.addElement(new Note(Note.c));
+		music.addElement(new BarLine());
+		music.addElement(new Note(Note.d));
+		music.addElement(new Note(Note.e));
+		music.addElement(new NotesSeparator());
+		music.addElement(new Note(Note.f));
+		Note noteStartingTie = new Note(Note.g); 
+		music.addElement(noteStartingTie);
+		music.addElement(new BarLine());
+		Note noteEndingTie = new Note(Note.g);
+		music.addElement(noteEndingTie);
+		music.addElement(new Note(Note.f));
+		music.addElement(new NotesSeparator());
+		music.addElement(new Note(Note.e));
+		music.addElement(new Note(Note.d));
+		music.addElement(new BarLine());
+		music.addElement(new Note(Note.c));
+		music.addElement(new Note(Note.B));
+		music.addElement(new NotesSeparator());
+		music.addElement(new Note(Note.A));
+		Note noteSecondSlurBegin = new Note(Note.G); 
+		music.addElement(noteSecondSlurBegin);
+		music.addElement(new BarLine());
+		music.addElement(new Note(Note.F));
+		music.addElement(new Note(Note.E));
+		music.addElement(new NotesSeparator());
+		music.addElement(new Note(Note.D));
+		Note noteSecondSlurEnd = new Note(Note.C);
+		music.addElement(noteSecondSlurEnd);
+		//first slur definition
+		SlurDefinition firstSlur = new SlurDefinition();
+		firstSlur.setStart(noteFirstSlurBegin);
+		firstSlur.setEnd(noteFirstSlurEnd);
+		noteFirstSlurBegin.setSlurDefinition(firstSlur);
+		noteFirstSlurEnd.setSlurDefinition(firstSlur);
+		//second slur definition
+		SlurDefinition secondSlur = new SlurDefinition();
+		secondSlur.setStart(noteSecondSlurBegin);
+		secondSlur.setEnd(noteSecondSlurEnd);
+		noteSecondSlurBegin.setSlurDefinition(secondSlur);
+		noteSecondSlurEnd.setSlurDefinition(secondSlur);
+		//tie between the two g notes.
+		TieDefinition tie = new TieDefinition();
+		tie.setStart(noteStartingTie);
+		tie.setEnd(noteEndingTie);
+		noteStartingTie.setTieDefinition(tie);
+		noteEndingTie.setTieDefinition(tie);
 		JScoreComponent scoreUI =new JScoreComponent();
-		/*scoreUI.setSize(43);
 		scoreUI.setTune(tune);
 		JFrame j = new JFrame();
-		j.setSize(500, 200);
 		j.add(scoreUI);
-		//System.out.println(sp.getSize());
-		j.setVisible(true);*/
-		try {
-			scoreUI.setTune(tune);
-			scoreUI.writeScoreTo(new File("C:/Documents and Settings/uidd0558/Desktop/abc4j.jpg"));
-		}
-		catch (Exception e){
-			e.printStackTrace();
-		}
-	}
+		j.pack();
+		j.setVisible(true);
+	}*/
 	
 }

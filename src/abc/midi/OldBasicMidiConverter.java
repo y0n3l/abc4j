@@ -1,8 +1,12 @@
 package abc.midi;
 
+import java.beans.FeatureDescriptor;
 import java.util.Vector;
+
+import javax.sound.midi.Instrument;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiEvent;
+import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.ShortMessage;
 
 import abc.notation.KeySignature;
@@ -121,5 +125,16 @@ public class OldBasicMidiConverter extends OldMidiConverterAbstract
     }
     return events;
   }
+  
+	public Instrument getInstrument() {
+		return null;
+	}
+
+	/** Sets the instrument to be used for sequence playback. This implicitly loads the 
+	 * given instrument. 
+	 * @param instr The instrument to be used for sequence playback. */
+	public void setInstrument(Instrument instr) {
+		throw new RuntimeException("Method not implemented");
+	}
 
 }

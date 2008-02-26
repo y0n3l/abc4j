@@ -1,10 +1,15 @@
 package abc.midi;
 
 import java.util.Vector;
+
+import javax.sound.midi.Instrument;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiMessage;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
+import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 
 import abc.notation.AccidentalType;
@@ -23,18 +28,27 @@ import abc.parser.PositionableNote;
 public abstract class MidiConverterAbstract implements MidiConverterInterface {
 	/** The resolution of the sequence : this will correspond to a quarter note. */
 	private static final int SEQUENCE_RESOLUTION = Note.QUARTER;
-
+	/** The instrument to use for the playback sequence. */ 
+	protected Instrument instrument = null;
+	
   	/** Converts the given tune to a midi sequence.
   	 * @param tune The tune to be converted.
   	 * @return The midi sequence of the tune. */
   	public Sequence toMidiSequence(Tune tune) {
   		Sequence sequence = null;
   		try {
+  			if (instrument==null)
+  	  			setInstrument(MidiSystem.getSynthesizer().getAvailableInstruments()[0]);
   			// Sequence in ticks per quarter note : PPQ = Pulse Per Quarter Note
   			// Resolution is expressed in ticks per beat.
   			// Last parameter "1" is the number of tracks.
   			sequence = new Sequence (Sequence.PPQ, SEQUENCE_RESOLUTION, 1);
+  			// Set the instrument on channel 0
+  	        ShortMessage sm = new ShortMessage( );
+  	        sm.setMessage(ShortMessage.PROGRAM_CHANGE, 0, instrument.getPatch().getProgram(), 0);
+  			
   			Track track = sequence.createTrack();
+  			track.add(new MidiEvent(sm, 0));
   			//long trackLengthInTicks = track.ticks();
   			int lastRepeatOpen = -1;
   			int repeatNumber = 1;
@@ -117,14 +131,33 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   		catch (InvalidMidiDataException e) {
   			e.printStackTrace();
   		}
+  		catch (Exception e) {
+  			e.printStackTrace();
+  		}
   		return sequence;
   	}
+  	
+  	/** Returns the instrument currently used for sequence playback.  
+  	 * @return The instrument currently used for sequence playback. Returns <TT>null</TT>
+  	 * if not set. */
+  	public Instrument getInstrument(){
+  		return instrument;
+  	}
+  	
+  	/** Sets the instrument to be used for sequence playback. This implicitly loads the 
+  	 * given instrument. 
+  	 * @param instr The instrument to be used for sequence playback. */
+  	public void setInstrument(Instrument instr) throws MidiUnavailableException {
+  		MidiSystem.getSynthesizer().loadInstrument(instr);
+  		instrument = instr;
+  		
+  	}
 
-  	/** Generates the midi events requiered to play the given note in the context 
+  	/** Generates the midi events required to play the given note in the context 
   	 * described by the others parameters.
   	 * @param note The note to be played.
   	 * @param indexInScore The index of the note in the score.
-  	 * @param currentKey The current key this note is refering to.
+  	 * @param currentKey The current key this note is referring to.
   	 * @param timeReference The time reference expressed in ticks when the note should be played.
   	 * @param duration The duration of the note expressed in ticks.
   	 * @param track The track where the note should be played.

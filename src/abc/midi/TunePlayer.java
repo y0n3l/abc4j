@@ -2,9 +2,11 @@ package abc.midi;
 
 import java.util.Vector;
 
+import javax.sound.midi.Instrument;
 import javax.sound.midi.MetaEventListener;
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 
@@ -65,6 +67,20 @@ public class TunePlayer implements MetaEventListener
    * @return The tempo currently used to play tunes. */
   public int getTempo()
   { return m_tempo; }
+  
+  /** Returns the instrument currently used for sequence playback.  
+	 * @return The instrument currently used for sequence playback. Returns <TT>null</TT>
+	 * if not set. */
+  public Instrument getInstrument(){
+		return m_converter.getInstrument();
+	}
+	
+  /** Sets the instrument to be used for sequence playback. This implicitly loads the 
+	* given instrument. 
+	* @param instr The instrument to be used for sequence playback. */
+  public void setInstrument(Instrument instr) throws MidiUnavailableException {
+	  m_converter.setInstrument(instr);
+	} 
 
 /*  public int getVolume()
   {
@@ -124,7 +140,7 @@ public class TunePlayer implements MetaEventListener
 
   /** Returns <TT>true</TT> if this player is currently playing a tune.
    * @return <TT>true</TT> if this player is currently playing a tune, <TT>false</TT>
-   * otheriwse. */
+   * otherwise. */
   public boolean isPlaying()
   {
     if (seq==null)
@@ -178,17 +194,37 @@ public class TunePlayer implements MetaEventListener
     try
     {
       seq = MidiSystem.getSequencer();
-      seq.open();
-      seq.addMetaEventListener(this);
+      //MidiSystem.getSynthesizer().
       //int[] val = {81};
       //seq.addControllerEventListener(this, val);
+      seq.open();
+      seq.addMetaEventListener(this);
+      
       m_isStarted = true;
+      
     }
     catch (IllegalStateException e)
     { e.printStackTrace(); }
     catch (Exception e)
     { e.printStackTrace(); }
   }
+  
+  /*private ShortMessage createProgramMessage(int num)
+  {
+      ShortMessage programMessage = new ShortMessage();
+      
+      try {
+          Instrument myInstrument 
+      			= MidiSystem.getSynthesizer().getDefaultSoundbank().getInstruments()[num];
+      
+      	    programMessage.setMessage(ShortMessage.PROGRAM_CHANGE, 
+      	        myInstrument.getPatch().getProgram(),10);
+      } catch (InvalidMidiDataException e) {
+      	    e.printStackTrace();
+      }
+      
+  	    return programMessage;
+  }*/
 
   /** Stops the playing of the current tune if any. */
   public void stopPlaying()

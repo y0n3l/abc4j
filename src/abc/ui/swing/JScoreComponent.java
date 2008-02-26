@@ -56,6 +56,8 @@ public class JScoreComponent extends JComponent {
 	 * item is selected. */
 	protected JScoreElement m_selectedItem = null;
 	
+	protected int staffLinesSpacing = -1;
+	
 	/** Default constructor. */
 	public JScoreComponent() {
 		m_dimension = new Dimension(1,1);
@@ -66,6 +68,7 @@ public class JScoreComponent extends JComponent {
 		m_bufferedImage = new BufferedImage((int)m_dimension.getWidth(), (int)m_dimension.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		m_bufferedImageGfx = (Graphics2D)m_bufferedImage.createGraphics();
 		m_metrics = new ScoreMetrics(m_bufferedImageGfx, m_size);
+		staffLinesSpacing = (int)(m_metrics.getStaffCharBounds().getHeight()*2.5);
 	}
 	
 	/** Draws the current tune score into the given graphic context.
@@ -127,6 +130,7 @@ public class JScoreComponent extends JComponent {
 		if (m_metrics==null)
 			m_metrics = new ScoreMetrics((Graphics2D)getGraphics());
 		m_jTune = new JTune(tune, new Point(XOffset, 0), m_metrics, m_isJustified);
+		m_jTune.setStaffLinesSpacing(staffLinesSpacing);
 		m_selectedItem = null;
 		m_dimension.setSize(m_jTune.getWidth(), m_jTune.getHeight()); 
 				//componentHeight+m_metrics.getStaffCharBounds().getHeight());
@@ -150,6 +154,20 @@ public class JScoreComponent extends JComponent {
 			setTune(m_jTune.getTune());
 		//m_jTune = new m_jTune(m_jTune.getTune(), )
 		//repaint();
+	}
+	
+	public void setStaffLinesSpacing(int spacing) {
+		staffLinesSpacing = spacing;
+		if (m_jTune!=null)
+			setTune(m_jTune.getTune());
+		//if (m_jTune!=null)
+		//	setTune(m_jTune.getTune());
+		//m_jTune = new m_jTune(m_jTune.getTune(), )
+		//repaint();
+	}  
+	
+	public int getStaffLinesSpacing() {
+		return staffLinesSpacing;
 	}
 	
 	/** Return <TT>true</TT> if the rendition staff lines alignment is

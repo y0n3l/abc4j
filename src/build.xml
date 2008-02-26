@@ -6,7 +6,7 @@
 	<property name="JDIFF_HOME" value="D:/installs/jdiff-1.1.0"/>
 	<property name="OLD_VERSION_DIR" value="D:/Perso/abc4jOld/v0.3"/>
 	<property name="COBERTURA_DIR" value="D:/installs/cobertura-1.8"/>
-	<property name="JUNIT_JAR" value="D:/eclipse/plugins/org.junit4_4.1.0.1/junit-4.1.jar" />
+	<property name="JUNIT_JAR" value="D:/eclipse/plugins/org.junit4_4.3.1/junit.jar" />
 
 	<!-- Properties for this project. -->
 	<property name="classesdir" value="./../classes" />
@@ -167,19 +167,20 @@
 			header="abc4j API Specification"
 			footer="abc4j API Specification"
 			overview="${srcdir}/overview.html"
-			sourcepath="${srcdir}">
+			sourcepath="${srcdir}"
+			excludepackagenames = "abc.parser.def, abcynth, abcynth.ui, check">
 			<bottom>&lt;a href=&quot;mailto:lionel.gueganton@libertysurf.fr&quot;&gt;Submit a bug or feature&lt;a&#47;&gt;</bottom>
 			<classpath path="${classesdir}" />
-			<group title="abc Representation / Parsing Packages" packages="abc.notation*, abc.parser*"/>
+			<group title="abc Representation / Parsing Packages" packages="abc.notation, abc.parser"/>
 			<group title="Midi Playback Packages" packages="abc.midi*"/>
       		<group title="Scanner Engine Packages" packages="scanner*"/>
 			<group title="UI Packages" packages="abc.ui*"/>
-      		<packageset dir="${srcdir}" defaultexcludes="yes">
-				<include name="abc/**" />
-      			<include name="scanner/**" />
-				<exclude name="abc/parser/def**" />
-      			<exclude name="abc/ui/swing/score**" />
-			</packageset>
+      		<!---<packageset dir="${srcdir}" >-->
+				<!--<include name="abc/**" />-->
+      			<!--<include name="scanner/**" />-->
+				<!--<exclude name="abc/parser/def**"/>-->
+      			<!--<exclude name="abc/ui/swing/score**" />-->
+			<!--</packageset>-->
 		</javadoc>
 		<mkdir dir="${docdir}/api/images"/>
 		<copy todir="${docdir}/api/images">

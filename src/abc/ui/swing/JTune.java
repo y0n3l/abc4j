@@ -40,7 +40,7 @@ class JTune extends JScoreElementAbstract {
 	/** Note instances starting Slurs and ties. */
 	protected Vector m_beginningNotesLinkElements = null;
 	
-	private int m_staffLinesOffset = -1;
+	private int m_staffLinesSpacing = -1;
 	/** The dimensions of this score. */
 	//protected Dimension m_dimension = null;
 	/** WTF ??? does not seem to be really taken into account anyway... */
@@ -86,6 +86,15 @@ class JTune extends JScoreElementAbstract {
 		return m_height;
 	}
 	
+	public void setStaffLinesSpacing(int staffLinesSpacing) {
+		m_staffLinesSpacing = staffLinesSpacing;
+		setTune(m_tune);
+	}
+	
+	public int getStaffLinesSpacing() {
+		return m_staffLinesSpacing;
+	}
+	
 	public Tune getTune() {
 		return m_tune;
 	}
@@ -125,7 +134,7 @@ class JTune extends JScoreElementAbstract {
 		m_staffLines.removeAllElements();
 		Music score = tune.getMusic();
 		//The spacing between two staff lines
-		m_staffLinesOffset = (int)(m_metrics.getStaffCharBounds().getHeight()*2.5);
+		//m_staffLinesSpacing = (int)(m_metrics.getStaffCharBounds().getHeight()*2.5);
 		cursor = new Point(XOffset, 0);
 		double componentWidth =0, componentHeight = 0;
 		ArrayList lessThanQuarter = new ArrayList();
@@ -425,7 +434,7 @@ class JTune extends JScoreElementAbstract {
 	private JStaffLine initNewStaffLine() {
 		JStaffLine sl = new JStaffLine(cursor, m_metrics);
 		//Vector initElements = new Vector();
-		cursor.setLocation(0, cursor.getY() + m_staffLinesOffset);
+		cursor.setLocation(0, cursor.getY() + m_staffLinesSpacing);
 		JClef clef = new JClef(cursor, m_metrics);
 		sl.addElement(clef);
 		//initElements.addElement(clef);

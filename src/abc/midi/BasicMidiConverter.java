@@ -9,8 +9,7 @@ import abc.notation.Note;
 import abc.notation.Tempo;
 
 /** A basic midi converter that just plays melody, ignores ornaments and chords. */
-public class BasicMidiConverter extends MidiConverterAbstract
-{
+public class BasicMidiConverter extends MidiConverterAbstract {
   public MidiMessage[] getNoteOneMessageFor(Note note, KeySignature key) throws InvalidMidiDataException
   {
     MidiMessage[] events = new MidiMessage[1];

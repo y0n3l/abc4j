@@ -18,7 +18,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import javax.sound.midi.Instrument;
 import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -161,6 +163,20 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
     setJMenuBar(menuBar);
 
     m_player = new TunePlayer();
+    try {
+    	//Retrieves all instruments
+    	Instrument[] allInstruments = MidiSystem.getSynthesizer().getAvailableInstruments();
+    	Instrument accordion = null;
+    	//Find the accordion among them
+    	for (int i=0; i<allInstruments.length && accordion ==null; i++)
+    		if (allInstruments[i].getName().equalsIgnoreCase("accordion"))
+    			accordion= allInstruments[i];
+    	m_player.setInstrument(accordion);
+    }
+    catch(MidiUnavailableException e) {
+    	e.printStackTrace();
+    }
+    
     m_player.addListener(this);
     m_player.start();
     m_playerToolBar = new PlayerToolBar(m_player);
