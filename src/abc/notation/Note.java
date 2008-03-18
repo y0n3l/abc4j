@@ -170,19 +170,19 @@ public class Note extends NoteAbstract
     setOctaveTransposition((byte)(octaveTransposition+octaveTranspositionValue));
   }
 
-  /** Sets the heigth of this note.
-   * @param heigthValue The heigth of this note. The heigth is <TT>REST</TT> if
+  /** Sets the height of this note.
+   * @param heigthValue The height of this note. The height is <TT>REST</TT> if
    * this note is a rest.
    * @deprecated use setHeight(byte heigthValue) instead. sorry for the typo... 
    * @see #setHeight(byte) */
   public void setHeigth(byte heigthValue)
   { setHeight(heigthValue); }
   
-  /** Sets the heigth of this note. Accidentals are not taken into account in this value, Ex:
+  /** Sets the height of this note. Accidentals are not taken into account in this value, Ex:
    * using this method you will be able to specify that your note is a C but not a C#.
    * To express the sharp, you'll have to use the {@link #setAccidental(byte)} method.  
-   * @param heightValue The heigth of this note as a byte that respect the scale defined by
-   * constants such as C D E F G A B c d e ..... The heigth is <TT>REST</TT> if
+   * @param heightValue The height of this note as a byte that respect the scale defined by
+   * constants such as C D E F G A B c d e ..... The height is <TT>REST</TT> if
    * this note is a rest. 
    * @see #getHeight() 
    * @see #setAccidental(byte) */
@@ -245,9 +245,9 @@ public class Note extends NoteAbstract
   
   /** Returns this note absolute height. This height doesn't take in account
    * octave transposition.
-   * @return The heigth of this note on the first octave. Possible values are
-   * <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>, <TT>A</TT>(404)
-   * or <TT>B</TT> only. 
+   * @return The height of this note on the first octave. Possible values are
+   * <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>, <TT>A</TT>(404), 
+   * <TT>B</TT> or <TT>REST</TT> only. 
    * @see #getHeight()
    * @see #setHeight(byte) */
   public byte getStrictHeight() {
@@ -256,9 +256,9 @@ public class Note extends NoteAbstract
  
   /** Returns this note absolute height. This height doesn't take in account
    * octave transposition.
-   * @param height A heigth of a note as a byte that respect the scale defined by
+   * @param height A height of a note as a byte that respect the scale defined by
    * constants such as C D E F G A B c d e ....
-   * @return The heigth of this note on the first octave. Possible values are
+   * @return The height of this note on the first octave. Possible values are
    * <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>, <TT>A</TT>(404)
    * <TT>B</TT> or <TT>REST</TT> only.
    * @see #getHeight() */
@@ -324,9 +324,9 @@ public class Note extends NoteAbstract
 	  m_duration = length;
   }
   
-  /** Sets the length of this note. However, it is recommanded to represent
+  /** Sets the length of this note. However, it is recommended to represent
    * the note duration using methods such as setStrictDuration(short strictDuration), 
-   * setDotted(byte dotted) etc etc as explained at the begining of this class description.
+   * setDotted(byte dotted) etc etc as explained at the beginning of this class description.
    * @param duration The length of this note as a value adjusted to 
    * the scale of constants such as <TT>Note.WHOLE</TT>, <TT>Note.HALF</TT> etc etc ... 
    * @see #getDuration()*/
