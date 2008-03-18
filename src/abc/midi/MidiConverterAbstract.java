@@ -20,8 +20,6 @@ import abc.notation.Note;
 import abc.notation.RepeatBarLine;
 import abc.notation.Tempo;
 import abc.notation.Tune;
-import abc.parser.PositionableMultiNote;
-import abc.parser.PositionableNote;
 
 /** MidiConverter class defines various static methods to convert abc related stuff
  * to midi : notes, tunes etc... */
@@ -77,7 +75,7 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   									// Notes ending ties should be ignored. Already taken into 
   									// account in getNoteLengthInTicks(Note)
   									&& !((abc.notation.Note)staff.elementAt(i)).isEndingTie()) {
-  								PositionableNote note = (PositionableNote)staff.elementAt(i);
+  								Note note = (Note)staff.elementAt(i);
   								long noteDuration;
   								//The note duration if the note isn't part of a tuplet.
   								noteDuration = getNoteLengthInTicks(note);
@@ -87,7 +85,7 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   							else
   								//==================================================================== MULTI NOTE
   								if ((staff.elementAt(i) instanceof abc.notation.MultiNote)) {
-  									PositionableMultiNote multiNote = (PositionableMultiNote)staff.elementAt(i);
+  									MultiNote multiNote = (MultiNote)staff.elementAt(i);
   									playMultiNote(multiNote, i, currentKey, elapsedTime, track);
   									elapsedTime+=getNoteLengthInTicks(multiNote);
   								}
