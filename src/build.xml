@@ -4,7 +4,7 @@
 	
 	<!-- Environment variables -->
 	<property name="JDIFF_HOME" value="D:/installs/jdiff-1.1.0"/>
-	<property name="OLD_VERSION_DIR" value="D:/Perso/abc4jOld/v0.3"/>
+	<property name="OLD_VERSION_DIR" value="D:/Perso/abc4jOld/v0.4"/>
 	<property name="COBERTURA_DIR" value="D:/installs/cobertura-1.8"/>
 	<property name="JUNIT_JAR" value="D:/eclipse/plugins/org.junit4_4.3.1/junit.jar" />
 
@@ -71,15 +71,28 @@
 		<javac srcdir="${testsdir}" destdir="${classesdir}" classpath="${JUNIT_JAR}" debuglevel="source,vars,lines" debug="true" target="1.4" source="1.4"/>
 	</target>
 	
+	<fileset id="licenseDocs" dir="../ressources">
+		<include name="COPYING"/>
+		<include name="COPYING.LESSER"/>
+	</fileset>
+	
+	<fileset id="releaseDocs" dir="${docdir}">
+			<include name="ReleaseNotes.txt"/>
+	</fileset>
+	
 	<!-- generates jar -->
 	<target name="libs" description="Generates the jar for abc4j">
 			<mkdir dir="${libdir}" />
 			<echo>Generating jars to ${libdir}</echo>
 			<copy file="../ressources/LGtunes.abc" todir="../classes/abcynth"/>
 			<copy file="../ressources/SONORA.TTF" todir="../classes/abc/ui/swing"/>
+			<copy file="../ressources/COPYING" todir="../classes"/>
+			<copy file="../ressources/COPYING.LESSER" todir="../classes"/>
 			<jar destfile="${libdir}/abc4j.jar" basedir="${classesdir}"
 				includes="abc/**,abcynth/**,check/**,scanner/**"
 				manifest="${srcdir}/manifest.mf">
+				<fileset refid="licenseDocs"/>
+				<fileset refid="releaseDocs"/>
 			</jar>
 	</target>
 	
@@ -173,6 +186,7 @@
 			<classpath path="${classesdir}" />
 			<group title="abc Representation / Parsing Packages" packages="abc.notation, abc.parser"/>
 			<group title="Midi Playback Packages" packages="abc.midi*"/>
+			<group title="MusicXML Packages" packages="abc.xml*"/>
       		<group title="Scanner Engine Packages" packages="scanner*"/>
 			<group title="UI Packages" packages="abc.ui*"/>
       		<!---<packageset dir="${srcdir}" >-->
@@ -208,7 +222,7 @@
 	<target name="jdiff.oldAPI">
 			<javadoc >
 				<doclet name="jdiff.JDiff" path="${JDIFF_HOME}/jdiff.jar:${JDIFF_HOME}/xerces.jar">
-					<param name="-apiname" value="v0.3"/>
+					<param name="-apiname" value="v0.4"/>
 				</doclet>
 				<packageset dir="${OLD_VERSION_DIR}/src" defaultexcludes="yes">
 	      			<patternset refid="doc.patternset"/>
@@ -219,7 +233,7 @@
 	<target name="jdiff.newAPI">
 				<javadoc >
 					<doclet name="jdiff.JDiff" path="${JDIFF_HOME}/jdiff.jar:${JDIFF_HOME}/xerces.jar">
-						<param name="-apiname" value="v0.4"/>
+						<param name="-apiname" value="v0.5"/>
 					</doclet>
 					<packageset dir="${srcdir}" defaultexcludes="yes">
 		      			<patternset refid="doc.patternset"/>
@@ -231,8 +245,8 @@
 			<javadoc destdir="${docdir}/diff">
 				<doclet name="jdiff.JDiff" path="${JDIFF_HOME}/jdiff.jar:${JDIFF_HOME}/xerces.jar">
 				    <param name="-stats"/>
-				    <param name="-oldapi" value="v0.3"/>
-				    <param name="-newapi" value="v0.4"/>
+				    <param name="-oldapi" value="v0.4"/>
+				    <param name="-newapi" value="v0.5"/>
 				</doclet>
 	  			<classpath path="${classesdir}" />
 				<packageset dir="${srcdir}" defaultexcludes="yes">
