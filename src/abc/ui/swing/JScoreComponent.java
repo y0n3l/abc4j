@@ -17,7 +17,7 @@ import abc.notation.MusicElement;
 import abc.notation.Tune;
 
 /**
- * This JComponent displays tunes scores such as :<BR/> 
+ * This JComponent displays tunes scores. You can get scores such as : <BR/> 
  * <CENTER>
  * <IMG src="../../../images/scoreEx.jpg"/> </CENTER>
  * <BR/>
