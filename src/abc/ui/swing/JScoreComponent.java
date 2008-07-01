@@ -150,6 +150,7 @@ public class JScoreComponent extends JComponent {
 	 * @see #isJustified()*/
 	public void setJustification(boolean isJustified) {
 		m_isJustified = isJustified;
+		//triggers the recalculation of the tune
 		if (m_jTune!=null)
 			setTune(m_jTune.getTune());
 		//m_jTune = new m_jTune(m_jTune.getTune(), )
@@ -158,6 +159,7 @@ public class JScoreComponent extends JComponent {
 	
 	public void setStaffLinesSpacing(int spacing) {
 		staffLinesSpacing = spacing;
+		//triggers the recalculation of the tune
 		if (m_jTune!=null)
 			setTune(m_jTune.getTune());
 		//if (m_jTune!=null)
