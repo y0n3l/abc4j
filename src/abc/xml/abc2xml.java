@@ -1,3 +1,18 @@
+// Copyright 2006-2008 Lionel Gueganton
+// This file is part of abc4j.
+//
+// abc4j is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// abc4j is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.xml;
 
 import java.io.BufferedWriter;
@@ -21,16 +36,14 @@ import org.w3c.dom.Node;
 import abc.notation.AccidentalType;
 import abc.notation.BarLine;
 import abc.notation.KeySignature;
-//import abc.notation.Measure;
 import abc.notation.MultiNote;
 import abc.notation.MusicElement;
 import abc.notation.Note;
-import abc.notation.RepeatBarLine;
 import abc.notation.TimeSignature;
 import abc.notation.Tune;
 import abc.notation.Tune.Music;
 
-public class abc2xml {
+public class Abc2xml {
 	
 	protected static final String SCORE_PARTWISE_TAG = "score-partwise";
 	protected static final String PART_LIST_TAG = "part-list";
