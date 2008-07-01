@@ -135,6 +135,14 @@ A basic midi converter that just plays melody, ignores ornaments and chords.
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;javax.sound.midi.Instrument</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/midi/OldBasicMidiConverter.html#getInstrument()">getInstrument</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the instrument currently used for sequence playback.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;javax.sound.midi.MidiEvent[]</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../abc/midi/OldBasicMidiConverter.html#getMidiEventsFor(abc.notation.MultiNote, abc.notation.KeySignature, long)">getMidiEventsFor</A></B>(<A HREF="../../abc/notation/MultiNote.html" title="class in abc.notation">MultiNote</A>&nbsp;notes,
                  <A HREF="../../abc/notation/KeySignature.html" title="class in abc.notation">KeySignature</A>&nbsp;key,
@@ -171,6 +179,14 @@ A basic midi converter that just plays melody, ignores ornaments and chords.
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the corresponding midi events for a tuplet.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/midi/OldBasicMidiConverter.html#setInstrument(javax.sound.midi.Instrument)">setInstrument</A></B>(javax.sound.midi.Instrument&nbsp;instr)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sets the instrument to be used for sequence playback.</TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_abc.midi.OldMidiConverterAbstract"><!-- --></A>
@@ -301,6 +317,36 @@ public javax.sound.midi.MidiEvent[] <B>getMidiEventsFor</B>(<A HREF="../../abc/n
 
 <DT><B>Throws:</B>
 <DD><CODE>javax.sound.midi.InvalidMidiDataException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getInstrument()"><!-- --></A><H3>
+getInstrument</H3>
+<PRE>
+public javax.sound.midi.Instrument <B>getInstrument</B>()</PRE>
+<DL>
+<DD><B>Description copied from interface: <CODE><A HREF="../../abc/midi/MidiConverterInterface.html#getInstrument()">MidiConverterInterface</A></CODE></B></DD>
+<DD>Returns the instrument currently used for sequence playback.
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>The instrument currently used for sequence playback. Returns <TT>null</TT>
+ if not set.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setInstrument(javax.sound.midi.Instrument)"><!-- --></A><H3>
+setInstrument</H3>
+<PRE>
+public void <B>setInstrument</B>(javax.sound.midi.Instrument&nbsp;instr)</PRE>
+<DL>
+<DD>Sets the instrument to be used for sequence playback. This implicitly loads the 
+ given instrument.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>instr</CODE> - The instrument to be used for sequence playback.</DL>
 </DD>
 </DL>
 <!-- ========= END OF CLASS DATA ========= -->

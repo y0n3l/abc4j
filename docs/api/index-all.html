@@ -86,7 +86,10 @@ Static variable in class abc.notation.<A HREF="./abc/notation/Note.html" title="
 <DT><A HREF="./abc/midi/package-summary.html"><B>abc.midi</B></A> - package abc.midi<DD>This package contains all classes for midi use from abc format.<DT><A HREF="./abc/notation/package-summary.html"><B>abc.notation</B></A> - package abc.notation<DD>This package defines all classes related to tunes in abc notation.<DT><A HREF="./abc/parser/package-summary.html"><B>abc.parser</B></A> - package abc.parser<DD>This package contains classes for parsing tunes in abc notation.<DT><A HREF="./abc/ui/awt/package-summary.html"><B>abc.ui.awt</B></A> - package abc.ui.awt<DD>This package contains classes for displaying abc related objects in awt UI components.<DT><A HREF="./abc/ui/swing/package-summary.html"><B>abc.ui.swing</B></A> - package abc.ui.swing<DD>This package contains classes for displaying abc related objects in swing UI components.<BR/>
         Such components are closely linked to music abstractions defined in package abc.notation and
         propose advanced UI components that take advantage of information offered by objects 
-        such as <TT>Tune</TT>, <TT>Tune.Music</TT> etc...<DT><A HREF="./abc/parser/AbcFileParser.html" title="class in abc.parser"><B>AbcFileParser</B></A> - Class in <A HREF="./abc/parser/package-summary.html">abc.parser</A><DD>This class provides instances to parse files and streams using
+        such as <TT>Tune</TT>, <TT>Tune.Music</TT> etc...<DT><A HREF="./abc/xml/package-summary.html"><B>abc.xml</B></A> - package abc.xml<DD>This package contains classes to convert tunes to musicXML format.<DT><A HREF="./abc/xml/Abc2xml.html" title="class in abc.xml"><B>Abc2xml</B></A> - Class in <A HREF="./abc/xml/package-summary.html">abc.xml</A><DD>&nbsp;<DT><A HREF="./abc/xml/Abc2xml.html#Abc2xml()"><B>Abc2xml()</B></A> - 
+Constructor for class abc.xml.<A HREF="./abc/xml/Abc2xml.html" title="class in abc.xml">Abc2xml</A>
+<DD>&nbsp;
+<DT><A HREF="./abc/parser/AbcFileParser.html" title="class in abc.parser"><B>AbcFileParser</B></A> - Class in <A HREF="./abc/parser/package-summary.html">abc.parser</A><DD>This class provides instances to parse files and streams using
  abc notation.<DT><A HREF="./abc/parser/AbcFileParser.html#AbcFileParser()"><B>AbcFileParser()</B></A> - 
 Constructor for class abc.parser.<A HREF="./abc/parser/AbcFileParser.html" title="class in abc.parser">AbcFileParser</A>
 <DD>Creates a new abc file parser.
@@ -323,6 +326,10 @@ Method in class abc.parser.<A HREF="./abc/parser/AbcToolkit.DurationDescription.
 <DT><A HREF="./scanner/State.html#countTransitions()"><B>countTransitions()</B></A> - 
 Method in class scanner.<A HREF="./scanner/State.html" title="class in scanner">State</A>
 <DD>Returns the number of transitions from this state.
+<DT><A HREF="./abc/xml/Abc2xml.html#createMusicXmlDOM(abc.notation.Tune)"><B>createMusicXmlDOM(Tune)</B></A> - 
+Static method in class abc.xml.<A HREF="./abc/xml/Abc2xml.html" title="class in abc.xml">Abc2xml</A>
+<DD>Creates a DOM representation (fullfilling musicXML dtd) of the specified
+ tune.
 <DT><A HREF="./abc/notation/Tune.html#createPart(char)"><B>createPart(char)</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in abc.notation">Tune</A>
 <DD>Creates a new part in this tune and returns it.
@@ -673,6 +680,18 @@ Static method in class abc.midi.<A HREF="./abc/midi/NoteIndexMessage.html" title
 <DT><A HREF="./abc/notation/Tune.html#getInformation()"><B>getInformation()</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in abc.notation">Tune</A>
 <DD>Returns additional information about the tune.
+<DT><A HREF="./abc/midi/MidiConverterAbstract.html#getInstrument()"><B>getInstrument()</B></A> - 
+Method in class abc.midi.<A HREF="./abc/midi/MidiConverterAbstract.html" title="class in abc.midi">MidiConverterAbstract</A>
+<DD>Returns the instrument currently used for sequence playback.
+<DT><A HREF="./abc/midi/MidiConverterInterface.html#getInstrument()"><B>getInstrument()</B></A> - 
+Method in interface abc.midi.<A HREF="./abc/midi/MidiConverterInterface.html" title="interface in abc.midi">MidiConverterInterface</A>
+<DD>Returns the instrument currently used for sequence playback.
+<DT><A HREF="./abc/midi/OldBasicMidiConverter.html#getInstrument()"><B>getInstrument()</B></A> - 
+Method in class abc.midi.<A HREF="./abc/midi/OldBasicMidiConverter.html" title="class in abc.midi">OldBasicMidiConverter</A>
+<DD>&nbsp;
+<DT><A HREF="./abc/midi/TunePlayer.html#getInstrument()"><B>getInstrument()</B></A> - 
+Method in class abc.midi.<A HREF="./abc/midi/TunePlayer.html" title="class in abc.midi">TunePlayer</A>
+<DD>Returns the instrument currently used for sequence playback.
 <DT><A HREF="./abc/notation/Tune.html#getKey()"><B>getKey()</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in abc.notation">Tune</A>
 <DD>Returns the key signature of this tune.
@@ -922,6 +941,9 @@ Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in 
 <DT><A HREF="./scanner/Transition.html#getSourceState()"><B>getSourceState()</B></A> - 
 Method in class scanner.<A HREF="./scanner/Transition.html" title="class in scanner">Transition</A>
 <DD>Returns the source state of this transition.
+<DT><A HREF="./abc/ui/swing/JScoreComponent.html#getStaffLinesSpacing()"><B>getStaffLinesSpacing()</B></A> - 
+Method in class abc.ui.swing.<A HREF="./abc/ui/swing/JScoreComponent.html" title="class in abc.ui.swing">JScoreComponent</A>
+<DD>&nbsp;
 <DT><A HREF="./abc/notation/TwoNotesLink.html#getStart()"><B>getStart()</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/TwoNotesLink.html" title="class in abc.notation">TwoNotesLink</A>
 <DD>Returns the start of the two notes link.
@@ -1241,13 +1263,7 @@ Method in class scanner.<A HREF="./scanner/State.html" title="class in scanner">
 <A NAME="_J_"><!-- --></A><H2>
 <B>J</B></H2>
 <DL>
-<DT><A HREF="./abc/ui/swing/JScoreComponent.html" title="class in abc.ui.swing"><B>JScoreComponent</B></A> - Class in <A HREF="./abc/ui/swing/package-summary.html">abc.ui.swing</A><DD>This JComponent displays tunes scores such as :<BR/> 
- 
- <IMG src="../../../images/scoreEx.jpg"/> 
- <BR/>
- To render a tune score, just invoke the <TT>setTune(Tune)</TT> method
- with your tune as parameter.<BR/>
- Basically, a score if composed of <A HREF="./abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing"><CODE>score elements</CODE></A><DT><A HREF="./abc/ui/swing/JScoreComponent.html#JScoreComponent()"><B>JScoreComponent()</B></A> - 
+<DT><A HREF="./abc/ui/swing/JScoreComponent.html" title="class in abc.ui.swing"><B>JScoreComponent</B></A> - Class in <A HREF="./abc/ui/swing/package-summary.html">abc.ui.swing</A><DD>This JComponent displays tunes scores.<DT><A HREF="./abc/ui/swing/JScoreComponent.html#JScoreComponent()"><B>JScoreComponent()</B></A> - 
 Constructor for class abc.ui.swing.<A HREF="./abc/ui/swing/JScoreComponent.html" title="class in abc.ui.swing">JScoreComponent</A>
 <DD>Default constructor.
 <DT><A HREF="./abc/ui/swing/JScoreElement.html" title="interface in abc.ui.swing"><B>JScoreElement</B></A> - Interface in <A HREF="./abc/ui/swing/package-summary.html">abc.ui.swing</A><DD>&nbsp;</DL>
@@ -1740,13 +1756,25 @@ Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in 
 <DD>&nbsp;
 <DT><A HREF="./abc/notation/Note.html#setHeight(byte)"><B>setHeight(byte)</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in abc.notation">Note</A>
-<DD>Sets the heigth of this note.
+<DD>Sets the height of this note.
 <DT><A HREF="./abc/notation/Note.html#setHeigth(byte)"><B>setHeigth(byte)</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Note.html" title="class in abc.notation">Note</A>
 <DD><B>Deprecated.</B>&nbsp;<I>use setHeight(byte heigthValue) instead. sorry for the typo...</I>
 <DT><A HREF="./abc/notation/Tune.html#setInformation(java.lang.String)"><B>setInformation(String)</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in abc.notation">Tune</A>
 <DD>Sets additional information about the tune.
+<DT><A HREF="./abc/midi/MidiConverterAbstract.html#setInstrument(javax.sound.midi.Instrument)"><B>setInstrument(Instrument)</B></A> - 
+Method in class abc.midi.<A HREF="./abc/midi/MidiConverterAbstract.html" title="class in abc.midi">MidiConverterAbstract</A>
+<DD>Sets the instrument to be used for sequence playback.
+<DT><A HREF="./abc/midi/MidiConverterInterface.html#setInstrument(javax.sound.midi.Instrument)"><B>setInstrument(Instrument)</B></A> - 
+Method in interface abc.midi.<A HREF="./abc/midi/MidiConverterInterface.html" title="interface in abc.midi">MidiConverterInterface</A>
+<DD>Sets the instrument to be used for sequence playback.
+<DT><A HREF="./abc/midi/OldBasicMidiConverter.html#setInstrument(javax.sound.midi.Instrument)"><B>setInstrument(Instrument)</B></A> - 
+Method in class abc.midi.<A HREF="./abc/midi/OldBasicMidiConverter.html" title="class in abc.midi">OldBasicMidiConverter</A>
+<DD>Sets the instrument to be used for sequence playback.
+<DT><A HREF="./abc/midi/TunePlayer.html#setInstrument(javax.sound.midi.Instrument)"><B>setInstrument(Instrument)</B></A> - 
+Method in class abc.midi.<A HREF="./abc/midi/TunePlayer.html" title="class in abc.midi">TunePlayer</A>
+<DD>Sets the instrument to be used for sequence playback.
 <DT><A HREF="./abc/ui/swing/JScoreComponent.html#setJustification(boolean)"><B>setJustification(boolean)</B></A> - 
 Method in class abc.ui.swing.<A HREF="./abc/ui/swing/JScoreComponent.html" title="class in abc.ui.swing">JScoreComponent</A>
 <DD>Changes the justification of the rendition score.
@@ -1822,6 +1850,9 @@ Method in class abc.notation.<A HREF="./abc/notation/Tune.html" title="class in 
 <DT><A HREF="./abc/notation/NoteAbstract.html#setStaccato(boolean)"><B>setStaccato(boolean)</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/NoteAbstract.html" title="class in abc.notation">NoteAbstract</A>
 <DD>Sets the staccato playing style of this note.
+<DT><A HREF="./abc/ui/swing/JScoreComponent.html#setStaffLinesSpacing(int)"><B>setStaffLinesSpacing(int)</B></A> - 
+Method in class abc.ui.swing.<A HREF="./abc/ui/swing/JScoreComponent.html" title="class in abc.ui.swing">JScoreComponent</A>
+<DD>&nbsp;
 <DT><A HREF="./abc/notation/TwoNotesLink.html#setStart(abc.notation.NoteAbstract)"><B>setStart(NoteAbstract)</B></A> - 
 Method in class abc.notation.<A HREF="./abc/notation/TwoNotesLink.html" title="class in abc.notation">TwoNotesLink</A>
 <DD>Sets the start of the two notes link.
@@ -2230,6 +2261,12 @@ Static variable in class abc.notation.<A HREF="./abc/notation/Note.html" title="
 <DT><A HREF="./abc/notation/Words.html" title="class in abc.notation"><B>Words</B></A> - Class in <A HREF="./abc/notation/package-summary.html">abc.notation</A><DD>A class to describe words (lyrics) for a tune.<DT><A HREF="./abc/notation/Words.html#Words(java.lang.String)"><B>Words(String)</B></A> - 
 Constructor for class abc.notation.<A HREF="./abc/notation/Words.html" title="class in abc.notation">Words</A>
 <DD>Creates a new word element.
+<DT><A HREF="./abc/xml/Abc2xml.html#writeAsMusicXML(abc.notation.Tune, java.io.File)"><B>writeAsMusicXML(Tune, File)</B></A> - 
+Static method in class abc.xml.<A HREF="./abc/xml/Abc2xml.html" title="class in abc.xml">Abc2xml</A>
+<DD>Writes the specified tune to the specified file as MusicXML.
+<DT><A HREF="./abc/xml/Abc2xml.html#writeAsMusicXML(org.w3c.dom.Node, java.io.BufferedWriter)"><B>writeAsMusicXML(Node, BufferedWriter)</B></A> - 
+Static method in class abc.xml.<A HREF="./abc/xml/Abc2xml.html" title="class in abc.xml">Abc2xml</A>
+<DD>Writes the specified Node to the given writer.
 <DT><A HREF="./abc/ui/swing/JScoreComponent.html#writeScoreTo(java.io.File)"><B>writeScoreTo(File)</B></A> - 
 Method in class abc.ui.swing.<A HREF="./abc/ui/swing/JScoreComponent.html" title="class in abc.ui.swing">JScoreComponent</A>
 <DD>Writes the currently set tune score to a PNG file.

@@ -117,6 +117,22 @@ This interface defines methods that should be implemented for any "tune to
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;javax.sound.midi.Instrument</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/midi/MidiConverterInterface.html#getInstrument()">getInstrument</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the instrument currently used for sequence playback.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/midi/MidiConverterInterface.html#setInstrument(javax.sound.midi.Instrument)">setInstrument</A></B>(javax.sound.midi.Instrument&nbsp;instr)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sets the instrument to be used for sequence playback.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;javax.sound.midi.Sequence</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../abc/midi/MidiConverterInterface.html#toMidiSequence(abc.notation.Tune)">toMidiSequence</A></B>(<A HREF="../../abc/notation/Tune.html" title="class in abc.notation">Tune</A>&nbsp;tune)</CODE>
 
@@ -147,6 +163,38 @@ javax.sound.midi.Sequence <B>toMidiSequence</B>(<A HREF="../../abc/notation/Tune
 <DD><DL>
 <DT><B>Parameters:</B><DD><CODE>tune</CODE> - A tune with a score.
 <DT><B>Returns:</B><DD>A midi sequence corresponding to the given tune.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="getInstrument()"><!-- --></A><H3>
+getInstrument</H3>
+<PRE>
+javax.sound.midi.Instrument <B>getInstrument</B>()</PRE>
+<DL>
+<DD>Returns the instrument currently used for sequence playback.
+<P>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>The instrument currently used for sequence playback. Returns <TT>null</TT>
+ if not set.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setInstrument(javax.sound.midi.Instrument)"><!-- --></A><H3>
+setInstrument</H3>
+<PRE>
+void <B>setInstrument</B>(javax.sound.midi.Instrument&nbsp;instr)
+                   throws javax.sound.midi.MidiUnavailableException</PRE>
+<DL>
+<DD>Sets the instrument to be used for sequence playback. This implicitly loads the 
+ given instrument.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>instr</CODE> - The instrument to be used for sequence playback.
+<DT><B>Throws:</B>
+<DD><CODE>javax.sound.midi.MidiUnavailableException</CODE></DL>
 </DD>
 </DL>
 <!-- ========= END OF CLASS DATA ========= -->

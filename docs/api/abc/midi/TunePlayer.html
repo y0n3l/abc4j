@@ -148,6 +148,14 @@ TunePlayer objects enable you to play tunes using default MIDI sequencer.
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;javax.sound.midi.Instrument</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/midi/TunePlayer.html#getInstrument()">getInstrument</A></B>()</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the instrument currently used for sequence playback.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;int</CODE></FONT></TD>
 <TD><CODE><B><A HREF="../../abc/midi/TunePlayer.html#getTempo()">getTempo</A></B>()</CODE>
 
@@ -193,6 +201,14 @@ TunePlayer objects enable you to play tunes using default MIDI sequencer.
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Removes a listener from this tune player.</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/midi/TunePlayer.html#setInstrument(javax.sound.midi.Instrument)">setInstrument</A></B>(javax.sound.midi.Instrument&nbsp;instr)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sets the instrument to be used for sequence playback.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -346,6 +362,44 @@ public int <B>getTempo</B>()</PRE>
 </DL>
 <HR>
 
+<A NAME="getInstrument()"><!-- --></A><H3>
+getInstrument</H3>
+<PRE>
+public javax.sound.midi.Instrument <B>getInstrument</B>()</PRE>
+<DL>
+<DD>Returns the instrument currently used for sequence playback.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+
+<DT><B>Returns:</B><DD>The instrument currently used for sequence playback. Returns <TT>null</TT>
+ if not set.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="setInstrument(javax.sound.midi.Instrument)"><!-- --></A><H3>
+setInstrument</H3>
+<PRE>
+public void <B>setInstrument</B>(javax.sound.midi.Instrument&nbsp;instr)
+                   throws javax.sound.midi.MidiUnavailableException</PRE>
+<DL>
+<DD>Sets the instrument to be used for sequence playback. This implicitly loads the 
+ given instrument.
+<P>
+<DD><DL>
+</DL>
+</DD>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>instr</CODE> - The instrument to be used for sequence playback.
+<DT><B>Throws:</B>
+<DD><CODE>javax.sound.midi.MidiUnavailableException</CODE></DL>
+</DD>
+</DL>
+<HR>
+
 <A NAME="getTune()"><!-- --></A><H3>
 getTune</H3>
 <PRE>
@@ -395,7 +449,7 @@ public boolean <B>isPlaying</B>()</PRE>
 <DD><DL>
 
 <DT><B>Returns:</B><DD><TT>true</TT> if this player is currently playing a tune, <TT>false</TT>
- otheriwse.</DL>
+ otherwise.</DL>
 </DD>
 </DL>
 <HR>

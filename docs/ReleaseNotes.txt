@@ -1,3 +1,15 @@
+abc4j includes the true-type music font SONORA.TTF 
+This font has been created by Christian TEXIER. More information about this font can be found here:
+http://pagespro-orange.fr/christian.texier/mididesi/free/
+
+Version 0.5
+===========
+*** abc4j is now distributed under the LGPL license. The use of abc4j ***
+
+* The Midi instrument used during playback can now be changed in the TunePlayer .
+* The staff line spacing can now be changed in the JScoreComponent
+* A first rough version of the musicXML export is provided.
+
 Version 0.4
 ===========
 * NOT BACKWARD COMPATIBLE, PLEASE UPDATE YOUR CODE FOR THE FOLLOWING CHANGE !!!! :

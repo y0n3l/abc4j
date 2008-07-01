@@ -3,17 +3,17 @@
 <HTML>
 <HEAD>
 <TITLE>
-BasicPositionableMidiConverter (abc4j API Documentation)
+Abc2xml (abc4j API Documentation)
 </TITLE>
 
-<META NAME="keywords" CONTENT="abc.midi.BasicPositionableMidiConverter class">
+<META NAME="keywords" CONTENT="abc.xml.Abc2xml class">
 
 <LINK REL ="stylesheet" TYPE="text/css" HREF="../../stylesheet.css" TITLE="Style">
 
 <SCRIPT type="text/javascript">
 function windowTitle()
 {
-    parent.document.title="BasicPositionableMidiConverter (abc4j API Documentation)";
+    parent.document.title="Abc2xml (abc4j API Documentation)";
 }
 </SCRIPT>
 <NOSCRIPT>
@@ -36,7 +36,7 @@ function windowTitle()
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/BasicPositionableMidiConverter.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/Abc2xml.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
@@ -51,11 +51,11 @@ abc4j API Specification</EM>
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../abc/midi/BasicMidiConverter.html" title="class in abc.midi"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../abc/midi/KeySignatureMessage.html" title="class in abc.midi"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;PREV CLASS&nbsp;
+&nbsp;NEXT CLASS</FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../index.html?abc/midi/BasicPositionableMidiConverter.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="BasicPositionableMidiConverter.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../index.html?abc/xml/Abc2xml.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="Abc2xml.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!--
   if(window==top) {
@@ -72,9 +72,9 @@ abc4j API Specification</EM>
 </TR>
 <TR>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#methods_inherited_from_class_abc.midi.BasicMidiConverter">METHOD</A></FONT></TD>
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;METHOD</FONT></TD>
+DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
 </TR>
 </TABLE>
 <A NAME="skip-navbar_top"></A>
@@ -84,26 +84,17 @@ DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&n
 <!-- ======== START OF CLASS DATA ======== -->
 <H2>
 <FONT SIZE="-1">
-abc.midi</FONT>
+abc.xml</FONT>
 <BR>
-Class BasicPositionableMidiConverter</H2>
+Class Abc2xml</H2>
 <PRE>
 java.lang.Object
-  <IMG SRC="../../resources/inherit.gif" ALT="extended by "><A HREF="../../abc/midi/MidiConverterAbstract.html" title="class in abc.midi">abc.midi.MidiConverterAbstract</A>
-      <IMG SRC="../../resources/inherit.gif" ALT="extended by "><A HREF="../../abc/midi/BasicMidiConverter.html" title="class in abc.midi">abc.midi.BasicMidiConverter</A>
-          <IMG SRC="../../resources/inherit.gif" ALT="extended by "><B>abc.midi.BasicPositionableMidiConverter</B>
+  <IMG SRC="../../resources/inherit.gif" ALT="extended by "><B>abc.xml.Abc2xml</B>
 </PRE>
-<DL>
-<DT><B>All Implemented Interfaces:</B> <DD><A HREF="../../abc/midi/MidiConverterInterface.html" title="interface in abc.midi">MidiConverterInterface</A></DD>
-</DL>
 <HR>
 <DL>
-<DT><PRE>public class <B>BasicPositionableMidiConverter</B><DT>extends <A HREF="../../abc/midi/BasicMidiConverter.html" title="class in abc.midi">BasicMidiConverter</A></DL>
+<DT><PRE>public class <B>Abc2xml</B><DT>extends java.lang.Object</DL>
 </PRE>
-
-<P>
-A basic midi converter that just plays melody, ignores ornaments and chords.
-<P>
 
 <P>
 <HR>
@@ -119,7 +110,7 @@ A basic midi converter that just plays melody, ignores ornaments and chords.
 <B>Constructor Summary</B></FONT></TH>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><B><A HREF="../../abc/midi/BasicPositionableMidiConverter.html#BasicPositionableMidiConverter()">BasicPositionableMidiConverter</A></B>()</CODE>
+<TD><CODE><B><A HREF="../../abc/xml/Abc2xml.html#Abc2xml()">Abc2xml</A></B>()</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -134,23 +125,32 @@ A basic midi converter that just plays melody, ignores ornaments and chords.
 <TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
 <B>Method Summary</B></FONT></TH>
 </TR>
-</TABLE>
-&nbsp;<A NAME="methods_inherited_from_class_abc.midi.BasicMidiConverter"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
-<TH ALIGN="left"><B>Methods inherited from class abc.midi.<A HREF="../../abc/midi/BasicMidiConverter.html" title="class in abc.midi">BasicMidiConverter</A></B></TH>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;org.w3c.dom.Document</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/xml/Abc2xml.html#createMusicXmlDOM(abc.notation.Tune)">createMusicXmlDOM</A></B>(<A HREF="../../abc/notation/Tune.html" title="class in abc.notation">Tune</A>&nbsp;tune)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Creates a DOM representation (fullfilling musicXML dtd) of the specified
+ tune.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><A HREF="../../abc/midi/BasicMidiConverter.html#getMidiMessagesFor(abc.notation.Tempo)">getMidiMessagesFor</A>, <A HREF="../../abc/midi/BasicMidiConverter.html#getNoteOffMessageFor(abc.notation.Note, abc.notation.KeySignature)">getNoteOffMessageFor</A>, <A HREF="../../abc/midi/BasicMidiConverter.html#getNoteOneMessageFor(abc.notation.Note, abc.notation.KeySignature)">getNoteOneMessageFor</A></CODE></TD>
-</TR>
-</TABLE>
-&nbsp;<A NAME="methods_inherited_from_class_abc.midi.MidiConverterAbstract"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
-<TH ALIGN="left"><B>Methods inherited from class abc.midi.<A HREF="../../abc/midi/MidiConverterAbstract.html" title="class in abc.midi">MidiConverterAbstract</A></B></TH>
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/xml/Abc2xml.html#writeAsMusicXML(org.w3c.dom.Node, java.io.BufferedWriter)">writeAsMusicXML</A></B>(org.w3c.dom.Node&nbsp;node,
+                java.io.BufferedWriter&nbsp;writer)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Writes the specified Node to the given writer.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><A HREF="../../abc/midi/MidiConverterAbstract.html#getInstrument()">getInstrument</A>, <A HREF="../../abc/midi/MidiConverterAbstract.html#getMidiNoteNumber(abc.notation.Note, abc.notation.KeySignature)">getMidiNoteNumber</A>, <A HREF="../../abc/midi/MidiConverterAbstract.html#getNoteLengthInTicks(abc.notation.MultiNote)">getNoteLengthInTicks</A>, <A HREF="../../abc/midi/MidiConverterAbstract.html#setInstrument(javax.sound.midi.Instrument)">setInstrument</A>, <A HREF="../../abc/midi/MidiConverterAbstract.html#toMidiSequence(abc.notation.Tune)">toMidiSequence</A></CODE></TD>
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>static&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../abc/xml/Abc2xml.html#writeAsMusicXML(abc.notation.Tune, java.io.File)">writeAsMusicXML</A></B>(<A HREF="../../abc/notation/Tune.html" title="class in abc.notation">Tune</A>&nbsp;tune,
+                java.io.File&nbsp;file)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Writes the specified tune to the specified file as MusicXML.</TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
@@ -175,11 +175,70 @@ A basic midi converter that just plays melody, ignores ornaments and chords.
 </TR>
 </TABLE>
 
-<A NAME="BasicPositionableMidiConverter()"><!-- --></A><H3>
-BasicPositionableMidiConverter</H3>
+<A NAME="Abc2xml()"><!-- --></A><H3>
+Abc2xml</H3>
 <PRE>
-public <B>BasicPositionableMidiConverter</B>()</PRE>
+public <B>Abc2xml</B>()</PRE>
 <DL>
+</DL>
+
+<!-- ============ METHOD DETAIL ========== -->
+
+<A NAME="method_detail"><!-- --></A>
+<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
+<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
+<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
+<B>Method Detail</B></FONT></TH>
+</TR>
+</TABLE>
+
+<A NAME="writeAsMusicXML(abc.notation.Tune, java.io.File)"><!-- --></A><H3>
+writeAsMusicXML</H3>
+<PRE>
+public static void <B>writeAsMusicXML</B>(<A HREF="../../abc/notation/Tune.html" title="class in abc.notation">Tune</A>&nbsp;tune,
+                                   java.io.File&nbsp;file)
+                            throws java.io.IOException</PRE>
+<DL>
+<DD>Writes the specified tune to the specified file as MusicXML.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>file</CODE> - A file.<DD><CODE>tune</CODE> - A tune.
+<DT><B>Throws:</B>
+<DD><CODE>java.io.IOException</CODE> - Thrown if the file cannot be created.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="writeAsMusicXML(org.w3c.dom.Node, java.io.BufferedWriter)"><!-- --></A><H3>
+writeAsMusicXML</H3>
+<PRE>
+public static void <B>writeAsMusicXML</B>(org.w3c.dom.Node&nbsp;node,
+                                   java.io.BufferedWriter&nbsp;writer)
+                            throws java.io.IOException</PRE>
+<DL>
+<DD>Writes the specified Node to the given writer.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>node</CODE> - A DOM node.<DD><CODE>writer</CODE> - A stream writer.
+<DT><B>Throws:</B>
+<DD><CODE>java.io.IOException</CODE> - Thrown if the file cannot be created.</DL>
+</DD>
+</DL>
+<HR>
+
+<A NAME="createMusicXmlDOM(abc.notation.Tune)"><!-- --></A><H3>
+createMusicXmlDOM</H3>
+<PRE>
+public static org.w3c.dom.Document <B>createMusicXmlDOM</B>(<A HREF="../../abc/notation/Tune.html" title="class in abc.notation">Tune</A>&nbsp;tune)</PRE>
+<DL>
+<DD>Creates a DOM representation (fullfilling musicXML dtd) of the specified
+ tune.
+<P>
+<DD><DL>
+<DT><B>Parameters:</B><DD><CODE>tune</CODE> - A tune.
+<DT><B>Returns:</B><DD>A DOM representation (fullfilling musicXML dtd) of the specified
+ tune.</DL>
+</DD>
 </DL>
 <!-- ========= END OF CLASS DATA ========= -->
 <HR>
@@ -197,7 +256,7 @@ public <B>BasicPositionableMidiConverter</B>()</PRE>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/BasicPositionableMidiConverter.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/Abc2xml.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
@@ -212,11 +271,11 @@ abc4j API Specification</EM>
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../abc/midi/BasicMidiConverter.html" title="class in abc.midi"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../abc/midi/KeySignatureMessage.html" title="class in abc.midi"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;PREV CLASS&nbsp;
+&nbsp;NEXT CLASS</FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../index.html?abc/midi/BasicPositionableMidiConverter.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="BasicPositionableMidiConverter.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../index.html?abc/xml/Abc2xml.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="Abc2xml.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!--
   if(window==top) {
@@ -233,9 +292,9 @@ abc4j API Specification</EM>
 </TR>
 <TR>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#methods_inherited_from_class_abc.midi.BasicMidiConverter">METHOD</A></FONT></TD>
+  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
 <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;METHOD</FONT></TD>
+DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
 </TR>
 </TABLE>
 <A NAME="skip-navbar_bottom"></A>
