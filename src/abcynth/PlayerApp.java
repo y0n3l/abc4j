@@ -48,7 +48,9 @@ import abc.notation.MusicElement;
 import abc.notation.NoteAbstract;
 import abc.notation.Tune;
 import abc.parser.TuneBook;
+import abc.ui.swing.JScoreComponent;
 import abc.ui.swing.JScoreElement;
+import abc.xml.abc2xml;
 import abcynth.ui.AddTuneAction;
 import abcynth.ui.RemoveTuneAction;
 import abcynth.ui.TuneBookActionAbstract;
@@ -65,7 +67,7 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
   private TunePlayer m_player = null;
   private CircularBuffer m_lastOpenedFiles = null;
   private TuneBookActionAbstract m_addTuneAction, m_saveAction, m_saveAsAction = null;
-  private Action m_tune2MidiExport, m_showHideLogAction, m_enableColoringAction = null;
+  private Action m_tune2MidiExport, m_tune2pngExport, m_abc2xmlExport,m_showHideLogAction, m_enableColoringAction = null;
   private JMenu m_fileMenu, m_tunebookMenu, m_lastOpenedFilesMenu, m_windowsMenu, m_viewMenu = null;
   private PlayerToolBar m_playerToolBar = null;
   private JPopupMenu m_tunePopMenu = null;
@@ -129,8 +131,12 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
     m_fileMenu.add(menuItem);
     m_saveAsAction = new SaveToAbcFileAction("Save as...", "Saves the current tunebook to a file", KeyEvent.VK_S, this);
     m_fileMenu.add(m_saveAsAction);
-    m_tune2MidiExport = new Tune2MidiExport("Export to midi...", "Saves the current selected tune to a midi file", PlayerApp.this);
+    m_tune2MidiExport = new Tune2MidiExport("Export to midi...", "Saves the selected tune to a midi file", PlayerApp.this);
     m_fileMenu.add(m_tune2MidiExport);
+    m_tune2pngExport = new Tune2PNGExport("Export to png...", "Saves the selected tune to a png image file", PlayerApp.this);
+    m_fileMenu.add(m_tune2pngExport);
+    m_abc2xmlExport = new Tune2XMLExport("Export to MusicXML...", "Saves the selected tune to a musicXML file", PlayerApp.this);
+    m_fileMenu.add(m_abc2xmlExport);
 
     m_tunebookMenu = new JMenu("Tunebook");
     menuItem = new JMenuItem(new NewTuneBookAction("New", "Creates a new emty tunebook"));
@@ -438,6 +444,69 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
             if (types.length>0)
               MidiSystem.write(s,types[0],file);
           }
+        }
+      }
+      catch (IOException excpt)
+      { excpt.printStackTrace(); }
+    }
+  }
+  
+  public class Tune2PNGExport extends AbstractAction
+  {
+    private Component m_parent = null;
+    public Tune2PNGExport(String name, String description, Component parent)
+    {
+      putValue(NAME, name);
+      putValue(SHORT_DESCRIPTION, description);
+      //putValue(MNEMONIC_KEY, new Integer(shortcut));
+      m_parent = parent;
+    }
+
+    public void actionPerformed(ActionEvent e)
+    {
+      try
+      {
+        Tune t = m_tuneBookEditorPanel.getTuneEditArea().getTune();
+        if (t!=null)
+        {
+          JFileChooser chooser = new JFileChooser(lastDirectory);
+          int returnVal = chooser.showSaveDialog(m_parent);
+          File file = chooser.getSelectedFile();
+          if (file!=null) {
+        	  m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().writeScoreTo(file);
+          }
+        }
+      }
+      catch (IOException excpt)
+      { excpt.printStackTrace(); }
+    }
+  }
+  
+  public class Tune2XMLExport extends AbstractAction
+  {
+    private Component m_parent = null;
+    public Tune2XMLExport(String name, String description, Component parent)
+    {
+      putValue(NAME, name);
+      putValue(SHORT_DESCRIPTION, description);
+      //putValue(MNEMONIC_KEY, new Integer(shortcut));
+      m_parent = parent;
+    }
+
+    public void actionPerformed(ActionEvent e)
+    {
+      try
+      {
+        Tune t = m_tuneBookEditorPanel.getTuneEditArea().getTune();
+        if (t!=null)
+        {
+          JFileChooser chooser = new JFileChooser(lastDirectory);
+          int returnVal = chooser.showSaveDialog(m_parent);
+          File file = chooser.getSelectedFile();
+          if (file!=null) //{
+        	  abc2xml.writeAsMusicXML(file, t);
+        	  //m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().writeScoreTo(file);
+          //}
         }
       }
       catch (IOException excpt)
