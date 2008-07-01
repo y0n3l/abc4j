@@ -504,7 +504,7 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
           int returnVal = chooser.showSaveDialog(m_parent);
           File file = chooser.getSelectedFile();
           if (file!=null) //{
-        	  abc2xml.writeAsMusicXML(file, t);
+        	  abc2xml.writeAsMusicXML(t, file);
         	  //m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().writeScoreTo(file);
           //}
         }
