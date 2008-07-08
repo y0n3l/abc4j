@@ -4,7 +4,10 @@ http://pagespro-orange.fr/christian.texier/mididesi/free/
 
 Version 0.5
 ===========
-*** abc4j is now distributed under the LGPL license. The use of abc4j ***
+****************************************************************************************************************************************************
+*** abc4j is now distributed under the LGPL license. The use of abc4j under those license terms is restricted to Java standalone applications.   ***
+*** For any other use of abc4j (for example : use over the internet, installation on a web server etc etc), please get in touch with me. 		***
+****************************************************************************************************************************************************
 
 * The Midi instrument used during playback can now be changed in the TunePlayer .
 * The staff line spacing can now be changed in the JScoreComponent
