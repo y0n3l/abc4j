@@ -41,7 +41,7 @@ class JGraceNotePartOfGroup extends JNotePartOfGroup {
 	/** Always "true" for auto stemming
 	*/
 	public void setStemUp(boolean isUp) {
-		if (getAutoStem()) {
+		if (isAutoStem()) {
 			super.setStemUp(true);
 		} else {
 			super.setStemUp(isUp);
@@ -57,7 +57,9 @@ class JGraceNotePartOfGroup extends JNotePartOfGroup {
 
 	// correct for font glyph positioning
 	public double getCorrectedGlyphOffest(Note note) {
-		double positionOffset = super.getCorrectedGlyphOffest(note);
+//		double positionOffset = super.getCorrectedGlyphOffset(note);
+		/* TJM */
+		double positionOffset = getCorrectedOffset(note);
 		return positionOffset -= 1; // move up 1px
 	}
 
@@ -93,7 +95,7 @@ if (glyphDimension == null) return;
 		stemDownBeginPosition = new Point2D.Double(noteX,stemYBegin);
 
 		//reinit stem position
-		setStemUp(isStemUp);
+		setStemUp(isStemUp());
 
 	}
 

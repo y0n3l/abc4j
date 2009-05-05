@@ -67,8 +67,8 @@ class JNote extends JNoteElementAbstract {
 
 	//private Point2D stemBeginPosition = null;
 
-	private Point2D stemUpBeginPosition = null;
-	private Point2D stemDownBeginPosition = null;
+	protected Point2D stemUpBeginPosition = null;
+	protected Point2D stemDownBeginPosition = null;
 
 
 	public JNote(Note noteValue, Point2D base, ScoreMetrics c) {
