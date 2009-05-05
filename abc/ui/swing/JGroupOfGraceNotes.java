@@ -49,6 +49,8 @@ class JGroupOfGraceNotes extends JGroupOfNotes {
 		slashStart = new Point2D.Double(0,0);
 		slashEnd = new Point2D.Double(0,0);
 
+		// force stem direction - gracenotes are always stemmed UP
+		setStemUp(true);
 	}
 
 	public void setRenderSlash(boolean render) {
