@@ -113,7 +113,7 @@ class JDecoration extends JScoreElementAbstract {
 				AffineTransform t = null;
 				try {
 					t = g2.getTransform();
-					g2.translate((int)m_base.getX(), (int)m_base.getY());
+					g2.translate((int)getBase().getX(), (int)getBase().getY());
 					g2.fill(rotatedDecoration);
 				} finally {
 					g2.setTransform(t);
@@ -121,7 +121,7 @@ class JDecoration extends JScoreElementAbstract {
 			}
 		} else {
 			g2.drawChars(m_decoration.getChars(), 0, 1,
-					(int)m_base.getX(), (int)m_base.getY());
+					(int)getBase().getX(), (int)getBase().getY());
 		}
 
 		return m_width;

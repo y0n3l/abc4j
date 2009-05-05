@@ -26,8 +26,8 @@ import abc.notation.MusicElement;
 class JStaffLine extends JScoreElementAbstract {
 
 	protected Vector m_staffElements = null;
-	protected Vector m_lyrics = null;
 
+	protected Vector m_lyrics = null;
 	//protected Vector m_beginningSlurElements = null;
 
 	public JStaffLine(Point2D base, ScoreMetrics c) {
@@ -55,10 +55,12 @@ class JStaffLine extends JScoreElementAbstract {
 		computeWidth();
 	}
 
-/* TJM : start */
+	// FIXME: lyrics should be appended score
+	//        inline lyrics should be parsed and appended to staff lines
 	public void addLyrics(JWords r) {
 		m_lyrics.addElement(r);
-// is this needed?		computeWidth();
+		// is this needed?
+		// computeWidth();
 	}
 
 	public boolean hasLyrics() {
@@ -70,17 +72,9 @@ class JStaffLine extends JScoreElementAbstract {
 		return (m_lyrics.size());
 	}
 
-	public JWords [] getLyrics() {
+	public JWords[] getLyrics() {
 		return ( (JWords[]) m_lyrics.toArray(new JWords[1]) );
 	}
-
-/* TJM : end */
-
-
-
-	/*public Vector getBeginningSlurElements() {
-		return m_beginningSlurElements;
-	}*/
 
 	public JScoreElementAbstract[] toArray() {
 		JScoreElementAbstract[] r = new JScoreElementAbstract[m_staffElements.size()];
@@ -120,9 +114,10 @@ class JStaffLine extends JScoreElementAbstract {
 		char[] staffS = new char[staffCharNb+2];
 		for (int j=0; j<staffS.length; j++)
 			staffS[j] = ScoreMetrics.STAFF_SIX_LINES;
-		g.drawChars(staffS, 0, staffS.length, 0, (int)getBase().getY());
+		//1 avoid a small gap (antialiased but really here)
+		//I can't explain what, but it fixes the gap :)
+		g.drawChars(staffS, 0, staffS.length, 1, (int)getBase().getY());
 
-/* TJM */
 		// render lyrics, annotations, etc.
 		Iterator iter = m_lyrics.iterator();
 		JWords lyrics = null;

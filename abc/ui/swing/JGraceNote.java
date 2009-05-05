@@ -15,14 +15,11 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 
 import abc.notation.Note;
 
@@ -47,7 +44,7 @@ class JGraceNote extends JNote {
 	/** Always "true" for auto stemming
 	*/
 	public void setStemUp(boolean isUp) {
-		if (getAutoStem()) {
+		if (isAutoStem()) {
 			super.setStemUp(true);
 		} else {
 			super.setStemUp(isUp);
@@ -61,7 +58,8 @@ class JGraceNote extends JNote {
 
 	// correct for font glyph positioning
 	public double getCorrectedGlyphOffest(Note note) {
-		double positionOffset = super.getCorrectedGlyphOffest(note);
+		double positionOffset = //
+			super.getCorrectedOffset(note);
 		return positionOffset -= 1; // move up 1px
 	}
 
@@ -78,7 +76,7 @@ class JGraceNote extends JNote {
 		int endX = 0;
 		int startY = 0;
 		int endY = 0;
-		if (isStemUp) {
+		if (isStemUp()) {
 			startX = (int) (displayPosition.getX() + m_width*0.5);
 			endX = (int) (displayPosition.getX() + m_width*2.5);
 			startY = (int) (displayPosition.getY() - m_width*2.5);
@@ -95,16 +93,11 @@ class JGraceNote extends JNote {
 	}
 
 	public double render(Graphics2D context){
-
 		Font previousFont = context.getFont();
-
 		try {
-
 			context.setFont(m_metrics.getGracingsFont());
-
 			super.render(context);
 
-/* TJM */
 // visual testing of base/offset/note positions
 /*
 Color previousColor = context.getColor();
@@ -116,7 +109,6 @@ context.setColor(Color.GREEN);
 context.drawRect((int)(m_base.getX()), (int)(m_base.getY()+offset),1, 1);
 context.setColor(previousColor);
 */
-// end TJM
 
 		} finally {
 			context.setFont(previousFont);
@@ -128,7 +120,6 @@ context.setColor(previousColor);
 			context.drawLine((int)slashStart.getX(), (int)slashStart.getY(), (int)slashEnd.getX(), (int)slashEnd.getY());
 			context.setStroke(dfs);
 		}
-
 
 		return m_width;
 	}

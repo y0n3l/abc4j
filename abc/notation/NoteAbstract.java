@@ -13,13 +13,6 @@
 //
 // You should have received a copy of the GNU Lesser General Public License
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
-/* CHANGELOG:
-
-	Added Generalized decorations.
-	Removed bowing, replaced as generalized Decoration instance.
-	TJM, Feb/09
-
-*/
 
 package abc.notation;
 
@@ -41,6 +34,10 @@ public class NoteAbstract implements MusicElement
   /** <TT>true</TT> if this note is part of a slur, <TT>false</TT>
    * otherwise. */
   protected boolean m_isPartOfSlur = false;
+
+  //private boolean m_isTied = false;
+  protected TieDefinition tieDefinition = null;
+
   /** The tuplet this note may belongs to. <TT>null</TT>
    * if this note does not belong to any tuplet. */
   private Tuplet m_tuplet = null;
@@ -62,13 +59,27 @@ public class NoteAbstract implements MusicElement
   public Decoration[] getDecorations()
   { return m_decorations; }
 
+  /**
+   * Test if the note has the specified type of decoration
+   * @param decorationType {@link Decoration#DOWNBOW}, {@link Decoration#STACCATO}...
+   * @return
+   */
+  public boolean hasDecoration(byte decorationType) {
+	if (hasDecorations()) {
+	  for (int i = 0; i < m_decorations.length; i++) {
+		if (m_decorations[i].isType(decorationType))
+		  return true;
+	  }
+	}
+	return false;
+  }
+
   public void setDecorations(Decoration[] dec)
   { m_decorations=dec;}
 
   /** Returns <TT>true</TT> if this note has decorations, <TT>false</TT> otherwise.
    * @return <TT>true</TT> if this note has decorations, <TT>false</TT> otherwise. */
-  public boolean hasDecorations()
-  {
+  public boolean hasDecorations() {
 	  return (m_decorations!=null && m_decorations.length > 0);
   }
 
@@ -85,7 +96,7 @@ public class NoteAbstract implements MusicElement
   /** Returns <TT>true</TT> if this note has gracings, <TT>false</TT> otherwise.
    * @return <TT>true</TT> if this note has gracings, <TT>false</TT> otherwise. */
   public boolean hasGracingNotes()
-  { return (m_gracingNotes!=null /* TJM */ && m_gracingNotes.length > 0);}
+  { return (m_gracingNotes!=null && m_gracingNotes.length > 0);}
 
   /** Sets the number of dots for this note.
    * @param dotsNumber The number of dots for this note. */
@@ -155,16 +166,6 @@ public class NoteAbstract implements MusicElement
   public void setPartOfSlur(boolean isPartOfSlur)
   { m_isPartOfSlur = isPartOfSlur; }
 
-  /** Needs to be reworked !! */
-  public int getGracingNotesLength(short defaultNoteLength)
-  {
-    int totalLength=0;
-/* TJM */
-//    if (m_gracingNotes!=null)
-//      for (int i=0; i<m_gracingNotes.length; i++)
-//          totalLength+=m_gracingNotes[i].getLength(defaultNoteLength);
-    return totalLength;
-  }
 
   /** Sets the tuplet this note belongs to.
    * @param tuplet The tuplet this note belongs to. */
@@ -199,6 +200,44 @@ public class NoteAbstract implements MusicElement
   	this.slurDefinition = slurDefinition;
   }
 
+  /** Sets the tie definition for this note.
+   * @param tieDef The definition of the tie if this note is tied. <TT>NULL</TT> if the
+   * note should not be tied.
+   * @see #isTied() */
+  public void setTieDefinition(TieDefinition tieDef) {
+	  //m_isTied = isTied;
+	  this.tieDefinition = tieDef;
+  }
+
+  public TieDefinition getTieDefinition() {
+	  //m_isTied = isTied;
+	  return tieDefinition;
+  }
+
+  /** Returns <TT>true</TT> if this note is beginning a tie.
+   * @return <TT>true</TT> if this note is beginning a tie, <TT>false</TT>
+   * otherwise. */
+  public boolean isBeginningTie() {
+	  return tieDefinition!=null && this.equals(tieDefinition.getStart());
+  }
+
+  /** Returns <TT>true</TT> if this note is ending a tie.
+   * @return <TT>true</TT> if this note is ending a tie, <TT>false</TT>
+   * otherwise. */
+  public boolean isEndingTie() {
+	  return tieDefinition!=null && this.equals(tieDefinition.getEnd());
+  }
+
+
+  /** Returns <TT>true</TT> if this note is tied.
+   * @return <TT>true</TT> if this note is tied, <TT>false</TT> otherwise.
+   * @see #setTieDefinition(TieDefinition) */
+  public boolean isTied() {
+	  return tieDefinition!=null;//isPartOfSlur() && (getSlurDefinition()==null || !getSlurDefinition().getEnd().equals(this));
+  }
+
+
+
   /** Returns a String representation of this Object.
    * @return a String representation of this Object. */
   public String toString()
@@ -210,8 +249,6 @@ public class NoteAbstract implements MusicElement
     if (m_gracingNotes!=null)	string2Return = string2Return.concat("{"+m_gracingNotes.toString()+"}");
     if (staccato)					string2Return = string2Return.concat(".");
     if (m_decorations!=null)	string2Return = string2Return.concat("{"+m_decorations.toString()+"}");
-
-
     //string2Return = string2Return.concat(notes.toString());
     return string2Return;
   }

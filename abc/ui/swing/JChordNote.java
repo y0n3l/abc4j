@@ -39,18 +39,13 @@ class JChordNote extends JNotePartOfGroup {
 		super.render(context);
 
 		// visual debug
-		/*
-		Color previousColor = context.getColor();
-		context.setColor(Color.RED);
-		context.drawLine((int)getStemX(), (int)getStemYBegin(),
-				(int)getStemX(), (int)getStemYBegin());
+/*
+		java.awt.Color previousColor = context.getColor();
+		context.setColor(java.awt.Color.GREEN);
+		context.drawLine((int)getStemBeginPosition().getX(), (int)getStemBeginPosition().getY(),
+				(int)getStemEndPosition().getX(), (int)getStemEndPosition().getY());
 		context.setColor(previousColor);
-		/*Color previousColor = context.getColor();
-		context.setColor(Color.RED);
-		context.drawLine((int)getStemBegin().getX(), (int)getStemBegin().getY(),
-				(int)getStemBegin().getX()+10, (int)getStemBegin().getY());
-		context.setColor(previousColor);*/
-
+*/
 		return m_width;
 	}
 }

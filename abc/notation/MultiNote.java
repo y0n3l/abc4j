@@ -31,7 +31,7 @@ public class MultiNote extends NoteAbstract
 		super();
 		m_notes = fromLowestToHighest(notes);
   	}
-
+  	
   	/** Returns <TT>true</TT> if this chord contains the specified note.
   	 * @param aNote A note instance.
   	 * @return <TT>true</TT> if this chord contains the specified note.
@@ -55,7 +55,7 @@ public class MultiNote extends NoteAbstract
 	  }
 	  return maxNote;*/return getLongestNote(this.toArray());
   }
-
+  
   /** Returns the note with the biggest duration from the given array of notes.
    * @param notes An array of notes.
    * @return The note with the biggest duration from the given array of notes.
@@ -71,7 +71,7 @@ public class MultiNote extends NoteAbstract
 	  }
 	  return maxNote;
   }
-
+  
   /** Returns all notes strictly shorter than the given strict duration.
    * @param notes An arry of notes.
    * @param aStrictDuration A strict duration (use constants defined class Note)
@@ -91,7 +91,7 @@ public class MultiNote extends NoteAbstract
 	  }
 	  return notesArray;
   }
-
+  
   /** Returns the lowest note from the given array of notes.
    * @param notes An array of notes.
    * @return The lowest note from the given array of notes.
@@ -103,7 +103,7 @@ public class MultiNote extends NoteAbstract
 			  lowestNote = notes[i];
 	  return lowestNote;
   }
-
+  
   /** Returns the highest note from the given array of notes.
    * @param notes An array of notes.
    * @return The highes note from the given array of notes.
@@ -115,7 +115,7 @@ public class MultiNote extends NoteAbstract
 			  highestNote = notes[i];
 	  return highestNote;
   }
-
+  
   /** Returns the shortest note of this multi note, based on its duration.
    * @return The shortest note of this multi note. If several notes have the
    * same shortest length, the first one is returned.
@@ -131,7 +131,7 @@ public class MultiNote extends NoteAbstract
 	  }
 	  return shortNote;
   }
-
+  
   /** Returns the highest note among the notes composing this multi note.
    * @return The highest note among the notes composing this multi note.
    * @see #getLowestNote()
@@ -145,7 +145,7 @@ public class MultiNote extends NoteAbstract
 			  highestNote = (Note)m_notes.elementAt(i);
 	  return highestNote;
   }
-
+  
   /** Returns the notes from this multinote that begin a tie.
    * @return Te notes from this multinote that begin a tie. <TT>null</TT> is
    * returned if no note begins a tie.
@@ -163,7 +163,7 @@ public class MultiNote extends NoteAbstract
 	  else
 		  return null;
   }
-
+  
   public static Note[] excludeTiesEndings(Note[] notes) {
 	  Vector withoutTiesEnding = new Vector();
 	  Note[] withoutTiesEndingArray = null;
@@ -177,7 +177,7 @@ public class MultiNote extends NoteAbstract
 	  }
 	  return withoutTiesEndingArray;
   }
-
+  
   /** Returns the lowest note among the notes composing this multi note.
    * @return The lowest note among the notes composing this multi note.
    * @see Note#isLowerThan(Note)
@@ -190,7 +190,7 @@ public class MultiNote extends NoteAbstract
 	  return lowestNote;*/
 	  return getLowestNote(this.toArray());
   }
-
+  
   /** Returns <TT>true</TT> if the strict durations of all notes composing this
    * multi note have the same value.
    * @return <TT>true</TT> if the strict durations of all notes composing this
@@ -207,7 +207,7 @@ public class MultiNote extends NoteAbstract
 	  return true;*/
 	  return getStrictDurations().length==1;
   }
-
+  
   /** Returns the strict durations composing this multi notes.
    * @return The strict durations composing this multi notes. The array is sorted
    * from shortest durations to longest ones. */
@@ -239,7 +239,7 @@ public class MultiNote extends NoteAbstract
 		  return durationsAsArray;
 	  }
   }
-
+  
   /** Normalizes this multi note by decomposing it into multinotes with
    * same strict duration.
    * @return An array of multinotes with unique strict duration. Such strict
@@ -265,7 +265,7 @@ public class MultiNote extends NoteAbstract
 	  }
 	  return normalizedChords;
   }
-
+  
   private static Vector fromLowestToHighest(Vector original){
 	  Vector orderedNotes = new Vector();
 	  for (int i=0; i<original.size(); i++) {
@@ -277,7 +277,7 @@ public class MultiNote extends NoteAbstract
 	  }
 	  return orderedNotes;
   }
-
+  
   /** Returns <TT>true</TT> if this multi note some accidentals (for at least one
    * of its note).
    * @return <TT>true</TT> if this multi note some accidentals (for at least one
@@ -289,14 +289,14 @@ public class MultiNote extends NoteAbstract
 			  return true;
 	  return false;
   }
-
+  
   /** Returns a new vector containing all <TT>Note</TT> objects contained in
    * this multi note.
    * @return a new vector containing all <TT>Note</TT> objects contained in
    * this multi note. */
   public Vector getNotesAsVector()
   { return (Vector)m_notes.clone(); }
-
+  
   /** Returns notes composing this multinote as an array of notes, sorted
    * from the lowest note to the highest one.
    * @return Notes composing this multinote as an array of notes, sorted

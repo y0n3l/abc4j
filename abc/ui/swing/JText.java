@@ -15,23 +15,12 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
-import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 
 import abc.notation.MusicElement;
-import abc.notation.Words;
 
 
-/** This class defines a score rendition element. Rendition scores elements
- * are graphical representations of tune score elements objects retrieved
- * from a tune object.
- * A <TT>JScoreElement</TT> can itself contain <TT>JScoreElement</TT> instances.
- * You should figure out the graphical score representation as a tree of
- * <TT>JScoreElement</TT>. (Composite)
- * @see Tune#getMusic()
+/** TODO doc
  */
 abstract class JText extends JScoreElementAbstract {
 

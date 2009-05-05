@@ -1326,7 +1326,7 @@ public class AbcParserAbstract
       Note[] graceNotes = null;
       Vector decorations = new Vector();
       boolean hasGeneralOrnament = false;
-      boolean staccato = false;
+      boolean staccato = false; //FIXME ? staccato is a decoration
       //boolean wasTied = isTied;
 
       String chordName = null;
@@ -1345,11 +1345,11 @@ public class AbcParserAbstract
       {
         String acc = accept(AbcTokenType.GRACING, current, follow);
         if (acc!=null) {
-/* TJM */
-		  // NOTE this isn't going to work for ABCv2 as '~' indicates a macro
-		  // general decorations
-          if (acc.equals(".")) staccato = true;
-          else if (acc.equals("~")) hasGeneralOrnament = true;
+
+          // general decorations
+		  // NOTE this won't work for ABCv2 as '~' indicates a macro
+           if (acc.equals(".")) staccato = true;
+           else if (acc.equals("~")) hasGeneralOrnament = true;
 
 		  byte decType = Decoration.convertToType(acc);
 		  if (decType != Decoration.UNKNOWN)
@@ -1366,11 +1366,10 @@ public class AbcParserAbstract
           if (notes.size()!=0)
           	note = new PositionableMultiNote(notes);
       }
-      else
-      {
+      else {
     	  //This a normal note, not a multinote/chord.
         note = parseNote(current.createUnion(follow));
-	  }
+      }
 
       if (note!=null) {
 	    // should staccato and general gracing be "standard" decorations ?
@@ -1420,11 +1419,7 @@ public class AbcParserAbstract
       Vector gracingNotes = new Vector();
       while(FIRST_PITCH.contains(m_tokenType))
       {
-/* TJM */
-// parse gracenote as regular note with parsePitch or parseNote?
-// TODO: deal with duration properly
-//        Note note = parsePitch(current.createUnion(follow));
-        Note note = parseNote(current.createUnion(follow));
+        Note note = parsePitch(current.createUnion(follow));
         if (note!=null)
           gracingNotes.addElement(note);
       }

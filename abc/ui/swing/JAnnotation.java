@@ -17,22 +17,9 @@ package abc.ui.swing;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-
-import abc.notation.MusicElement;
-import abc.notation.Words;
 
 
-/** This class defines a score rendition element. Rendition scores elements
- * are graphical representations of tune score elements objects retrieved
- * from a tune object.
- * A <TT>JScoreElement</TT> can itself contain <TT>JScoreElement</TT> instances.
- * You should figure out the graphical score representation as a tree of
- * <TT>JScoreElement</TT>. (Composite)
- * @see Tune#getMusic()
- */
+/** TODO doc */
 class JAnnotation extends JText {
 
 	protected String m_text = null;
@@ -62,11 +49,11 @@ class JAnnotation extends JText {
 	/** Renders this Score element to the given graphic context.
 	 * @param g2 */
 	public double render(Graphics2D g2) {
-				Font previousFont = g2.getFont();
-				g2.setFont(m_metrics.getAnnotationFont());
-				g2.drawString(m_text, (int)m_base.getX(), (int)m_base.getY());
-				g2.setFont(previousFont);
-				return m_width;
+		Font previousFont = g2.getFont();
+		g2.setFont(m_metrics.getAnnotationFont());
+		g2.drawString(m_text, (int)getBase().getX(), (int)getBase().getY());
+		g2.setFont(previousFont);
+		return m_width;
 	}
 
 }

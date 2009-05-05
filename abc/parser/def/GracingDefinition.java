@@ -28,12 +28,7 @@ public class GracingDefinition extends AutomataDefinition
     public GracingDefinition()
     {
       State state = new State(AbcTokenType.GRACING, true);
-//      char[] chars = {'~', '.', 'v', 'u'};
-/* TJM */
-      char[] chars = {'~', '.', 'v', 'u',
-      					// ABC v2.0 common decoration 'shorcuts'
-      					'T', 'H', 'L', 'M', 'P', 'S', 'O'};
-
+      char[] chars = {'~', '.', 'v', 'u'};
 
       getStartingState().addTransition(new Transition(state, chars));
     }

@@ -90,7 +90,8 @@ public class Note extends NoteAbstract
   /** The <TT>REST</TT> height type. */
   public static final byte REST		= -128;
 
-  private static final short LENGTH_RESOLUTION = 3;
+  //max short possible = 290, else transform to int = 560 (9:2 64th)
+  private static final short LENGTH_RESOLUTION = 12;
   /** The <TT>DOTTED_WHOLE</TT> length type. */
   public static final short DOTTED_WHOLE	= LENGTH_RESOLUTION * 96;
   /** The <TT>WHOLE</TT> length type. <IMG src="../../images/whole.jpg"/>*/
@@ -134,8 +135,6 @@ public class Note extends NoteAbstract
    * the tuplet or whatever : this is the pure note type definition. */
   private short m_strictDuration = EIGHTH;
   /** <TT>true</TT> if this note is tied, <TT>false</TT> otherwise. */
-  //private boolean m_isTied = false;
-  protected TieDefinition tieDefinition = null;
 
   /** Creates an abc note with the specified height. Accidental will inherit
    * its default value <TT>AccidentalType.NONE</TT>.
@@ -247,6 +246,10 @@ public class Note extends NoteAbstract
 	  return getMidiLikeHeight()<aNote.getMidiLikeHeight();
   }
 
+  public boolean isShorterThan(Note aNote) {
+	  return getDuration()<aNote.getDuration();
+  }
+
   private int getMidiLikeHeight() {
 	  int midiLikeHeight = getHeight();
 	  if (accidental==AccidentalType.SHARP)
@@ -260,7 +263,7 @@ public class Note extends NoteAbstract
   /** Returns this note absolute height. This height doesn't take in account
    * octave transposition.
    * @return The height of this note on the first octave. Possible values are
-   * <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>, <TT>A</TT>(404),
+   * <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>, <TT>A</TT>(440Hz),
    * <TT>B</TT> or <TT>REST</TT> only.
    * @see #getHeight()
    * @see #setHeight(byte) */
@@ -273,7 +276,7 @@ public class Note extends NoteAbstract
    * @param height A height of a note as a byte that respect the scale defined by
    * constants such as C D E F G A B c d e ....
    * @return The height of this note on the first octave. Possible values are
-   * <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>, <TT>A</TT>(404)
+   * <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>, <TT>A</TT>(440Hz)
    * <TT>B</TT> or <TT>REST</TT> only.
    * @see #getHeight() */
   public static byte getStrictHeight(byte height) {
@@ -333,14 +336,17 @@ public class Note extends NoteAbstract
    * @deprecated use setDuration(short duration) instead.
    * @param length The length of this note as a value adjusted to
    * the scale of constants such as <TT>Note.WHOLE</TT>, <TT>Note.HALF</TT> etc etc ...
-   * @see #setDuration(short)*/
+   * @see #setDuration(short)
+   */
   public void setLength(short length) {
 	  m_duration = length;
   }
 
-  /* TJM */
-  /** Needs to be reworked !! */
-  public int getGracingNotesLength(short defaultNoteLength)
+  /** Returns the length of all grace notes associated with this note.
+   * @return The sum of strict durations of associated grace notes.
+   * @see #getStrictDuration()
+   */
+  public int getGracingNotesLength()
   {
     int totalLength=0;
     if (hasGracingNotes()) {
@@ -439,42 +445,6 @@ public class Note extends NoteAbstract
   public boolean hasAccidental() {
 	  return accidental==AccidentalType.FLAT || accidental==AccidentalType.SHARP ||
 	  accidental == AccidentalType.NATURAL;
-  }
-
-  /** Sets the tie definition for this note.
-   * @param tieDef The definition of the tie if this note is tied. <TT>NULL</TT> if the
-   * note should not be tied.
-   * @see #isTied() */
-  public void setTieDefinition(TieDefinition tieDef) {
-	  //m_isTied = isTied;
-	  this.tieDefinition = tieDef;
-  }
-
-  public TieDefinition getTieDefinition() {
-	  //m_isTied = isTied;
-	  return tieDefinition;
-  }
-
-  /** Returns <TT>true</TT> if this note is beginning a tie.
-   * @return <TT>true</TT> if this note is beginning a tie, <TT>false</TT>
-   * otherwise. */
-  public boolean isBeginningTie() {
-	  return tieDefinition!=null && this.equals(tieDefinition.getStart());
-  }
-
-  /** Returns <TT>true</TT> if this note is ending a tie.
-   * @return <TT>true</TT> if this note is ending a tie, <TT>false</TT>
-   * otherwise. */
-  public boolean isEndingTie() {
-	  return tieDefinition!=null && this.equals(tieDefinition.getEnd());
-  }
-
-
-  /** Returns <TT>true</TT> if this note is tied.
-   * @return <TT>true</TT> if this note is tied, <TT>false</TT> otherwise.
-   * @see #setTieDefinition(TieDefinition) */
-  public boolean isTied() {
-	  return tieDefinition!=null;//isPartOfSlur() && (getSlurDefinition()==null || !getSlurDefinition().getEnd().equals(this));
   }
 
   /** A convenient method that returns <TT>true</TT> if this note is a rest.
@@ -615,6 +585,19 @@ public class Note extends NoteAbstract
 		return highestNote;
 	}
 
+  	public static int getLowestNoteIndex(Note[] notes) {
+		Note lowestNote = notes[0];
+		int index = 0;
+		for (int i=0; i<notes.length; i++) {
+			if(notes[i].getHeight()<lowestNote.getHeight()) {
+				lowestNote =notes[i];
+				index = i;
+				//System.out.println("lowest note is" + i);
+			}
+		}
+		return index;
+	}
+
   	public static int getHighestNoteIndex(Note[] notes) {
 		Note highestNote = notes[0];
 		int index = 0;
@@ -637,18 +620,6 @@ public class Note extends NoteAbstract
 			}
 		}
 		return lowestNote;
-	}
-
-	public static int getLowestNoteIndex(Note[] notes) {
-		Note lowestNote = notes[0];
-		int index = 0;
-		for (int i=0; i<notes.length; i++) {
-			if(notes[i].getHeight()<lowestNote.getHeight()) {
-				lowestNote =notes[i];
-				index = i;
-			}
-		}
-		return index;
 	}
 }
 

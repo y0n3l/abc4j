@@ -54,6 +54,8 @@ import abc.parser.TuneParserListenerInterface;
  * actions. */
 public class TuneEditorPane extends JTextPane// implements ActionListener
 {
+
+  private static final long serialVersionUID = 2835190367574934182L;
   private static Color BACKGROUND_COLOR = new Color(249,234,202);
   private static Color FIELDS_COLOR = new Color (0,128,0);
   private static Color GRACING_FOREGROUND_COLOR = Color.green;
@@ -98,7 +100,7 @@ public class TuneEditorPane extends JTextPane// implements ActionListener
   { this(new TuneParser()); }
 
   /** Creates a new TuneEditorPane with the given parser.
-   * @param parser The parser to be used to parse the abc notation
+   * @param parser The parser to be used to parse the abc notation 
    * written in the TuneEditorPane and to give the resulting {@link abc.notation.Tune tune} */
   public TuneEditorPane(TuneParser parser)
   { this(parser, IDLE_TIME_BEFORE_REFRESH); }
@@ -112,7 +114,7 @@ public class TuneEditorPane extends JTextPane// implements ActionListener
 
   /** Creates a new TuneEditorPane with the given parser and
    * idle time before refresh.
-   * @param parser The parser to be used to parse the abc notation
+   * @param parser The parser to be used to parse the abc notation 
    * written in the TuneEditorPane and to give the resulting {@link abc.notation.Tune tune}
    * @param idleTimeBeforeRefresh The idle time after any text update
    * before triggering the parsing of the abc text written in this pane.
@@ -140,28 +142,28 @@ public class TuneEditorPane extends JTextPane// implements ActionListener
   public boolean getScrollableTracksViewportWidth()
   { return false;  }
 
-  	/** Returns the parser used to build up the tune from the
+  	/** Returns the parser used to build up the tune from the 
   	 * abc text written in this pane.
-  	 * @return the parser used to build up the tune from the
-  	 * abc text written in this pane. */
-  	public TuneParser getParser() {
-  		return m_refresher.getParser();
+  	 * @return the parser used to build up the tune from the 
+  	 * abc text written in this pane. */ 
+  	public TuneParser getParser() { 
+  		return m_refresher.getParser(); 
   	}
 
   /** Returns <TT>true</TT> if text coloring has been enabled, <TT>false</TT>
-   * otherwise.
+   * otherwise. 
    * @return <TT>true</TT> if text coloring has been enabled, <TT>false</TT>
-   * otherwise. Text coloring enables user to distinguish abc tokens detected in
-   * the text of this pane.
+   * otherwise. Text coloring enables user to distinguish abc tokens detected in 
+   * the text of this pane. 
    * @see #setColoringEnable(boolean) */
   public boolean isColoringEnabled()
   { return m_enableColoring; }
 
   /** Enables/disables coloring of the text.
-   * @param coloring <TT>true</TT> if text coloring should be enabled,
-   * <TT>false</TT> otherwise.
+   * @param coloring <TT>true</TT> if text coloring should be enabled, 
+   * <TT>false</TT> otherwise. 
    * @see #isColoringEnabled() */
-  public void setColoringEnable(boolean coloring)
+  public void setColoringEnable(boolean coloring) 
   {
     m_enableColoring = coloring;
     if (m_enableColoring)
@@ -174,13 +176,11 @@ public class TuneEditorPane extends JTextPane// implements ActionListener
       //setSelectionColor(SELECTION_BACKGROUND_COLOR);
     }
   }
-
+  
   	/** Highlights the specified element in the abc tune notation.
   	 * @param elmnt The element to be highlighted in the abc tune notation. */
   	public void setSelectedItem(PositionableInCharStream elmnt) {
   		CharStreamPosition pos = elmnt.getPosition();
-/* TJM */
-System.out.println(elmnt.getPosition() +", "+elmnt.getLength());
   		int begin = pos.getCharactersOffset();
   		int end = begin + ((PositionableInCharStream)elmnt).getLength();
   		try	{
@@ -201,9 +201,9 @@ System.out.println(elmnt.getPosition() +", "+elmnt.getLength());
   }
 
   	/** Returns the tune that is currently described in this tune editor.
-  	 * @return The tune that is currently described in this tune editor. */
-  	public Tune getTune() {
-  		return m_tune;
+  	 * @return The tune that is currently described in this tune editor. */ 
+  	public Tune getTune() { 
+  		return m_tune; 
   	}
 
   /*public void setDocument(Document doc)
@@ -276,7 +276,7 @@ System.out.println(elmnt.getPosition() +", "+elmnt.getLength());
     StyleConstants.setForeground(m_rhythmStyle, TUPLET_FOREGROUND_COLOR);
     StyleConstants.setBold(m_rhythmStyle, true);
   }
-
+  
   private class MyActionListener implements ActionListener {
 
   /** This method is activated on the Keystrokes we are listening to

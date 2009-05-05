@@ -20,6 +20,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.Shape;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
@@ -27,18 +28,25 @@ import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import abc.notation.Clef;
+import abc.notation.Note;
 
 /**
  * This class encapsulates all requiered dimensions needed to draw
  * correctly a score (notes spacing, space between accidental and notes etc...).
- * All those values are calculated from the font size. */
-class ScoreMetrics {
+ * All those values are calculated from the font size.
+ */
+public class ScoreMetrics {
 
 	public static final int NOTE_GLYPH = 100;
 	public static final int GRACENOTE_GLYPH = 200;
 
-
 	public static final char STAFF_SIX_LINES = '\uF03D';
+	/** staff six lines / ratio = note height */
 	public static final double STAFF_SIX_LINES_LINE_HEIGHT_RATIO = 4.1;
 	public static final char[] BAR_LINE = {'\uF05C'};
 
@@ -50,36 +58,127 @@ class ScoreMetrics {
 	/** The pure note character without any stem for notes such as whole & half */
 	public static final char[] NOTE_LONGER = {'\uF092'};
 
+	/** Tuplet digits */
+	private static final char[] TUPLET_DIGITS = {
+		'\uF0C1', //1
+		'\uF0AA', //2
+		'\uF0A3', //3
+		'\uF0A2', //4
+		'\uF0B0', //5
+		'\uF0A4', //6
+		'\uF0A6', //7
+		'\uF0A5', //8
+		'\uF0BB'}; //9
+
+	/** Digits for time signature */
+	private static final char[] TIME_SIGNATURE_DIGITS = {
+			'\uF030', //0
+			'\uF031', //1
+			'\uF032', //2
+			'\uF033', //3
+			'\uF034', //4
+			'\uF035', //5
+			'\uF036', //6
+			'\uF037', //7
+			'\uF038', //8
+			'\uF039', //9
+			};
+
 	public static final char STEM_COMBINE_UP_SINGLE = '\uF021';
 	public static final char STEM_COMBINE_UP_DOUBLE = '\uF040';
 
+	private static final char G_CLEF = '\uF026';
 	public static final char[] SHARP = {'\uF023'};
 	public static final char[] FLAT = {'\uF062'};
 	public static final char[] NATURAL = {'\uF06E'};
-	public static final float DEFAULT_NOTATION_SIZE = 48;
+
+	//Notes glyphes stem up
+	private static final char[] WHOLE_NOTE = {'\uF092'};
+	private static final char[] HALF_NOTE = {'\uF068'};
+	private static final char[] QUARTER_NOTE = {'\uF071'};
+	private static final char[] EIGHTH_NOTE = {'\uF065'};
+	private static final char[] SIXTEENTH_NOTE = {'\uF072'};
+	private static final char[] THIRTY_SECOND_NOTE = {'\uF078'};
+	private static final char[] SIXTY_FOURTH_NOTE = {'\uF01C'};
+
+	//Notes glyphes stem down
+	private static final char[] WHOLE_NOTE_STEM_DOWN = {'\uF092'};
+	private static final char[] HALF_NOTE_STEM_DOWN = {'\uF048'};
+	private static final char[] QUARTER_NOTE_STEM_DOWN = {'\uF051'};
+	private static final char[] EIGHTH_NOTE_STEM_DOWN = {'\uF045'};
+	private static final char[] SIXTEENTH_NOTE_STEM_DOWN = {'\uF052'};
+	private static final char[] THIRTY_SECOND_NOTE_STEM_DOWN = {'\uF058'};
+	private static final char[] SIXTY_FOURTH_NOTE_STEM_DOWN = {'\uF01D'};
+
+	//Rests glyphes
+	private static final char[] DOUBLE_REST = {'\uF0E3'};
+	private static final char[] WHOLE_REST = {'\uF0B7'};
+	private static final char[] HALF_REST = {'\uF0EE'};
+	private static final char[] QUARTER_REST = {'\uF0CE'};
+	private static final char[] EIGHTH_REST = {'\uF0E4'};
+	private static final char[] SIXTEENTH_REST = {'\uF0C5'};
+	private static final char[] THIRTY_SECOND_REST = {'\uF0A8'};
+	private static final char[] SIXTY_FOURTH_REST = {'\uF0F4'};
+
+	/** Unknown note length */
+	private static final char[] UNKNWON_NOTE = {'\uF0AD'};
+
+	/** Default font size for musical symbols */
+	public static final float DEFAULT_NOTATION_SIZE = 45;
 	public static final float DEFAULT_TEXT_SIZE = DEFAULT_NOTATION_SIZE / 4;
 
-
-	public static final String NOTATION_FONT = "SONORA.TTF";
+	public static final String NOTATION_FONT = "SONORA2.TTF";
 	public static final String TEXT_FONT = "Dialog";
 
-	double noteHeight = -1;
-	double noteWidth = -1;
-	double staffLineHeight = -1;
-	//double staffCharWidth = -1;
-	Rectangle2D staffCharBounds = null;
-	Rectangle2D sharpBounds = null;
-	Rectangle2D naturalBounds = null;
-	Rectangle2D flatBounds = null;
-	Rectangle2D quarterNoteBounds = null;
-	BasicStroke notesLinkStroke = null;
-	BasicStroke stemStroke = null;
-	int noteStrokeLength = -1;
-	int stemLength = -1;
-	int notesSpacing = -1;
-	double biggestAccidentalWidth = -1;
+	/** Textual font for title
+	 * @see #getTextFont(short)
+	 */
+	public static final short FONT_TITLE = 0;
+	/** Textual font for chord names
+	 * @see #getTextFont(short)
+	 */
+	public static final short FONT_CHORDS = 1;
+	/** Textual font for lyrics
+	 * @see #getTextFont(short)
+	 */
+	public static final short FONT_LYRICS = 2;
+	private static final String[][] textFontPreferences = new String[][] {
+		/*FONT_TITLE*/{"Palatino Linotype", "Arial", "Dialog"},
+		/*FONT_CHORDS*/{"Palatino Linotype", "Arial", "Dialog"},
+		/*FONT_LYRICS*/{"Palatino Linotype", "Arial", "Dialog"}
+	};
 
-	// gracings support
+	private double noteHeight = -1;
+	private double noteWidth = -1;
+
+	private double timeSignatureNumberWidth = -1;
+	private double timeSignatureNumberHeight = -1;
+	private double tupletNumberYOffset = -1;
+
+	private Rectangle2D staffCharBounds = null;
+	//private double staffCharWidth = -1;
+	double staffLineHeight = -1;
+	private int staffLinesSpacing = -1;
+
+	private Font[] textFonts = null;
+
+	private Rectangle2D sharpBounds = null;
+	private Rectangle2D naturalBounds = null;
+	private Rectangle2D flatBounds = null;
+	private double biggestAccidentalWidth = -1;
+
+	private Rectangle2D quarterNoteBounds = null;
+	private BasicStroke notesLinkStroke = null;
+	private BasicStroke stemStroke = null;
+	private int noteStrokeLength = -1;
+	private int stemLength = -1;
+
+	private int notesSpacing = -1;
+
+	private double slurAnchorYOffset = -1;
+	private double slurThickness = -1;
+
+	//	 gracings support
 	double graceNoteHeight = 0;
 	double graceNoteWidth = 0;
 	BasicStroke graceNotesLinkStroke = null;
@@ -88,10 +187,7 @@ class ScoreMetrics {
 	int graceNoteStemLength = 0;
 	int graceNotesSpacing = 0;
 
-
-
-/* TJM */
-
+	// fonts
 	Font baseNotationFont = null;
 	Font noteFont = null;
 	Font gracingsFont = null;
@@ -108,6 +204,7 @@ class ScoreMetrics {
 	FontMetrics lyricsFontMetrics  = null;
 	FontMetrics annotationFontMetrics  = null;
 
+	// text elements
 	int titleHeight = -1;
 	int subtitleHeight = -1;
 	int annotationHeight = -1;
@@ -115,98 +212,183 @@ class ScoreMetrics {
 	int lyricsHeight = -1;
 
 
-/* TJM */
-	public ScoreMetrics(Graphics2D g2) {
-		this(g2, DEFAULT_NOTATION_SIZE, TEXT_FONT, DEFAULT_TEXT_SIZE);
+	private Graphics2D g2 = null;
+
+	private float m_size = -1;
+
+	/**
+	 * ScoreMetrics with {@link #DEFAULT_NOTATION_SIZE default size}
+	 * @param g2d
+	 */
+	protected ScoreMetrics(Graphics2D g2d) {
+		this(g2d, DEFAULT_NOTATION_SIZE, TEXT_FONT, DEFAULT_TEXT_SIZE);
 	}
 
-/* TJM */
-	public ScoreMetrics(Graphics2D g2, float notationSize) {
-		this(g2, notationSize, TEXT_FONT, notationSize/4);
+	/**
+	 * ScoreMetrics with a specified font size.
+	 * @param g2d
+	 * @param size
+	 * @see #setSize(float)
+	 */
+	protected ScoreMetrics(Graphics2D g2d, float notationSize) {
+		this(g2d, notationSize, TEXT_FONT, notationSize/4);
 	}
 
-/* TJM */
-	public ScoreMetrics(Graphics2D g2, float notationSize, String textFontName, float textSize) {
-
+	protected ScoreMetrics(Graphics2D g2d, float notationSize,
+			String textFontName, float textSize) {
 		try {
+			g2 = g2d;
 			//getClass().getResourceAsStream("SONORA.TTF");
 			//File file =new File("D:/Perso/musicfonts/MIDIDESI/TRUETYPE/SONORA.TTF");
 			//FileInputStream fontStream = new FileInputStream(file);
 		    baseNotationFont = Font.createFont(Font.TRUETYPE_FONT, ScoreMetrics.this.getClass().getResourceAsStream(NOTATION_FONT));
 			baseTextFont = new Font(textFontName, Font.PLAIN, (int)textSize);
 
-			initNoteFont(g2, notationSize);
-			initGracingsFont(g2,60.00f);
-			initTextFonts(g2);
+			initNoteFont(notationSize);
+			initGracingsFont(60.00f);
+			initTextFonts();
 
 		} catch (Exception e){
 			e.printStackTrace();
 		}
+		//setSize(notationSize);
 	}
 
 	/* Sets reference font size (pts) that all other sizes are derived from.
 		Gracings = 60%,
 	   150% = 67.5pt, etc.
 	*/
-	public void setNotationFontSize(Graphics2D g2, float notationSize) {
-		initNoteFont(g2, notationSize);
-		initGracingsFont(g2,60.00f);
+	/**
+	 * Define (or redefine) the font size, then all elements of
+	 * the score. {@link #DEFAULT_NOTATION_SIZE Default size} is 45.
+	 *
+	 * Reinitialize all values you could have set, like
+	 * {@link #staffLinesSpacing}, {@link #slurThickness}
+	 * @param size
+	 */
+	public void setNotationFontSize(float notationSize) {
+		initNoteFont(notationSize);
+		initGracingsFont(60.00f);
+	}
+	public float getNotationFontSize() {
+		return m_size;
 	}
 
-	/* Sets reference font size (pts) that all other sizes are derived from.
-		Gracings = 60%,
-	   150% = 67.5pt, etc.
-	*/
-	public void setTextFontSize(Graphics2D g2, float notationSize) {
-		initTextFonts(g2);
+	public void setTextFontSize(float notationSize) {
+		initTextFonts();
 	}
 
-	private void initNoteFont (Graphics2D g2, float size) {
+	private void initNoteFont(float size) {
 		try {
+			m_size = size;
 
-		  noteFont = baseNotationFont.deriveFont(size);
-		  noteFontMetrics = g2.getFontMetrics(noteFont);
+			//getClass().getResourceAsStream("SONORA.TTF");
+			//File file =new File("D:/Perso/musicfonts/MIDIDESI/TRUETYPE/SONORA.TTF");
+			//FileInputStream fontStream = new FileInputStream(file);
+			//noteFont = Font.createFont(Font.TRUETYPE_FONT,
+			//			getClass().getResourceAsStream("SONORA2.TTF"));
+			//noteFont = noteFont.deriveFont(size);
+			noteFont = baseNotationFont.deriveFont(size);
+			noteFontMetrics = g2.getFontMetrics(noteFont);
 
-		  FontRenderContext frc = g2.getFontRenderContext();
+			//skip that search if fonts already loaded, just resize them
+			if (textFonts == null) {
+				//Find fonts for title, chords, lyrics...
+				//First, make a list of all wanted fonts, so we'll iterate only
+				//once over the getAllFonts array
+				Set wantedFontNames = new HashSet();
+				for (int i = 0; i < textFontPreferences.length; i++) {
+					for (int j = 0; j < textFontPreferences[i].length; j++) {
+						wantedFontNames.add(textFontPreferences[i][j]);
+					}
+				}
+				int wantedFontCount = wantedFontNames.size();
+				Map foundFonts = new HashMap();
+				Font[] availableFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
+				for (int i = 0; i < availableFonts.length; i++) {
+					if (wantedFontNames.contains(availableFonts[i].getFontName())) {
+						foundFonts.put(availableFonts[i].getFontName(), availableFonts[i]);
+						if (foundFonts.size() == wantedFontCount) {
+							break; //Yeah! we got all we wanted!
+						}
+					}
+				}
+				//Now we know which wanted fonts are available
+				textFonts = new Font[textFontPreferences.length];
+				for (int i = 0; i < textFontPreferences.length; i++) {
+					for (int j = 0; j < textFontPreferences[i].length; j++) {
+						if (foundFonts.containsKey(textFontPreferences[i][j])) {
+							textFonts[i] = (Font) foundFonts.get(textFontPreferences[i][j]);
+							break;
+						}
+					}
+				}
+			}
+			for (int i = 0; i < textFonts.length; i++) {
+				textFonts[i] = textFonts[i].deriveFont(14*size/DEFAULT_NOTATION_SIZE);
+			}
+//			for (int i = 0; i < textFonts.length; i++) {
+//				System.out.println("textFonts["+i+"] = "+textFonts[i].getFontName());
+//				Rectangle2D testFont = new TextLayout("A", textFonts[i], frc).getBounds();
+//				System.out.println("h="+testFont.getHeight()+",w="+testFont.getWidth());
+//			}
+			FontRenderContext frc = g2.getFontRenderContext();
 
-		  staffCharBounds = new TextLayout(new Character(STAFF_SIX_LINES).toString(), noteFont, frc).getBounds();
+			staffCharBounds = new TextLayout(new Character(STAFF_SIX_LINES).toString(), noteFont, frc).getBounds();
+			//staffCharWidth = staffCharBounds.getWidth();
+			staffLineHeight = staffCharBounds.getHeight()/STAFF_SIX_LINES_LINE_HEIGHT_RATIO;
 
-		  TextLayout noteLayout = null;
-		  noteLayout = new TextLayout(new Character(NOTE[0]).toString(), noteFont, frc);
-		  noteHeight = noteLayout.getBounds().getHeight();
-//		  noteHeight = staffCharBounds.getHeight()/STAFF_SIX_LINES_LINE_HEIGHT_RATIO;
-		  noteWidth =  noteLayout.getBounds().getWidth();
-		  // FIXME: get proper decoration height ... or adjust this to be more generalized ...
-		  decorationHeight = (int)(noteLayout.getBounds().getHeight()*2.5);
+			TextLayout noteLayout = null;
+			noteLayout = new TextLayout(new Character(NOTE[0]).toString(), noteFont, frc);
+			noteHeight = noteLayout.getBounds().getHeight();
+			noteWidth = noteLayout.getBounds().getWidth();
+			//noteHeight = staffCharBounds.getHeight()/STAFF_SIX_LINES_LINE_HEIGHT_RATIO; //4.1
+			//noteWidth = new TextLayout(new Character(NOTE[0]).toString(), noteFont, frc).getBounds().getWidth();
 
-		  sharpBounds = new TextLayout(new Character(SHARP[0]).toString(), noteFont, frc).getBounds();
-		  flatBounds = new TextLayout(new Character(FLAT[0]).toString(), noteFont, frc).getBounds();
-		  naturalBounds = new TextLayout(new Character(NATURAL[0]).toString(), noteFont, frc).getBounds();
-		  quarterNoteBounds =  new TextLayout(new Character(JNote.QUARTER_NOTE[0]).toString(), noteFont, frc).getBounds();
-//		  noteWidth =  new TextLayout(new Character(NOTE[0]).toString(), noteFont, frc).getBounds().getWidth();
-		  notesLinkStroke = new BasicStroke((float)(noteWidth/3), 0, 0);
-		  stemStroke = new BasicStroke((float)(noteWidth/12));
-		  stemLength = (int)(noteHeight*3);
-		  noteStrokeLength = 2;
-		  notesSpacing = (int)(1.5*noteWidth);
-		  biggestAccidentalWidth = (getFlatBounds().getWidth()>getNaturalBounds().getWidth())
-			?getFlatBounds().getWidth():getNaturalBounds().getWidth();
-			biggestAccidentalWidth = (getSharpBounds().getWidth()>biggestAccidentalWidth)
-			?getSharpBounds().getWidth():biggestAccidentalWidth;
+			//FIXME: get proper decoration height ... or adjust this to be more generalized ...
+			decorationHeight = (int)(noteLayout.getBounds().getHeight()*2.5);
 
-/* TJM */
-		  staffLineHeight = staffCharBounds.getHeight()/STAFF_SIX_LINES_LINE_HEIGHT_RATIO;
+			staffLinesSpacing = (int)(staffCharBounds.getHeight()*2.5);
 
-		} catch (Exception e){
+			//slurs
+			slurAnchorYOffset = (noteHeight / 3);
+			slurThickness = Math.max(noteHeight / 7, 1);
+
+			//accidental
+			sharpBounds = new TextLayout(new Character(SHARP[0]).toString(), noteFont, frc).getBounds();
+			flatBounds = new TextLayout(new Character(FLAT[0]).toString(), noteFont, frc).getBounds();
+			naturalBounds = new TextLayout(new Character(NATURAL[0]).toString(), noteFont, frc).getBounds();
+			biggestAccidentalWidth = Math.max(
+					Math.max(getFlatBounds().getWidth(),
+							getNaturalBounds().getWidth()),
+						getSharpBounds().getWidth());
+
+
+			quarterNoteBounds = new TextLayout(new Character(QUARTER_NOTE[0]).toString(), noteFont, frc).getBounds();
+
+			//numbers, digits
+			Rectangle2D timeSignatureBounds = new TextLayout(new Character(getTimeSignatureDigitChar(2)).toString(), noteFont, frc).getBounds();
+			timeSignatureNumberWidth = timeSignatureBounds.getWidth();
+			timeSignatureNumberHeight = timeSignatureBounds.getHeight();
+			tupletNumberYOffset = noteHeight / 4;
+
+			notesLinkStroke = new BasicStroke((float)(noteWidth/3), 0, 0);
+			stemStroke = new BasicStroke((float)(noteWidth/12));
+			stemLength = (int)(noteHeight*3);
+			noteStrokeLength = 2;
+
+			//default note spacing, Engrave is here to arrange this, hehe :)
+			notesSpacing = (int)(1.5*noteWidth);
+
+			m_size = size;
+		}
+		catch (Exception e){
 			e.printStackTrace();
 		}
-
 	}
 
-
-	private void initGracingsFont (Graphics2D g2, float percentOfNotationSize) {
+	private void initGracingsFont(float percentOfNotationSize) {
 		try {
-
 			int notationSize = noteFont.getSize();
 			float gracingsSize = notationSize*(percentOfNotationSize/100);
 
@@ -214,7 +396,6 @@ class ScoreMetrics {
 			gracingsFontMetrics = g2.getFontMetrics(gracingsFont);
 
 			FontRenderContext frc = g2.getFontRenderContext();
-
 
 			TextLayout layout = null;
 			layout = new TextLayout(new Character(NOTE[0]).toString(), gracingsFont, frc);
@@ -230,38 +411,40 @@ class ScoreMetrics {
 		} catch (Exception e){
 			e.printStackTrace();
 		}
-
 	}
 
-	private void initTextFonts (Graphics2D g2) {
+	private void initTextFonts() {
 		try {
+			//TODO (iubito) rework!!!
+			int baseTextSize = baseTextFont.getSize();
+			titleFont = baseTextFont.deriveFont(Font.BOLD, baseTextSize*3);
+			titleFontMetrics = g2.getFontMetrics(titleFont);
+			titleHeight = titleFontMetrics.getHeight();
 
-		  int baseTextSize = baseTextFont.getSize();
-		  titleFont = baseTextFont.deriveFont(Font.BOLD, baseTextSize*3);
-		  titleFontMetrics = g2.getFontMetrics(titleFont);
-		  titleHeight = titleFontMetrics.getHeight();
+			subtitleFont = baseTextFont.deriveFont(Font.BOLD, baseTextSize*2);
+			subtitleFontMetrics = g2.getFontMetrics(subtitleFont);
+			subtitleHeight = subtitleFontMetrics.getHeight();
 
-		  subtitleFont = baseTextFont.deriveFont(Font.BOLD, baseTextSize*2);
-		  subtitleFontMetrics = g2.getFontMetrics(subtitleFont);
-		  subtitleHeight = subtitleFontMetrics.getHeight();
+			annotationFont = baseTextFont.deriveFont((int) (baseTextSize*0.8) );
+			annotationFontMetrics = g2.getFontMetrics(annotationFont);
+			annotationHeight = annotationFontMetrics.getHeight();
 
-		  annotationFont = baseTextFont.deriveFont((int) (baseTextSize*0.8) );
-		  annotationFontMetrics = g2.getFontMetrics(annotationFont);
-		  annotationHeight = annotationFontMetrics.getHeight();
-
-		  lyricsFont = baseTextFont.deriveFont(baseTextSize);
-		  lyricsFontMetrics = g2.getFontMetrics(lyricsFont);
-		  lyricsHeight = lyricsFontMetrics.getHeight();
+			lyricsFont = baseTextFont.deriveFont(baseTextSize);
+			lyricsFontMetrics = g2.getFontMetrics(lyricsFont);
+			lyricsHeight = lyricsFontMetrics.getHeight();
 
 		} catch (Exception e){
 			e.printStackTrace();
 		}
 	}
 
-
+	/**
+	 *
+	 * @param notationContext {@link #NOTE_GLYPH}, {@link #GRACENOTE_GLYPH}
+	 * @return
+	 */
 	public Dimension getGlyphDimension(int notationContext) {
 		Dimension d = null;
-
 		switch (notationContext) {
 			case NOTE_GLYPH: 		d = new Dimension((int)noteHeight, (int)noteWidth);
 									break;
@@ -273,18 +456,53 @@ class ScoreMetrics {
 		return (d);
 	}
 
-/* TJM */
-	public double getStaffLineHeight() {
-		return staffLineHeight;
+	/**
+	 * Returns a text font (for lyrics, chord names, title...)
+	 * @param textType {@link #FONT_CHORDS}, {@link #FONT_LYRICS}, {@link #FONT_TITLE}
+	 * @return a Font object
+	 */
+	public Font getTextFont(short textType) {
+		return textFonts[textType];
 	}
 
-	public double getNoteHeigth() {
-		return (getNoteHeight());
-	}
-/* TJM */
 	public double getNoteHeight() {
 		return noteHeight;
 	}
+	/** @deprecated {@link getNoteHeight()} */
+	public double getNoteHeigth() {
+		return getNoteHeight();
+	}
+
+	/**
+	 * Returns the vertical offset between note head and slur/tie point
+	 */
+	public double getSlurAnchorYOffset() {
+		return slurAnchorYOffset;
+	}
+
+	/**
+	 * Sets the vertical offset between note head and slur/tie point
+	 * @param d
+	 */
+	public void setSlurAnchorYOffset(double d) {
+		slurAnchorYOffset = d;
+	}
+
+	/**
+	 * Returns the slur/tie thickness
+	 */
+	public double getSlurThickness() {
+		return slurThickness;
+	}
+
+	/**
+	 * Sets the slur/tie thickness
+	 * @param d
+	 */
+	public void setSlurThickness(double d) {
+		slurThickness = d;
+	}
+
 	public double getNoteStrokeLength() {
 		return noteStrokeLength;
 	}
@@ -293,8 +511,20 @@ class ScoreMetrics {
 		return noteWidth;
 	}
 
-	/** Returns the spacing between notes.
-	 * @return The spacing between notes, expressed in pixels. */
+	public double getTimeSignatureNumberWidth() {
+		return timeSignatureNumberWidth;
+	}
+
+	public double getTimeSignatureNumberHeight() {
+		return timeSignatureNumberHeight;
+	}
+
+	/**
+	 * Returns the spacing between notes.
+	 * Note that the engraver can change the spacings, this one is
+	 * the default spacing, used as reference for engraver.
+	 * @return The spacing between notes, expressed in pixels.
+	 */
 	public double getNotesSpacing() {
 		return notesSpacing;
 	}
@@ -309,6 +539,17 @@ class ScoreMetrics {
 		return staffCharBounds;
 	}
 
+	public double getStaffLineHeight() {
+		return staffLineHeight;
+	}
+
+	public int getStaffLinesSpacing() {
+		return staffLinesSpacing;
+	}
+	public void setStaffLinesSpacing(int i) {
+		staffLinesSpacing = i;
+	}
+
 	public BasicStroke getStemStroke(){
 		return stemStroke;
 	}
@@ -317,6 +558,11 @@ class ScoreMetrics {
 		return stemLength;
 	}
 
+	/**
+	 *
+	 * @param notationContext {@link #NOTE_GLYPH}, {@link #GRACENOTE_GLYPH}
+	 * @return
+	 */
 	public int getStemLength(int notationContext){
 		int len = 0;
 
@@ -329,7 +575,7 @@ class ScoreMetrics {
 					break;
 		}
 		return (len);
-}
+	}
 
 	/** Returns the bounding box of a sharp character.
 	 * @return Returns the bounding box of a sharp character. */
@@ -357,8 +603,102 @@ class ScoreMetrics {
 		return quarterNoteBounds;
 	}
 
+	/**
+	 * @return Returns the tupletNumberYOffset.
+	 */
+	public double getTupletNumberYOffset() {
+		return tupletNumberYOffset;
+	}
 
-/* TJM */
+	/**
+	 * Return the font char for a tuplet number
+	 * @param tupletNumber from 1 to 9
+	 * @return
+	 */
+	public char getTupletDigitChar(int tupletNumber) {
+		return TUPLET_DIGITS[tupletNumber - 1];
+	}
+
+	/**
+	 * Returns the font char for a digit of the time signature
+	 * @param digit from 0 to 9
+	 * @return
+	 */
+	public char getTimeSignatureDigitChar(int digit) {
+		return TIME_SIGNATURE_DIGITS[digit];
+	}
+
+	/**
+	 * Return the font char for the clef
+	 * @param clef {@link Clef#G} is the only one supported
+	 * @return {@link #G_CLEF}
+	 * @throws IllegalArgumentException if clefType is not equal to "G"
+	 */
+	public char getClefChar(Clef clef)
+		throws IllegalArgumentException {
+		if (clef.equals(Clef.G))
+			return G_CLEF;
+		else
+			throw new IllegalArgumentException("Unsupported clef type "+clef.getName());
+	}
+
+	/**
+	 * Return the char for a given note with a stem up
+	 * @param strictDuration {@link Note#getStrictDuration()}, for
+	 * example {@link {@link Note#QUARTER}
+	 * @return a char[] containing glyph
+	 */
+	protected char[] getNoteStemUpChar(short strictDuration) {
+		switch (strictDuration) {
+			case Note.SIXTY_FOURTH: return SIXTY_FOURTH_NOTE;
+			case Note.THIRTY_SECOND: return THIRTY_SECOND_NOTE;
+			case Note.SIXTEENTH : return SIXTEENTH_NOTE;
+			case Note.EIGHTH : return EIGHTH_NOTE;
+			case Note.QUARTER: return QUARTER_NOTE;
+			case Note.HALF: return HALF_NOTE;
+			case Note.WHOLE: return WHOLE_NOTE;
+			default : return UNKNWON_NOTE;
+		}
+	}
+
+	/**
+	 * Return the char for a given note with a stem down
+	 * @param strictDuration {@link Note#getStrictDuration()}, for
+	 * example {@link {@link Note#QUARTER}
+	 * @return a char[] containing glyph
+	 */
+	protected char[] getNoteStemDownChar(short strictDuration) {
+		switch (strictDuration) {
+			case Note.SIXTY_FOURTH: return SIXTY_FOURTH_NOTE_STEM_DOWN;
+			case Note.THIRTY_SECOND: return THIRTY_SECOND_NOTE_STEM_DOWN;
+			case Note.SIXTEENTH : return SIXTEENTH_NOTE_STEM_DOWN;
+			case Note.EIGHTH : return EIGHTH_NOTE_STEM_DOWN;
+			case Note.QUARTER: return QUARTER_NOTE_STEM_DOWN;
+			case Note.HALF: return HALF_NOTE_STEM_DOWN;
+			case Note.WHOLE: return WHOLE_NOTE_STEM_DOWN;
+			default: return UNKNWON_NOTE;
+		}
+	}
+
+	/**
+	 * Return the char for a given rest.
+	 * @param strictDuration {@link Note#getStrictDuration()}, for
+	 * example {@link {@link Note#QUARTER}
+	 * @return a char[] containing glyph
+	 */
+	protected char[] getRestChar(short strictDuration) {
+		switch (strictDuration) {
+			case Note.SIXTY_FOURTH: return SIXTY_FOURTH_REST;
+			case Note.THIRTY_SECOND: return THIRTY_SECOND_REST;
+			case Note.SIXTEENTH : return SIXTEENTH_REST;
+			case Note.EIGHTH : return EIGHTH_REST;
+			case Note.QUARTER: return QUARTER_REST;
+			case Note.HALF: return HALF_REST;
+			case Note.WHOLE: return WHOLE_REST;
+			//case Note.DOUBLE: return DOUBLE_REST; //is it breve?
+			default: return UNKNWON_NOTE;
+		}
+	}
 
 	/** Returns height of character rendered in the Decorations font.
 	 * @return the width of a string in this font used for this score metrics.
@@ -373,8 +713,6 @@ class ScoreMetrics {
 	public int getDecorationWidth(char[] c){
 		return (noteFontMetrics.charsWidth(c,0,c.length));
 	}
-
-
 
 	/* *** graceNotes support *** */
 	public double getGraceNoteHeight() {
@@ -399,7 +737,6 @@ class ScoreMetrics {
 		return graceNotesLinkStroke;
 	}
 
-
 	public BasicStroke getGraceNoteStemStroke(){
 		return graceNoteStemStroke;
 	}
@@ -408,8 +745,8 @@ class ScoreMetrics {
 		return graceNoteStemLength;
 	}
 
-
 // get heights/widths for stings in various fonts
+	//FIXME (iubito) rework this
 	/** Returns height of text line rendered in the Title font.
 	 * @return the height of a line of text in this font used for this score metrics.
 	 */
@@ -466,8 +803,7 @@ class ScoreMetrics {
 		return (lyricsFontMetrics.stringWidth(text));
 	}
 
-
-// fontrenderingcontext specific transformations
+//fontrenderingcontext specific transformations
 
 	public Shape getRotatedDecoration(Graphics2D g2, char[] chars, double radians) {
 		Shape glyphOutline = null;

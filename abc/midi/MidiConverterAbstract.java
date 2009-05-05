@@ -70,20 +70,20 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   			KeySignature tuneKey = null;
   			KeySignature currentKey = null;
 
-  			long elapsedTime = 0;
-  			Note[] graceNotes = null;
-  			Tune.Music staff = tune.getMusic();
-  			while (i < staff.size()) {
-  				if (!inWrongEnding) {
-  					//==================================================================== TEMPO
-  					if (staff.elementAt(i) instanceof abc.notation.Tempo) {
-  						addTempoEventsFor(track, elapsedTime, getMidiMessagesFor((Tempo)staff.elementAt(i)));//, trackLengthInTicks));
-  					}
-  					else
-  						//==================================================================== KEY SIGNATURE
+			long elapsedTime = 0;
+			Note[] graceNotes = null;
+			Tune.Music staff = tune.getMusic();
+			while (i < staff.size()) {
+				if (!inWrongEnding) {
+					//==================================================================== TEMPO
+					if (staff.elementAt(i) instanceof abc.notation.Tempo) {
+						addTempoEventsFor(track, elapsedTime, getMidiMessagesFor((Tempo)staff.elementAt(i)));//, trackLengthInTicks));
+				}
+					else
+						//==================================================================== KEY SIGNATURE
 					if (staff.elementAt(i) instanceof abc.notation.KeySignature) {
-  							tuneKey = (KeySignature)(staff.elementAt(i));
-  							currentKey = new KeySignature(tuneKey.getAccidentals());
+							tuneKey = (KeySignature)(staff.elementAt(i));
+							currentKey = new KeySignature(tuneKey.getAccidentals());
 					}
 					else
 					//==================================================================== NOTE
@@ -94,9 +94,9 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 
 						Note note = (Note)staff.elementAt(i);
 						long noteDuration;
-/* TJM */
 						if (note.hasGeneralGracing()) {
-							// is this even needed??
+							// currently not used
+							// future use: playing rolls, slides, etc.
 						}
 						if (note.hasGracingNotes()) {
 							graceNotes = note.getGracingNotes();
@@ -119,7 +119,7 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 							elapsedTime+=getNoteLengthInTicks(multiNote);
 						}
 				}
-  				//====================================================================== REPEAT BAR LINE
+    				//====================================================================== REPEAT BAR LINE
   				if (staff.elementAt(i) instanceof abc.notation.RepeatBarLine) {
   					RepeatBarLine bar = (RepeatBarLine)staff.elementAt(i);
   					if (repeatNumber<bar.getRepeatNumber() && lastRepeatOpen!=-1) {
@@ -140,15 +140,15 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 						case BarLine.SIMPLE : break;
 						case BarLine.REPEAT_OPEN : lastRepeatOpen=i; repeatNumber=1; break;
 						case BarLine.REPEAT_CLOSE :
-								if (repeatNumber<2 && lastRepeatOpen!=-1) {
+  								if (repeatNumber<2 && lastRepeatOpen!=-1) {
   									repeatNumber++; i=lastRepeatOpen;
   								}
   								else {
   									repeatNumber=1; lastRepeatOpen=-1;
   								}
   								break;
-  					}
-  				}
+					}
+				}
   				//Whatever kind of bar line it is
   				if (staff.elementAt(i) instanceof abc.notation.BarLine)
 					currentKey = new KeySignature(tuneKey.getAccidentals());
@@ -177,7 +177,6 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   	public void setInstrument(Instrument instr) throws MidiUnavailableException {
   		MidiSystem.getSynthesizer().loadInstrument(instr);
   		instrument = instr;
-
   	}
 
   	/** Generates the midi events required to play the given note in the context

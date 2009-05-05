@@ -15,7 +15,25 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.notation;
 
-/** This class defines decorations. */
+/** This class defines decorations. Decoration definitions include:
+ * <pre>
+ * .		staccato
+ * ~		general gracing (abc v1.6 and older)
+ * ~		irish roll (abc v2.0)
+ * u		upbow
+ * v		downbow
+ * T       trill
+ * H       fermata
+ * L       accent or emphasis
+ * M       lowermordent
+ * P       uppermordent
+ * S       segno
+ * O       coda
+ * </pre>
+ * <b>NOTE:</b>The symbols T,H,L,M,P,S,O and ABC2.0 features and are not supported
+ * by the abc4j 1.6 parser.
+ */
+//FIXME (Sylvain) move this in FontMetrics !!! maybe m_metrics.getMusicalFont().getGlyph(Decoration.STACCATO)...
 public class Decoration implements MusicElement
 {
 
@@ -101,7 +119,7 @@ public class Decoration implements MusicElement
    */
   public boolean isDynamic (byte decoration) {
       boolean is = false;
-/* TJM : todo: implement!! */
+	  /* FIXME: not abc1.6 feature, implement for abc2.0 */
       switch (decoration) {
 		  default : break;
 	  }
@@ -144,8 +162,6 @@ public class Decoration implements MusicElement
       else if (str.equals("S")) type = SEGNO;
       else if (str.equals("O")) type = CODA;
 
-/* TJM */
-// add 'roll' 'trill' 'slide'
 
       return type;
 

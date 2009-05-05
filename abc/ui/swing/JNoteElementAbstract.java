@@ -15,6 +15,7 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -42,6 +43,12 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract {
 	protected Vector m_jDecorations = null;
 
 	private JSlurOrTie jSlurDefinition = null;
+
+	//TODO redundant with slur...AnchorOutOfStem ?
+	protected Dimension slurStemOffset = null;
+
+	protected Point2D slurUnderAnchor = null, slurAboveAnchor = null;
+	protected Point2D slurUnderAnchorOutOfStem = null, slurAboveAnchorOutOfStem = null;
 
 	/** <TT>true</TT> if the stem is up for this chord, <TT>false</TT> otherwise. */
 	protected boolean stemUp = true;
@@ -125,6 +132,22 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract {
 	 */
 	public void setJSlurDefinition(JSlurOrTie slurDefinition) {
 		jSlurDefinition = slurDefinition;
+	}
+
+	public Point2D getSlurAboveAnchor() {
+		return slurAboveAnchor;
+	}
+
+	public Point2D getSlurUnderAnchor() {
+		return slurUnderAnchor;
+	}
+
+	public Point2D getSlurAboveAnchorOutOfStem() {
+		return slurAboveAnchorOutOfStem;
+	}
+
+	public Point2D getSlurUnderAnchorOutOfStem() {
+		return slurUnderAnchorOutOfStem;
 	}
 
 

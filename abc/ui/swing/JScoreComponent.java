@@ -43,36 +43,39 @@ import abc.notation.Tune;
  * @see JScoreElement
  */
 public class JScoreComponent extends JComponent {
+
+	private static final long serialVersionUID = 7903517456075406436L;
 	private static final Color SELECTED_ITEM_COLOR = Color.RED;
 	/** The graphical representation of the tune currently set.
 	 * <TT>null</TT> if no tune is set. */
-	protected JTune m_jTune = null;
+	private JTune m_jTune = null;
 
 	//private int staffLinesOffset = -1;
 	/** The dimensions of this score. */
-	protected Dimension m_dimension = null;
-	/** WTF ??? does not seem to be really taken into account anyway... */
-/* TJM :: must set XOffset for JTune.setMarginLeft() for offset to have any effect */
+	private Dimension m_dimension = null;
+	/** The space of the left margin */
+	// NOTE: must set XOffset for JTune.setMarginLeft() for offset to have any effect
 	private int XOffset = 0;
 	/** The place where all spacing dimensions are expressed. */
-	protected ScoreMetrics m_metrics = null;
+	private ScoreMetrics m_metrics = null;
+	private Engraver m_engraver = null;
 	/** The buffer where the score image is put before rendition in the swing component. */
-	protected BufferedImage m_bufferedImage = null;
+	private BufferedImage m_bufferedImage = null;
 	/** The graphic context of the buffered image used to generate the score. */
-	protected Graphics2D m_bufferedImageGfx = null;
+	private Graphics2D m_bufferedImageGfx = null;
 	/** Set to <TT>true</TT> if the score drawn into the buffered image is
 	 * outdated and does not represent the tune currently set. */
-	protected boolean m_isBufferedImageOutdated = true;
+	private boolean m_isBufferedImageOutdated = true;
 	/** The size used for the score scale. */
-	protected float m_size = 45;
+	//protected float m_size = 45;
 	/** <TT>true</TT> if the rendition of the score should be justified,
 	 * <TT>false</TT> otherwise. */
-	protected boolean m_isJustified = false;
+	private boolean m_isJustified = false;
 	/** The selected item in this score. <TT>null</TT> if no
 	 * item is selected. */
-	protected JScoreElement m_selectedItem = null;
+	private JScoreElement m_selectedItem = null;
 
-	protected int staffLinesSpacing = -1;
+	//protected int staffLinesSpacing = -1;
 
 	/** Default constructor. */
 	public JScoreComponent() {
@@ -83,8 +86,18 @@ public class JScoreComponent extends JComponent {
 	protected void initGfx(){
 		m_bufferedImage = new BufferedImage((int)m_dimension.getWidth(), (int)m_dimension.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		m_bufferedImageGfx = (Graphics2D)m_bufferedImage.createGraphics();
-		m_metrics = new ScoreMetrics(m_bufferedImageGfx, m_size);
-		staffLinesSpacing = (int)(m_metrics.getStaffCharBounds().getHeight()*2.5);
+		//staffLinesSpacing = (int)(m_metrics.getStaffCharBounds().getHeight()*2.5);
+	}
+
+	public ScoreMetrics getScoreMetrics() {
+		if (m_metrics == null)
+			m_metrics = new ScoreMetrics(m_bufferedImageGfx);
+		return m_metrics;
+	}
+	public Engraver getEngraver() {
+		if (m_engraver == null)
+			m_engraver = new Engraver(Engraver.DEFAULT);
+		return m_engraver;
 	}
 
 	/** Draws the current tune score into the given graphic context.
@@ -113,20 +126,25 @@ public class JScoreComponent extends JComponent {
 	}
 
 	/** The size of the font used to display the music score.
-	 * @param size The size of the font used to display the music score expressed in ? */
+	 * @param size The size of the font used to display the music score expressed in ?
+	 * @deprecated use {@link #getScoreMetrics() getScoreMetrics()}.{@link ScoreMetrics#setNotationSize(float) setNotationSize(float)} and then {@link #refresh()}
+	 */
 	public void setSize(float size){
-		m_size = size;
+		getScoreMetrics().setNotationFontSize(size);
+		refresh();
+	}
+
+	/**
+	 * Refresh the score, blanks the component, compute and draw
+	 * the score.<br>Call this method to refresh the component
+	 * after changes on its {@link #getEngraver() Engraver} and
+	 * {@link #getScoreMetrics() ScoreMetric}.
+	 */
+	public void refresh() {
 		initGfx();
 		if (m_jTune!=null)
 			setTune(m_jTune.getTune());
 		repaint();
-	}
-
-/* TJM */
-	/** Returns size of the font used to display the music score.
-	*/
-	public float getNotationFontSize(){
-		return(m_size);
 	}
 
 	/** Writes the currently set tune score to a PNG file.
@@ -135,7 +153,7 @@ public class JScoreComponent extends JComponent {
 	public void writeScoreTo(File file) throws IOException {
 		//if (m_bufferedImage==null || m_dimension.getWidth()>m_bufferedImage.getWidth()
 		//		|| m_dimension.getHeight()>m_bufferedImage.getHeight()) {
-		if (m_metrics==null)
+		if (m_metrics == null)
 			initGfx();
 		//}
 		m_bufferedImageGfx.setColor(getBackground());
@@ -153,8 +171,12 @@ public class JScoreComponent extends JComponent {
 	public void setTune(Tune tune){
 		if (m_metrics==null)
 			initGfx();
-		m_jTune = new JTune(tune, new Point(XOffset, 0), m_metrics, m_isJustified);
-		m_jTune.setStaffLinesSpacing(staffLinesSpacing);
+		m_jTune = new JTune(tune,
+							new Point(XOffset, 0),
+							getScoreMetrics(),
+							getEngraver(),
+							isJustified());
+		//m_jTune.setStaffLinesSpacing(staffLinesSpacing);
 		m_selectedItem = null;
 		m_dimension.setSize(m_jTune.getWidth(), m_jTune.getHeight());
 				//componentHeight+m_metrics.getStaffCharBounds().getHeight());
@@ -171,7 +193,11 @@ public class JScoreComponent extends JComponent {
 	 * elegant display.
 	 * @param isJustified <TT>true</TT> if the score rendition should be
 	 * justified, <TT>false</TT> otherwise.
-	 * @see #isJustified()*/
+	 * @see #isJustified()
+	 * @deprecated call {@link #setJustified(boolean)} and then
+	 * {@link #refresh()} when you have finished to change all
+	 * settings (justification, engraving, score metrics...)
+	 */
 	public void setJustification(boolean isJustified) {
 		m_isJustified = isJustified;
 		//triggers the recalculation of the tune
@@ -181,7 +207,18 @@ public class JScoreComponent extends JComponent {
 		//repaint();
 	}
 
-	public void setStaffLinesSpacing(int spacing) {
+	/** Changes the justification of the rendition score. This will
+	 * set the staff lines aligment to justify in order to have a more
+	 * elegant display.
+	 * @param isJustified <TT>true</TT> if the score rendition should be
+	 * justified, <TT>false</TT> otherwise.
+	 * @see #isJustified()
+	 */
+	public void setJustified(boolean isJustified) {
+		m_isJustified = isJustified;
+	}
+
+	/*public void setStaffLinesSpacing(int spacing) {
 		staffLinesSpacing = spacing;
 		//triggers the recalculation of the tune
 		if (m_jTune!=null)
@@ -190,11 +227,11 @@ public class JScoreComponent extends JComponent {
 		//	setTune(m_jTune.getTune());
 		//m_jTune = new m_jTune(m_jTune.getTune(), )
 		//repaint();
-	}
+	}  */
 
-	public int getStaffLinesSpacing() {
+	/*public int getStaffLinesSpacing() {
 		return staffLinesSpacing;
-	}
+	}*/
 
 	/** Return <TT>true</TT> if the rendition staff lines alignment is
 	 * justified, <TT>false</TT> otherwise.
