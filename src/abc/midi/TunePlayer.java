@@ -82,20 +82,20 @@ public class TunePlayer implements MetaEventListener
    * @return The tempo currently used to play tunes. */
   public int getTempo()
   { return m_tempo; }
-  
-  /** Returns the instrument currently used for sequence playback.  
+
+  /** Returns the instrument currently used for sequence playback.
 	 * @return The instrument currently used for sequence playback. Returns <TT>null</TT>
 	 * if not set. */
   public Instrument getInstrument(){
 		return m_converter.getInstrument();
 	}
-	
-  /** Sets the instrument to be used for sequence playback. This implicitly loads the 
-	* given instrument. 
+
+  /** Sets the instrument to be used for sequence playback. This implicitly loads the
+	* given instrument.
 	* @param instr The instrument to be used for sequence playback. */
   public void setInstrument(Instrument instr) throws MidiUnavailableException {
 	  m_converter.setInstrument(instr);
-	} 
+	}
 
 /*  public int getVolume()
   {
@@ -103,7 +103,7 @@ public class TunePlayer implements MetaEventListener
     {
       MidiChannel[] channels =((Synthesizer)seq).getChannels();
       for (int i=0; i<channels.length; i++)
-        System.out.println(channels[i].getController(VOLUME_CONTROLLER_NUMBER));
+        //System.out.println(channels[i].getController(VOLUME_CONTROLLER_NUMBER));
       return ((Synthesizer)seq).getChannels()[0].getController(VOLUME_CONTROLLER_NUMBER);
     }
     catch (Exception e)
@@ -166,7 +166,7 @@ public class TunePlayer implements MetaEventListener
 
 //
 //  public void controlChange(ShortMessage event)
-//  { System.out.println("control  : "  + event); }
+//  { //System.out.println("control  : "  + event); }
 
   	//========================================================================
   	//======================= Meta events  Listener =========================
@@ -178,8 +178,8 @@ public class TunePlayer implements MetaEventListener
 				(meta.getType()==MidiMessageType.MARKER && MetaMessageWA.isTempoMessage(meta))
 				) {
 			int expectdNotesNbPerMn = TempoMessage.getTempo(meta.getData()).getNotesNumberPerMinute();
-			System.out.println("detected tempo change : " + expectdNotesNbPerMn + 
-					" current seq tempo : " + seq.getTempoInBPM());
+			//System.out.println("detected tempo change : " + expectdNotesNbPerMn +
+			//		" current seq tempo : " + seq.getTempoInBPM());
 			// Work around for JDK 1.5 (seems to work in JDK 1.4....)
 			if ((int)seq.getTempoInBPM()!=expectdNotesNbPerMn)
 				seq.setTempoInBPM(expectdNotesNbPerMn);
@@ -197,7 +197,7 @@ public class TunePlayer implements MetaEventListener
 					notifyForPartPlayedChanged (begin, end);
 				}
 				else
-					if (meta.getType()==MidiMessageType.END_OF_TRACK) { 
+					if (meta.getType()==MidiMessageType.END_OF_TRACK) {
 						notifyForPlayEnd();
 					}
   }
@@ -214,30 +214,30 @@ public class TunePlayer implements MetaEventListener
       //seq.addControllerEventListener(this, val);
       seq.open();
       seq.addMetaEventListener(this);
-      
+
       m_isStarted = true;
-      
+
     }
     catch (IllegalStateException e)
     { e.printStackTrace(); }
     catch (Exception e)
     { e.printStackTrace(); }
   }
-  
+
   /*private ShortMessage createProgramMessage(int num)
   {
       ShortMessage programMessage = new ShortMessage();
-      
+
       try {
-          Instrument myInstrument 
+          Instrument myInstrument
       			= MidiSystem.getSynthesizer().getDefaultSoundbank().getInstruments()[num];
-      
-      	    programMessage.setMessage(ShortMessage.PROGRAM_CHANGE, 
+
+      	    programMessage.setMessage(ShortMessage.PROGRAM_CHANGE,
       	        myInstrument.getPatch().getProgram(),10);
       } catch (InvalidMidiDataException e) {
       	    e.printStackTrace();
       }
-      
+
   	    return programMessage;
   }*/
 

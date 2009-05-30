@@ -41,9 +41,9 @@ import abc.notation.Tune;
 public abstract class MidiConverterAbstract implements MidiConverterInterface {
 	/** The resolution of the sequence : this will correspond to a quarter note. */
 	private static final int SEQUENCE_RESOLUTION = Note.QUARTER;
-	/** The instrument to use for the playback sequence. */ 
+	/** The instrument to use for the playback sequence. */
 	protected Instrument instrument = null;
-	
+
   	/** Converts the given tune to a midi sequence.
   	 * @param tune The tune to be converted.
   	 * @return The midi sequence of the tune. */
@@ -59,7 +59,7 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   			// Set the instrument on channel 0
   	        ShortMessage sm = new ShortMessage( );
   	        sm.setMessage(ShortMessage.PROGRAM_CHANGE, 0, instrument.getPatch().getProgram(), 0);
-  			
+
   			Track track = sequence.createTrack();
   			track.add(new MidiEvent(sm, 0));
   			//long trackLengthInTicks = track.ticks();
@@ -70,42 +70,56 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   			KeySignature tuneKey = null;
   			KeySignature currentKey = null;
 
-  			long elapsedTime = 0;
-  			Tune.Music staff = tune.getMusic();
-  			while (i < staff.size()) {
-  				if (!inWrongEnding) {
-  					//==================================================================== TEMPO
-  					if (staff.elementAt(i) instanceof abc.notation.Tempo) {
-  						addTempoEventsFor(track, elapsedTime, getMidiMessagesFor((Tempo)staff.elementAt(i)));//, trackLengthInTicks));
-  					}
-  					else
-  						//==================================================================== KEY SIGNATURE
-  						if (staff.elementAt(i) instanceof abc.notation.KeySignature) {
-  							tuneKey = (KeySignature)(staff.elementAt(i));
-  							currentKey = new KeySignature(tuneKey.getAccidentals());
-  						}
-  						else
-  							//==================================================================== NOTE
-  							if (staff.elementAt(i) instanceof abc.notation.Note
-  									// Notes ending ties should be ignored. Already taken into 
-  									// account in getNoteLengthInTicks(Note)
-  									&& !((abc.notation.Note)staff.elementAt(i)).isEndingTie()) {
-  								Note note = (Note)staff.elementAt(i);
-  								long noteDuration;
-  								//The note duration if the note isn't part of a tuplet.
-  								noteDuration = getNoteLengthInTicks(note);
-  								playNote(note, i, currentKey, elapsedTime, noteDuration, track);
-  								elapsedTime+=noteDuration;
-  							}
-  							else
-  								//==================================================================== MULTI NOTE
-  								if ((staff.elementAt(i) instanceof abc.notation.MultiNote)) {
-  									MultiNote multiNote = (MultiNote)staff.elementAt(i);
-  									playMultiNote(multiNote, i, currentKey, elapsedTime, track);
-  									elapsedTime+=getNoteLengthInTicks(multiNote);
-  								}
-  				}
-  				//====================================================================== REPEAT BAR LINE
+			long elapsedTime = 0;
+			Note[] graceNotes = null;
+			Tune.Music staff = tune.getMusic();
+			while (i < staff.size()) {
+				if (!inWrongEnding) {
+					//==================================================================== TEMPO
+					if (staff.elementAt(i) instanceof abc.notation.Tempo) {
+						addTempoEventsFor(track, elapsedTime, getMidiMessagesFor((Tempo)staff.elementAt(i)));//, trackLengthInTicks));
+				}
+					else
+						//==================================================================== KEY SIGNATURE
+					if (staff.elementAt(i) instanceof abc.notation.KeySignature) {
+							tuneKey = (KeySignature)(staff.elementAt(i));
+							currentKey = new KeySignature(tuneKey.getAccidentals());
+					}
+					else
+					//==================================================================== NOTE
+					// Notes ending ties should be ignored. Already taken into
+					// account in getNoteLengthInTicks(Note)
+					if (staff.elementAt(i) instanceof abc.notation.Note
+						&& !((abc.notation.Note)staff.elementAt(i)).isEndingTie()) {
+
+						Note note = (Note)staff.elementAt(i);
+						long noteDuration;
+						if (note.hasGeneralGracing()) {
+							// currently not used
+							// future use: playing rolls, slides, etc.
+						}
+						if (note.hasGracingNotes()) {
+							graceNotes = note.getGracingNotes();
+							for (int j=0;j<graceNotes.length;j++) {
+								noteDuration = getNoteLengthInTicks(graceNotes[j]);
+								playNote(graceNotes[j], i, currentKey, elapsedTime, noteDuration, track);
+								elapsedTime+=noteDuration;
+							}
+						}
+						//The note duration if the note isn't part of a tuplet.
+						noteDuration = getNoteLengthInTicks(note);
+						playNote(note, i, currentKey, elapsedTime, noteDuration, track);
+						elapsedTime+=noteDuration;
+					}
+					else
+						//==================================================================== MULTI NOTE
+						if ((staff.elementAt(i) instanceof abc.notation.MultiNote)) {
+							MultiNote multiNote = (MultiNote)staff.elementAt(i);
+							playMultiNote(multiNote, i, currentKey, elapsedTime, track);
+							elapsedTime+=getNoteLengthInTicks(multiNote);
+						}
+				}
+    				//====================================================================== REPEAT BAR LINE
   				if (staff.elementAt(i) instanceof abc.notation.RepeatBarLine) {
   					RepeatBarLine bar = (RepeatBarLine)staff.elementAt(i);
   					if (repeatNumber<bar.getRepeatNumber() && lastRepeatOpen!=-1) {
@@ -113,29 +127,29 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   						i=lastRepeatOpen;
   					}
   					else
-  						if (repeatNumber>bar.getRepeatNumber())
-  							inWrongEnding = true;
-  						else
-  							inWrongEnding = false;
+					if (repeatNumber>bar.getRepeatNumber())
+						inWrongEnding = true;
+					else
+						inWrongEnding = false;
   				}
   				else
-  					//====================================================================== BAR LINE OPEN / CLOSE
-  					if (staff.elementAt(i) instanceof abc.notation.BarLine) {
-  						//currentKey = new KeySignature(tuneKey.getAccidentals());
-  						switch ( ((BarLine)(staff.elementAt(i))).getType()) {
-  							case BarLine.SIMPLE : break;
-  							case BarLine.REPEAT_OPEN : lastRepeatOpen=i; repeatNumber=1; break;
-  							case BarLine.REPEAT_CLOSE :
-  								if (repeatNumber<2 && lastRepeatOpen!=-1) { 
+				//====================================================================== BAR LINE OPEN / CLOSE
+				if (staff.elementAt(i) instanceof abc.notation.BarLine) {
+					//currentKey = new KeySignature(tuneKey.getAccidentals());
+					switch ( ((BarLine)(staff.elementAt(i))).getType()) {
+						case BarLine.SIMPLE : break;
+						case BarLine.REPEAT_OPEN : lastRepeatOpen=i; repeatNumber=1; break;
+						case BarLine.REPEAT_CLOSE :
+  								if (repeatNumber<2 && lastRepeatOpen!=-1) {
   									repeatNumber++; i=lastRepeatOpen;
   								}
   								else {
   									repeatNumber=1; lastRepeatOpen=-1;
   								}
   								break;
-  						}
-  					}
-  				//Whatever kind of bar line it is 
+					}
+				}
+  				//Whatever kind of bar line it is
   				if (staff.elementAt(i) instanceof abc.notation.BarLine)
 					currentKey = new KeySignature(tuneKey.getAccidentals());
   				i++;
@@ -149,24 +163,23 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   		}
   		return sequence;
   	}
-  	
-  	/** Returns the instrument currently used for sequence playback.  
+
+  	/** Returns the instrument currently used for sequence playback.
   	 * @return The instrument currently used for sequence playback. Returns <TT>null</TT>
   	 * if not set. */
   	public Instrument getInstrument(){
   		return instrument;
   	}
-  	
-  	/** Sets the instrument to be used for sequence playback. This implicitly loads the 
-  	 * given instrument. 
+
+  	/** Sets the instrument to be used for sequence playback. This implicitly loads the
+  	 * given instrument.
   	 * @param instr The instrument to be used for sequence playback. */
   	public void setInstrument(Instrument instr) throws MidiUnavailableException {
   		MidiSystem.getSynthesizer().loadInstrument(instr);
   		instrument = instr;
-  		
   	}
 
-  	/** Generates the midi events required to play the given note in the context 
+  	/** Generates the midi events required to play the given note in the context
   	 * described by the others parameters.
   	 * @param note The note to be played.
   	 * @param indexInScore The index of the note in the score.
@@ -175,7 +188,7 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   	 * @param duration The duration of the note expressed in ticks.
   	 * @param track The track where the note should be played.
   	 * @throws InvalidMidiDataException */
-  	 protected void playNote(Note note, int indexInScore, KeySignature currentKey, long timeReference, 
+  	 protected void playNote(Note note, int indexInScore, KeySignature currentKey, long timeReference,
 		  long duration, Track track) throws InvalidMidiDataException {
   		 if (!note.isRest() && !note.isEndingTie()) {
   			 addNoteOnEventsFor(track, timeReference, getNoteOneMessageFor(note, currentKey));
@@ -247,7 +260,7 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
         track.add(events[i]);
     return track.ticks();
   }
-  
+
   protected static long addEventsToTrack(Track track, MidiEvent event) {
 	  track.add(event);
 	  return track.ticks();

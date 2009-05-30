@@ -26,7 +26,7 @@ class JChordNote extends JNotePartOfGroup {
 		super(noteValue, base, c);
 		//onBaseChanged();
 	}
-	
+
 	protected void valuateNoteChars() {
 		if (note.getStrictDuration()==Note.HALF || note.getStrictDuration()==Note.WHOLE) {
 			noteChars = ScoreMetrics.NOTE_LONGER;
@@ -34,25 +34,18 @@ class JChordNote extends JNotePartOfGroup {
 		else
 			noteChars = ScoreMetrics.NOTE;
 	}
-	
+
 	public double render(Graphics2D context){
-		//super.render(context);
-		context.drawChars(noteChars, 0, 1, (int)displayPosition.getX(), (int)displayPosition.getY());
-		renderExtendedStaffLines(context, m_metrics, m_base);
-		renderAccidentals(context);
-		renderDots(context);
-		/*
-		Color previousColor = context.getColor();
-		context.setColor(Color.RED);
-		context.drawLine((int)getStemX(), (int)getStemYBegin(), 
-				(int)getStemX(), (int)getStemYBegin());
+		super.render(context);
+
+		// visual debug
+/*
+		java.awt.Color previousColor = context.getColor();
+		context.setColor(java.awt.Color.GREEN);
+		context.drawLine((int)getStemBeginPosition().getX(), (int)getStemBeginPosition().getY(),
+				(int)getStemEndPosition().getX(), (int)getStemEndPosition().getY());
 		context.setColor(previousColor);
-		/*Color previousColor = context.getColor();
-		context.setColor(Color.RED);
-		context.drawLine((int)getStemBegin().getX(), (int)getStemBegin().getY(), 
-				(int)getStemBegin().getX()+10, (int)getStemBegin().getY());
-		context.setColor(previousColor);*/
-		
+*/
 		return m_width;
 	}
 }

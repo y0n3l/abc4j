@@ -21,7 +21,7 @@ package abc.notation;
  * For instance :<BR/>
  * <B>Tuplets</B><BR/>
  * <IMG src="../../images/tuplets.gif"/><BR/>
- * The first tuplet describes 3 quarter notes in the time of 2. So in that case, 
+ * The first tuplet describes 3 quarter notes in the time of 2. So in that case,
  * the representation of each note of tuplet as a <TT>Note</TT> object is :
  * <UL>
  * <LI><TT>getStrictDuration()</TT> returns <TT>Note.QUARTER</TT></LI>
@@ -35,7 +35,7 @@ package abc.notation;
  * <B>Dots</B><BR/>
  * <IMG src="../../images/multiDots.jpg"/><BR/>
  * When a note is dotted, its strict duration remains unchanged. The only difference
- * between a non-dotted note and a dotted one can be retrieved from the method 
+ * between a non-dotted note and a dotted one can be retrieved from the method
  * <TT>countDots()</TT> that returns the number of dots for a given <TT>Note</TT> instance.
  * So in the example above :
  * <UL>
@@ -90,7 +90,8 @@ public class Note extends NoteAbstract
   /** The <TT>REST</TT> height type. */
   public static final byte REST		= -128;
 
-  private static final short LENGTH_RESOLUTION = 3;
+  //max short possible = 290, else transform to int = 560 (9:2 64th)
+  private static final short LENGTH_RESOLUTION = 12;
   /** The <TT>DOTTED_WHOLE</TT> length type. */
   public static final short DOTTED_WHOLE	= LENGTH_RESOLUTION * 96;
   /** The <TT>WHOLE</TT> length type. <IMG src="../../images/whole.jpg"/>*/
@@ -120,24 +121,22 @@ public class Note extends NoteAbstract
   /** The <TT>SIXTY_FOURTH</TT> length type. */
   public static final short SIXTY_FOURTH	= LENGTH_RESOLUTION;      // quadruple croche
   /** The height of the note AS A CONSTANT such as C D E F G A B <B>only</B> !!
-   * This strict height must be used with the octave transposition (if defined) to know the 
-   * real height of this note. Accidentals are not taken into account in this value. */ 
+   * This strict height must be used with the octave transposition (if defined) to know the
+   * real height of this note. Accidentals are not taken into account in this value. */
   private byte strictHeight = REST;
-  
+
   private byte octaveTransposition = 0;
   /** Accidental for this note. */
   private byte accidental = AccidentalType.NONE;
   /** The full whole duration that takes into account the dots. (why not
    * the tuplet stuff ? :/ ) */
   private short m_duration = -1;
-  /** The strict duration (that does not take into account the dots, 
+  /** The strict duration (that does not take into account the dots,
    * the tuplet or whatever : this is the pure note type definition. */
   private short m_strictDuration = EIGHTH;
   /** <TT>true</TT> if this note is tied, <TT>false</TT> otherwise. */
-  //private boolean m_isTied = false;
-  protected TieDefinition tieDefinition = null;
-  
-  /** Creates an abc note with the specified height. Accidental will inherit 
+
+  /** Creates an abc note with the specified height. Accidental will inherit
    * its default value <TT>AccidentalType.NONE</TT>.
    * @param heightValue The heigth of this note as a byte that respect the scale defined by
    * constants such as C D E F G A B c d e ..... The heigth is <TT>REST</TT> if
@@ -153,9 +152,9 @@ public class Note extends NoteAbstract
    * constants such as C D E F G A B c d e ..... The heigth is <TT>REST</TT> if
    * this note is a rest.
    * @param accidentalValue Accidental for this note. Possible values are
-   * <TT>AccidentalType.NATURAL</TT>, <TT>AccidentalType.SHARP</TT> (#), 
+   * <TT>AccidentalType.NATURAL</TT>, <TT>AccidentalType.SHARP</TT> (#),
    * <TT>AccidentalType.FLAT</TT> (b) or <TT>AccidentalType.NONE</TT>.
-   * @see #setAccidental(byte) 
+   * @see #setAccidental(byte)
    * @see #setHeight(byte) */
   public Note (byte heightValue, byte accidentalValue)
   {
@@ -170,13 +169,13 @@ public class Note extends NoteAbstract
    * constants such as C D E F G A B c d e ..... The heigth is <TT>REST</TT> if
    * this note is a rest.
    * @param accidentalValue Accidental for this note. Possible values are
-   * <TT>AccidentalType.NATURAL</TT>, <TT>AccidentalType.SHARP</TT> (#), 
+   * <TT>AccidentalType.NATURAL</TT>, <TT>AccidentalType.SHARP</TT> (#),
    * <TT>AccidentalType.FLAT</TT> (b) or <TT>AccidentalType.NONE</TT>.
    * @param octaveTranspositionValue The octave transposition for this note :
    * 1, 2 or 3 means "1, 2 or 3 octave(s) higher than the reference octave" and
-   * -1, -2 or -3 means "1, 2 or 3 octave(s) less than the reference octave". 
-   * @see #setAccidental(byte) 
-   * @see #setOctaveTransposition(byte) 
+   * -1, -2 or -3 means "1, 2 or 3 octave(s) less than the reference octave".
+   * @see #setAccidental(byte)
+   * @see #setOctaveTransposition(byte)
    * @see #setHeight(byte) */
   public Note (byte heightValue, byte accidentalValue, byte octaveTranspositionValue)
   {
@@ -187,18 +186,18 @@ public class Note extends NoteAbstract
   /** Sets the height of this note.
    * @param heigthValue The height of this note. The height is <TT>REST</TT> if
    * this note is a rest.
-   * @deprecated use setHeight(byte heigthValue) instead. sorry for the typo... 
+   * @deprecated use setHeight(byte heigthValue) instead. sorry for the typo...
    * @see #setHeight(byte) */
   public void setHeigth(byte heigthValue)
   { setHeight(heigthValue); }
-  
+
   /** Sets the height of this note. Accidentals are not taken into account in this value, Ex:
    * using this method you will be able to specify that your note is a C but not a C#.
-   * To express the sharp, you'll have to use the {@link #setAccidental(byte)} method.  
+   * To express the sharp, you'll have to use the {@link #setAccidental(byte)} method.
    * @param heightValue The height of this note as a byte that respect the scale defined by
    * constants such as C D E F G A B c d e ..... The height is <TT>REST</TT> if
-   * this note is a rest. 
-   * @see #getHeight() 
+   * this note is a rest.
+   * @see #getHeight()
    * @see #setAccidental(byte) */
   public void setHeight(byte heightValue) throws IllegalArgumentException {
 	  //checks if this height does not describe a sharp.
@@ -214,39 +213,43 @@ public class Note extends NoteAbstract
   /** Returns this note absolute height. This height <DEL>doesn't take in account</DEL>
    * <B>takes into account</B> octave transposition.
    * @return This note height.
-   * @deprecated use getHeight() instead. Sorry for the typo.... 
+   * @deprecated use getHeight() instead. Sorry for the typo....
    * @see #getHeight() */
   public byte getHeigth ()
   { return getHeight(); }
-  
+
   /** Returns this note height. This height <DEL>doesn't take in account</DEL>
-   * <B>takes into account</B> octave transposition. This height is not the height 
-   * of the note itself (like how it would be played using midi for instance) but 
-   * the height of its representation on a score. 
-   * For instance 2 notes written C and C# would have the same value returned 
+   * <B>takes into account</B> octave transposition. This height is not the height
+   * of the note itself (like how it would be played using midi for instance) but
+   * the height of its representation on a score.
+   * For instance 2 notes written C and C# would have the same value returned
    * by getHeight(). They would only differ with their accidental value returned
-   * by {@link #getAccidental()}. 
+   * by {@link #getAccidental()}.
    * @return The heigth of this note as a byte that respect the scale defined by
-   * constants such as C D E F G A B c d e .... 
+   * constants such as C D E F G A B c d e ....
    * @see #getStrictHeight()
    * @see #setHeight(byte) */
   public byte getHeight() {
 	  return (byte)(strictHeight + octaveTransposition*12);
   }
-  
+
   /** Returns <TT>true</TT> if the given note is strictly higher than this one.
-   * @param aNote A note instance. 
-   * @return <TT>true</TT> if the given note is strictly higher than this one, 
-   * <TT>false</TT> otherwise. 
+   * @param aNote A note instance.
+   * @return <TT>true</TT> if the given note is strictly higher than this one,
+   * <TT>false</TT> otherwise.
    * @see #isLowerThan(Note) */
   public boolean isHigherThan (Note aNote) {
 	  return getMidiLikeHeight()>aNote.getMidiLikeHeight();
   }
-  
+
   public boolean isLowerThan (Note aNote) {
 	  return getMidiLikeHeight()<aNote.getMidiLikeHeight();
   }
-  
+
+  public boolean isShorterThan(Note aNote) {
+	  return getDuration()<aNote.getDuration();
+  }
+
   private int getMidiLikeHeight() {
 	  int midiLikeHeight = getHeight();
 	  if (accidental==AccidentalType.SHARP)
@@ -256,24 +259,24 @@ public class Note extends NoteAbstract
 			  midiLikeHeight--;
 	  return midiLikeHeight;
   }
-  
+
   /** Returns this note absolute height. This height doesn't take in account
    * octave transposition.
    * @return The height of this note on the first octave. Possible values are
-   * <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>, <TT>A</TT>(404), 
-   * <TT>B</TT> or <TT>REST</TT> only. 
+   * <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>, <TT>A</TT>(440Hz),
+   * <TT>B</TT> or <TT>REST</TT> only.
    * @see #getHeight()
    * @see #setHeight(byte) */
   public byte getStrictHeight() {
 	  return getStrictHeight(strictHeight);
   }
- 
+
   /** Returns this note absolute height. This height doesn't take in account
    * octave transposition.
    * @param height A height of a note as a byte that respect the scale defined by
    * constants such as C D E F G A B c d e ....
    * @return The height of this note on the first octave. Possible values are
-   * <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>, <TT>A</TT>(404)
+   * <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>, <TT>A</TT>(440Hz)
    * <TT>B</TT> or <TT>REST</TT> only.
    * @see #getHeight() */
   public static byte getStrictHeight(byte height) {
@@ -288,15 +291,15 @@ public class Note extends NoteAbstract
 	  else
 		  return sh;
   }
-  
-  /** Returns the octave transposition for the specified height 
-   * relative to its strict height. For instance, the octave 
-   * transposition of <TT>Note.c</TT> is <TT>1</TT> because it 
+
+  /** Returns the octave transposition for the specified height
+   * relative to its strict height. For instance, the octave
+   * transposition of <TT>Note.c</TT> is <TT>1</TT> because it
    * is one octave higher than its strict height <TT>Note.C</TT>.
    * @param height A height as a byte that respect the scale defined by
    * constants such as C D E F G A B c d e ....
    * @return The number of octave(s), to reach the given height from
-   * the stric height. A positive value is returned if the height 
+   * the stric height. A positive value is returned if the height
    * is higher than the strict height, negative otherwise. */
   public static byte getOctaveTransposition(byte height) {
 	  if (height==REST)
@@ -307,8 +310,8 @@ public class Note extends NoteAbstract
   /** Returns the heigth of this note on the first octave.
    * @return the heigth of this note on the first octave. Possible values are
    * <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>, <TT>A</TT>(404)
-   * or <TT>B</TT>. 
-   * @deprecated use getStrictHeight() instead 
+   * or <TT>B</TT>.
+   * @deprecated use getStrictHeight() instead
    * @see #getStrictHeight() */
   public byte toRootOctaveHeigth()
   { return getStrictHeight(); }
@@ -329,34 +332,52 @@ public class Note extends NoteAbstract
   public byte getOctaveTransposition()
   { return octaveTransposition; }
 
-  /** Sets the length of this note. 
+  /** Sets the length of this note.
    * @deprecated use setDuration(short duration) instead.
-   * @param length The length of this note as a value adjusted to 
-   * the scale of constants such as <TT>Note.WHOLE</TT>, <TT>Note.HALF</TT> etc etc ... 
-   * @see #setDuration(short)*/
-  public void setLength(short length) { 
+   * @param length The length of this note as a value adjusted to
+   * the scale of constants such as <TT>Note.WHOLE</TT>, <TT>Note.HALF</TT> etc etc ...
+   * @see #setDuration(short)
+   */
+  public void setLength(short length) {
 	  m_duration = length;
   }
-  
+
+  /** Returns the length of all grace notes associated with this note.
+   * @return The sum of strict durations of associated grace notes.
+   * @see #getStrictDuration()
+   */
+  public int getGracingNotesLength()
+  {
+    int totalLength=0;
+    if (hasGracingNotes()) {
+		Note[] notes = getGracingNotes();
+		for (int i=0; i<notes.length; i++) {
+			totalLength+=notes[i].getStrictDuration();
+		}
+	}
+    return totalLength;
+  }
+
+
   /** Sets the length of this note. However, it is recommended to represent
-   * the note duration using methods such as setStrictDuration(short strictDuration), 
+   * the note duration using methods such as setStrictDuration(short strictDuration),
    * setDotted(byte dotted) etc etc as explained at the beginning of this class description.
-   * @param duration The length of this note as a value adjusted to 
-   * the scale of constants such as <TT>Note.WHOLE</TT>, <TT>Note.HALF</TT> etc etc ... 
+   * @param duration The length of this note as a value adjusted to
+   * the scale of constants such as <TT>Note.WHOLE</TT>, <TT>Note.HALF</TT> etc etc ...
    * @see #getDuration()*/
-  public void setDuration(short duration) { 
+  public void setDuration(short duration) {
 	  m_duration = duration;
-	  System.err.println("[warning]duration of " + this + 
+	  System.err.println("[warning]duration of " + this +
 			  " set in an absolute manner with " + duration + "(not recommanded but supported)");
 	  //Thread.dumpStack();
   }
-  
+
   /** Sets the strict duration of this note.
-   * @param strictDuration This note strict duration. Possible values are ONLY 
+   * @param strictDuration This note strict duration. Possible values are ONLY
    * <TT>Note.WHOLE</TT>, <TT>Note.HALF</TT>,
-   * <TT>Note.QUARTER</TT>, <TT>Note.EIGHTH</TT>, <TT>Note.SIXTEENTH</TT>, 
+   * <TT>Note.QUARTER</TT>, <TT>Note.EIGHTH</TT>, <TT>Note.SIXTEENTH</TT>,
    * <TT>Note.THIRTY_SECOND</TT>, <TT>Note.SIXTY_FOURTH</TT>.
-   * @exception IllegalArgumentException Thrown if the given duration does not 
+   * @exception IllegalArgumentException Thrown if the given duration does not
    * match the excepted ones. */
   public void setStrictDuration(short strictDuration) throws IllegalArgumentException {
 	  if (isStrictDuration(strictDuration)) {
@@ -366,18 +387,18 @@ public class Note extends NoteAbstract
 	  }
 	  else
 		  throw new IllegalArgumentException("The note duration " + strictDuration + " is not equals to " +
-				  "Note.WHOLE, Note.HALF, Note.QUARTER, Note.EIGHTH, Note.SIXTEENTH, " + 
+				  "Note.WHOLE, Note.HALF, Note.QUARTER, Note.EIGHTH, Note.SIXTEENTH, " +
 				  "Note.THIRTY_SECOND or Note.SIXTY_FOURTH");
 	  // Re init the whole duration => will be computed later on request only.
 	  m_duration = -1;
   }
-  
-  /** Returns the strict duration of this note. 
-   * @return The strict duration of this note. The dot, tuplet whatever... 
+
+  /** Returns the strict duration of this note.
+   * @return The strict duration of this note. The dot, tuplet whatever...
    * are taken NOT into account for the duration returned by this function.
    * The possible returned values are :
    * <TT>Note.WHOLE</TT>, <TT>Note.HALF</TT>,
-   * <TT>Note.QUARTER</TT>, <TT>Note.EIGHTH</TT>, <TT>Note.SIXTEENTH</TT>, 
+   * <TT>Note.QUARTER</TT>, <TT>Note.EIGHTH</TT>, <TT>Note.SIXTEENTH</TT>,
    * <TT>Note.THIRTY_SECOND</TT>, <TT>Note.SIXTY_FOURTH</TT> or -1 if this
    * note duration is not expressed using (strict duration + dots + tuplet)
    * but with an exotic duration (that can be retrieved using getDuration()
@@ -387,16 +408,16 @@ public class Note extends NoteAbstract
     return m_strictDuration;
   }
 
-  /** Returns the duration of this note. The duration returned here takes into 
+  /** Returns the duration of this note. The duration returned here takes into
    * account if the note is dotted, part of a tuplet and so on ... (as opposed
-   * to <TT>getStrictDuration()</TT> that only refers to the "pure" note) 
-   * @return The duration of this note as a value adjusted to 
+   * to <TT>getStrictDuration()</TT> that only refers to the "pure" note)
+   * @return The duration of this note as a value adjusted to
    * the scale of constants such as <TT>Note.WHOLE</TT>, <TT>Note.HALF</TT> etc etc ...
    * @see #setLength(short)
    * @see #getStrictDuration() */
   public short getDuration() {
 	  if (m_duration!=-1)
-		  //The duration has been set in an absolute manner (not recommanded, but 
+		  //The duration has been set in an absolute manner (not recommanded, but
 		  //can be usefull
 		  return m_duration;
 	  else {
@@ -405,10 +426,10 @@ public class Note extends NoteAbstract
 		  return m_duration = computeDuration(m_strictDuration, countDots());
 	  }
   }
-  
+
   /** Sets the accidental for this note.
    * @param accidentalValue Accidental for this note. Possible values are
-   * <TT>AccidentalType.NATURAL</TT>, <TT>AccidentalType.SHARP</TT> (#), 
+   * <TT>AccidentalType.NATURAL</TT>, <TT>AccidentalType.SHARP</TT> (#),
    * <TT>AccidentalType.FLAT</TT> (b) or <TT>AccidentalType.NONE</TT>. */
   public void setAccidental(byte accidentalValue)
   { accidental = accidentalValue; }
@@ -420,62 +441,26 @@ public class Note extends NoteAbstract
    * @see #setAccidental(byte) */
   public byte getAccidental()
   { return accidental; }
-  
+
   public boolean hasAccidental() {
 	  return accidental==AccidentalType.FLAT || accidental==AccidentalType.SHARP ||
 	  accidental == AccidentalType.NATURAL;
   }
 
-  /** Sets the tie definition for this note.
-   * @param tieDef The definition of the tie if this note is tied. <TT>NULL</TT> if the
-   * note should not be tied.
-   * @see #isTied() */
-  public void setTieDefinition(TieDefinition tieDef) { 
-	  //m_isTied = isTied;
-	  this.tieDefinition = tieDef;
-  }
-  
-  public TieDefinition getTieDefinition() { 
-	  //m_isTied = isTied;
-	  return tieDefinition;
-  }
-  
-  /** Returns <TT>true</TT> if this note is beginning a tie.
-   * @return <TT>true</TT> if this note is beginning a tie, <TT>false</TT>
-   * otherwise. */ 
-  public boolean isBeginningTie() { 
-	  return tieDefinition!=null && this.equals(tieDefinition.getStart());
-  }
-  
-  /** Returns <TT>true</TT> if this note is ending a tie.
-   * @return <TT>true</TT> if this note is ending a tie, <TT>false</TT>
-   * otherwise. */
-  public boolean isEndingTie() { 
-	  return tieDefinition!=null && this.equals(tieDefinition.getEnd());
-  }
-  
-
-  /** Returns <TT>true</TT> if this note is tied.
-   * @return <TT>true</TT> if this note is tied, <TT>false</TT> otherwise.
-   * @see #setTieDefinition(TieDefinition) */
-  public boolean isTied() { 
-	  return tieDefinition!=null;//isPartOfSlur() && (getSlurDefinition()==null || !getSlurDefinition().getEnd().equals(this)); 
-  }
-
-  /** A convenient method that returns <TT>true</TT> if this note is a rest. 
-   * A note is a rest if its height returned by {@link #getHeight()} 
-   * or {@link #getStrictHeight()} is equals to <TT>Note.REST</TT>.  
+  /** A convenient method that returns <TT>true</TT> if this note is a rest.
+   * A note is a rest if its height returned by {@link #getHeight()}
+   * or {@link #getStrictHeight()} is equals to <TT>Note.REST</TT>.
    * @return <TT>true</TT> if this note is a rest, <TT>false</TT> otherwise. */
   public boolean isRest()
   { return (strictHeight == REST); }
-  
+
   /** Sets the number of dots for this note.
    * @param dotsNb The number of dots for this note.
    * @see #countDots() */
-  public void setDotted(byte dotsNb) { 
+  public void setDotted(byte dotsNb) {
   	super.setDotted(dotsNb);
   	// Re init the whole duration => will be computed later on request only.
-  	m_duration = -1; 
+  	m_duration = -1;
   }
 
   public static byte convertToNoteType(String note)
@@ -546,15 +531,15 @@ public class Note extends NoteAbstract
     //string2Return = string2Return.concat(relativeLength.toString());
     return string2Return;
   }
-  
-  /** Returns <TT>true</TT> if the duration of the note is one of the 
+
+  /** Returns <TT>true</TT> if the duration of the note is one of the
    * following : <TT>Note.WHOLE</TT>, <TT>Note.HALF</TT>,
-   * <TT>Note.QUARTER</TT>, <TT>Note.EIGHTH</TT>, <TT>Note.SIXTEENTH</TT>, 
+   * <TT>Note.QUARTER</TT>, <TT>Note.EIGHTH</TT>, <TT>Note.SIXTEENTH</TT>,
    * <TT>Note.THIRTY_SECOND</TT>, <TT>Note.SIXTY_FOURTH</TT>.
    * @param noteDuration The note duration to be checked
-   * @return <TT>true</TT> if the duration of the note is one of the 
+   * @return <TT>true</TT> if the duration of the note is one of the
    * following : <TT>Note.WHOLE</TT>, <TT>Note.HALF</TT>,
-   * <TT>Note.QUARTER</TT>, <TT>Note.EIGHTH</TT>, <TT>Note.SIXTEENTH</TT>, 
+   * <TT>Note.QUARTER</TT>, <TT>Note.EIGHTH</TT>, <TT>Note.SIXTEENTH</TT>,
    * <TT>Note.THIRTY_SECOND</TT>, <TT>Note.SIXTY_FOURTH</TT>.
    * <TT>false</TT> otherwise. */
   public static boolean isStrictDuration(short noteDuration) {
@@ -566,7 +551,7 @@ public class Note extends NoteAbstract
   }
 
   	/** Compute a duration that takes strict duration as a reference plus
-  	 * the duration of the optional dots and the tuplet if any. */ 
+  	 * the duration of the optional dots and the tuplet if any. */
   	private short computeDuration(short strictDuration, int dotsNumber){
   		short duration = strictDuration;
   	    if (isPartOfTuplet()) {
@@ -588,7 +573,7 @@ public class Note extends NoteAbstract
   	    }
   	    return duration;
   	}
-  	
+
   	public static Note getHighestNote(Note[] notes) {
 		Note highestNote = notes[0];
 		for (int i=0; i<notes.length; i++) {
@@ -599,7 +584,20 @@ public class Note extends NoteAbstract
 		}
 		return highestNote;
 	}
-  	
+
+  	public static int getLowestNoteIndex(Note[] notes) {
+		Note lowestNote = notes[0];
+		int index = 0;
+		for (int i=0; i<notes.length; i++) {
+			if(notes[i].getHeight()<lowestNote.getHeight()) {
+				lowestNote =notes[i];
+				index = i;
+				//System.out.println("lowest note is" + i);
+			}
+		}
+		return index;
+	}
+
   	public static int getHighestNoteIndex(Note[] notes) {
 		Note highestNote = notes[0];
 		int index = 0;
@@ -612,7 +610,7 @@ public class Note extends NoteAbstract
 		}
 		return index;
 	}
-	
+
 	public static Note getLowestNote(Note[] notes) {
 		Note lowestNote = notes[0];
 		for (int i=0; i<notes.length; i++) {

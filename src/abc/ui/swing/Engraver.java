@@ -1,0 +1,209 @@
+/**
+ * 
+ */
+package abc.ui.swing;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.TreeSet;
+
+import abc.notation.Note;
+import abc.notation.Tune;
+import abc.notation.Tune.Music;
+
+/**
+ * @author Sylvain Machefert
+ *
+ */
+public class Engraver {
+	
+	private HashMap spacesAfter;
+	
+	public static final int NONE = -1;
+	public static final int DEFAULT = 0;
+	
+	private int m_mode = DEFAULT;
+	private int m_variation = 0;
+	
+	protected Engraver() {
+		this(DEFAULT);
+	}
+	
+	protected Engraver(int mode) {
+		spacesAfter = new HashMap();
+		setMode(mode);
+	}
+	
+	/**
+	 * Sets the engraving mode
+	 * <ul><li>{@link #NONE} : equal space between each note
+	 * <li>{@link #DEFAULT} : smaller space for short note, bigger space for long notes, something that look nice ;)
+	 * </ul>
+	 * @param mode
+	 */
+	public void setMode(int mode) {
+		setMode(mode, 0);
+	}
+	
+	/**
+	 * Sets the engraving mode
+	 * <ul><li>{@link #NONE} : equal space between each note
+	 * <li>{@link #DEFAULT} : smaller space for short note, bigger space for long notes, something that look nice ;)
+	 * </ul>
+	 * @param mode {@link #DEFAULT} or {@link #NONE}
+	 * @param variation, in % negative to reduce, positive
+	 * to improve space between notes.
+	 */
+	public void setMode(int mode, int variation) {
+		spacesAfter.clear();
+		m_mode = mode;
+		//bounds variation %
+		//variation = Math.max(variation, -50);
+		m_variation = variation;
+		if (m_mode == DEFAULT) {
+			double factor = 1 + variation/100f;
+			setSpaceAfter(Note.DOTTED_WHOLE, 30*factor);
+			setSpaceAfter(Note.WHOLE, 25*factor);
+			setSpaceAfter(Note.DOTTED_HALF, 20*factor);
+			setSpaceAfter(Note.HALF, 15*factor);
+			setSpaceAfter(Note.DOTTED_QUARTER, 12*factor);
+			setSpaceAfter(Note.QUARTER, 10*factor);
+			setSpaceAfter(Note.DOTTED_EIGHTH, 7*factor);
+			setSpaceAfter(Note.EIGHTH, 5*factor);
+			setSpaceAfter(Note.DOTTED_SIXTEENTH, 2*factor);
+			//invert factor
+			factor = 1 - variation/100;
+			setSpaceAfter(Note.SIXTEENTH, -1*factor);
+			setSpaceAfter(Note.DOTTED_THIRTY_SECOND, -2*factor);
+			setSpaceAfter(Note.THIRTY_SECOND, -3*factor);
+			setSpaceAfter(Note.DOTTED_SIXTY_FOURTH, -4*factor);
+			setSpaceAfter(Note.SIXTY_FOURTH, -5*factor);
+		}
+		else { //mode==NONE
+			//do nothing, will always return 0
+		}
+	}
+
+	/**
+	 * Adapt the engraving to the tune, i.e. search for the
+	 * shortest note in the tune. If shortest note is a quarter,
+	 * we can reduce the space between quarter.
+	 * @param tune
+	 */
+	protected void adaptToTune(Tune tune, ScoreMetrics metrics) {
+		//reinit the values of the engraving mode
+		setMode(m_mode, m_variation);
+		
+		if (m_mode != NONE) {
+			//11=notes spacing at 45px (default font size)
+			double ratio = 100 * (11 / metrics.getNotesSpacing()) - 100;
+			int oldVariation = m_variation;
+			setMode(m_mode, m_variation - (int)ratio);
+			m_variation = oldVariation;
+			
+			Music music = tune.getMusic();
+			int shortestDuration = music.getShortestNote().getDuration();
+			//System.out.println("shortest note duration = "+shortest.getDuration());
+			short min = /*(shortestDuration >= Note.QUARTER)
+				? Note.SIXTEENTH
+				: */Note.SIXTEENTH;
+			if (shortestDuration > min) {
+				TreeSet set = new TreeSet(spacesAfter.keySet());
+				Object[] durations = set.toArray();
+				int iMin = 0, iShortest = 0;
+				for (int i = 0; i < durations.length; i++) {
+					//System.out.println("durations["+i+"] = "+durations[i]);
+					int j = ((Integer) durations[i]).intValue();
+					if (j == min)
+						iMin = i;
+					if (j == shortestDuration)
+						iShortest = i;
+				}
+				int offset = (iShortest>iMin)?iShortest - iMin:0;
+				if (offset != 0) {
+					for (int i = durations.length-1; i >= iShortest; i--) {
+						//DEBUG
+						/*String s = "";
+						for (Iterator itSet = set.iterator(); itSet.hasNext();) {
+							Integer i2 = (Integer) itSet.next();
+							System.out.print(i2+"\t");
+							s += getSpaceAfter(i2.intValue())+"\t";
+						}
+						System.out.println("\n"+s);*/
+						setSpaceAfter(((Integer) durations[i]).intValue(),
+							getSpaceAfter( ((Integer)durations[i-offset]).intValue())
+							);
+					}
+				}
+				//System.out.println(spaceAfter.keySet().toArray());
+				//System.out.println(spaceAfter.entrySet().toArray());
+			}
+		}
+	}
+	
+	public void setSpaceAfter(int noteLength, double space) {
+		spacesAfter.put(new Integer(noteLength), new Double(space));
+	}
+	
+	public double getSpaceAfter(int noteDuration) {
+		if (m_mode == NONE)
+			return 0;
+		Integer i = new Integer(noteDuration);
+		if (spacesAfter.containsKey(i))
+			return ((Double) spacesAfter.get(i)).doubleValue();
+		//This assumes that 64th and dotted whole space are defined!
+		//TODO getLongest, getShortest
+		else if (noteDuration <= Note.SIXTY_FOURTH) 
+			return getSpaceAfter(Note.SIXTY_FOURTH);
+		else if (noteDuration >= Note.DOTTED_WHOLE)
+			return getSpaceAfter(Note.DOTTED_WHOLE);
+		else {
+			try {
+				//System.out.println("Unknown note duration : "+noteDuration);
+				int[] nearests = getNearestDurations(noteDuration);
+				int topD = nearests[0], bottomD = nearests[1];
+				//System.out.println(" --> nearests : top="+topD+", bottom="+bottomD);
+				if (topD == bottomD)
+					return getSpaceAfter(topD);
+				float percent = (float)(noteDuration-bottomD)/(float)(topD-bottomD);
+				//System.out.println(" --> % = "+(noteDuration-bottomD)+"/"+(topD-bottomD)+"="+percent);
+				double topL = getSpaceAfter(topD);
+				double bottomL = getSpaceAfter(bottomD);
+				double ret = (double) ((percent*(topL-bottomL)) + bottomL);
+				//System.out.println(" --> topL="+topL+", bottomL="+bottomL+" = "+ret);
+				return ret;
+			} catch (Exception e) {
+				System.err.println(e.getMessage());
+				return 0;
+			}
+		}
+	}
+	
+	private int[] getNearestDurations(int unknownDuration) {
+		int[] ret = {Note.DOTTED_WHOLE, Note.SIXTY_FOURTH};
+		for (Iterator it = spacesAfter.keySet().iterator(); it.hasNext();) {
+			int i = ((Integer) it.next()).intValue();
+			if (i > unknownDuration && i < ret[0])
+				ret[0] = i;
+			else if (i < unknownDuration && i > ret[1])
+				ret[1] = i;
+		}
+		return ret;
+	}
+	
+	protected double getNoteSpacing(JScoreElement e) {
+		Note n1 = null;
+		if (e instanceof JGroupOfNotes) {
+			JGroupOfNotes jgon = (JGroupOfNotes) e;
+			n1 = jgon.m_notes[jgon.m_notes.length-1];
+		} else if (e instanceof JNote) {
+			n1 = ((JNote) e).note;
+		}
+		/*System.out.println(e.getClass().getSimpleName()+"\t"
+				+((n1!=null)?(n1.getHeight()+"\t"+n1.getDuration()
+						+"\t"+getSpaceAfter(n1.getDuration()))
+						:"null")); /* */
+		return (n1==null) ? 0 : (getSpaceAfter(n1.getDuration()));
+	}
+	
+}

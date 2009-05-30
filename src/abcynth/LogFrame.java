@@ -29,6 +29,7 @@ import abc.parser.InvalidTokenEvent;
 /** */
 public class LogFrame extends JFrame implements AbcFileParserListenerInterface
 {
+  private static final long serialVersionUID = -1909417662191372084L;
   private JTextArea m_errorsArea = null;
 
   public LogFrame()

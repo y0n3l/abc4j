@@ -52,11 +52,11 @@ class JChordPartOfGroup extends JChord implements JGroupableNote {
 			return ((JNotePartOfGroup)anchor).getStemYEnd();
 	}
 	
-	public Point2D getStemBegin() {
+	public Point2D getStemBeginPosition() {
 		if (m_normalizedChords!=null)
-			return ((JChordPartOfGroup)m_normalizedChords[0]).getStemBegin();
+			return ((JChordPartOfGroup)m_normalizedChords[0]).getStemBeginPosition();
 		else
-			return ((JNotePartOfGroup)anchor).getStemBegin();
+			return ((JNotePartOfGroup)anchor).getStemBeginPosition();
 	}
 	
 	public JNotePartOfGroup getReferenceNoteForGroup () {

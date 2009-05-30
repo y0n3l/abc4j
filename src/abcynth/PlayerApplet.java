@@ -32,6 +32,7 @@ import abc.parser.TuneBook;
  * tunes. */
 public class PlayerApplet extends JApplet
 {
+  private static final long serialVersionUID = 2227304461525394613L;
   private static final String DEMO_FILE_NAME = "LGtunes.abc";
   private PlayerApp m_app = null;
   //private TunePlayer m_player = null;

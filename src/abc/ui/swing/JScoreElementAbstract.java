@@ -34,9 +34,13 @@ import abc.notation.Tune;
 abstract class JScoreElementAbstract implements JScoreElement {
 	/** The metrics to be used to calculate this rendition element */ 
 	protected ScoreMetrics m_metrics = null;
-	/** The reference point (bottom, left) that should be used when rendering
-	 * this element. */
-	protected Point2D m_base = null;
+	/**
+	 * The reference point (bottom, left) that should be used when rendering
+	 * this element.
+	 * 
+	 * Use {@link #getBase()} which is sometimes extended
+	 */
+	private Point2D m_base = null;
 	/** The width of this rendition element */
 	protected double m_width = -1;
 	/** Teh bounding box (more or less humm....) that encapsulates
@@ -125,12 +129,12 @@ abstract class JScoreElementAbstract implements JScoreElement {
 	/** Renders this Score element to the given graphic context. 
 	 * @param g2 */
 	public double render(Graphics2D g2) {
-		/*Color previousColor = g.getColor();
-		g.setColor(Color.RED);
+		/* * /java.awt.Color previousColor = g2.getColor();
+		g2.setColor(java.awt.Color.RED);
 		m_boundingBox = getBoundingBox();
-		g.drawRect((int)(m_boundingBox.getX()), (int)(m_boundingBox.getY()), 
+		g2.drawRect((int)(m_boundingBox.getX()), (int)(m_boundingBox.getY()), 
 				(int)(m_boundingBox.getWidth()), (int)(m_boundingBox.getHeight()));
-		g.setColor(previousColor);*/
+		g2.setColor(previousColor);/**/
 		return m_width;
 	}
 }

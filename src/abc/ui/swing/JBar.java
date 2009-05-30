@@ -49,10 +49,10 @@ class JBar extends JScoreElementAbstract{
 		m_barWidth = (int)(m_metrics.getNoteWidth()*0.5);
 		m_barDotsSpacing = (int)(m_metrics.getNoteWidth()*0.2);
 		int height = (int)m_metrics.getStaffCharBounds().getHeight();
-		m_topDotY = (int)(m_base.getY()-height*0.61);
-		m_bottomDotY = (int)(m_base.getY()-height*0.4);
+		m_topDotY = (int)(getBase().getY()-height*0.61);
+		m_bottomDotY = (int)(getBase().getY()-height*0.4);
 		switch (m_barLine.getType()) {
-			case BarLine.SIMPLE :  
+			case BarLine.SIMPLE :
 				m_width = 0;
 				break;
 			case BarLine.REPEAT_OPEN : 
@@ -68,6 +68,7 @@ class JBar extends JScoreElementAbstract{
 		super.render(context);
 		int height = (int)m_metrics.getStaffCharBounds().getHeight();
 		//System.out.println("space between = " + m_barDotsSpacing);
+		Point2D m_base = getBase();
 		switch (m_barLine.getType()) {
 			case BarLine.REPEAT_OPEN : 
 				context.fillRect((int)m_base.getX(), (int)m_base.getY()-height, m_barWidth, height);

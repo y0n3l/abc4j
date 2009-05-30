@@ -29,6 +29,7 @@ public class GracingDefinition extends AutomataDefinition
     {
       State state = new State(AbcTokenType.GRACING, true);
       char[] chars = {'~', '.', 'v', 'u'};
+
       getStartingState().addTransition(new Transition(state, chars));
     }
 }

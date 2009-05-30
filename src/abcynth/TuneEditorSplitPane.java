@@ -40,6 +40,7 @@ import abcynth.ui.ParsingEventsList;
 /** A pane for displaying tunes. */
 public class TuneEditorSplitPane extends JSplitPane// implements TuneParserListenerInterface
 {
+  private static final long serialVersionUID = -6870328612084596925L;
   private TuneEditorPane m_tunePane = null;
   //private TuneParser m_parser = null;
   private JList m_errorsList = null;
@@ -53,7 +54,7 @@ public class TuneEditorSplitPane extends JSplitPane// implements TuneParserListe
   private static final String TOKENS_TAB_NAME = "Tokens";
   private static final String SCORE_TAB_NAME = "Score";
   private static final boolean DISPLAY_TOKEN_TAB = false;
-  
+
   private static final int SCORE_SIZE = 38;
 
   public TuneEditorSplitPane()
@@ -63,8 +64,9 @@ public class TuneEditorSplitPane extends JSplitPane// implements TuneParserListe
     m_tunePane = new TuneEditorPane();
     m_errorsList = new ErrorsList(m_tunePane.getParser());
     m_score = new JScoreComponent();
-    m_score.setJustification(true);
-    m_score.setSize(SCORE_SIZE);
+    m_score.setJustified(true);
+    m_score.getScoreMetrics().setNotationFontSize(SCORE_SIZE);
+    m_score.refresh();
     m_tunePane.getParser().addListener(new TuneParserAdapter(){
     	public void tuneEnd(Tune tune){
     		m_score.setTune(tune);
@@ -159,9 +161,14 @@ public class TuneEditorSplitPane extends JSplitPane// implements TuneParserListe
 
   public TuneEditorPane getTuneEditorPane()
   { return m_tunePane; }
-  
+
   public JScoreComponent getScore()
   { return m_score; }
+
+
+
+
+
 
 
 }

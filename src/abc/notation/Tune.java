@@ -15,7 +15,9 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.notation;
 
+import java.util.Collection;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Vector;
 
 import scanner.PositionableInCharStream;
@@ -402,7 +404,8 @@ public class Tune implements Cloneable
 
   public class Music extends Vector {
 	  
-	  protected NoteAbstract lastNote = null; 
+	private static final long serialVersionUID = 5411161761359626571L;
+	protected NoteAbstract lastNote = null; 
     public Music ()
     { super (); }
 
@@ -513,8 +516,8 @@ public class Tune implements Cloneable
     	}
     	return highestNote;
     }
-
-    /** <TT>MultiNote</TT> instances are ignored.  
+    
+    /**  
      * @param noteBegin (included)
      * @param noteEnd (included)
      * @return The lowest note between the two given score elements if found.
@@ -549,6 +552,59 @@ public class Tune implements Cloneable
     	return lowestNote;
 
 	}
+    
+    /** <TT>MultiNote</TT> instances are ignored.  
+     * Returns a collection of Note between begin and end included
+     * @param noteBegin
+     * @param noteEnd
+     * @return a Collection of Note
+     * @throws IllegalArgumentException
+     */
+    public Collection getNotesBetween(MusicElement noteBegin, MusicElement noteEnd)
+    	throws IllegalArgumentException {
+    	int idxBegin = indexOf(noteBegin);
+    	int idxEnd = this.indexOf(noteEnd);
+    	if (idxBegin==-1)
+    		throw new IllegalArgumentException("Note " + noteBegin + " hasn't been found in tune");
+    	if (idxEnd==-1)
+        	throw new IllegalArgumentException("Note " + noteEnd + " hasn't been found in tune");
+    	if (idxBegin>idxEnd)
+    		throw new IllegalArgumentException("Note " + noteBegin + " is located after " + noteEnd + " in the score");
+    	Collection ret = new Vector();
+    	MusicElement currentScoreEl;
+    	for (int i=idxBegin; i<=idxEnd; i++) {
+    		currentScoreEl=(MusicElement)elementAt(i);
+    		if (currentScoreEl instanceof Note)
+    			ret.add((Note)currentScoreEl);
+    	}
+    	return ret;
+    }
+
+    /** <TT>MultiNote</TT> instances are ignored.  
+     * @return The shortest note in the tune.
+     */
+    public Note getShortestNote() throws IllegalArgumentException {
+    	Note shortestNote = null;
+    	//init
+    	MusicElement currentScoreEl;
+    	Iterator it = iterator();
+    	while (it.hasNext()) {
+    		currentScoreEl=(MusicElement)it.next();
+    		if (currentScoreEl instanceof Note) {
+    			if (shortestNote == null)
+    				shortestNote = (Note)currentScoreEl;
+    			else if (((Note)currentScoreEl)
+    						.isShorterThan(shortestNote))
+    			shortestNote = (Note)currentScoreEl;
+    		/* else
+    			if (currentScoreEl instanceof MultiNote && ((MultiNote)currentScoreEl).getLowestNote().isLowerThan(lowestNote))
+    					lowestNote = ((MultiNote)currentScoreEl).getLowestNote();*/
+    		}
+    	}
+    	return shortestNote;
+
+	}
+    
     
     /*public Note getLowestNoteBewteen(int scoreElmntIndexBegin, int ScoreElmtIndexEnd) throws IllegalArgumentException {
     	if (scoreElmntIndexBegin>ScoreElmtIndexEnd)

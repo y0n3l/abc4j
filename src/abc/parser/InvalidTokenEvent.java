@@ -23,6 +23,7 @@ import scanner.TokenType;
 /** Event generated when an invalid token is encountered by a parser. */
 public class InvalidTokenEvent extends TokenEvent
 {
+  private static final long serialVersionUID = 4010380470678842731L;
   /** The expected token type. */
   private TokenType m_expectedTokenType = TokenType.UNKNOWN;
   private CharStreamPosition m_position = null;

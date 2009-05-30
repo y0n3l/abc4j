@@ -23,6 +23,7 @@ import javax.swing.JOptionPane;
 
 public class HelpAction extends AbstractAction
 {
+  private static final long serialVersionUID = 3645150876472254238L;
   private Component m_parent = null;
 
   public HelpAction(String name, String description, int shortcurt, Component parent)

@@ -32,6 +32,7 @@ import abc.parser.TuneParserListenerInterface;
 /** */
 public class ParsingEventsList extends JTable implements TuneParserListenerInterface
 {
+  private static final long serialVersionUID = -5448619364935299044L;
   private TuneParser m_parser = null;
   private ParsingEventsTableModel m_model = null;
 
@@ -113,7 +114,8 @@ public class ParsingEventsList extends JTable implements TuneParserListenerInter
 
   public class ParsingEventsTableModel extends AbstractTableModel// implements TuneBookListenerInterface
   {
-    private TuneParser m_tuneParser = null;
+    private static final long serialVersionUID = -4695151725324770777L;
+	private TuneParser m_tuneParser = null;
     private Vector m_events = null;
 
 

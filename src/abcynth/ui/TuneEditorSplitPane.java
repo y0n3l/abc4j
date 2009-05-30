@@ -26,6 +26,7 @@ import abc.ui.swing.TuneEditorPane;
 /** A pane for displaying tunes. */
 public class TuneEditorSplitPane extends JSplitPane// implements TuneParserListenerInterface
 {
+  private static final long serialVersionUID = -7079256875832517566L;
   private TuneEditorPane m_tunePane = null;
   //private TuneParser m_parser = null;
   private JList m_errorsList = null;

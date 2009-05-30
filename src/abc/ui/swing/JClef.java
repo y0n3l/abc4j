@@ -18,17 +18,17 @@ package abc.ui.swing;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
+import abc.notation.Clef;
 import abc.notation.MusicElement;
 
 /** This class is in charge of rendering a staff clef. */
 class JClef extends JScoreElementAbstract {
 	
-	public static final char G_CLEF = '\uF026';
-	
 	//protected BarLine m_barLine = null;
 	
 	public JClef(Point2D base, ScoreMetrics c) {
 		super (c);
+		//TODO m_metrics.getClefWidth+noteWidth/4
 		m_width = 3*m_metrics.getNoteWidth();
 		setBase(base);
 	}
@@ -37,7 +37,7 @@ class JClef extends JScoreElementAbstract {
 	}
 	
 	public MusicElement getMusicElement() {
-		return null;
+		return Clef.G;
 	}
 	
 	public double render(Graphics2D context){
@@ -45,9 +45,10 @@ class JClef extends JScoreElementAbstract {
 		/*char[] chars2 = {ScoreMetrics.STAFF_SIX_LINES};
 		context.drawChars(chars2, 0, chars2.length, 
 				(int)m_base.getX(), (int)(m_base.getY()));*/
-		char[] chars = {G_CLEF};
+		char[] chars = {m_metrics.getClefChar(Clef.G)};
 		context.drawChars(chars, 0, chars.length, 
-				(int)m_base.getX(), (int)(m_base.getY()-m_metrics.getNoteHeigth()));
+				(int)(getBase().getX()+m_metrics.getNoteWidth()/4),
+				(int)(getBase().getY()-m_metrics.getNoteHeight()));
 		return m_width;
 	}
 }

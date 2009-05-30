@@ -35,6 +35,7 @@ import abcynth.ui.TuneBookTable;
  * tunes. */
 public class TuneBookEditorPanel extends JSplitPane
 {
+  private static final long serialVersionUID = -7199977154233819313L;
   //private static final String FIRST_TAB_NAME = "Header";
   //private static final String SECOND_TAB_NAME = "Errors";
   //private static final String THIRD_TAB_NAME = "Tokens";

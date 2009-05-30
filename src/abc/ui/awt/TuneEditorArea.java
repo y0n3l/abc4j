@@ -24,6 +24,7 @@ import abc.parser.*;
  * actions. */
 public class TuneEditorArea extends TextArea
 {
+  private static final long serialVersionUID = -687399329203942962L;
   private static final int IDLE_TIME_BEFORE_REFRESH = 200;
   private int m_idleTimeBeforeRefresh = IDLE_TIME_BEFORE_REFRESH;
   /** The thread in charge of refreshing the tune representation of this editor pane. */

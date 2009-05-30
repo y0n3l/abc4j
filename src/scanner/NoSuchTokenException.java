@@ -20,5 +20,7 @@ import java.lang.RuntimeException;
 /** A runtime exception thrown when no more token can be generated. */
 public class NoSuchTokenException extends RuntimeException
 {
+
+	private static final long serialVersionUID = 3382649357979805659L;
 }
 

@@ -24,6 +24,7 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
@@ -32,7 +33,7 @@ import abc.notation.MusicElement;
 import abc.notation.Tune;
 
 /**
- * This JComponent displays tunes scores. You can get scores such as : <BR/> 
+ * This JComponent displays tunes scores. You can get scores such as : <BR/>
  * <CENTER>
  * <IMG src="../../../images/scoreEx.jpg"/> </CENTER>
  * <BR/>
@@ -40,52 +41,69 @@ import abc.notation.Tune;
  * with your tune as parameter.<BR/>
  * Basically, a score if composed of {@link abc.ui.swing.JScoreElement score elements}
  * @see Tune
- * @see JScoreElement 
+ * @see JScoreElement
  */
 public class JScoreComponent extends JComponent {
+
+	private static final long serialVersionUID = 7903517456075406436L;
 	private static final Color SELECTED_ITEM_COLOR = Color.RED;
 	/** The graphical representation of the tune currently set.
 	 * <TT>null</TT> if no tune is set. */
-	protected JTune m_jTune = null;
-	
+	private JTune m_jTune = null;
+
 	//private int staffLinesOffset = -1;
 	/** The dimensions of this score. */
-	protected Dimension m_dimension = null;
-	/** WTF ??? does not seem to be really taken into account anyway... */
+	private Dimension m_dimension = null;
+	/** The space of the left margin */
+	// NOTE: must set XOffset for JTune.setMarginLeft() for offset to have any effect
 	private int XOffset = 0;
 	/** The place where all spacing dimensions are expressed. */
-	protected ScoreMetrics m_metrics = null;
+	private ScoreMetrics m_metrics = null;
+	private Engraver m_engraver = null;
 	/** The buffer where the score image is put before rendition in the swing component. */
-	protected BufferedImage m_bufferedImage = null;
+	private BufferedImage m_bufferedImage = null;
 	/** The graphic context of the buffered image used to generate the score. */
-	protected Graphics2D m_bufferedImageGfx = null;
+	private Graphics2D m_bufferedImageGfx = null;
 	/** Set to <TT>true</TT> if the score drawn into the buffered image is
 	 * outdated and does not represent the tune currently set. */
-	protected boolean m_isBufferedImageOutdated = true;
+	private boolean m_isBufferedImageOutdated = true;
 	/** The size used for the score scale. */
-	protected float m_size = 45;
-	/** <TT>true</TT> if the rendition of the score should be justified, 
+	//protected float m_size = 45;
+	/** <TT>true</TT> if the rendition of the score should be justified,
 	 * <TT>false</TT> otherwise. */
-	protected boolean m_isJustified = false;
-	/** The selected item in this score. <TT>null</TT> if no 
+	private boolean m_isJustified = false;
+	/** The selected item in this score. <TT>null</TT> if no
 	 * item is selected. */
-	protected JScoreElement m_selectedItem = null;
-	
-	protected int staffLinesSpacing = -1;
-	
+	private JScoreElement m_selectedItem = null;
+
+	//protected int staffLinesSpacing = -1;
+
+	private boolean m_showTitles = true;
+	private byte m_stemPolicy = 0;
+
 	/** Default constructor. */
 	public JScoreComponent() {
 		m_dimension = new Dimension(1,1);
 		initGfx();
 	}
-	
+
 	protected void initGfx(){
 		m_bufferedImage = new BufferedImage((int)m_dimension.getWidth(), (int)m_dimension.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		m_bufferedImageGfx = (Graphics2D)m_bufferedImage.createGraphics();
-		m_metrics = new ScoreMetrics(m_bufferedImageGfx, m_size);
-		staffLinesSpacing = (int)(m_metrics.getStaffCharBounds().getHeight()*2.5);
+		//staffLinesSpacing = (int)(m_metrics.getStaffCharBounds().getHeight()*2.5);
 	}
-	
+
+	public ScoreMetrics getScoreMetrics() {
+		if (m_metrics == null)
+			m_metrics = new ScoreMetrics(m_bufferedImageGfx);
+		return m_metrics;
+	}
+	public Engraver getEngraver() {
+		if (m_engraver == null)
+			m_engraver = new Engraver(Engraver.DEFAULT);
+		return m_engraver;
+	}
+
 	/** Draws the current tune score into the given graphic context.
 	 * @param g Graphic context. */
 	protected void drawIn(Graphics2D g){
@@ -93,11 +111,11 @@ public class JScoreComponent extends JComponent {
 			m_jTune.render(g);
 		}
 	}
-	
+
 	public void paint(Graphics g){
 		if (m_isBufferedImageOutdated) {
 			//System.out.println("buf image is outdated");
-			if (m_bufferedImage==null || m_dimension.getWidth()>m_bufferedImage.getWidth() 
+			if (m_bufferedImage==null || m_dimension.getWidth()>m_bufferedImage.getWidth()
 					|| m_dimension.getHeight()>m_bufferedImage.getHeight()) {
 				initGfx();
 			}
@@ -110,23 +128,100 @@ public class JScoreComponent extends JComponent {
 		//if (m_jTune!=null)
 		//	m_jTune.render((Graphics2D)g);
 	}
-	
+
 	/** The size of the font used to display the music score.
-	 * @param size The size of the font used to display the music score expressed in ? */
+	 * @param size The size of the font used to display the music score expressed in ?
+	 * @deprecated use {@link #getScoreMetrics() getScoreMetrics()}.{@link ScoreMetrics#setNotationSize(float) setNotationSize(float)} and then {@link #refresh()}
+	 */
 	public void setSize(float size){
-		m_size = size;
+		getScoreMetrics().setNotationFontSize(size);
+		refresh();
+	}
+
+    /** Toggles display of score title elements.
+     *  true=show false=hide
+     */
+	public void showTitles(boolean show) {
+      m_showTitles = show;
+	}
+
+    /** Sets the note stem direction on a score.
+     *  0=auto 1=up 2=down
+     */
+    public void setStemmingPolicy (byte policy) {
+	  if (m_stemPolicy == policy)
+	    return;
+
+	  m_stemPolicy = policy;
+    }
+
+    private void resetNoteStems() {
+	  if (m_jTune!=null) {
+
+		// get all JNoteElementAbstract instances and set stemming
+		Object obj = null;
+		JNoteElementAbstract note = null;
+		Iterator iter = m_jTune.getRenditionObjectsMapping().values().iterator();
+		while (iter.hasNext()) {
+		  obj = iter.next();
+ 		  if (obj != null && obj instanceof JNoteElementAbstract) {
+			  if (m_stemPolicy == 0) {
+			    ((JNoteElementAbstract)obj).setAutoStem(true);
+			 } else {
+		        boolean isup = (m_stemPolicy == 1) ? true :  false;
+			    note = (JNoteElementAbstract)obj;
+			    note.setAutoStem(false);
+			    note.setStemUp(isup);
+				note.onBaseChanged();
+			  }
+		  }
+		}
+		iter = m_jTune.getNoteGroups().iterator();
+		while (iter.hasNext()) {
+		  obj = iter.next();
+		  if (obj != null && obj instanceof JGroupOfNotes) {
+			  if (m_stemPolicy == 0 ) {
+				((JGroupOfNotes)obj).setAutoStem(true);
+			  } else {
+				boolean isup = (m_stemPolicy == 1) ? true :  false;
+				((JGroupOfNotes)obj).setAutoStem(false);
+				((JGroupOfNotes)obj).setStemUp(isup);
+				((JGroupOfNotes)obj).onBaseChanged();
+			  }
+		  }
+	    }
+
+      }
+	}
+
+	private void resetDisplayTitles () {
+	  if (m_jTune!=null)
+		m_jTune.displayTitles(m_showTitles);
+	}
+
+	/**
+	 * Refresh the score, blanks the component, compute and draw
+	 * the score.<br>Call this method to refresh the component
+	 * after changes on its {@link #getEngraver() Engraver} and
+	 * {@link #getScoreMetrics() ScoreMetric}.
+	 */
+	public void refresh() {
 		initGfx();
-		if (m_jTune!=null)
+		if (m_jTune!=null) {
+			resetDisplayTitles();
 			setTune(m_jTune.getTune());
+ 			resetNoteStems();
+		}
 		repaint();
 	}
-	
+
 	/** Writes the currently set tune score to a PNG file.
 	 * @param file The PNG output file.
-	 * @throws IOException Thrown if the given file cannot be accessed. */ 
+	 * @throws IOException Thrown if the given file cannot be accessed. */
 	public void writeScoreTo(File file) throws IOException {
-		//if (m_bufferedImage==null || m_dimension.getWidth()>m_bufferedImage.getWidth() 
+		//if (m_bufferedImage==null || m_dimension.getWidth()>m_bufferedImage.getWidth()
 		//		|| m_dimension.getHeight()>m_bufferedImage.getHeight()) {
+		if (m_metrics == null)
 			initGfx();
 		//}
 		m_bufferedImageGfx.setColor(getBackground());
@@ -138,16 +233,24 @@ public class JScoreComponent extends JComponent {
 		m_isBufferedImageOutdated=false;
 		ImageIO.write(m_bufferedImage,"png",file);
 	}
-	
+
 	/** Sets the tune to be renderered.
 	 * @param tune The tune to be displayed. */
 	public void setTune(Tune tune){
 		if (m_metrics==null)
-			m_metrics = new ScoreMetrics((Graphics2D)getGraphics());
-		m_jTune = new JTune(tune, new Point(XOffset, 0), m_metrics, m_isJustified);
-		m_jTune.setStaffLinesSpacing(staffLinesSpacing);
+			initGfx();
+		m_jTune = new JTune(tune,
+							new Point(XOffset, 0),
+							getScoreMetrics(),
+							getEngraver(),
+							isJustified());
+		//m_jTune.setStaffLinesSpacing(staffLinesSpacing);
+		m_jTune.displayTitles(m_showTitles);
+		m_jTune.setTune(m_jTune.getTune());
+		resetNoteStems();
+
 		m_selectedItem = null;
-		m_dimension.setSize(m_jTune.getWidth(), m_jTune.getHeight()); 
+		m_dimension.setSize(m_jTune.getWidth(), m_jTune.getHeight());
 				//componentHeight+m_metrics.getStaffCharBounds().getHeight());
 		setPreferredSize(m_dimension);
 		setSize(m_dimension);
@@ -156,13 +259,17 @@ public class JScoreComponent extends JComponent {
 		m_isBufferedImageOutdated=true;
 		repaint();
 	}
-	
+
 	/** Changes the justification of the rendition score. This will
 	 * set the staff lines aligment to justify in order to have a more
-	 * elegant display. 
+	 * elegant display.
 	 * @param isJustified <TT>true</TT> if the score rendition should be
-	 * justified, <TT>false</TT> otherwise. 
-	 * @see #isJustified()*/
+	 * justified, <TT>false</TT> otherwise.
+	 * @see #isJustified()
+	 * @deprecated call {@link #setJustified(boolean)} and then
+	 * {@link #refresh()} when you have finished to change all
+	 * settings (justification, engraving, score metrics...)
+	 */
 	public void setJustification(boolean isJustified) {
 		m_isJustified = isJustified;
 		//triggers the recalculation of the tune
@@ -171,8 +278,19 @@ public class JScoreComponent extends JComponent {
 		//m_jTune = new m_jTune(m_jTune.getTune(), )
 		//repaint();
 	}
-	
-	public void setStaffLinesSpacing(int spacing) {
+
+	/** Changes the justification of the rendition score. This will
+	 * set the staff lines aligment to justify in order to have a more
+	 * elegant display.
+	 * @param isJustified <TT>true</TT> if the score rendition should be
+	 * justified, <TT>false</TT> otherwise.
+	 * @see #isJustified()
+	 */
+	public void setJustified(boolean isJustified) {
+		m_isJustified = isJustified;
+	}
+
+	/*public void setStaffLinesSpacing(int spacing) {
 		staffLinesSpacing = spacing;
 		//triggers the recalculation of the tune
 		if (m_jTune!=null)
@@ -181,21 +299,21 @@ public class JScoreComponent extends JComponent {
 		//	setTune(m_jTune.getTune());
 		//m_jTune = new m_jTune(m_jTune.getTune(), )
 		//repaint();
-	}  
-	
-	public int getStaffLinesSpacing() {
+	}  */
+
+	/*public int getStaffLinesSpacing() {
 		return staffLinesSpacing;
-	}
-	
+	}*/
+
 	/** Return <TT>true</TT> if the rendition staff lines alignment is
 	 * justified, <TT>false</TT> otherwise.
 	 * @return <TT>true</TT> if the rendition staff lines alignment is
-	 * justified, <TT>false</TT> otherwise. 
+	 * justified, <TT>false</TT> otherwise.
 	 * @see #setJustification(boolean) */
 	public boolean isJustified() {
 		return m_isJustified;
 	}
-	
+
 	/** Returns the graphical score element fount at the given location.
 	 * @param location A point in the score.
 	 * @return The graphical score element found at the specified location.
@@ -206,13 +324,13 @@ public class JScoreComponent extends JComponent {
 		else
 			return null;
 	}
-	
+
 	/** Highlights the given score element in the score.
 	 * If an item was previously selected, this previous item
 	 * is unselected.
 	 * @param elmnt The music element to be highlighted in the
-	 * score. <TT>null</TT> can be specified to remove 
-	 * highlighting. 
+	 * score. <TT>null</TT> can be specified to remove
+	 * highlighting.
 	 * @see #setSelectedItem(JScoreElement) */
 	public void setSelectedItem(MusicElement elmnt) {
 		JScoreElementAbstract r = null;
@@ -222,13 +340,13 @@ public class JScoreComponent extends JComponent {
 		//	System.out.println("Selecting item " + elmnt + "->" + r + "@" + r.getBase());
 		setSelectedItem(r);
 	}
-	
+
 	/** Highlights the given score element in the score.
 	 * If an item was previously selected, this previous item
 	 * is unselected.
 	 * @param elmnt The score rendition element to be highlighted in the
-	 * score. <TT>null</TT> can be specified to remove 
-	 * highlighting. 
+	 * score. <TT>null</TT> can be specified to remove
+	 * highlighting.
 	 * @see #setSelectedItem(MusicElement) */
 	public void setSelectedItem(JScoreElement elmnt){
 		if (m_selectedItem!=null) {
@@ -242,14 +360,14 @@ public class JScoreComponent extends JComponent {
 		}
 		repaint();
 	}
-	
-	/** Returns the graphical element that corresponds to a tune element. 
+
+	/** Returns the graphical element that corresponds to a tune element.
 	 * @param elmnt A tune element.
-	 * @return The graphical score element that corresponds to the given 
+	 * @return The graphical score element that corresponds to the given
 	 * tune element. <TT>null</TT> is returned if the given tune element
 	 * does not have any graphical representation. */
 	public JScoreElement getRenditionElementFor(MusicElement elmnt) {
-		if (m_jTune!=null) 
+		if (m_jTune!=null)
 			return (JScoreElement)m_jTune.getRenditionObjectsMapping().get(elmnt);
 		else
 			return null;

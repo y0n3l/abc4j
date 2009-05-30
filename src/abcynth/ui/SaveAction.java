@@ -21,6 +21,9 @@ import java.io.IOException;
 
 public class SaveAction extends TuneBookActionAbstract
 {
+
+  private static final long serialVersionUID = -6714276449739610799L;
+
   public SaveAction()
   {
     putValue(NAME, "Save");

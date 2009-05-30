@@ -25,8 +25,9 @@ import abc.notation.MusicElement;
 
 /** This class is in charge of rendering a key signature. */
 class JKeySignature extends JScoreElementAbstract {
+/* TODO: test every keys, TJM "Gracings" branch changes not included */
 	KeySignature key = null;
-	Point2D FPosition = null; 
+	Point2D FPosition = null;
 	char[] Fchar = null;
 	Point2D CPosition = null;
 	char[] Cchar = null;
@@ -40,64 +41,65 @@ class JKeySignature extends JScoreElementAbstract {
 	char[] Echar = null;
 	Point2D BPosition = null;
 	char[] Bchar = null;
-	
+
 	public JKeySignature(KeySignature keyV, Point2D base, ScoreMetrics c) {
 		super(c);
 		key = keyV;
 		setBase(base);
 	}
-	
+
 	public MusicElement getMusicElement() {
 		return key;
 	}
-	
+
 	protected void onBaseChanged() {
 		ScoreMetrics c = m_metrics;
+		Point2D m_base = getBase();
 		if (key.hasOnlySharps()) {
 			double FPositionX = m_base.getX();
-			double FPositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.f, AccidentalType.NONE))*c.getNoteHeigth();
+			double FPositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.f, AccidentalType.NONE))*c.getNoteHeight();
 			FPosition = new Point2D.Double(FPositionX, FPositionY);
 			double CPositionX = m_base.getX()+c.getSharpBounds().getWidth();
-			double CPositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.c, AccidentalType.NONE))*c.getNoteHeigth();
+			double CPositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.c, AccidentalType.NONE))*c.getNoteHeight();
 			CPosition = new Point2D.Double(CPositionX, CPositionY);
 			double GPositionX = m_base.getX()+2*c.getSharpBounds().getWidth();
-			double GPositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.g, AccidentalType.NONE))*c.getNoteHeigth();
+			double GPositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.g, AccidentalType.NONE))*c.getNoteHeight();
 			GPosition = new Point2D.Double(GPositionX, GPositionY);
 			double DPositionX = m_base.getX()+3*c.getSharpBounds().getWidth();
-			double DPositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.d, AccidentalType.NONE))*c.getNoteHeigth();
+			double DPositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.d, AccidentalType.NONE))*c.getNoteHeight();
 			DPosition = new Point2D.Double(DPositionX, DPositionY);
 			double APositionX = m_base.getX()+4*c.getSharpBounds().getWidth();
-			double APositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.A, AccidentalType.NONE))*c.getNoteHeigth();
+			double APositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.A, AccidentalType.NONE))*c.getNoteHeight();
 			APosition = new Point2D.Double(APositionX, APositionY);
 			double EPositionX = m_base.getX()+5*c.getSharpBounds().getWidth();
-			double EPositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.e, AccidentalType.NONE))*c.getNoteHeigth();
+			double EPositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.e, AccidentalType.NONE))*c.getNoteHeight();
 			EPosition = new Point2D.Double(EPositionX, EPositionY);
 			double BPositionX = m_base.getX()+6*c.getSharpBounds().getWidth();
-			double BPositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.B, AccidentalType.NONE))*c.getNoteHeigth();
+			double BPositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.B, AccidentalType.NONE))*c.getNoteHeight();
 			BPosition = new Point2D.Double(BPositionX, BPositionY);
 		}
 		else
 			if (key.hasOnlyFlats()) {
 				double BPositionX = m_base.getX();
-				double BPositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.B, AccidentalType.NONE))*c.getNoteHeigth();
+				double BPositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.B, AccidentalType.NONE))*c.getNoteHeight();
 				BPosition = new Point2D.Double(BPositionX, BPositionY);
 				double EPositionX = m_base.getX()+c.getSharpBounds().getWidth();
-				double EPositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.e, AccidentalType.NONE))*c.getNoteHeigth();
+				double EPositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.e, AccidentalType.NONE))*c.getNoteHeight();
 				EPosition = new Point2D.Double(EPositionX, EPositionY);
 				double APositionX = m_base.getX()+2*c.getSharpBounds().getWidth();
-				double APositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.A, AccidentalType.NONE))*c.getNoteHeigth();
+				double APositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.A, AccidentalType.NONE))*c.getNoteHeight();
 				APosition = new Point2D.Double(APositionX, APositionY);
 				double DPositionX = m_base.getX()+3*c.getSharpBounds().getWidth();
-				double DPositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.d, AccidentalType.NONE))*c.getNoteHeigth();
+				double DPositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.d, AccidentalType.NONE))*c.getNoteHeight();
 				DPosition = new Point2D.Double(DPositionX, DPositionY);
 				double GPositionX = m_base.getX()+4*c.getSharpBounds().getWidth();
-				double GPositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.G, AccidentalType.NONE))*c.getNoteHeigth();
+				double GPositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.G, AccidentalType.NONE))*c.getNoteHeight();
 				GPosition = new Point2D.Double(GPositionX, GPositionY);
 				double CPositionX = m_base.getX()+5*c.getSharpBounds().getWidth();
-				double CPositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.c, AccidentalType.NONE))*c.getNoteHeigth();
+				double CPositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.c, AccidentalType.NONE))*c.getNoteHeight();
 				CPosition = new Point2D.Double(CPositionX, CPositionY);
 				double FPositionX = m_base.getX()+6*c.getSharpBounds().getWidth();
-				double FPositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.F, AccidentalType.NONE))*c.getNoteHeigth();
+				double FPositionY = m_base.getY() - JNotePartOfGroup.getOffset(new Note(Note.F, AccidentalType.NONE))*c.getNoteHeight();
 				FPosition = new Point2D.Double(FPositionX, FPositionY);
 			}
 		byte[] accidentals = key.getAccidentals();
@@ -123,7 +125,7 @@ class JKeySignature extends JScoreElementAbstract {
 			}
 		}
 	}
-	
+
 	public double render(Graphics2D context){
 		super.render(context);
 		if (Fchar!=null)
@@ -142,6 +144,6 @@ class JKeySignature extends JScoreElementAbstract {
 			context.drawChars(Bchar, 0, 1, (int)BPosition.getX(), (int)BPosition.getY());
 		return m_width;
 	}
-	
-	
+
+
 }

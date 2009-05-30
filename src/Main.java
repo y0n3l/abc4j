@@ -20,6 +20,7 @@ import javax.swing.JFrame;
 
 import abc.notation.Tune;
 import abc.parser.TuneBook;
+import abc.parser.TuneParser;
 import abc.ui.swing.JScoreComponent;
 
 //import jm.music.data.*;
@@ -119,7 +120,7 @@ public class Main  {
   	  }
   }*/
 	
-	/*public static void main (String[] arg) {
+	public static void main (String[] arg) {
 		String tuneAsString = "X:0\nT:A simple scale exercise\nM:4/4\nK:D\n(CD EF|G)A Bc|de fg-|gf ed|cB A(G|FE DC)\n";
 		Tune tune = new TuneParser().parse(tuneAsString);
 		JScoreComponent scoreUI =new JScoreComponent();
@@ -129,11 +130,10 @@ public class Main  {
 		j.pack();
 		//System.out.println(sp.getSize());
 		j.setVisible(true);
-		}
-	}*/
+	}
 	
 	
-	public static void main (String[] arg) {
+	/*public static void main (String[] arg) {
 		try {
 		TuneBook tb = new TuneBook(new File("D:/Perso/abc/Book4.abc"));
 		Tune tune = tb.getTune(7); 
@@ -146,7 +146,7 @@ public class Main  {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
+	}/* */
 	
 	/*public static void main (String[] arg) {
 		Tune tune = new Tune();

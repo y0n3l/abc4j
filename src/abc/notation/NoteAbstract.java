@@ -13,31 +13,31 @@
 //
 // You should have received a copy of the GNU Lesser General Public License
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
+
 package abc.notation;
 
 /** This is the abstract class to define notes or multi notes. */
 public class NoteAbstract implements MusicElement
 {
-  /** The none bow type. */
-  public static final byte NONE	 = -1;
-  /** The down bow type. */
-  public static final byte DOWN	= 1;
-  /** The up bow type. */
-  public static final byte UP	= 2;
 
   /** The chord name. */
   private String m_chordName = null;
+  private Decoration[] m_decorations = null;
   private Note[] m_gracingNotes = null;
   private boolean generalGracing		= false;
   private boolean staccato			= false;
-  private byte bow				= NONE;
+
   /** The number of dots for this note. */
   private byte m_dotted = 0;
-  
+
   protected SlurDefinition slurDefinition = null;
   /** <TT>true</TT> if this note is part of a slur, <TT>false</TT>
-   * otherwise. */ 
+   * otherwise. */
   protected boolean m_isPartOfSlur = false;
+
+  //private boolean m_isTied = false;
+  protected TieDefinition tieDefinition = null;
+
   /** The tuplet this note may belongs to. <TT>null</TT>
    * if this note does not belong to any tuplet. */
   private Tuplet m_tuplet = null;
@@ -52,18 +52,36 @@ public class NoteAbstract implements MusicElement
   public String getChordName ()
   { return m_chordName; }
 
-  /** Returns the bow to be used when playing this note.
-   * @return The bow to be used when playing this note.
-   * @see #setBow(byte) */
-  public byte getBow ()
-  { return bow; }
+  /** Returns the decorations for this note.
+   * @return The decorations for this note. <TT>null</TT> if
+   * this note has no decoration.
+   * @see #hasDecorations() */
+  public Decoration[] getDecorations()
+  { return m_decorations; }
 
-  /** Sets the bow to be used when playing this note.
-   * @param bowValue The bow to be used when playing this note. Possible values
-   * are <TT>NONE</TT> (the default value when not specified), <TT>UP</TT> or
-   * </TT>DOWN</TT>. */
-  public void setBow(byte bowValue)
-  { bow = bowValue; }
+  /**
+   * Test if the note has the specified type of decoration
+   * @param decorationType {@link Decoration#DOWNBOW}, {@link Decoration#STACCATO}...
+   * @return
+   */
+  public boolean hasDecoration(byte decorationType) {
+	if (hasDecorations()) {
+	  for (int i = 0; i < m_decorations.length; i++) {
+		if (m_decorations[i].isType(decorationType))
+		  return true;
+	  }
+	}
+	return false;
+  }
+
+  public void setDecorations(Decoration[] dec)
+  { m_decorations=dec;}
+
+  /** Returns <TT>true</TT> if this note has decorations, <TT>false</TT> otherwise.
+   * @return <TT>true</TT> if this note has decorations, <TT>false</TT> otherwise. */
+  public boolean hasDecorations() {
+	  return (m_decorations!=null && m_decorations.length > 0);
+  }
 
   /** Returns the gracing notes to be played with this note.
    * @return The gracing notes to be played with this note. <TT>null</TT> if
@@ -78,23 +96,23 @@ public class NoteAbstract implements MusicElement
   /** Returns <TT>true</TT> if this note has gracings, <TT>false</TT> otherwise.
    * @return <TT>true</TT> if this note has gracings, <TT>false</TT> otherwise. */
   public boolean hasGracingNotes()
-  { return (m_gracingNotes!=null);}
+  { return (m_gracingNotes!=null && m_gracingNotes.length > 0);}
 
-  /** Sets the number of dots for this note. 
+  /** Sets the number of dots for this note.
    * @param dotsNumber The number of dots for this note. */
   public void setDotted(byte dotsNumber)
   { m_dotted = dotsNumber; }
 
   /** Returns the dotted value of this note.
    * @return The dotted value of this note. Default is 0.
-   * @deprecated replaced by countDots() 
+   * @deprecated replaced by countDots()
    * @see #countDots() */
   public byte getDotted()
   { return m_dotted; }
-  
+
   /** Returns the number of dots for this note.
    * @return The number of dots for this note. Default is 0. */
-  public byte countDots() { 
+  public byte countDots() {
 	  return m_dotted;
   }
 
@@ -111,7 +129,7 @@ public class NoteAbstract implements MusicElement
 
   /** Returns <TT>true</TT> if this note should be played with staccato.
    * @return <TT>true</TT> if this note should be played with staccato,
-   * <TT>false</TT> otherwise. 
+   * <TT>false</TT> otherwise.
    * @see #setStaccato(boolean) */
   public boolean hasStaccato()
   { return staccato; }
@@ -148,49 +166,78 @@ public class NoteAbstract implements MusicElement
   public void setPartOfSlur(boolean isPartOfSlur)
   { m_isPartOfSlur = isPartOfSlur; }
 
-  /** Needs to be reworked !! */
-  public int getGracingNotesLength(short defaultNoteLength)
-  {
-    int totalLength=0;
-/*    if (m_gracingNotes!=null)
-      for (int i=0; i<m_gracingNotes.length; i++)
-        totalLength+=m_gracingNotes[i].getLength(defaultNoteLength);*/
-    return totalLength;
-  }
 
   /** Sets the tuplet this note belongs to.
    * @param tuplet The tuplet this note belongs to. */
   void setTuplet(Tuplet tuplet)
   { m_tuplet = tuplet; }
-  
+
   /**
    * @return Returns the slurDefinition.
    */
   public SlurDefinition getSlurDefinition() {
   	return slurDefinition;
   }
-  
+
   public boolean isBeginingSlur() {
   	if (slurDefinition==null || slurDefinition.getStart()==null)
   		return false;
   	else
   		return slurDefinition.getStart().equals(this);
   }
-  
+
   public boolean isEndingSlur() {
   	if (slurDefinition==null)
   		return false;
   	else
   		return slurDefinition.getEnd().equals(this);
   }
-  
+
   /**
    * @param slurDefinition The slurDefinition to set.
    */
   public void setSlurDefinition(SlurDefinition slurDefinition) {
   	this.slurDefinition = slurDefinition;
   }
-  
+
+  /** Sets the tie definition for this note.
+   * @param tieDef The definition of the tie if this note is tied. <TT>NULL</TT> if the
+   * note should not be tied.
+   * @see #isTied() */
+  public void setTieDefinition(TieDefinition tieDef) {
+	  //m_isTied = isTied;
+	  this.tieDefinition = tieDef;
+  }
+
+  public TieDefinition getTieDefinition() {
+	  //m_isTied = isTied;
+	  return tieDefinition;
+  }
+
+  /** Returns <TT>true</TT> if this note is beginning a tie.
+   * @return <TT>true</TT> if this note is beginning a tie, <TT>false</TT>
+   * otherwise. */
+  public boolean isBeginningTie() {
+	  return tieDefinition!=null && this.equals(tieDefinition.getStart());
+  }
+
+  /** Returns <TT>true</TT> if this note is ending a tie.
+   * @return <TT>true</TT> if this note is ending a tie, <TT>false</TT>
+   * otherwise. */
+  public boolean isEndingTie() {
+	  return tieDefinition!=null && this.equals(tieDefinition.getEnd());
+  }
+
+
+  /** Returns <TT>true</TT> if this note is tied.
+   * @return <TT>true</TT> if this note is tied, <TT>false</TT> otherwise.
+   * @see #setTieDefinition(TieDefinition) */
+  public boolean isTied() {
+	  return tieDefinition!=null;//isPartOfSlur() && (getSlurDefinition()==null || !getSlurDefinition().getEnd().equals(this));
+  }
+
+
+
   /** Returns a String representation of this Object.
    * @return a String representation of this Object. */
   public String toString()
@@ -201,8 +248,7 @@ public class NoteAbstract implements MusicElement
       string2Return = string2Return.concat("~");
     if (m_gracingNotes!=null)	string2Return = string2Return.concat("{"+m_gracingNotes.toString()+"}");
     if (staccato)					string2Return = string2Return.concat(".");
-    if (bow == UP)					string2Return = string2Return.concat("u");
-    if (bow == DOWN)				string2Return = string2Return.concat("d");
+    if (m_decorations!=null)	string2Return = string2Return.concat("{"+m_decorations.toString()+"}");
     //string2Return = string2Return.concat(notes.toString());
     return string2Return;
   }

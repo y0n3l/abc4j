@@ -22,7 +22,8 @@ import abc.notation.RepeatBarLine;
 
 /** This class is in charge of rendering a repeat bar. */
 class JRepeatBar extends JBar{
-	
+
+	//TODO move this to ScoreMetrics
 	public static final char[][] DIGITS = {
 			{'\uF0C1', '\uF02E'}, 
 			{'\uF0AA', '\uF02E'},
@@ -40,6 +41,7 @@ class JRepeatBar extends JBar{
 	
 	public double render(Graphics2D context){
 		char[] ch = DIGITS[((RepeatBarLine)m_barLine).getRepeatNumber()-1];
+		Point2D m_base = getBase();
 		context.drawChars(ch, 0, ch.length, 
 				(int)(m_base.getX()+m_metrics.getNoteWidth()), 
 				(int)(m_base.getY()-m_metrics.getStaffCharBounds().getHeight()*1.3));

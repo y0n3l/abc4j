@@ -35,6 +35,7 @@ import abc.parser.TuneChangeEvent;
 /** A scecial JTable that has integrated features for displaying tunebooks. */
 public class TuneBookTable extends JTable// implements TuneBookListenerInterface
 {
+  private static final long serialVersionUID = -3122844279167171823L;
   /* Reference number column model identifier. */
   public static final int REFERENCE_NUMBER_COLUMN = 10;
   /* Title column model identifier. */
@@ -75,7 +76,8 @@ public class TuneBookTable extends JTable// implements TuneBookListenerInterface
 
   private class TuneBookTableModel extends AbstractTableModel implements TuneBookListenerInterface
   {
-    private TuneBook m_bookModel = null;
+    private static final long serialVersionUID = -8633051016071310665L;
+	private TuneBook m_bookModel = null;
     public TuneBookTableModel(TuneBook tuneBook)
     {
       this();
@@ -152,7 +154,9 @@ public class TuneBookTable extends JTable// implements TuneBookListenerInterface
   }
   private class TuneBookTableColumnModel extends DefaultTableColumnModel
   {
-    public TuneBookTableColumnModel()
+    private static final long serialVersionUID = 5169104548493229419L;
+
+	public TuneBookTableColumnModel()
     {
       TableColumn col = new ReferenceNumberColumn();
       col.setModelIndex(REFERENCE_NUMBER_COLUMN);
@@ -312,7 +316,9 @@ public class TuneBookTable extends JTable// implements TuneBookListenerInterface
 
   public class ReferenceNumberColumn extends TuneColumn
   {
-    public ReferenceNumberColumn()
+    private static final long serialVersionUID = 3311509836959634079L;
+
+	public ReferenceNumberColumn()
     { setHeaderValue("Number"); }
 
     public Object getValueFor(Tune tune)
@@ -321,7 +327,9 @@ public class TuneBookTable extends JTable// implements TuneBookListenerInterface
 
   public class AreaColumn extends TuneColumn
   {
-    public AreaColumn()
+    private static final long serialVersionUID = -4037874545792828471L;
+
+	public AreaColumn()
     { setHeaderValue("Area"); }
 
     public Object getValueFor(Tune tune)
@@ -330,7 +338,9 @@ public class TuneBookTable extends JTable// implements TuneBookListenerInterface
 
   public class BookColumn extends TuneColumn
   {
-    public BookColumn()
+    private static final long serialVersionUID = -4333645200233370864L;
+
+	public BookColumn()
     { setHeaderValue("Book"); }
 
     public Object getValueFor(Tune tune)
@@ -339,7 +349,9 @@ public class TuneBookTable extends JTable// implements TuneBookListenerInterface
 
   public class ComposerColumn extends TuneColumn
   {
-    public ComposerColumn()
+    private static final long serialVersionUID = 525383724250210536L;
+
+	public ComposerColumn()
     { setHeaderValue("Composer"); }
 
     public Object getValueFor(Tune tune)
@@ -348,7 +360,9 @@ public class TuneBookTable extends JTable// implements TuneBookListenerInterface
 
   public class DiscographyColumn extends TuneColumn
   {
-    public DiscographyColumn()
+    private static final long serialVersionUID = -8706999551276986691L;
+
+	public DiscographyColumn()
     { setHeaderValue("Discography"); }
 
     public Object getValueFor(Tune tune)
@@ -357,7 +371,9 @@ public class TuneBookTable extends JTable// implements TuneBookListenerInterface
 
   public class TitleColumn extends TuneColumn
   {
-    public TitleColumn()
+    private static final long serialVersionUID = 8458394472067280070L;
+
+	public TitleColumn()
     { setHeaderValue("Title"); }
 
     public Object getValueFor(Tune tune)
@@ -371,7 +387,9 @@ public class TuneBookTable extends JTable// implements TuneBookListenerInterface
 
   public class KeyColumn extends TuneColumn
   {
-    public KeyColumn()
+    private static final long serialVersionUID = -4934314460244170985L;
+
+	public KeyColumn()
     { setHeaderValue("Key"); }
 
     public Object getValueFor(Tune tune)
@@ -385,7 +403,9 @@ public class TuneBookTable extends JTable// implements TuneBookListenerInterface
 
   public class OriginColumn extends TuneColumn
   {
-    public OriginColumn()
+    private static final long serialVersionUID = -7822572943663270418L;
+
+	public OriginColumn()
     { setHeaderValue("Origin"); }
 
     public Object getValueFor(Tune tune)
@@ -394,7 +414,9 @@ public class TuneBookTable extends JTable// implements TuneBookListenerInterface
 
   public class InformationColumn extends TuneColumn
   {
-    public InformationColumn()
+    private static final long serialVersionUID = -1252521124405645627L;
+
+	public InformationColumn()
     { setHeaderValue("Information"); }
 
     public Object getValueFor(Tune tune)
@@ -403,7 +425,9 @@ public class TuneBookTable extends JTable// implements TuneBookListenerInterface
 
   public class RhythmColumn extends TuneColumn
   {
-    public RhythmColumn()
+    private static final long serialVersionUID = -6549603686085530436L;
+
+	public RhythmColumn()
     { setHeaderValue("Rhythm"); }
 
     public Object getValueFor(Tune tune)
@@ -412,7 +436,9 @@ public class TuneBookTable extends JTable// implements TuneBookListenerInterface
 
   public class SourceColumn extends TuneColumn
   {
-    public SourceColumn()
+    private static final long serialVersionUID = 7671040181088674806L;
+
+	public SourceColumn()
     { setHeaderValue("Source"); }
 
     public Object getValueFor(Tune tune)

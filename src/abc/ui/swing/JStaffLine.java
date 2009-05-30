@@ -18,6 +18,7 @@ package abc.ui.swing;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
+import java.util.Iterator;
 import java.util.Vector;
 
 import abc.notation.MusicElement;
@@ -25,43 +26,62 @@ import abc.notation.MusicElement;
 class JStaffLine extends JScoreElementAbstract {
 
 	protected Vector m_staffElements = null;
-	
+
+	protected Vector m_lyrics = null;
 	//protected Vector m_beginningSlurElements = null;
-	
+
 	public JStaffLine(Point2D base, ScoreMetrics c) {
 		super (c);
 		m_staffElements = new Vector();
+		m_lyrics = new Vector();
 		//m_beginningSlurElements = new Vector();
 	}
-	
+
 	public Point2D getBase() {
 		return ((JScoreElementAbstract)m_staffElements.elementAt(0)).getBase();
 	}
-	
+
 	public MusicElement getMusicElement() {
 		return null;
 	}
-	
+
 	protected void onBaseChanged() {
-		
+
 	}
-	
+
 	public void addElement(JScoreElementAbstract r) {
 		m_staffElements.addElement(r);
 		r.setStaffLine(this);
 		computeWidth();
 	}
-	
-	/*public Vector getBeginningSlurElements() {
-		return m_beginningSlurElements;
-	}*/
-	
+
+	// FIXME: lyrics should be appended score
+	//        inline lyrics should be parsed and appended to staff lines
+	public void addLyrics(JWords r) {
+		m_lyrics.addElement(r);
+		// is this needed?
+		// computeWidth();
+	}
+
+	public boolean hasLyrics() {
+		if (m_lyrics.size() > 0) return true;
+		else return false;
+	}
+
+	public int getLyricsLineCount() {
+		return (m_lyrics.size());
+	}
+
+	public JWords[] getLyrics() {
+		return ( (JWords[]) m_lyrics.toArray(new JWords[1]) );
+	}
+
 	public JScoreElementAbstract[] toArray() {
 		JScoreElementAbstract[] r = new JScoreElementAbstract[m_staffElements.size()];
 		m_staffElements.toArray(r);
 		return r;
 	}
-	
+
 	public JScoreElement getScoreElementAt(Point point) {
 		JScoreElement scoreEl = null;
 		for (int i=0; i<m_staffElements.size(); i++) {
@@ -71,12 +91,12 @@ class JStaffLine extends JScoreElementAbstract {
 		}
 		return scoreEl;
 	}
-	
+
 	public double render(Graphics2D g) {
 		//super.render(g);
 		/*Color previousColor = g.getColor();
 		g.setColor(Color.LIGHT_GRAY);
-		g.fillRect((int)(getBase().getX()), (int)(getBase().getY()-m_metrics.getStaffCharBounds().getHeight()), 
+		g.fillRect((int)(getBase().getX()), (int)(getBase().getY()-m_metrics.getStaffCharBounds().getHeight()),
 				(int)getWidth(), (int)(m_metrics.getStaffCharBounds().getHeight()));
 		g.setColor(previousColor);*/
 		JScoreElementAbstract[] elmts = toArray();
@@ -86,7 +106,7 @@ class JStaffLine extends JScoreElementAbstract {
 				Note note = ((SNote)elmts[j]).getNote();
 				if (note.isBeginingSlur())
 					m_beginningSlurElements.addElement(note);
-					
+
 			}*/
 		}
 		int staffCharNb = (int)(getWidth()/m_metrics.getStaffCharBounds().getWidth());
@@ -94,10 +114,21 @@ class JStaffLine extends JScoreElementAbstract {
 		char[] staffS = new char[staffCharNb+2];
 		for (int j=0; j<staffS.length; j++)
 			staffS[j] = ScoreMetrics.STAFF_SIX_LINES;
-		g.drawChars(staffS, 0, staffS.length, 0, (int)getBase().getY());
+		//1 avoid a small gap (antialiased but really here)
+		//I can't explain what, but it fixes the gap :)
+		g.drawChars(staffS, 0, staffS.length, 1, (int)getBase().getY());
+
+		// render lyrics, annotations, etc.
+		Iterator iter = m_lyrics.iterator();
+		JWords lyrics = null;
+		while (iter.hasNext()) {
+			lyrics = (JWords)iter.next();
+			lyrics.render(g);
+		}
+
 		return m_width;
 	}
-	
+
 	public void scaleToWidth(double newWidth) {
 		for (int i=0; i<m_staffElements.size(); i++){
 			JScoreElementAbstract elmt = (JScoreElementAbstract)m_staffElements.elementAt(i);
@@ -113,7 +144,7 @@ class JStaffLine extends JScoreElementAbstract {
 		computeWidth();
 		//System.out.println("StaffLine, required Width : " + newWidth + " | result width=" + m_width);
 	}
-	
+
 	private void computeWidth() {
 		JScoreElementAbstract lastElmt = (JScoreElementAbstract)m_staffElements.lastElement();
 		m_width = lastElmt.getBase().getX()+lastElmt.getWidth();
