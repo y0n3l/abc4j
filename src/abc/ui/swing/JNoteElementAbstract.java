@@ -70,8 +70,8 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract {
 
 
 
-	public JNoteElementAbstract(NoteAbstract noteValue, Point2D base, ScoreMetrics c) {
-		super(c);
+	public JNoteElementAbstract(NoteAbstract noteValue, Point2D base, ScoreMetrics metrics) {
+		super(base, metrics);
 
 		// add JGraceNotes
 		if (noteValue.hasGracingNotes()) {
@@ -90,7 +90,7 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract {
 		if (noteValue.hasDecorations()) {
 			Decoration[] decorations = noteValue.getDecorations();
 			for (int i=0; i<decorations.length;i++) {
-				addDecoration(new JDecoration(decorations[i], c));
+				addDecoration(new JDecoration(decorations[i], m_metrics));
 			}
 		}
 	}

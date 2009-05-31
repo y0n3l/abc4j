@@ -60,31 +60,16 @@ class JChord extends JNoteElementAbstract {
 		if (multiNote.hasUniqueStrictDuration()) {
 			m_sNoteInstances = new JNote[m_notes.length];
 			for (int i=0; i<m_notes.length; i++) {
-				m_sNoteInstances[i] = new JChordNote(m_notes[i], base /*new Point2D.Double()*/, m_metrics);
+				m_sNoteInstances[i] = new JChordNote(m_notes[i], base, m_metrics);
 				if(m_sNoteInstances[i].getWidth()>c_width)
 					c_width += m_sNoteInstances[i].getWidth();
 			}
-			//inits stem direction
-			if (multiNote.getHighestNote().getHeight()<Note.B) {
-				setStemUp(true);
-			} else 	if (multiNote.getLowestNote().getHeight()>=Note.B) {
-				setStemUp(false);
-			} else {
-				byte highest = multiNote.getHighestNote().getHeight();
-				byte lowest = multiNote.getLowestNote().getHeight();
-				if ( (highest - Note.B) >= (Note.B - lowest) ) {
-					setStemUp(false);
-				} else if ( (highest - Note.B) < (Note.B - lowest) ) {
-					setStemUp(true);
-				} else {
-					setStemUp(false);
-				}
-			}
-
 		}
 		else {
 			m_sNoteInstances = new JNote[1];
-			m_sNoteInstances[0] = new JNote(multiNote.getHighestNote(), new Point2D.Double(), m_metrics);
+//			m_sNoteInstances[0] = new JNote(multiNote.getHighestNote(), base, m_metrics);
+			m_sNoteInstances[0] = new JChordNote(multiNote.getHighestNote(), base, m_metrics);
+
 			c_width = m_sNoteInstances[0].getWidth();
 			MultiNote[] h = multiNote.normalize();
 			short[] durations = multiNote.getStrictDurations();
@@ -117,7 +102,8 @@ class JChord extends JNoteElementAbstract {
 	 * @return
 	 */
 	protected JNote createAnchorNote(Note note, Point2D base, ScoreMetrics metrics) {
-		JNote jNote = new JNote(note, new Point2D.Double(), m_metrics);
+//		JNote jNote = new JNote(note, base, metrics);
+		JNote jNote = new JChordNote(note, base, metrics);
 		//note.set
 		return jNote;
 	}
@@ -160,6 +146,49 @@ class JChord extends JNoteElementAbstract {
 
 	/** Invoked when this chord base has changed. */
 	protected void onBaseChanged() {
+
+		// assume every note in group has same auto stemming policy
+		// can be indivudual beamed note or chord multinote
+		boolean stemUp = false;
+		if (isAutoStem()) {
+
+			byte h = multiNote.getHighestNote().getHeight();
+			byte l = multiNote.getLowestNote().getHeight();
+
+			if (h <= Note.B) {
+				stemUp = true;
+			} else if (l > Note.B) {
+				stemUp = false;
+			} else {
+				if ( (h - Note.B) < (Note.B - l) ) {
+					// lowest note is further away from center line than highest note
+					stemUp = true;
+				} else {
+					stemUp = false;
+				}
+			}
+
+		} else {
+			stemUp = isStemUp();
+
+		}
+
+		setStemUp(stemUp);
+
+		// set stemYEnd
+		//   get highest/lowest in group
+		//   set stems appropriately
+
+		int stemYEnd = (int)getBase().getY();
+		if (stemUp) {
+			stemYEnd = (int)(anchor.getStemBeginPosition().getY()-m_metrics.getStemLength(ScoreMetrics.NOTE_GLYPH));
+		} else {
+			stemYEnd = (int)(anchor.getStemBeginPosition().getY()+m_metrics.getStemLength(ScoreMetrics.NOTE_GLYPH));
+		}
+		for (int i=0; i<m_sNoteInstances.length; i++) {
+			((JChordNote)m_sNoteInstances[i]).setStemYEnd(stemYEnd);
+		}
+
 		double graceNotesWidth = 0;
 		// setBase for grace notes
 		if (m_jGracenotes != null) {
@@ -208,6 +237,11 @@ class JChord extends JNoteElementAbstract {
 			for (int i=0; i<m_sNoteInstances.length; i++) {
 				JNote n = m_sNoteInstances[i];
 				n.render(context);
+System.out.println(n.getMusicElement().toString() +
+					":\tX=" + n.getStemBeginPosition().getX() +
+					",Y=" + n.getStemBeginPosition().getY() +
+					"\n\tisStemUp()=" + n.isStemUp() );
+
 			}
 		}
 		else
@@ -231,8 +265,6 @@ class JChord extends JNoteElementAbstract {
 			//When the stem is up, the anchor is the highest note.
 			anchor = createAnchorNote(highestNote, highestJNote.getBase(), m_metrics);
 			m_sNoteInstances[m_sNoteInstances.length-1] = anchor;
-			for (int i=0; i<m_sNoteInstances.length; i++)
-				m_sNoteInstances[i].setStemUp(true);
 		}
 		else {
 			//Replace the existing highest note
@@ -244,11 +276,13 @@ class JChord extends JNoteElementAbstract {
 			//When the stem is down, the anchor is the lowest note.
 			anchor = createAnchorNote(lowestNote, lowestJNote.getBase(), m_metrics);
 			m_sNoteInstances[0] = anchor;
-			//m_sNoteInstances[0].setStemUp(false);
-			//Apply the stem direction to the rest of the notes composing the chord.
-			for (int i=0; i<m_sNoteInstances.length; i++)
-				m_sNoteInstances[i].setStemUp(false);
 		}
+		//Apply the stem direction to the rest of the notes composing the chord.
+		for (int i=0; i<m_sNoteInstances.length; i++) {
+			m_sNoteInstances[i].setAutoStem(false);
+			m_sNoteInstances[i].setStemUp(isUp);
+		}
+
 	}
 
 	public JScoreElement getScoreElementAt(Point point) {

@@ -173,8 +173,9 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 	}
 
 	public void setAutoStem(boolean auto) {
-	  // no-op, instances are stemmed by the aggregating class
-	  //autoStem = auto;
+	  // always false, instances are stemmed by the aggregating class
+	  autoStem = false;
+
 	}
 
 }

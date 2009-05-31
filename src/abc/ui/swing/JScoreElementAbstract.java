@@ -24,20 +24,20 @@ import abc.notation.MusicElement;
 import abc.notation.Tune;
 
 /** This class defines a score rendition element. Rendition scores elements
- * are graphical representations of tune score elements objects retrieved 
+ * are graphical representations of tune score elements objects retrieved
  * from a tune object.
  * A <TT>JScoreElement</TT> can itself contain <TT>JScoreElement</TT> instances.
- * You should figure out the graphical score representation as a tree of 
- * <TT>JScoreElement</TT>. (Composite) 
+ * You should figure out the graphical score representation as a tree of
+ * <TT>JScoreElement</TT>. (Composite)
  * @see Tune#getMusic()
- */ 
+ */
 abstract class JScoreElementAbstract implements JScoreElement {
-	/** The metrics to be used to calculate this rendition element */ 
+	/** The metrics to be used to calculate this rendition element */
 	protected ScoreMetrics m_metrics = null;
 	/**
 	 * The reference point (bottom, left) that should be used when rendering
 	 * this element.
-	 * 
+	 *
 	 * Use {@link #getBase()} which is sometimes extended
 	 */
 	private Point2D m_base = null;
@@ -46,93 +46,102 @@ abstract class JScoreElementAbstract implements JScoreElement {
 	/** Teh bounding box (more or less humm....) that encapsulates
 	 * this graphical score element. */
 	protected Rectangle2D m_boundingBox = null;
-	
+
 	//protected Color m_color = null;
-	/** The staff line that contains this score element. */ 
-	protected JStaffLine staffLine = null; 
-	
-	/** Constructor 
-	 * @param mtrx The score metrics needed 
+	/** The staff line that contains this score element. */
+	protected JStaffLine staffLine = null;
+
+	/** Constructor
+	 * @param base The base location
+	 * @param mtrx The score metrics needed
+	 */
+	protected JScoreElementAbstract(Point2D base, ScoreMetrics mtrx) {
+		m_base = base;
+		m_metrics = mtrx;
+	}
+
+	/** Constructor
+	 * @param mtrx The score metrics needed
 	 */
 	protected JScoreElementAbstract(ScoreMetrics mtrx) {
 		m_metrics = mtrx;
 	}
-	
+
 	/** Returns the width of this score element.
 	 * @return The width of this score element. */
 	public double getWidth() {
 		return m_width;
 	}
-	
-	/** Returns the staff line containing this score element. 
+
+	/** Returns the staff line containing this score element.
 	 * @return The staff line containing this score element. */
 	public JStaffLine getStaffLine() {
 		return staffLine;
 	}
-	
+
 	public void setStaffLine(JStaffLine staffLine) {
 		this.staffLine = staffLine;
 	}
-	
+
 	/** Returns the tune's music element represented by this graphical score element.
 	 * @return The tune's music element represented by this graphical score element. <TT>null</TT>
-	 * if this graphical score element is not related to any music element. 
-	 * @see MusicElement  */ 
+	 * if this graphical score element is not related to any music element.
+	 * @see MusicElement  */
 	public abstract MusicElement getMusicElement();
-	
-	/** Returns the bounding box for this score element. 
+
+	/** Returns the bounding box for this score element.
 	 * @return the bounding box for this score element. */
 	public Rectangle2D getBoundingBox() {
 		Rectangle2D bb = new Rectangle2D.Double(m_base.getX(), m_base.getY()-50, m_width, 50);
 		return bb;
 	}
-	
+
 	/** Returns the score element whose bouding box contains the
 	 * given location.
 	 * @param location A location.
 	 * @return The score element whose bouding box contains the
-	 * given location. <TT>this</TT> can be returned or one of the 
+	 * given location. <TT>this</TT> can be returned or one of the
 	 * sub <TT>JScoreElement</TT> contained in this one. <TT>null</TT>
-	 * is returned if no matching element has been found. */ 
+	 * is returned if no matching element has been found. */
 	public JScoreElement getScoreElementAt(Point location) {
 		if (getBoundingBox().contains(location))
 			return this;
 		else
 			return null;
 	}
-	
+
 	/** Return the base of this element.
-	 * @return The base of this element. The base is the point that is used 
-	 * as a reference to draw the element at this location. 
+	 * @return The base of this element. The base is the point that is used
+	 * as a reference to draw the element at this location.
 	 * @see #setBase(Point2D) */
 	public Point2D getBase() {
 		return m_base;
 	}
-	
+
 	/** Sets the base of this element.
-	 * @param base The new bas that should be used to draw this element. 
+	 * @param base The new bas that should be used to draw this element.
 	 * @see #getBase() */
 	public void setBase(Point2D base) {
 		m_base = (Point2D)base.clone();
 		onBaseChanged();
 	}
-	
+
 	/** Sets the color used for the rendition of this score element.
 	 * @param color The color used for the rendition of this score element. */
 	/*public void setColor(Color color) {
 		m_color = color;
 	}*/
-	
+
 	/** Callback invoked when the base has changed for this object. */
 	protected abstract void onBaseChanged();
-	
-	/** Renders this Score element to the given graphic context. 
+
+	/** Renders this Score element to the given graphic context.
 	 * @param g2 */
 	public double render(Graphics2D g2) {
 		/* * /java.awt.Color previousColor = g2.getColor();
 		g2.setColor(java.awt.Color.RED);
 		m_boundingBox = getBoundingBox();
-		g2.drawRect((int)(m_boundingBox.getX()), (int)(m_boundingBox.getY()), 
+		g2.drawRect((int)(m_boundingBox.getX()), (int)(m_boundingBox.getY()),
 				(int)(m_boundingBox.getWidth()), (int)(m_boundingBox.getHeight()));
 		g2.setColor(previousColor);/**/
 		return m_width;
