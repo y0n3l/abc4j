@@ -16,7 +16,6 @@
 
 package abc.ui.swing;
 
-import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
@@ -53,8 +52,8 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 
 	protected void onBaseChanged() {
 		super.onBaseChanged();
-
-		Dimension glyphDimension = m_metrics.getGlyphDimension(NOTATION_CONTEXT);
+		ScoreMetrics metrics = getMetrics();
+		Dimension glyphDimension = metrics.getGlyphDimension(NOTATION_CONTEXT);
 		// FIXME: ... 1st time called this is always null. why ?
 		if (glyphDimension == null) {
 			System.err.println("JNotePartOfGroup : glyphDimension is null!");
@@ -72,17 +71,16 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 
 		displayPosition.setLocation(noteX, noteY);
 
-		BasicStroke stemStroke = m_metrics.getNotesLinkStroke();
 		int stemYBegin = (int)(noteY - glyphDimension.getHeight()/6);
 
 		if (isStemUp()) {
-			stemYBegin = (int)(displayPosition.getY() - glyphDimension.getHeight()/6);
+			//stemYBegin = (int)(displayPosition.getY() - glyphDimension.getHeight()/6);
 			// if stemYEnd hasn't been set give it a default
-			if (stemYEnd < 0) stemYEnd = (int)(displayPosition.getY() - m_metrics.getStemLength(NOTATION_CONTEXT));
+			if (stemYEnd < 0) stemYEnd = (int)(displayPosition.getY() - metrics.getStemLength(NOTATION_CONTEXT));
 		} else {
-			stemYBegin = (int)(displayPosition.getY() + glyphDimension.getHeight()/6);
+			//stemYBegin = (int)(displayPosition.getY() + glyphDimension.getHeight()/6);
 			// if stemYEnd hasn't been set give it a default
-			if (stemYEnd < 0) stemYEnd = (int)(displayPosition.getY() + m_metrics.getStemLength(NOTATION_CONTEXT));
+			if (stemYEnd < 0) stemYEnd = (int)(displayPosition.getY() + metrics.getStemLength(NOTATION_CONTEXT));
 		}
 
 		setStemUpBeginPosition(new Point2D.Double(noteX + glyphDimension.getWidth(), stemYBegin));
@@ -106,19 +104,19 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 	}*/
 
 	public Rectangle2D getBoundingBox() {
-		Dimension glyphDimension = m_metrics.getGlyphDimension(NOTATION_CONTEXT);
+		Dimension glyphDimension = getMetrics().getGlyphDimension(NOTATION_CONTEXT);
 		if (isStemUp()) {
 			return new Rectangle2D.Double(
 				(int)(getBase().getX()),
 				(int)(stemYEnd),
-				m_width,
+				getWidth(),
 				getStemBeginPosition().getY()-stemYEnd+glyphDimension.getHeight()/2);
 		}
 		else {
 			return new Rectangle2D.Double(
 				(int)(getBase().getX()),
 				getStemBeginPosition().getY()-glyphDimension.getHeight()/2,
-				m_width,
+				getWidth(),
 				stemYEnd-getStemBeginPosition().getY()+1+glyphDimension.getHeight()/2);
 		}
 	}
@@ -129,7 +127,7 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 		else
 			throw new IllegalStateException();
 	}
-
+/*
 	public static double getOffset(Note note) {
 		double positionOffset = 0;
 		byte noteHeight = note.getStrictHeight();
@@ -146,14 +144,14 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 		//System.out.println("offset for " + note +"," + note.getOctaveTransposition() + " : " + positionOffset);
 		return positionOffset;
 	}
-
+*/
 	public double render(Graphics2D context){
 		super.render(context);
 		//context.drawChars(noteChars, 0, 1, (int)displayPosition.getX(), (int)displayPosition.getY());
 
 		//draw stem
 		Stroke defaultS = context.getStroke();
-		context.setStroke(m_metrics.getStemStroke());
+		context.setStroke(getMetrics().getStemStroke());
 		context.drawLine((int)getStemBeginPosition().getX(), (int)getStemBeginPosition().getY(),
 				(int)getStemBeginPosition().getX(), stemYEnd);
 		context.setStroke(defaultS);
@@ -169,7 +167,7 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 				(int)m_base.getX(), (int)m_base.getY());
 		context.setColor(previousColor);/* */
 
-		return m_width;
+		return getWidth();
 	}
 
 	public void setAutoStem(boolean auto) {

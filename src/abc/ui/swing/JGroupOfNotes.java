@@ -51,6 +51,8 @@ class JGroupOfNotes extends JScoreElementAbstract {
 
 	private boolean autoStemming = true;
 	private boolean isStemUp = true;
+	
+	private double m_width = -1;
 
 	private Engraver m_engraver = null;
 
@@ -66,12 +68,12 @@ class JGroupOfNotes extends JScoreElementAbstract {
 		for (int i=0; i<notes.length; i++)
 			if (notes[i] instanceof Note) {
 				m_notes[i] = (Note)notes[i];
-				m_jNotes[i] = new JNotePartOfGroup((Note)m_notes[i], base, m_metrics);
+				m_jNotes[i] = new JNotePartOfGroup((Note)m_notes[i], base, getMetrics());
 				//anchorNotes[i] = (Note)notes[i];
 			}
 			else {
 				//This is a multiNote
-				m_jNotes[i] = new JChordPartOfGroup((MultiNote)notes[i], m_metrics, new Point2D.Double());
+				m_jNotes[i] = new JChordPartOfGroup((MultiNote)notes[i], getMetrics(), new Point2D.Double());
 				m_notes[i] = (Note)((JChordPartOfGroup)m_jNotes[i]).getReferenceNoteForGroup().getMusicElement();
 
 			}
@@ -81,7 +83,7 @@ class JGroupOfNotes extends JScoreElementAbstract {
 			SlurDefinition slurDef = new SlurDefinition();
 			slurDef.setStart(notes[0]);
 			slurDef.setEnd(notes[notes.length-1]);
-			JSlurOrTie jSlurDef = new JSlurOrTie(slurDef, m_metrics);
+			JSlurOrTie jSlurDef = new JSlurOrTie(slurDef, getMetrics());
 			jSlurDef.setPosition(JSlurOrTie.POSITION_ABOVE);
 			jSlurDef.setOutOfStems(true);
 			jSlurDef.setTuplet(true);
@@ -93,6 +95,10 @@ class JGroupOfNotes extends JScoreElementAbstract {
 
 	public MusicElement getMusicElement() {
 		return null;
+	}
+	
+	public double getWidth() {
+		return m_width; //suppose that is has been calculated
 	}
 
 	public void setStaffLine(JStaffLine staffLine) {
@@ -190,14 +196,16 @@ class JGroupOfNotes extends JScoreElementAbstract {
 			updatedBase.setLocation(currentBase);
 			((JScoreElementAbstract)highestNote).setBase(updatedBase);
 			//based on this, calculate the new stem Y end.
-			m_stemYend = (int)(highestNote.getStemBeginPosition().getY()-m_metrics.getStemLength(NOTATION_CONTEXT));
+			m_stemYend = (int)(highestNote.getStemBeginPosition().getY()
+					-getMetrics().getNoteHeight()/2
+					-getMetrics().getStemLength(NOTATION_CONTEXT));
 		} else {
 			//update the lowest note to calculate when the stem Y end should be after the base change.
 			updatedBase = lowestNote.getBase();
 			updatedBase.setLocation(currentBase);
 			((JScoreElementAbstract)lowestNote).setBase(updatedBase);
 			//based on this, calculate the new stem Y end.
-			m_stemYend = (int)(lowestNote.getStemBeginPosition().getY()+m_metrics.getStemLength(NOTATION_CONTEXT));
+			m_stemYend = (int)(lowestNote.getStemBeginPosition().getY()+getMetrics().getStemLength(NOTATION_CONTEXT));
 		}
 
 		JGroupableNote firstNote = m_jNotes[0];
@@ -216,20 +224,20 @@ class JGroupOfNotes extends JScoreElementAbstract {
 			if (m_engraver != null) engraverSpacing = m_engraver.getNoteSpacing(m_jNotes[i]);
 			currentBase.setLocation(currentBase.getX()
 							+ m_jNotes[i].getWidth()
-							+ m_metrics.getNotesSpacing()
+							+ getMetrics().getNotesSpacing()
 							+ engraverSpacing,
 						getBase().getY());
 				//}
 		}
 		if (lastNote==null)
 			lastNote=firstNote;
-		double firstNoteAccidentalWidth = (firstNote.getWidth()-m_metrics.getNoteWidth());
+		double firstNoteAccidentalWidth = (firstNote.getWidth()-getMetrics().getNoteWidth());
 
 		if (isStemUp) {
 			m_width = (int)(lastNote.getStemBeginPosition().getX()-(firstNote).getBase().getX() + firstNoteAccidentalWidth);
 		}
 		else {
-			m_width = (int)(lastNote.getStemBeginPosition().getX()+m_metrics.getNoteWidth()
+			m_width = (int)(lastNote.getStemBeginPosition().getX()+getMetrics().getNoteWidth()
 						-firstNote.getBase().getX() + firstNoteAccidentalWidth);
 		}
 	}
@@ -241,7 +249,7 @@ class JGroupOfNotes extends JScoreElementAbstract {
 		for (int i=0; i<m_jNotes.length; i++) {
 			JGroupableNote n = m_jNotes[i];
 			((JScoreElementAbstract)n).render(context);
-			BasicStroke notesLinkStroke = m_metrics.getNotesLinkStroke();
+			BasicStroke notesLinkStroke = getMetrics().getNotesLinkStroke();
 			context.setStroke(notesLinkStroke);
 			short[] longerRhythms = null;
 			short noteStrictDuration = m_notes[i].getStrictDuration();
@@ -282,11 +290,11 @@ class JGroupOfNotes extends JScoreElementAbstract {
 						noteLinkEnd = (int)((JGroupableNote)m_jNotes[i-1]).getStemBeginPosition().getX();//getE (int)(stemX-2*context.getNoteWidth());
 					else
 						if (!(hasNext && nextNoteIsShorterOrEquals))
-							noteLinkEnd = (int)(m_jNotes[i].getStemBeginPosition().getX()-m_metrics.getNoteWidth()/1.2);
+							noteLinkEnd = (int)(m_jNotes[i].getStemBeginPosition().getX()-getMetrics().getNoteWidth()/1.2);
 				}
 				else
 					if (!nextNoteIsShorterOrEquals)
-						noteLinkEnd = (int)(m_jNotes[i].getStemBeginPosition().getX()+m_metrics.getNoteWidth()/1.2);
+						noteLinkEnd = (int)(m_jNotes[i].getStemBeginPosition().getX()+getMetrics().getNoteWidth()/1.2);
 				if (noteLinkEnd!=-1)
 					context.drawLine((int)m_jNotes[i].getStemBeginPosition().getX(), noteLinkY, noteLinkEnd, noteLinkY);
 			}
@@ -295,14 +303,14 @@ class JGroupOfNotes extends JScoreElementAbstract {
 		}
 
 		if (nUpletSize!=-1) {
-			char[] chars = {m_metrics.getTupletDigitChar(nUpletSize)};
+			char[] chars = {getMetrics().getTupletDigitChar(nUpletSize)};
 			//TODO replace with commented line but needs to be improved because of the get display position.
 			//context.drawChars(chars, 0, 1, (int)(((JNote)m_jNotes[0]).getDisplayPosition().getX()+m_width/2), (int)(m_stemYend - m_metrics.getNoteHeigth()/4));
 			Point2D ctrlP = null;
 			if (isStemUp) {
 				ctrlP = new Point2D.Double(
-						m_jNotes[0].getBase().getX()+m_width/2,
-						m_stemYend - m_metrics.getTupletNumberYOffset());
+						m_jNotes[0].getBase().getX()+getWidth()/2,
+						m_stemYend - getMetrics().getTupletNumberYOffset());
 				context.drawChars(chars, 0, 1, (int)ctrlP.getX(), (int)ctrlP.getY());
 			} else {
 				//if group is ascending or descending
@@ -322,18 +330,18 @@ class JGroupOfNotes extends JScoreElementAbstract {
 				}
 				if (intersects) { //control point above bounds of the groupe
 					ctrlP = new Point2D.Double(
-						m_jNotes[0].getStemBeginPosition().getX()+(m_width-m_metrics.getNoteWidth())/2,
-						getBoundingBox().getMinY() - m_metrics.getTupletNumberYOffset());
+						m_jNotes[0].getStemBeginPosition().getX()+(getWidth()-getMetrics().getNoteWidth())/2,
+						getBoundingBox().getMinY() - getMetrics().getTupletNumberYOffset());
 				} else {
 					ctrlP = new Point2D.Double(
-						m_jNotes[0].getStemBeginPosition().getX()+(m_width-m_metrics.getNoteWidth())/2,
-						line.getBounds2D().getCenterY() - m_metrics.getTupletNumberYOffset());
+						m_jNotes[0].getStemBeginPosition().getX()+(getWidth()-getMetrics().getNoteWidth())/2,
+						line.getBounds2D().getCenterY() - getMetrics().getTupletNumberYOffset());
 				}
 				context.drawChars(chars, 0, 1, (int)ctrlP.getX(), (int)ctrlP.getY());
 			}
 			ctrlP.setLocation(
-				ctrlP.getX()+m_metrics.getTimeSignatureNumberWidth()/2,
-				ctrlP.getY()-m_metrics.getTimeSignatureNumberHeight()-m_metrics.getTupletNumberYOffset());
+				ctrlP.getX()+getMetrics().getTimeSignatureNumberWidth()/2,
+				ctrlP.getY()-getMetrics().getTimeSignatureNumberHeight()-getMetrics().getTupletNumberYOffset());
 			((JNoteElementAbstract) m_jNotes[0]).getJSlurDefinition()
 				.setTupletControlPoint(ctrlP);
 		}
@@ -343,7 +351,7 @@ class JGroupOfNotes extends JScoreElementAbstract {
 		context.draw(getBoundingBox());
 		context.setColor(previousColor);/* */
 
-		return m_width;
+		return getWidth();
 	}
 
 	public Rectangle2D getBoundingBox() {

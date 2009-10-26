@@ -22,7 +22,6 @@ import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
-import java.util.Vector;
 
 import abc.notation.AccidentalType;
 import abc.notation.Decoration;
@@ -67,6 +66,7 @@ class JNote extends JNoteElementAbstract {
 	protected Point2D stemUpBeginPosition = null;
 	protected Point2D stemDownBeginPosition = null;
 
+	private double m_width = -1;
 
 	public JNote(Note noteValue, Point2D base, ScoreMetrics c) {
 		super(noteValue, base, c);
@@ -86,6 +86,10 @@ class JNote extends JNoteElementAbstract {
 	public MusicElement getMusicElement() {
 		return note;
 	}
+	
+	public double getWidth() {
+		return m_width; //suppose it has been calculated
+	}
 
 	/** Sets the Unicode value of the note as a char array.
 	 * @see #noteChars
@@ -93,14 +97,14 @@ class JNote extends JNoteElementAbstract {
 	protected void valuateNoteChars() {
 		short noteDuration = note.getStrictDuration();
 		if (note.isRest()){
-			noteChars = m_metrics.getRestChar(noteDuration);
+			noteChars = getMetrics().getRestChar(noteDuration);
 			//System.out.println("duration of the rest is " + noteDuration);
 		}
 		else {
 			if (isStemUp())
-				noteChars = m_metrics.getNoteStemUpChar(noteDuration);
+				noteChars = getMetrics().getNoteStemUpChar(noteDuration);
 			else
-				noteChars = m_metrics.getNoteStemDownChar(noteDuration);
+				noteChars = getMetrics().getNoteStemDownChar(noteDuration);
 		}
 	}
 
@@ -129,7 +133,8 @@ class JNote extends JNoteElementAbstract {
 	//
 	protected void onBaseChanged() {
 		//System.out.println("JNote.onBaseChanged : "+note.toString());
-		Dimension glyphDimension = m_metrics.getGlyphDimension(NOTATION_CONTEXT);
+		ScoreMetrics metrics = getMetrics();
+		Dimension glyphDimension = metrics.getGlyphDimension(NOTATION_CONTEXT);
 
 		Point2D base = getBase();
 		int noteY = 0;
@@ -144,13 +149,13 @@ class JNote extends JNoteElementAbstract {
 		if (note.getAccidental()!=AccidentalType.NONE) {
 			switch (note.getAccidental()) {
 				case AccidentalType.FLAT: accidentalsChars = ScoreMetrics.FLAT;
-					accidentalsWidth = m_metrics.getFlatBounds().getWidth();
+					accidentalsWidth = metrics.getFlatBounds().getWidth();
 					break;
 				case AccidentalType.SHARP: accidentalsChars = ScoreMetrics.SHARP;
-					accidentalsWidth = m_metrics.getSharpBounds().getWidth();
+					accidentalsWidth = metrics.getSharpBounds().getWidth();
 					break;
 				case AccidentalType.NATURAL: accidentalsChars = ScoreMetrics.NATURAL;
-					accidentalsWidth = m_metrics.getNaturalBounds().getWidth();
+					accidentalsWidth = metrics.getNaturalBounds().getWidth();
 					break;
 				default : throw new IllegalArgumentException("Incorrect accidental for " + note + " : " + note.getAccidental());
 			}
@@ -195,7 +200,7 @@ class JNote extends JNoteElementAbstract {
 
 	protected void calcDotsPosition() {
 		if (note.countDots()!=0) {
-			Dimension glyphDimension = m_metrics.getGlyphDimension(NOTATION_CONTEXT);
+			Dimension glyphDimension = getMetrics().getGlyphDimension(NOTATION_CONTEXT);
 			dotsPosition = new Point2D.Double(notePosition.getX() + glyphDimension.getWidth()*1.2,
 					notePosition.getY()-glyphDimension.getHeight()*0.05);
 		}
@@ -225,15 +230,16 @@ class JNote extends JNoteElementAbstract {
 		//TODO getDecorations.size==0, return (if null, =new Vector)
 		if (m_jDecorations != null && m_jDecorations.size() > 0){
 
-			double decorationHeight = m_metrics.getDecorationHeight();
+			ScoreMetrics metrics = getMetrics();
+			double decorationHeight = metrics.getDecorationHeight();
 			double decorationWidth = 0;
 
 			double yOverStaff = 0;
 			double yOnStaff = 0;
 			double yUnderStaff = 0;
 			// always use full note height ... even if this is a gracenote
-			double noteHeight = m_metrics.getNoteHeight() + m_metrics.getStemLength();
-			double stemedNoteHeight = noteHeight + m_metrics.getStemLength();
+			double noteHeight = metrics.getNoteHeight() + metrics.getStemLength();
+			double stemedNoteHeight = noteHeight + metrics.getStemLength();
 
 			// a little convience multiplier so that Y co-ord can be
 			// incremented up/down without isStemUp testing
@@ -242,7 +248,7 @@ class JNote extends JNoteElementAbstract {
 			if (isStemUp()) {
 
 				// ensure yOver is over stave AND higher than top of stem
-				yOverStaff = getBase().getY() - m_metrics.getStaffLineHeight()*5 - decorationHeight;
+				yOverStaff = getBase().getY() - metrics.getStaffLineHeight()*5 - decorationHeight;
 				if (yOverStaff <= notePosition.getY() - stemedNoteHeight) {
 					yOverStaff = notePosition.getY() - stemedNoteHeight - decorationHeight;
 				}
@@ -261,7 +267,7 @@ class JNote extends JNoteElementAbstract {
 				yCoordMultiplier = -1;
 
 				// ensure yOver is over stave AND higher than note head
-				yOverStaff = notePosition.getY() - m_metrics.getStaffLineHeight()*5 - decorationHeight;
+				yOverStaff = notePosition.getY() - metrics.getStaffLineHeight()*5 - decorationHeight;
 				if (yOverStaff <= notePosition.getY() - noteHeight) {
 					yOverStaff = notePosition.getY() - noteHeight - decorationHeight*0.75;
 				}
@@ -286,7 +292,7 @@ class JNote extends JNoteElementAbstract {
 				dType = ((Decoration)decoration.getMusicElement()).getType();
 				switch (dType) {
 					case Decoration.STACCATO:
-							decorationWidth = m_metrics.getDecorationWidth(((Decoration)decoration.getMusicElement()).getChars());
+							decorationWidth = metrics.getDecorationWidth(((Decoration)decoration.getMusicElement()).getChars());
 
 							pos = new Point2D.Double(notePosition.getX() + decorationWidth/3, yOnStaff);
 							decoration.setBase(pos);
@@ -318,11 +324,12 @@ class JNote extends JNoteElementAbstract {
 		// calculate slur/tie position last because slurs/ties must
 		//  go over any decorations
 		//if (note.getSlurDefinition()!=null)
-		Dimension glyphDimension = m_metrics.getGlyphDimension(NOTATION_CONTEXT);
+		ScoreMetrics metrics = getMetrics();
+		Dimension glyphDimension = metrics.getGlyphDimension(NOTATION_CONTEXT);
 		slurUnderAnchor = new Point2D.Double(notePosition.getX() + glyphDimension.getWidth()/2,
-				notePosition.getY()+m_metrics.getSlurAnchorYOffset());
+				notePosition.getY()+metrics.getSlurAnchorYOffset());
 		slurAboveAnchor = new Point2D.Double(displayPosition.getX() + glyphDimension.getWidth()/2,
-				notePosition.getY()-glyphDimension.getHeight()-m_metrics.getSlurAnchorYOffset());
+				notePosition.getY()-glyphDimension.getHeight()-metrics.getSlurAnchorYOffset());
 		if (note.getHeight()>=Note.c && note.getStrictDuration() <= Note.SIXTEENTH) {
 			slurAboveAnchor.setLocation(slurAboveAnchor.getX(), slurAboveAnchor.getY()-glyphDimension.getHeight()/2);
 			slurUnderAnchor.setLocation(slurUnderAnchor.getX(), slurUnderAnchor.getY()+glyphDimension.getHeight()/2);
@@ -330,10 +337,10 @@ class JNote extends JNoteElementAbstract {
 		slurUnderAnchorOutOfStem = isStemUp()
 			?slurUnderAnchor
 			:new Point2D.Double(getBoundingBox().getMinX(),
-								getBoundingBox().getMaxY()+m_metrics.getSlurAnchorYOffset());
+								getBoundingBox().getMaxY()+metrics.getSlurAnchorYOffset());
 		slurAboveAnchorOutOfStem = isStemUp()
 			?new Point2D.Double(getBoundingBox().getMaxX(),
-								getBoundingBox().getMinY()-m_metrics.getSlurAnchorYOffset())
+								getBoundingBox().getMinY()-metrics.getSlurAnchorYOffset())
 			:slurAboveAnchor;
 	}
 
@@ -345,7 +352,7 @@ class JNote extends JNoteElementAbstract {
 	//TODO move getCorrectedOffset to ScoreMetrics
 	public static double getCorrectedOffset(Note note) {
 		double positionOffset = getOffset(note);
-		if ((note.getOctaveTransposition() <= 0)
+		/*if ((note.getOctaveTransposition() <= 0)
 				|| (note.getStrictDuration() == Note.WHOLE)) {
 			short noteDuration = note.getStrictDuration();
 			switch (noteDuration) {
@@ -355,7 +362,7 @@ class JNote extends JNoteElementAbstract {
 				case Note.WHOLE: positionOffset=positionOffset+0.5; break;
 			}
 			//System.out.println("offset : " + positionOffset );
-		}
+		}*/
 		return positionOffset;
 	}
 
@@ -389,7 +396,7 @@ public Note getNote(){
 	}*/
 
 	public Rectangle2D getBoundingBox() {
-		Dimension glyphDimension = m_metrics.getGlyphDimension(NOTATION_CONTEXT);
+		Dimension glyphDimension = getMetrics().getGlyphDimension(NOTATION_CONTEXT);
 		double noteGlyphHeight = glyphDimension.getHeight()*4;
 		if (note.getStrictDuration() == Note.THIRTY_SECOND)
 			noteGlyphHeight = glyphDimension.getHeight()*5;
@@ -407,21 +414,21 @@ public Note getNote(){
 			return new Rectangle2D.Double(
 					(int)(displayPosition.getX()),
 					(int)(displayPosition.getY()-correctOffset-noteGlyphHeight),
-					m_width,
+					getWidth(),
 					noteGlyphHeight);
 		}
 		else {
 			return new Rectangle2D.Double(
 					(int)(displayPosition.getX()),
 					(int)(displayPosition.getY()-correctOffset-glyphDimension.getHeight()),
-					m_width,
+					getWidth(),
 					noteGlyphHeight);
 		}
 	}
 
 	public double render(Graphics2D g){
 		super.render(g);
-		renderExtendedStaffLines(g, m_metrics, getBase());
+		renderExtendedStaffLines(g, getMetrics(), getBase());
 		renderAccidentals(g);
 		renderGraceNotes(g);
 		renderDots(g);
@@ -429,7 +436,7 @@ public Note getNote(){
 		renderNoteChars(g);
 		renderChordName(g);
 
-		return m_width;
+		return getWidth();
 	}
 
 	protected void renderNoteChars(Graphics2D gfx) {
@@ -440,12 +447,12 @@ public Note getNote(){
 		if (note.getChordName()!=null) {
 			Font oldFont = gfx.getFont();
 			try {
-				Font chordFont = m_metrics.getTextFont(ScoreMetrics.FONT_CHORDS);
+				Font chordFont = getMetrics().getTextFont(ScoreMetrics.FONT_CHORDS);
 				gfx.setFont(chordFont);
 				Rectangle2D bounds = chordFont.getStringBounds(note.getChordName(), gfx.getFontRenderContext());
 				double y = getStaffLine().getBase().getY()/* not yet defined*/
 					//- (displayPosition.getY()%m_metrics.getStaffLinesSpacing())
-					- m_metrics.getStaffLinesSpacing()
+					- getMetrics().getStaffLinesSpacing()
 					+ bounds.getHeight();
 				gfx.drawString(note.getChordName(), (int)displayPosition.getX(), (int)y);
 			} finally {

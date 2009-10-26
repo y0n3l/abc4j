@@ -69,8 +69,8 @@ class JDecoration extends JScoreElementAbstract {
 		super(mtrx);
 		m_decoration = decoration;
 		if (base != null) setBase(base);
-		m_height = m_metrics.getDecorationHeight();
-		m_width = m_metrics.getDecorationWidth(m_decoration.getChars());
+		m_height = getMetrics().getDecorationHeight();
+		m_width = getMetrics().getDecorationWidth(m_decoration.getChars());
 	}
 
 	/** Returns the height of this score element.
@@ -108,7 +108,7 @@ class JDecoration extends JScoreElementAbstract {
 			//
 			// where's the roll character in SONOROA??
 			// use 90CW rotated left bracket instead .....
-			Shape rotatedDecoration = m_metrics.getRotatedDecoration(g2, m_decoration.getChars(), Math.PI/2);
+			Shape rotatedDecoration = getMetrics().getRotatedDecoration(g2, m_decoration.getChars(), Math.PI/2);
 			if (rotatedDecoration != null) {
 				AffineTransform t = null;
 				try {

@@ -77,11 +77,11 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract {
 		if (noteValue.hasGracingNotes()) {
 			Note [] graceNotes = noteValue.getGracingNotes();
 			if (graceNotes.length == 1) {
-				m_jGracenotes = new JGraceNote(graceNotes[0], base, m_metrics);
+				m_jGracenotes = new JGraceNote(graceNotes[0], base, getMetrics());
 				base.setLocation(base.getX()+m_jGracenotes.getWidth(),base.getY());
 			} else if (graceNotes.length>1) {
 				// FIXME: gracenote groups should use a proper engraver!!
-				m_jGracenotes = new JGroupOfGraceNotes(m_metrics, base, graceNotes, null);
+				m_jGracenotes = new JGroupOfGraceNotes(getMetrics(), base, graceNotes, null);
 //				base.setLocation(base.getX()+m_jGracenotes.getWidth(),base.getY());
 			}
 		}
@@ -90,7 +90,7 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract {
 		if (noteValue.hasDecorations()) {
 			Decoration[] decorations = noteValue.getDecorations();
 			for (int i=0; i<decorations.length;i++) {
-				addDecoration(new JDecoration(decorations[i], m_metrics));
+				addDecoration(new JDecoration(decorations[i], getMetrics()));
 			}
 		}
 	}
@@ -140,7 +140,7 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract {
 	 */
 	public JSlurOrTie getJSlurDefinition() {
 		if (jSlurDefinition == null)
-			jSlurDefinition = new JSlurOrTie(null, m_metrics);
+			jSlurDefinition = new JSlurOrTie(null, getMetrics());
 		return jSlurDefinition;
 	}
 

@@ -27,7 +27,7 @@ class JChordPartOfGroup extends JChord implements JGroupableNote {
 	}
 
 	protected JNote createAnchorNote(Note note, Point2D base, ScoreMetrics metrics) {
-		return new JNotePartOfGroup(note, base, m_metrics);
+		return new JNotePartOfGroup(note, base, getMetrics());
 	}
 
 	protected JChord createNormalizedChord(MultiNote mNote, ScoreMetrics mtrx, Point2D base) {

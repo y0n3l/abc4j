@@ -46,9 +46,13 @@ class JTimeSignature extends JScoreElementAbstract {
 		for (int i = 0; i < m_denomChars.length; i++) {
 			m_denomChars[i] = c.getTimeSignatureDigitChar(Integer.valueOf(""+m_denomChars[i]).intValue());
 		}
-		//compute width, no limit, we can have 16/128 if we want ;)
-		m_width = Math.max(m_numChars.length, m_denomChars.length)*m_metrics.getTimeSignatureNumberWidth();
 		setBase(base);
+	}
+	
+	public double getWidth() {
+		//compute width, no limit, we can have 16/128 if we want ;)
+		return Math.max(m_numChars.length, m_denomChars.length)
+				* getMetrics().getTimeSignatureNumberWidth();
 	}
 	
 	public MusicElement getMusicElement() {
@@ -57,19 +61,21 @@ class JTimeSignature extends JScoreElementAbstract {
 	
 	protected void onBaseChanged() {
 		//FIXME what if the signature numbers are not supported ? => arrayOutOfBounds ! :/
-		m_topNumY = (int)(getBase().getY()-m_metrics.getNoteHeight()*3.0);
-		m_bottomNumY = (int)(getBase().getY()-m_metrics.getNoteHeight()*0.9);
+		m_topNumY = (int)(getBase().getY()-getMetrics().getNoteHeight()*3.0);
+		m_bottomNumY = (int)(getBase().getY()-getMetrics().getNoteHeight()*0.9);
 	}
 	
 	public double render(Graphics2D context){
 		super.render(context);
+		double width = getWidth();
+		double timeSigNumberWidth = getMetrics().getTimeSignatureNumberWidth();
 		context.drawChars(m_numChars, 0, m_numChars.length,
-				(int)(getBase().getX()+m_width/2-m_numChars.length*m_metrics.getTimeSignatureNumberWidth()/2),
+				(int)(getBase().getX()+width/2-m_numChars.length*timeSigNumberWidth/2),
 				m_topNumY);
 		context.drawChars(m_denomChars, 0, m_denomChars.length,
-				(int)(getBase().getX()+m_width/2-m_denomChars.length*m_metrics.getTimeSignatureNumberWidth()/2),
+				(int)(getBase().getX()+width/2-m_denomChars.length*timeSigNumberWidth/2),
 				m_bottomNumY);
-		return m_width;
+		return width;
 	}
 }
 

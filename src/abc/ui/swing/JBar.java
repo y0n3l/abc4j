@@ -27,16 +27,19 @@ class JBar extends JScoreElementAbstract{
 	/** The encapsulated abc notation bar element */
 	protected BarLine m_barLine = null;
 
-	protected int m_barWidth = -1;
+	private int m_barWidth = -1;
 	//dots in case of repeat only.
-	protected int m_barDotsSpacing = -1;
-	protected int m_dotsRadius = -1;
-	protected int m_topDotY = -1;
-	protected int m_bottomDotY = -1;
+	private int m_barDotsSpacing = -1;
+	private int m_dotsRadius = -1;
+	private int m_topDotY = -1;
+	private int m_bottomDotY = -1;
 	
-	public JBar(BarLine barLine, Point2D base, ScoreMetrics c) {
-		super (c);
+	public JBar(BarLine barLine, Point2D base, ScoreMetrics mtrx) {
+		super(mtrx);
 		m_barLine = barLine; 
+		m_dotsRadius = (int)(mtrx.getNoteWidth()*0.3);
+		m_barWidth = (int)(mtrx.getNoteWidth()*0.5);
+		m_barDotsSpacing = (int)(mtrx.getNoteWidth()*0.2);
 		setBase(base);
 	}
 	
@@ -44,29 +47,31 @@ class JBar extends JScoreElementAbstract{
 		return m_barLine;
 	}
 	
+	private int getHeight() {
+		return (int)getMetrics().getStaffCharBounds().getHeight();
+	}
+	
+	public double getWidth() {
+		switch (m_barLine.getType()) {
+		case BarLine.SIMPLE :
+			return 0;
+		case BarLine.REPEAT_OPEN : 
+			return m_barWidth+2*m_barDotsSpacing+m_dotsRadius;
+		case BarLine.REPEAT_CLOSE : 
+			return m_barWidth+2*m_barDotsSpacing+m_dotsRadius;
+		}
+		return 0;
+	}
+	
 	protected void onBaseChanged() {
-		m_dotsRadius = (int)(m_metrics.getNoteWidth()*0.3);
-		m_barWidth = (int)(m_metrics.getNoteWidth()*0.5);
-		m_barDotsSpacing = (int)(m_metrics.getNoteWidth()*0.2);
-		int height = (int)m_metrics.getStaffCharBounds().getHeight();
+		int height = getHeight();
 		m_topDotY = (int)(getBase().getY()-height*0.61);
 		m_bottomDotY = (int)(getBase().getY()-height*0.4);
-		switch (m_barLine.getType()) {
-			case BarLine.SIMPLE :
-				m_width = 0;
-				break;
-			case BarLine.REPEAT_OPEN : 
-				m_width = m_barWidth+2*m_barDotsSpacing+m_dotsRadius;
-				break;
-			case BarLine.REPEAT_CLOSE : 
-				m_width = m_barWidth+2*m_barDotsSpacing+m_dotsRadius;
-				break;
-		}
 	}
 	
 	public double render(Graphics2D context){
 		super.render(context);
-		int height = (int)m_metrics.getStaffCharBounds().getHeight();
+		int height = getHeight();
 		//System.out.println("space between = " + m_barDotsSpacing);
 		Point2D m_base = getBase();
 		switch (m_barLine.getType()) {
@@ -88,10 +93,10 @@ class JBar extends JScoreElementAbstract{
 												m_barWidth, height);
 				break;
 			case BarLine.SIMPLE : context.drawChars(ScoreMetrics.BAR_LINE, 0, 1, 
-					(int)(m_base.getX()+m_metrics.getNoteWidth()/3), (int)(m_base.getY()));
+					(int)(m_base.getX()+getMetrics().getNoteWidth()/3), (int)(m_base.getY()));
 				break;
 		}
-		return m_width;
+		return getWidth();
 	}
 	
 	

@@ -67,7 +67,7 @@ class JGraceNotePartOfGroup extends JNotePartOfGroup {
 	protected void onBaseChanged() {
 		super.onBaseChanged();
 
-		Dimension glyphDimension = m_metrics.getGlyphDimension(NOTATION_CONTEXT);
+		Dimension glyphDimension = getMetrics().getGlyphDimension(NOTATION_CONTEXT);
         /* TJM */ // bug ... 1st time called this is always null. why ?
         if (glyphDimension == null) return;
 
@@ -75,17 +75,17 @@ class JGraceNotePartOfGroup extends JNotePartOfGroup {
 		// bug corection below:
 		// for some (unknown) reason, beaming moves one of the note positions
 		// down 1 note position. This line corrects for it.
-		int noteY = (int) ( notePosition.getY() - (m_metrics.getStaffLineHeight()/2) );
+		int noteY = (int) ( notePosition.getY() - (getMetrics().getStaffLineHeight()/2) );
 		int noteX = (int) notePosition.getX();
 		displayPosition.setLocation(noteX, noteY);
 
-		BasicStroke stemStroke = m_metrics.getNotesLinkStroke();
+		BasicStroke stemStroke = getMetrics().getNotesLinkStroke();
 
 		noteX = (int)displayPosition.getX();
 
 		int stemYBegin = (int)(displayPosition.getY() - glyphDimension.getHeight()/6);
 
-		stemUpBeginPosition = new Point2D.Double(noteX + m_metrics.getGraceNoteWidth(), stemYBegin);
+		stemUpBeginPosition = new Point2D.Double(noteX + getMetrics().getGraceNoteWidth(), stemYBegin);
 		stemDownBeginPosition = new Point2D.Double(noteX,stemYBegin);
 
 	}
@@ -95,12 +95,12 @@ class JGraceNotePartOfGroup extends JNotePartOfGroup {
 		Font previousFont = context.getFont();
 
 		try {
-			context.setFont(m_metrics.getGracingsFont());
+			context.setFont(getMetrics().getGracingsFont());
 			super.render(context);
 		} finally {
 			context.setFont(previousFont);
 		}
 
-		return m_width;
+		return getWidth();
 	}
 }

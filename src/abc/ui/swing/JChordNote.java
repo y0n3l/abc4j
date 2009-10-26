@@ -46,6 +46,6 @@ class JChordNote extends JNotePartOfGroup {
 				(int)getStemEndPosition().getX(), (int)getStemEndPosition().getY());
 		context.setColor(previousColor);
 */
-		return m_width;
+		return getWidth();
 	}
 }

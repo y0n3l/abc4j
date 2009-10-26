@@ -120,6 +120,11 @@ public class JSlurOrTie extends JScoreElementAbstract {
 	public MusicElement getMusicElement() {
 		return null;
 	}
+	
+	/** Not used, returns -1 */
+	public double getWidth() {
+		return -1; //not used
+	}
 
 	/* (non-Javadoc)
 	 * @see abc.ui.swing.JScoreElementAbstract#onBaseChanged()

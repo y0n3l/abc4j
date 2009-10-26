@@ -123,27 +123,42 @@ public class ScoreMetrics {
 	/** Unknown note length */
 	private static final char[] UNKNWON_NOTE = {'\uF0AD'};
 
-	/** Default font size for musical symbols */
-	public static final float DEFAULT_NOTATION_SIZE = 45;
-	public static final float DEFAULT_TEXT_SIZE = DEFAULT_NOTATION_SIZE / 4;
-
-	public static final String NOTATION_FONT = "SONORA2.TTF";
-	public static final String TEXT_FONT = "Dialog";
+	/** Default font size for musical symbols and texts */
+	private static final float DEFAULT_NOTATION_SIZE = 45;
+	private static final float DEFAULT_TEXT_SIZE = DEFAULT_NOTATION_SIZE / 4;
+	private static final String NOTATION_FONT = "SONORA3.TTF";
+//	private static final String DEFAULT_TEXT_FONT = "Dialog";
 
 	/** Textual font for title
 	 * @see #getTextFont(short)
 	 */
 	public static final short FONT_TITLE = 0;
+	/** Textual font for subtitle
+	 * @see #getTextFont(short)
+	 */
+	public static final short FONT_SUBTITLE = 1;
+	/** Textual font for composer
+	 * @see #getTextFont(short)
+	 */
+	public static final short FONT_COMPOSER = 2;
+	/** Textual font for annotation
+	 * @see #getTextFont(short)
+	 */
+	public static final short FONT_ANNOTATION = 3;
 	/** Textual font for chord names
 	 * @see #getTextFont(short)
 	 */
-	public static final short FONT_CHORDS = 1;
+	public static final short FONT_CHORDS = 4;
 	/** Textual font for lyrics
 	 * @see #getTextFont(short)
 	 */
-	public static final short FONT_LYRICS = 2;
-	private static final String[][] textFontPreferences = new String[][] {
+	public static final short FONT_LYRICS = 5;
+	
+	private String[][] textFontPreferences = new String[][] {
 		/*FONT_TITLE*/{"Palatino Linotype", "Arial", "Dialog"},
+		/*FONT_SUBTITLE*/{"Palatino Linotype", "Arial", "Dialog"},
+		/*FONT_COMPOSER*/{"Palatino Linotype", "Arial", "Dialog"},
+		/*FONT_ANNOTATION*/{"Palatino Linotype", "Arial", "Dialog"},
 		/*FONT_CHORDS*/{"Palatino Linotype", "Arial", "Dialog"},
 		/*FONT_LYRICS*/{"Palatino Linotype", "Arial", "Dialog"}
 	};
@@ -188,40 +203,26 @@ public class ScoreMetrics {
 	int graceNotesSpacing = 0;
 
 	// fonts
-	Font baseNotationFont = null;
-	Font noteFont = null;
-	Font gracingsFont = null;
-	Font baseTextFont = null;
-	Font titleFont = null;
-	Font subtitleFont = null;
-	Font annotationFont = null;
-	Font lyricsFont = null;
+	private Font baseNotationFont = null;
+	private Font noteFont = null;
+	private Font gracingsFont = null;
 
-	FontMetrics noteFontMetrics  = null;
-	FontMetrics gracingsFontMetrics  = null;
-	FontMetrics titleFontMetrics  = null;
-	FontMetrics subtitleFontMetrics  = null;
-	FontMetrics lyricsFontMetrics  = null;
-	FontMetrics annotationFontMetrics  = null;
+	private FontMetrics noteFontMetrics  = null;
+	private FontMetrics gracingsFontMetrics  = null;
 
-	// text elements
-	int titleHeight = -1;
-	int subtitleHeight = -1;
-	int annotationHeight = -1;
-	int decorationHeight = -1;
-	int lyricsHeight = -1;
-
+	private int decorationHeight = -1;
 
 	private Graphics2D g2 = null;
 
-	private float m_size = -1;
+	private float m_notationFontSize = -1;
+	private float m_textFontSize = -1;
 
 	/**
 	 * ScoreMetrics with {@link #DEFAULT_NOTATION_SIZE default size}
 	 * @param g2d
 	 */
 	protected ScoreMetrics(Graphics2D g2d) {
-		this(g2d, DEFAULT_NOTATION_SIZE, TEXT_FONT, DEFAULT_TEXT_SIZE);
+		this(g2d, DEFAULT_NOTATION_SIZE, DEFAULT_TEXT_SIZE);
 	}
 
 	/**
@@ -231,18 +232,19 @@ public class ScoreMetrics {
 	 * @see #setSize(float)
 	 */
 	protected ScoreMetrics(Graphics2D g2d, float notationSize) {
-		this(g2d, notationSize, TEXT_FONT, notationSize/4);
+		this(g2d, notationSize, notationSize/4);
 	}
 
 	protected ScoreMetrics(Graphics2D g2d, float notationSize,
-			String textFontName, float textSize) {
+			float textSize) {
 		try {
 			g2 = g2d;
 			//getClass().getResourceAsStream("SONORA.TTF");
 			//File file =new File("D:/Perso/musicfonts/MIDIDESI/TRUETYPE/SONORA.TTF");
 			//FileInputStream fontStream = new FileInputStream(file);
 		    baseNotationFont = Font.createFont(Font.TRUETYPE_FONT, ScoreMetrics.this.getClass().getResourceAsStream(NOTATION_FONT));
-			baseTextFont = new Font(textFontName, Font.PLAIN, (int)textSize);
+		    m_notationFontSize = notationSize;
+			m_textFontSize = textSize;
 
 			initNoteFont(notationSize);
 			initGracingsFont(60.00f);
@@ -251,7 +253,6 @@ public class ScoreMetrics {
 		} catch (Exception e){
 			e.printStackTrace();
 		}
-		//setSize(notationSize);
 	}
 
 	/* Sets reference font size (pts) that all other sizes are derived from.
@@ -269,18 +270,33 @@ public class ScoreMetrics {
 	public void setNotationFontSize(float notationSize) {
 		initNoteFont(notationSize);
 		initGracingsFont(60.00f);
+		setTextFontSize(notationSize/DEFAULT_NOTATION_SIZE * DEFAULT_TEXT_SIZE);
 	}
 	public float getNotationFontSize() {
-		return m_size;
+		return m_notationFontSize;
+	}
+	
+	/**
+	 * Return the base text font size<br>
+	 * Titles, subtitles... sizes are derived from it.
+	 */
+	public float getTextFontSize() {
+		return m_textFontSize;
 	}
 
-	public void setTextFontSize(float notationSize) {
+	/**
+	 * Sets the base text font size<br>
+	 * Titles, subtitles... sizes are derived from it.
+	 * @param textSize
+	 */
+	public void setTextFontSize(float textSize) {
+		m_textFontSize = textSize;
 		initTextFonts();
 	}
 
 	private void initNoteFont(float size) {
 		try {
-			m_size = size;
+			m_notationFontSize = size;
 
 			//getClass().getResourceAsStream("SONORA.TTF");
 			//File file =new File("D:/Perso/musicfonts/MIDIDESI/TRUETYPE/SONORA.TTF");
@@ -291,47 +307,6 @@ public class ScoreMetrics {
 			noteFont = baseNotationFont.deriveFont(size);
 			noteFontMetrics = g2.getFontMetrics(noteFont);
 
-			//skip that search if fonts already loaded, just resize them
-			if (textFonts == null) {
-				//Find fonts for title, chords, lyrics...
-				//First, make a list of all wanted fonts, so we'll iterate only
-				//once over the getAllFonts array
-				Set wantedFontNames = new HashSet();
-				for (int i = 0; i < textFontPreferences.length; i++) {
-					for (int j = 0; j < textFontPreferences[i].length; j++) {
-						wantedFontNames.add(textFontPreferences[i][j]);
-					}
-				}
-				int wantedFontCount = wantedFontNames.size();
-				Map foundFonts = new HashMap();
-				Font[] availableFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
-				for (int i = 0; i < availableFonts.length; i++) {
-					if (wantedFontNames.contains(availableFonts[i].getFontName())) {
-						foundFonts.put(availableFonts[i].getFontName(), availableFonts[i]);
-						if (foundFonts.size() == wantedFontCount) {
-							break; //Yeah! we got all we wanted!
-						}
-					}
-				}
-				//Now we know which wanted fonts are available
-				textFonts = new Font[textFontPreferences.length];
-				for (int i = 0; i < textFontPreferences.length; i++) {
-					for (int j = 0; j < textFontPreferences[i].length; j++) {
-						if (foundFonts.containsKey(textFontPreferences[i][j])) {
-							textFonts[i] = (Font) foundFonts.get(textFontPreferences[i][j]);
-							break;
-						}
-					}
-				}
-			}
-			for (int i = 0; i < textFonts.length; i++) {
-				textFonts[i] = textFonts[i].deriveFont(14*size/DEFAULT_NOTATION_SIZE);
-			}
-//			for (int i = 0; i < textFonts.length; i++) {
-//				System.out.println("textFonts["+i+"] = "+textFonts[i].getFontName());
-//				Rectangle2D testFont = new TextLayout("A", textFonts[i], frc).getBounds();
-//				System.out.println("h="+testFont.getHeight()+",w="+testFont.getWidth());
-//			}
 			FontRenderContext frc = g2.getFontRenderContext();
 
 			staffCharBounds = new TextLayout(new Character(STAFF_SIX_LINES).toString(), noteFont, frc).getBounds();
@@ -380,7 +355,7 @@ public class ScoreMetrics {
 			//default note spacing, Engrave is here to arrange this, hehe :)
 			notesSpacing = (int)(1.5*noteWidth);
 
-			m_size = size;
+			m_notationFontSize = size;
 		}
 		catch (Exception e){
 			e.printStackTrace();
@@ -415,23 +390,54 @@ public class ScoreMetrics {
 
 	private void initTextFonts() {
 		try {
-			//TODO (iubito) rework!!!
-			int baseTextSize = baseTextFont.getSize();
-			titleFont = baseTextFont.deriveFont(Font.BOLD, baseTextSize*3);
-			titleFontMetrics = g2.getFontMetrics(titleFont);
-			titleHeight = titleFontMetrics.getHeight();
+			//skip that search if fonts already loaded, just resize them
+			if (textFonts == null) {
+				//Find fonts for title, chords, lyrics...
+				//First, make a list of all wanted fonts, so we'll iterate only
+				//once over the getAllFonts array
+				Set wantedFontNames = new HashSet();
+				for (int i = 0; i < textFontPreferences.length; i++) {
+					for (int j = 0; j < textFontPreferences[i].length; j++) {
+						wantedFontNames.add(textFontPreferences[i][j]);
+					}
+				}
+				int wantedFontCount = wantedFontNames.size();
+				Map foundFonts = new HashMap();
+				Font[] availableFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
+				for (int i = 0; i < availableFonts.length; i++) {
+					if (wantedFontNames.contains(availableFonts[i].getFontName())) {
+						foundFonts.put(availableFonts[i].getFontName(), availableFonts[i]);
+						if (foundFonts.size() == wantedFontCount) {
+							break; //Yeah! we got all we wanted!
+						}
+					}
+				}
+				//Now we know which wanted fonts are available
+				textFonts = new Font[textFontPreferences.length];
+				for (int i = 0; i < textFontPreferences.length; i++) {
+					for (int j = 0; j < textFontPreferences[i].length; j++) {
+						if (foundFonts.containsKey(textFontPreferences[i][j])) {
+							textFonts[i] = (Font) foundFonts.get(textFontPreferences[i][j]);
+							break;
+						}
+					}
+				}
+			}
+//			for (int i = 0; i < textFonts.length; i++) {
+//				textFonts[i] = textFonts[i].deriveFont(14*size/DEFAULT_NOTATION_SIZE);
+//			}
+//			for (int i = 0; i < textFonts.length; i++) {
+//				System.out.println("textFonts["+i+"] = "+textFonts[i].getFontName());
+//				Rectangle2D testFont = new TextLayout("A", textFonts[i], frc).getBounds();
+//				System.out.println("h="+testFont.getHeight()+",w="+testFont.getWidth());
+//			}
 
-			subtitleFont = baseTextFont.deriveFont(Font.BOLD, baseTextSize*2);
-			subtitleFontMetrics = g2.getFontMetrics(subtitleFont);
-			subtitleHeight = subtitleFontMetrics.getHeight();
-
-			annotationFont = baseTextFont.deriveFont((int) (baseTextSize*0.8) );
-			annotationFontMetrics = g2.getFontMetrics(annotationFont);
-			annotationHeight = annotationFontMetrics.getHeight();
-
-			lyricsFont = baseTextFont.deriveFont(baseTextSize);
-			lyricsFontMetrics = g2.getFontMetrics(lyricsFont);
-			lyricsHeight = lyricsFontMetrics.getHeight();
+			textFonts[FONT_TITLE] = textFonts[FONT_TITLE].deriveFont(Font.BOLD, m_textFontSize*2);
+			textFonts[FONT_SUBTITLE] = textFonts[FONT_SUBTITLE].deriveFont(Font.BOLD, (float)(m_textFontSize*1.5));
+			textFonts[FONT_COMPOSER] = textFonts[FONT_COMPOSER].deriveFont(Font.BOLD, (float)(m_textFontSize*1.5));
+			textFonts[FONT_ANNOTATION] = textFonts[FONT_ANNOTATION].deriveFont(Font.ITALIC, m_textFontSize);
+			textFonts[FONT_LYRICS] = textFonts[FONT_LYRICS].deriveFont(m_textFontSize);
+			textFonts[FONT_CHORDS] = textFonts[FONT_CHORDS].deriveFont(m_textFontSize);
 
 		} catch (Exception e){
 			e.printStackTrace();
@@ -464,7 +470,54 @@ public class ScoreMetrics {
 	public Font getTextFont(short textType) {
 		return textFonts[textType];
 	}
+	
+	/**
+	 * Sets a text font name (if exists) for one type of text<br>
+	 * The font size is derived from the {@link #getTextFontSize() default text font size}.
+	 * @param textType One of {@link #FONT_TITLE}, {@link #FONT_LYRICS}...
+	 * @param fontNames Array of font names, in order of preference. If the first doesn't exist,
+	 * it'll try to use the second...
+	 */
+	public void setTextFont(short textType, String[] fontNames) {
+		/*Vector v = new Vector();
+		for (int i = 0; i < fontNames.length; i++) {
+			v.add((String) fontNames[i]);
+		}
+		for (int i = 0; i < textFontPreferences[textType].length; i++) {
+			v.add((String) textFontPreferences[textType][i]);
+		}*/
+		String[] array = new String[fontNames.length+textFontPreferences[textType].length];
+		System.arraycopy(fontNames, 0, array, 0, fontNames.length);
+		System.arraycopy(textFontPreferences[textType], 0, array, fontNames.length, textFontPreferences[textType].length);
+		textFontPreferences[textType] = array;
+		//reset in order to check if wanted font exists
+		textFonts = null; 
+		initTextFonts();
+	}
+	
+	/**
+	 * Returns height of one line rendered in the textType font.
+	 * @param textType one of {@link #FONT_TITLE}, {@link #FONT_CHORDS}...
+	 * @return the height of a string in this font used for this score metrics
+	 */
+	public int getTextFontHeight(short textType) {
+		FontMetrics fontMetrics = g2.getFontMetrics(getTextFont(textType));
+		return fontMetrics.getHeight();
+	}
 
+	/**
+	 * Returns width of string rendered in the textType font.
+	 * @param textType one of {@link #FONT_TITLE}, {@link #FONT_CHORDS}...
+	 * @param text The text we want to know its width
+	 * @return the width of a string in this font used for this score metrics
+	 */
+	public int getTextFontWidth(short textType, String text) {
+		if (text == null)
+			return 0;
+		FontMetrics fontMetrics = g2.getFontMetrics(getTextFont(textType));
+		return fontMetrics.stringWidth(text);
+	}
+	
 	public double getNoteHeight() {
 		return noteHeight;
 	}
@@ -745,64 +798,6 @@ public class ScoreMetrics {
 		return graceNoteStemLength;
 	}
 
-// get heights/widths for stings in various fonts
-	//FIXME (iubito) rework this
-	/** Returns height of text line rendered in the Title font.
-	 * @return the height of a line of text in this font used for this score metrics.
-	 */
-	public int getTitleHeight(){
-		return titleHeight;
-	}
-
-	/** Returns width of string rendered in the Title font.
-	 * @return the width of a string in this font used for this score metrics.
-	 */
-	public int getTitleWidth(String text){
-		return (titleFontMetrics.stringWidth(text));
-	}
-
-	/** Returns height of text line rendered in the Subtitle font.
-	 * @return the height of a line of text in this font used for this score metrics.
-	 */
-	public int getSubtitleHeight(){
-		return subtitleHeight;
-	}
-
-	/** Returns width of string rendered in the Subtitle font.
-	 * @return the width of a string in this font used for this score metrics.
-	 */
-	public int getSubtitleWidth(String text){
-		return (subtitleFontMetrics.stringWidth(text));
-	}
-
-	/** Returns height of text line rendered in the Annotation font.
-	 * @return the height of a line of text in this font used for this score metrics.
-	 */
-	public int getAnnotationHeight(){
-		return annotationHeight;
-	}
-
-	/** Returns width of string rendered in the Annotation font.
-	 * @return the width of a string in this font used for this score metrics.
-	 */
-	public int getAnnotationWidth(String text){
-		return (annotationFontMetrics.stringWidth(text));
-	}
-
-	/** Returns height of text line rendered in the Lyrics font.
-	 * @return the height of a line of text in this font used for this score metrics.
-	 */
-	public int getLyricsHeight(){
-		return lyricsHeight;
-	}
-
-	/** Returns width of string rendered in the Lyrics font.
-	 * @return the width of a string in this font used for this score metrics.
-	 */
-	public int getLyricsWidth(String text){
-		return (lyricsFontMetrics.stringWidth(text));
-	}
-
 //fontrenderingcontext specific transformations
 
 	public Shape getRotatedDecoration(Graphics2D g2, char[] chars, double radians) {
@@ -839,27 +834,4 @@ public class ScoreMetrics {
 		return gracingsFont;
 	}
 
-	/** Returns the font used for text titles in this score metrics.
-	 * @return the font used for text titles in this score metrics. */
-	public Font getTitleFont() {
-		return titleFont;
-	}
-
-	/** Returns the font used for  text subtitles in this score metrics.
-	 * @return the font used for text subtitles in this score metrics. */
-	public Font getSubtitleFont() {
-		return subtitleFont;
-	}
-
-	/** Returns the font used for text annotations in this score metrics.
-	 * @return the font used for text annotations in this score metrics. */
-	public Font getAnnotationFont() {
-		return annotationFont;
-	}
-
-	/** Returns the font used for lyrics in this score metrics.
-	 * @return the font used for lyrics in this score metrics. */
-	public Font getLyricsFont() {
-		return lyricsFont;
-	}
 }

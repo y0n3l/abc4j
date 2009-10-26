@@ -52,15 +52,12 @@ class JStaffLine extends JScoreElementAbstract {
 	public void addElement(JScoreElementAbstract r) {
 		m_staffElements.addElement(r);
 		r.setStaffLine(this);
-		computeWidth();
 	}
 
 	// FIXME: lyrics should be appended score
 	//        inline lyrics should be parsed and appended to staff lines
 	public void addLyrics(JWords r) {
 		m_lyrics.addElement(r);
-		// is this needed?
-		// computeWidth();
 	}
 
 	public boolean hasLyrics() {
@@ -109,7 +106,7 @@ class JStaffLine extends JScoreElementAbstract {
 
 			}*/
 		}
-		int staffCharNb = (int)(getWidth()/m_metrics.getStaffCharBounds().getWidth());
+		int staffCharNb = (int)(getWidth()/getMetrics().getStaffCharBounds().getWidth());
 		//System.out.println("char staff nb : " + staffCharNb);
 		char[] staffS = new char[staffCharNb+2];
 		for (int j=0; j<staffS.length; j++)
@@ -126,7 +123,7 @@ class JStaffLine extends JScoreElementAbstract {
 			lyrics.render(g);
 		}
 
-		return m_width;
+		return getWidth();
 	}
 
 	public void scaleToWidth(double newWidth) {
@@ -141,13 +138,12 @@ class JStaffLine extends JScoreElementAbstract {
 				elmt.setBase(base);
 			}
 		}
-		computeWidth();
-		//System.out.println("StaffLine, required Width : " + newWidth + " | result width=" + m_width);
+		//System.out.println("StaffLine, required Width : " + newWidth + " | result width=" + getWidth());
 	}
 
-	private void computeWidth() {
+	public double getWidth() {
 		JScoreElementAbstract lastElmt = (JScoreElementAbstract)m_staffElements.lastElement();
-		m_width = lastElmt.getBase().getX()+lastElmt.getWidth();
+		return lastElmt.getBase().getX()+lastElmt.getWidth();
 	}
 
 }

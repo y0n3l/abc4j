@@ -442,7 +442,7 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
 	val = val.substring(0, (val.length()-2));
 	float newSize = m_notationFontSize;
 	try {
-	  newSize=Float.valueOf(val);
+	  newSize=Float.valueOf(val).floatValue();
 	  newSize = newSize/100;
 	  newSize = m_notationFontSize * newSize;
 	} catch (NumberFormatException nfe) {

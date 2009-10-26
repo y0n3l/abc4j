@@ -142,17 +142,17 @@ public class JScoreComponent extends JComponent {
      *  true=show false=hide
      */
 	public void showTitles(boolean show) {
-      m_showTitles = show;
+		m_showTitles = show;
 	}
 
     /** Sets the note stem direction on a score.
      *  0=auto 1=up 2=down
      */
     public void setStemmingPolicy (byte policy) {
-	  if (m_stemPolicy == policy)
-	    return;
+    	if (m_stemPolicy == policy)
+    		return;
 
-	  m_stemPolicy = policy;
+    	m_stemPolicy = policy;
     }
 
     private void resetNoteStems() {
@@ -219,19 +219,12 @@ public class JScoreComponent extends JComponent {
 	 * @param file The PNG output file.
 	 * @throws IOException Thrown if the given file cannot be accessed. */
 	public void writeScoreTo(File file) throws IOException {
-		//if (m_bufferedImage==null || m_dimension.getWidth()>m_bufferedImage.getWidth()
-		//		|| m_dimension.getHeight()>m_bufferedImage.getHeight()) {
-		if (m_metrics == null)
-			initGfx();
-		//}
-		m_bufferedImageGfx.setColor(getBackground());
-		//m_bufferedImageGfx.fillRect(0, 0, (int)m_bufferedImage.getWidth(), (int)m_bufferedImage.getHeight());
-		m_bufferedImageGfx.setComposite(AlphaComposite.Clear);
-		m_bufferedImageGfx.fillRect(0, 0, (int)m_bufferedImage.getWidth(), (int)m_bufferedImage.getHeight());
-		m_bufferedImageGfx.setComposite(AlphaComposite.SrcOver);
-		drawIn(m_bufferedImageGfx);
-		m_isBufferedImageOutdated=false;
-		ImageIO.write(m_bufferedImage,"png",file);
+		BufferedImage bufferedImage = new BufferedImage((int)m_dimension.getWidth(), (int)m_dimension.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		Graphics2D bufferedImageGfx = (Graphics2D)bufferedImage.createGraphics();
+		bufferedImageGfx.setColor(Color.WHITE);
+		bufferedImageGfx.fillRect(0, 0, (int)bufferedImage.getWidth(), (int)bufferedImage.getHeight());
+		drawIn(bufferedImageGfx);
+		ImageIO.write(bufferedImage, "png", file);
 	}
 
 	/** Sets the tune to be renderered.

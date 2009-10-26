@@ -29,22 +29,20 @@ class JWords extends JText {
 	 * @param mtrx The score metrics needed
 	 */
 	protected JWords(ScoreMetrics mtrx, Words words) {
-		super(mtrx);
+		super(mtrx, words.getContent());
 		m_words = words;
 	}
 
 	/** Returns the height of this score element.
 	 * @return The height of this score element. */
 	public double getHeight() {
-		m_height = (double)m_metrics.getLyricsHeight();
-		return (m_height);
+		return (double)getMetrics().getTextFontHeight(ScoreMetrics.FONT_LYRICS);
 	}
 
 	/** Returns the width of this score element.
 	 * @return The width of this score element. */
 	public double getWidth() {
-		m_width = (double)m_metrics.getLyricsWidth(m_words.getContent());
-		return (m_width);
+		return (double)getMetrics().getTextFontWidth(ScoreMetrics.FONT_LYRICS, getText());
 	}
 
 	/** Returns the tune's music element represented by this graphical score element.
@@ -65,10 +63,10 @@ class JWords extends JText {
 	 * @param g2 */
 	public double render(Graphics2D g2) {
 		Font previousFont = g2.getFont();
-		g2.setFont(m_metrics.getLyricsFont());
+		g2.setFont(getMetrics().getTextFont(ScoreMetrics.FONT_LYRICS));
 		g2.drawString(m_words.getContent(), (int)getBase().getX(), (int)getBase().getY());
 		g2.setFont(previousFont);
-		return m_width;
+		return getWidth();
 	}
 }
 

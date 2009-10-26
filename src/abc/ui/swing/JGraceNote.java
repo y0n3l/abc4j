@@ -34,6 +34,8 @@ class JGraceNote extends JNote {
 	protected boolean renderSlash = true;
 	protected Point2D slashStart = null;
 	protected Point2D slashEnd = null;
+	
+	private double m_width = -1;
 
 	public JGraceNote(Note noteValue, Point2D base, ScoreMetrics c) {
 		super(noteValue, base, c);
@@ -65,10 +67,14 @@ class JGraceNote extends JNote {
 			super.getCorrectedOffset(note);
 		return positionOffset -= 1; // move up 1px
 	}
+	
+	public double getWidth() {
+		return m_width; //suppose it has been calculated
+	}
 
 	protected void onBaseChanged() {
 		super.onBaseChanged();
-		Dimension d = m_metrics.getGlyphDimension(NOTATION_CONTEXT);
+		Dimension d = getMetrics().getGlyphDimension(NOTATION_CONTEXT);
 
 		if (d == null) return;
 
@@ -98,7 +104,7 @@ class JGraceNote extends JNote {
 	public double render(Graphics2D context){
 		Font previousFont = context.getFont();
 		try {
-			context.setFont(m_metrics.getGracingsFont());
+			context.setFont(getMetrics().getGracingsFont());
 			super.render(context);
 
 // visual testing of base/offset/note positions
@@ -119,7 +125,7 @@ context.setColor(previousColor);
 
 		if (renderSlash) {
 			Stroke dfs = context.getStroke();
-			context.setStroke(m_metrics.getStemStroke());
+			context.setStroke(getMetrics().getStemStroke());
 			context.drawLine((int)slashStart.getX(), (int)slashStart.getY(), (int)slashEnd.getX(), (int)slashEnd.getY());
 			context.setStroke(dfs);
 		}

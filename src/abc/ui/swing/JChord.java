@@ -48,6 +48,7 @@ class JChord extends JNoteElementAbstract {
 
 	// the width of the chord group without grace notes
 	private double c_width = 0;
+	private double m_width = -1;
 
 
 	public JChord(MultiNote multiNote, ScoreMetrics metrics, Point2D base){
@@ -60,7 +61,7 @@ class JChord extends JNoteElementAbstract {
 		if (multiNote.hasUniqueStrictDuration()) {
 			m_sNoteInstances = new JNote[m_notes.length];
 			for (int i=0; i<m_notes.length; i++) {
-				m_sNoteInstances[i] = new JChordNote(m_notes[i], base, m_metrics);
+				m_sNoteInstances[i] = new JChordNote(m_notes[i], base, getMetrics());
 				if(m_sNoteInstances[i].getWidth()>c_width)
 					c_width += m_sNoteInstances[i].getWidth();
 			}
@@ -68,7 +69,7 @@ class JChord extends JNoteElementAbstract {
 		else {
 			m_sNoteInstances = new JNote[1];
 //			m_sNoteInstances[0] = new JNote(multiNote.getHighestNote(), base, m_metrics);
-			m_sNoteInstances[0] = new JChordNote(multiNote.getHighestNote(), base, m_metrics);
+			m_sNoteInstances[0] = new JChordNote(multiNote.getHighestNote(), base, getMetrics());
 
 			c_width = m_sNoteInstances[0].getWidth();
 			MultiNote[] h = multiNote.normalize();
@@ -117,6 +118,10 @@ class JChord extends JNoteElementAbstract {
 	public MusicElement getMusicElement() {
 		return multiNote;
 	}
+	
+	public double getWidth() {
+		return m_width; //suppose it has been calculated
+	}
 
 	public JNote[] getScoreElements() {
 		return m_sNoteInstances;
@@ -147,14 +152,13 @@ class JChord extends JNoteElementAbstract {
 	/** Invoked when this chord base has changed. */
 	protected void onBaseChanged() {
 
+		byte h = multiNote.getHighestNote().getHeight();
+		byte l = multiNote.getLowestNote().getHeight();
+
 		// assume every note in group has same auto stemming policy
 		// can be indivudual beamed note or chord multinote
 		boolean stemUp = false;
 		if (isAutoStem()) {
-
-			byte h = multiNote.getHighestNote().getHeight();
-			byte l = multiNote.getLowestNote().getHeight();
-
 			if (h <= Note.B) {
 				stemUp = true;
 			} else if (l > Note.B) {
@@ -167,12 +171,11 @@ class JChord extends JNoteElementAbstract {
 					stemUp = false;
 				}
 			}
-
 		} else {
 			stemUp = isStemUp();
-
 		}
 
+		//recalculate anchor
 		setStemUp(stemUp);
 
 		// set stemYEnd
@@ -181,12 +184,32 @@ class JChord extends JNoteElementAbstract {
 
 		int stemYEnd = (int)getBase().getY();
 		if (stemUp) {
-			stemYEnd = (int)(anchor.getStemBeginPosition().getY()-m_metrics.getStemLength(ScoreMetrics.NOTE_GLYPH));
+			stemYEnd = (int)(anchor.getStemBeginPosition().getY()-getMetrics().getStemLength(ScoreMetrics.NOTE_GLYPH));
 		} else {
-			stemYEnd = (int)(anchor.getStemBeginPosition().getY()+m_metrics.getStemLength(ScoreMetrics.NOTE_GLYPH));
+			stemYEnd = (int)(anchor.getStemBeginPosition().getY()+getMetrics().getStemLength(ScoreMetrics.NOTE_GLYPH));
 		}
 		for (int i=0; i<m_sNoteInstances.length; i++) {
-			((JChordNote)m_sNoteInstances[i]).setStemYEnd(stemYEnd);
+			((JNotePartOfGroup)m_sNoteInstances[i]).setStemYEnd(stemYEnd);
+//XXX I tried to set the note glyph for a chord not in group which duration is 1/8 or lower... but doesn't work
+//			if (!(this instanceof JChordPartOfGroup)) {
+//				anchor.noteChars = getMetrics().getNoteStemUpChar(
+//					((Note) anchor.getMusicElement()).getStrictDuration());
+//				Note n = (Note) m_sNoteInstances[i].getMusicElement();
+//				short noteDuration = n.getStrictDuration();
+//				if (n.getHeight() == h && stemUp) {
+//					//((JNote) m_sNoteInstances[i]).setAutoStem(false);
+//					//((JNote) m_sNoteInstances[i]).setStemUp(true);
+//					((JNote) m_sNoteInstances[i]).noteChars
+//						= getMetrics().getNoteStemUpChar(noteDuration);
+//					//valuateNoteChars();
+//				} else if (n.getHeight() == l && !stemUp) {
+//					//((JNote) m_sNoteInstances[i]).setStemUp(false);
+//					((JNote) m_sNoteInstances[i]).noteChars
+//						= getMetrics().getNoteStemDownChar(noteDuration);
+//					//((JNote) m_sNoteInstances[i]).valuateNoteChars();
+//				}
+//			}
+			//		m_sNoteInstances[i] instanceof JNotePartOfGroup)
 		}
 
 		double graceNotesWidth = 0;
@@ -259,22 +282,22 @@ System.out.println(n.getMusicElement().toString() +
 	public void setStemUp(boolean isUp) {
 		super.setStemUp(isUp);
 		if (isUp) {
-			m_sNoteInstances[0] = new JChordNote(m_notes[0], m_sNoteInstances[0].getBase(), m_metrics);
+			m_sNoteInstances[0] = new JChordNote(m_notes[0], m_sNoteInstances[0].getBase(), getMetrics());
 			JNote highestJNote = m_sNoteInstances[m_sNoteInstances.length-1];
 			Note highestNote = (Note)highestJNote.getMusicElement();
 			//When the stem is up, the anchor is the highest note.
-			anchor = createAnchorNote(highestNote, highestJNote.getBase(), m_metrics);
+			anchor = createAnchorNote(highestNote, highestJNote.getBase(), getMetrics());
 			m_sNoteInstances[m_sNoteInstances.length-1] = anchor;
 		}
 		else {
 			//Replace the existing highest note
 			m_sNoteInstances[m_sNoteInstances.length-1] = new JChordNote(m_notes[m_notes.length-1],
-					m_sNoteInstances[m_sNoteInstances.length-1].getBase(), m_metrics);
+					m_sNoteInstances[m_sNoteInstances.length-1].getBase(), getMetrics());
 			JNote lowestJNote = m_sNoteInstances[0];
 			Note lowestNote = (Note)lowestJNote.getMusicElement();
 			// Replace the existing lowest note
 			//When the stem is down, the anchor is the lowest note.
-			anchor = createAnchorNote(lowestNote, lowestJNote.getBase(), m_metrics);
+			anchor = createAnchorNote(lowestNote, lowestJNote.getBase(), getMetrics());
 			m_sNoteInstances[0] = anchor;
 		}
 		//Apply the stem direction to the rest of the notes composing the chord.

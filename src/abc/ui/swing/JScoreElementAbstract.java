@@ -33,7 +33,7 @@ import abc.notation.Tune;
  */
 abstract class JScoreElementAbstract implements JScoreElement {
 	/** The metrics to be used to calculate this rendition element */
-	protected ScoreMetrics m_metrics = null;
+	private ScoreMetrics m_metrics = null;
 	/**
 	 * The reference point (bottom, left) that should be used when rendering
 	 * this element.
@@ -42,7 +42,7 @@ abstract class JScoreElementAbstract implements JScoreElement {
 	 */
 	private Point2D m_base = null;
 	/** The width of this rendition element */
-	protected double m_width = -1;
+	//protected double m_width = -1;
 	/** Teh bounding box (more or less humm....) that encapsulates
 	 * this graphical score element. */
 	protected Rectangle2D m_boundingBox = null;
@@ -69,8 +69,10 @@ abstract class JScoreElementAbstract implements JScoreElement {
 
 	/** Returns the width of this score element.
 	 * @return The width of this score element. */
-	public double getWidth() {
-		return m_width;
+	public abstract double getWidth();
+	
+	protected ScoreMetrics getMetrics() {
+		return m_metrics;
 	}
 
 	/** Returns the staff line containing this score element.
@@ -92,7 +94,11 @@ abstract class JScoreElementAbstract implements JScoreElement {
 	/** Returns the bounding box for this score element.
 	 * @return the bounding box for this score element. */
 	public Rectangle2D getBoundingBox() {
-		Rectangle2D bb = new Rectangle2D.Double(m_base.getX(), m_base.getY()-50, m_width, 50);
+		Rectangle2D bb = new Rectangle2D.Double(
+				m_base.getX(),
+				m_base.getY()-50,
+				getWidth(),
+				50);
 		return bb;
 	}
 
@@ -144,6 +150,6 @@ abstract class JScoreElementAbstract implements JScoreElement {
 		g2.drawRect((int)(m_boundingBox.getX()), (int)(m_boundingBox.getY()),
 				(int)(m_boundingBox.getWidth()), (int)(m_boundingBox.getHeight()));
 		g2.setColor(previousColor);/**/
-		return m_width;
+		return getWidth();
 	}
 }

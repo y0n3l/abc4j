@@ -23,15 +23,15 @@ import abc.notation.MusicElement;
 /** TODO doc
  */
 abstract class JText extends JScoreElementAbstract {
-
-	/** The height of this rendition element */
-	protected double m_height = -1;
+	
+	private String m_text = null;
 
 	/** Constructor
 	 * @param mtrx The score metrics needed
 	 */
-	protected JText(ScoreMetrics mtrx) {
+	protected JText(ScoreMetrics mtrx, String text) {
 		super(mtrx);
+		this.m_text = text;
 	}
 
 	/** Returns the height of this score element.
@@ -50,6 +50,9 @@ abstract class JText extends JScoreElementAbstract {
 		return null;
 	}
 
+	public String getText() {
+		return m_text;
+	}
 
 	/** Callback invoked when the base has changed for this object. */
 	protected void onBaseChanged() {

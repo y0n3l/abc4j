@@ -63,7 +63,7 @@ class JGroupOfGraceNotes extends JGroupOfNotes {
 		super.onBaseChanged();
 
 		// calculate slash position
-		Dimension d = m_metrics.getGlyphDimension(NOTATION_CONTEXT);
+		Dimension d = getMetrics().getGlyphDimension(NOTATION_CONTEXT);
 
 		if (d == null) return;
 		JGroupableNote firstNote = m_jNotes[0];
@@ -93,10 +93,10 @@ class JGroupOfGraceNotes extends JGroupOfNotes {
 
 		if (renderSlash) {
 			Stroke dfs = context.getStroke();
-			context.setStroke(m_metrics.getStemStroke());
+			context.setStroke(getMetrics().getStemStroke());
 			context.drawLine((int)slashStart.getX(), (int)slashStart.getY(), (int)slashEnd.getX(), (int)slashEnd.getY());
 			context.setStroke(dfs);
 		}
-		return m_width;
+		return getWidth();
 	}
 }

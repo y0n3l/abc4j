@@ -41,6 +41,7 @@ class JKeySignature extends JScoreElementAbstract {
 	char[] Echar = null;
 	Point2D BPosition = null;
 	char[] Bchar = null;
+	private double m_width = -1;
 
 	public JKeySignature(KeySignature keyV, Point2D base, ScoreMetrics c) {
 		super(c);
@@ -51,9 +52,13 @@ class JKeySignature extends JScoreElementAbstract {
 	public MusicElement getMusicElement() {
 		return key;
 	}
+	
+	public double getWidth() {
+		return m_width; //suppose it has been calculated
+	}
 
 	protected void onBaseChanged() {
-		ScoreMetrics c = m_metrics;
+		ScoreMetrics c = getMetrics();
 		Point2D m_base = getBase();
 		if (key.hasOnlySharps()) {
 			double FPositionX = m_base.getX();
@@ -142,7 +147,7 @@ class JKeySignature extends JScoreElementAbstract {
 			context.drawChars(Echar, 0, 1, (int)EPosition.getX(), (int)EPosition.getY());
 		if (Bchar!=null)
 			context.drawChars(Bchar, 0, 1, (int)BPosition.getX(), (int)BPosition.getY());
-		return m_width;
+		return getWidth();
 	}
 
 

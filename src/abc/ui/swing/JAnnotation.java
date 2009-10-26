@@ -22,38 +22,33 @@ import java.awt.Graphics2D;
 /** TODO doc */
 class JAnnotation extends JText {
 
-	protected String m_text = null;
-
 	/** Constructor
 	 * @param mtrx The score metrics needed
 	 */
 	protected JAnnotation(ScoreMetrics mtrx, String text) {
-		super(mtrx);
-		m_text = text;
+		super(mtrx, text);
 	}
 
 	/** Returns the height of this score element.
 	 * @return The height of this score element. */
 	public double getHeight() {
-		m_height = (double)m_metrics.getAnnotationHeight();
-		return (m_height);
+		return (double)getMetrics().getTextFontHeight(ScoreMetrics.FONT_ANNOTATION);
 	}
 
 	/** Returns the width of this score element.
 	 * @return The width of this score element. */
 	public double getWidth() {
-		m_width = (double)m_metrics.getAnnotationWidth(m_text);
-		return (m_width);
+		return (double)getMetrics().getTextFontWidth(ScoreMetrics.FONT_ANNOTATION, getText());
 	}
 
 	/** Renders this Score element to the given graphic context.
 	 * @param g2 */
 	public double render(Graphics2D g2) {
 		Font previousFont = g2.getFont();
-		g2.setFont(m_metrics.getAnnotationFont());
-		g2.drawString(m_text, (int)getBase().getX(), (int)getBase().getY());
+		g2.setFont(getMetrics().getTextFont(ScoreMetrics.FONT_ANNOTATION));
+		g2.drawString(getText(), (int)getBase().getX(), (int)getBase().getY());
 		g2.setFont(previousFont);
-		return m_width;
+		return getWidth();
 	}
 
 }

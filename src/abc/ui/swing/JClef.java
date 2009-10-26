@@ -27,10 +27,13 @@ class JClef extends JScoreElementAbstract {
 	//protected BarLine m_barLine = null;
 	
 	public JClef(Point2D base, ScoreMetrics c) {
-		super (c);
-		//TODO m_metrics.getClefWidth+noteWidth/4
-		m_width = 3*m_metrics.getNoteWidth();
+		super(c);
 		setBase(base);
+	}
+	
+	public double getWidth() {
+		//TODO m_metrics.getClefWidth+noteWidth/4
+		return 3*getMetrics().getNoteWidth();
 	}
 	
 	protected void onBaseChanged() {
@@ -45,10 +48,10 @@ class JClef extends JScoreElementAbstract {
 		/*char[] chars2 = {ScoreMetrics.STAFF_SIX_LINES};
 		context.drawChars(chars2, 0, chars2.length, 
 				(int)m_base.getX(), (int)(m_base.getY()));*/
-		char[] chars = {m_metrics.getClefChar(Clef.G)};
+		char[] chars = {getMetrics().getClefChar(Clef.G)};
 		context.drawChars(chars, 0, chars.length, 
-				(int)(getBase().getX()+m_metrics.getNoteWidth()/4),
-				(int)(getBase().getY()-m_metrics.getNoteHeight()));
-		return m_width;
+				(int)(getBase().getX()+getMetrics().getNoteWidth()/4),
+				(int)(getBase().getY()-getMetrics().getNoteHeight()));
+		return getWidth();
 	}
 }

@@ -102,7 +102,10 @@ public class Engraver {
 			m_variation = oldVariation;
 			
 			Music music = tune.getMusic();
-			int shortestDuration = music.getShortestNote().getDuration();
+			Note shortestNote = music.getShortestNote();
+			int shortestDuration = Note.SIXTEENTH;
+			if (shortestNote != null)
+				shortestDuration = shortestNote.getDuration();
 			//System.out.println("shortest note duration = "+shortest.getDuration());
 			short min = /*(shortestDuration >= Note.QUARTER)
 				? Note.SIXTEENTH
