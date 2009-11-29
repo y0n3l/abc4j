@@ -40,7 +40,7 @@ class JNote extends JNoteElementAbstract {
 	// subclasses should override this attrribute.
 	protected int NOTATION_CONTEXT = ScoreMetrics.NOTE_GLYPH;
 
-	private static final double SPACE_RATIO_FOR_ACCIDENTALS = 1.1;
+	private static final double SPACE_RATIO_FOR_ACCIDENTALS = 1.2;
 
 	/** This position is independant from the note type (height or rhythm)
 	 * and, as a way of consequence, can be used to render elements such as sharp,
@@ -166,22 +166,16 @@ class JNote extends JNoteElementAbstract {
 		//double noteY =(int)(base.getY()-getOffset(note)*glyphDimension.getHeigth());
 		double noteX = base.getX()+graceNotesWidth+accidentalsWidth*SPACE_RATIO_FOR_ACCIDENTALS;
 		displayPosition = new Point2D.Double(noteX, noteY);
-		if (note.getStrictDuration()==Note.WHOLE || note.getStrictDuration()==Note.SIXTEENTH ||
-				note.getStrictDuration()==Note.THIRTY_SECOND || note.getStrictDuration()==Note.SIXTY_FOURTH)
-			notePosition = new Point2D.Double(displayPosition.getX(), displayPosition.getY()+glyphDimension.getHeight()*0.5);
-		else
-			notePosition = (Point2D)displayPosition.clone();
+		notePosition = (Point2D)displayPosition.clone();
 		stemUpBeginPosition = new Point2D.Double(notePosition.getX()+ glyphDimension.getWidth()*0.93,
 				notePosition.getY()-glyphDimension.getHeight()/2);
 		stemDownBeginPosition = new Point2D.Double(notePosition.getX(),
 				notePosition.getY()-glyphDimension.getHeight()/2);
 		if (note.hasAccidental())
-			accidentalsPosition = new Point2D.Double(base.getX(),notePosition.getY()-glyphDimension.getHeight()/2);
+			accidentalsPosition = new Point2D.Double(base.getX()+graceNotesWidth,notePosition.getY()-glyphDimension.getHeight()/2);
 		if (note.getHeight()>=Note.c && note.getStrictDuration() < Note.EIGHTH) {
 			stemUpBeginPosition.setLocation(stemUpBeginPosition.getX(), stemUpBeginPosition.getY()-glyphDimension.getHeight()/2);
 			stemDownBeginPosition.setLocation(stemDownBeginPosition.getX(), stemDownBeginPosition.getY()-glyphDimension.getHeight()/2);
-			if (accidentalsPosition != null)
-				accidentalsPosition.setLocation(accidentalsPosition.getX(), accidentalsPosition.getY()-glyphDimension.getHeight()/2);
 		}
 		//reinit stem position
 		setStemUp(isStemUp());
