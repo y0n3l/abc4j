@@ -97,7 +97,9 @@ class JTune extends JScoreElementAbstract {
 	//temporary variables used only to cumpute the score when tune is set.
 	private boolean currentStaffLineInitialized = false;
 	private JStaffLine currentStaffLine = null;
+	private KeySignature previousKey = null;
 	private KeySignature currentKey = null;
+	private TimeSignature previousTime = null;
 	private TimeSignature currentTime = null;
 	private Point2D cursor = null;
 
@@ -299,6 +301,8 @@ class JTune extends JScoreElementAbstract {
 		int staffLineNb = 0;
 		//init attributes that are for iterating through the score of the tune.
 		currentKey = tune.getKey();
+		previousKey = (KeySignature) currentKey.clone();
+		previousTime = null;
 		currentTime = null;
 		currentStaffLineInitialized = false;
 		currentStaffLine = null;
@@ -323,12 +327,23 @@ class JTune extends JScoreElementAbstract {
 				lessThanQuarter.clear();
 			}
 			// ==== Key signature ====
-			if (s instanceof KeySignature)
+			if (s instanceof KeySignature) {
 				currentKey = (KeySignature)s;
-			else
+				//TODO if end of staffline, add the key at right
+				//here or in initStaffLine?
+				if (currentStaffLineInitialized) {
+					appendToScore(new JKeySignature(currentKey, previousKey, cursor, getMetrics()));
+					previousKey = (KeySignature) currentKey.clone();
+				}
+			} else
 			// ==== Time signature ====
 			if (s instanceof TimeSignature) {
+				if (currentTime != null)
+					previousTime = (TimeSignature) currentTime.clone();
 				currentTime = (TimeSignature)s;
+				if (previousTime != null)
+					if (!currentTime.equals(previousTime))
+						appendToScore(new JTimeSignature(currentTime, cursor, getMetrics()));
 			}
 			else
 			// ==== MultiNote ====
@@ -442,7 +457,7 @@ class JTune extends JScoreElementAbstract {
 		currentStaffLine.addElement(element);
 		double width = element.getWidth();
 		int cursorNewLocationX = (int)(cursor.getX() + width);
-
+		
 		//fixed space + variable space (engraver)
 		cursorNewLocationX += getMetrics().getNotesSpacing()
 			+ getEngraver().getNoteSpacing(element);
@@ -538,8 +553,6 @@ class JTune extends JScoreElementAbstract {
 		g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-	    renderTitles(g2);
-
 		// staff line width
 		int staffCharNb = (int)(getWidth()/getMetrics().getStaffCharBounds().getWidth());
 		char[] staffS = new char[staffCharNb+1];
@@ -553,6 +566,7 @@ class JTune extends JScoreElementAbstract {
 			g2.drawChars(staffS, 0, staffS.length, MARGIN_LEFT, (int)(currentStaffLine.getBase().getY()));
 		}
 		renderSlursAndTies(g2);
+	    renderTitles(g2);
 
 		return getWidth();
 	}
@@ -1044,7 +1058,8 @@ class JTune extends JScoreElementAbstract {
 		double width = clef.getWidth();
 		cursor.setLocation(cursor.getX()+width, cursor.getY());
 		if (currentKey!=null) {
-			JKeySignature sk = new JKeySignature(currentKey, cursor, getMetrics());
+			JKeySignature sk = new JKeySignature(currentKey, previousKey, cursor, getMetrics());
+			previousKey = (KeySignature) currentKey.clone();
 			sl.addElement(sk);
 			//initElements.addElement(sk);
 			width = sk.getWidth();

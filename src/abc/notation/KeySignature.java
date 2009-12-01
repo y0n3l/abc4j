@@ -275,16 +275,35 @@ public class KeySignature implements MusicElement, Cloneable
       return accidentals[index];
     }
     
+    /* FIXME: rename to hasSharpsDominant or something like that.
+     * Doesn't work for K:Dm ^c */
     public boolean hasOnlySharps(){
     	return ((keyIndex==1 && m_keyAccidental==AccidentalType.SHARP) || keyIndex==2 || keyIndex==4 
     			|| (keyIndex==6 && m_keyAccidental==AccidentalType.SHARP) 
     			|| keyIndex==7 || keyIndex== 9 || (keyIndex==11 && m_keyAccidental==AccidentalType.NATURAL));     
     }
     
+    /* FIXME: rename to hasFlatsDominant or something like that.
+     * Doesn't work for K:Dm ^c */
     public boolean hasOnlyFlats(){
     	return ((keyIndex==1 && m_keyAccidental==AccidentalType.FLAT) || keyIndex==3 || keyIndex==5 
     			|| (keyIndex==6 && m_keyAccidental==AccidentalType.FLAT) || keyIndex==8 || keyIndex== 10
     			|| (keyIndex==11 && m_keyAccidental==AccidentalType.FLAT));     
+    }
+    
+    /**
+     * Returns <TT>true</TT> if the key contains sharps <B>and</B>
+     * flats (e.g.: oriental scale <TT>K:Dm ^c</TT> in ABC format).
+     * Returns <TT>false</TT> otherwise.
+     * @return
+     */
+    public boolean hasSharpsAndFlats() {
+    	boolean hasSharp = false, hasFlat = false;
+    	for (int i = 0; i < accidentals.length; i++) {
+			hasSharp = hasSharp || accidentals[i] == AccidentalType.SHARP;
+			hasFlat = hasFlat || accidentals[i] == AccidentalType.FLAT;
+		}
+    	return hasSharp && hasFlat;
     }
     
     public String toLitteralNotation()
@@ -354,8 +373,31 @@ public class KeySignature implements MusicElement, Cloneable
     return string2Return;
   }
   
+
+	public boolean equals(Object o) {
+		if (o instanceof KeySignature){
+			KeySignature oKey = (KeySignature) o;
+			if ((this.key != oKey.key)
+					|| (this.keyIndex != oKey.keyIndex)
+					|| (this.m_keyAccidental != oKey.m_keyAccidental)
+					|| (this.mode != oKey.mode)
+				) {
+				return false;
+			}
+			for (int i = 0; i < accidentals.length; i++) {
+				if (accidentals[i] != oKey.accidentals[i])
+					return false;
+			}
+			return true;
+		}
+		else
+			return super.equals(o);
+	}
+
   	public Object clone() {
-  		return new KeySignature(this.getNote(), this.getAccidental(), this.getMode());
+  		KeySignature k = new KeySignature(this.getNote(), this.getAccidental(), this.getMode());
+  		k.accidentals = accidentals;
+  		return k;
   	}
 
 /*    public void display ()
