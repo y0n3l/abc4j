@@ -301,7 +301,10 @@ class JTune extends JScoreElementAbstract {
 		int staffLineNb = 0;
 		//init attributes that are for iterating through the score of the tune.
 		currentKey = tune.getKey();
-		previousKey = (KeySignature) currentKey.clone();
+		if (currentKey != null)
+			previousKey = (KeySignature) currentKey.clone();
+		else
+			previousKey = null;
 		previousTime = null;
 		currentTime = null;
 		currentStaffLineInitialized = false;

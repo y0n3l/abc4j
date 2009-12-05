@@ -236,7 +236,7 @@ public class TuneEditorPane extends JTextPane// implements ActionListener
     try
     {
     	m_refresher.stopIt();
-       	getDocument().remove(0,getDocument().getLength()-1);
+       	getDocument().remove(0,getDocument().getLength()/*-1*/);
     	getDocument().insertString(0,text,m_defaultStyle);
     	m_refresher.startIt();
     }

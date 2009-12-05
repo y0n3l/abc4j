@@ -21,9 +21,12 @@ public class Engraver {
 	
 	public static final int NONE = -1;
 	public static final int DEFAULT = 0;
+	public static final int VARIATION_DEFAULT = 0;
+	public static final int VARIATION_MIN = -100;
+	public static final int VARIATION_MAX = 100;
 	
 	private int m_mode = DEFAULT;
-	private int m_variation = 0;
+	private int m_variation = VARIATION_DEFAULT;
 	
 	protected Engraver() {
 		this(DEFAULT);
@@ -59,7 +62,8 @@ public class Engraver {
 		m_mode = mode;
 		//bounds variation %
 		//variation = Math.max(variation, -50);
-		m_variation = variation;
+		m_variation = Math.max(VARIATION_MIN,
+						Math.min(VARIATION_MAX, variation));
 		if (m_mode == DEFAULT) {
 			double factor = 1 + variation/100f;
 			setSpaceAfter(Note.DOTTED_WHOLE, 30*factor);

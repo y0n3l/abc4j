@@ -553,7 +553,7 @@ public class ScoreMetrics {
 	 * @param d
 	 */
 	public void setSlurThickness(double d) {
-		slurThickness = d;
+		slurThickness = Math.max(d, 1);
 	}
 
 	public double getNoteStrokeLength() {
