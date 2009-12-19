@@ -26,4 +26,10 @@ public interface AccidentalType
   public static final byte SHARP = 1;
   /** The <TT>NONE</TT> accidental type. */
   public static final byte NONE = 10;
+  /** The <TT>DOUBLE SHARP</TT> accidental type : x */
+  public static final byte DOUBLE_SHARP = 2;
+  /** The <TT>DOUBLE FLAT</TT> ccidental type : bb */
+  public static final byte DOUBLE_FLAT = -2;
+  
+  //TODO half-sharp, half-flat
 }

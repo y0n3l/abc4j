@@ -32,14 +32,8 @@ import abc.notation.SlurDefinition;
 /** This class is in charge of rendering a group of notes whose stems should be linked. */
 class JGroupOfNotes extends JScoreElementAbstract {
 
-	// used to request glyph-specific metrics
-	// in a genric way that enables positioning, sizing, rendering
-	// to be done generically
-	// subclasses should override this attrribute.
-	protected int NOTATION_CONTEXT = ScoreMetrics.NOTE_GLYPH;
-
-	/** All the notes that are part of the group. */
-	protected Note[] m_notes = null;
+	/** All the {@link Note}s and {@link MultiNote}s that are part of the group. */
+	protected NoteAbstract[] m_notes = null;
 	/** notes that are grouped */
 	//protected Note[] anchorNotes = null;
 	/** All the notes rendition elements that are part of the group. chords and / or notes*/
@@ -61,7 +55,7 @@ class JGroupOfNotes extends JScoreElementAbstract {
 		if (notes.length<=1)
 			throw new IllegalArgumentException(notes + " is not a group of notes, length = " + notes.length);
 		m_engraver = engrav;
-		m_notes = new Note[notes.length];
+		m_notes = new NoteAbstract[notes.length];
 		//create JNotePartOfGroup instances. Those instance should stay the same
 		//when the base is changed.
 		m_jNotes = new JGroupableNote[m_notes.length];
@@ -74,8 +68,8 @@ class JGroupOfNotes extends JScoreElementAbstract {
 			else {
 				//This is a multiNote
 				m_jNotes[i] = new JChordPartOfGroup((MultiNote)notes[i], getMetrics(), new Point2D.Double());
-				m_notes[i] = (Note)((JChordPartOfGroup)m_jNotes[i]).getReferenceNoteForGroup().getMusicElement();
-
+				m_notes[i] = (MultiNote) notes[i];
+					//(Note)((JChordPartOfGroup)m_jNotes[i]).getReferenceNoteForGroup().getMusicElement();
 			}
 		//m_jNotes[i]=n;
 		if (notes[0].getTuplet()!=null) {
@@ -87,7 +81,7 @@ class JGroupOfNotes extends JScoreElementAbstract {
 			jSlurDef.setPosition(JSlurOrTie.POSITION_ABOVE);
 			jSlurDef.setOutOfStems(true);
 			jSlurDef.setTuplet(true);
-			m_notes[0].setSlurDefinition(slurDef);
+			m_notes[0].addSlurDefinition(slurDef);
 			((JNoteElementAbstract) m_jNotes[0]).setJSlurDefinition(jSlurDef);
 		}
 		setBase(base);
@@ -95,6 +89,16 @@ class JGroupOfNotes extends JScoreElementAbstract {
 
 	public MusicElement getMusicElement() {
 		return null;
+	}
+	
+	/**
+	 * in a genric way that enables positioning, sizing,
+	 * rendering to be done generically
+	 * <p>subclasses should override this method. 
+	 * @return {@link ScoreMetrics#NOTE_GLYPH}
+	 */
+	protected int getNotationContext() {
+		return ScoreMetrics.NOTE_GLYPH;
 	}
 	
 	public double getWidth() {
@@ -109,11 +113,11 @@ class JGroupOfNotes extends JScoreElementAbstract {
 		super.setStaffLine(staffLine);
 	}
 
-	Note[] getMusicElements() {
+	protected NoteAbstract[] getMusicElements() {
 		return m_notes;
 	}
 
-	JScoreElementAbstract[] getRenditionElements() {
+	protected JScoreElementAbstract[] getRenditionElements() {
 		JScoreElementAbstract[] array = new JScoreElementAbstract[m_jNotes.length];
 		System.arraycopy(m_jNotes, 0, array, 0, m_jNotes.length);
 		return array;
@@ -131,6 +135,7 @@ class JGroupOfNotes extends JScoreElementAbstract {
 	public void setStemUp(boolean isUp) {
 		isStemUp = isUp;
 		for (int i=0; i<m_jNotes.length; i++) {
+			((JNoteElementAbstract)m_jNotes[i]).setAutoStem(false);
 			((JNoteElementAbstract)m_jNotes[i]).setStemUp(isStemUp);
 			((JNoteElementAbstract)m_jNotes[i]).onBaseChanged();
 		}
@@ -140,6 +145,7 @@ class JGroupOfNotes extends JScoreElementAbstract {
 		Point2D currentBase =(Point2D)getBase().clone();
 		int highIndex = 0;
 		int lowIndex = 0;
+		//Note highNote, lowNote;
 
 		highIndex = Note.getHighestNoteIndex(m_notes);
 		lowIndex = Note.getLowestNoteIndex(m_notes);
@@ -152,8 +158,15 @@ class JGroupOfNotes extends JScoreElementAbstract {
 
 		if (autoStemming) {
 
-			byte h = m_notes[highIndex].getHeight();
-			byte l = m_notes[lowIndex].getHeight();
+			byte h, l;
+			if (m_notes[highIndex] instanceof MultiNote)
+				h = ((MultiNote) m_notes[highIndex]).getHighestNote().getHeight();
+			else
+				h = ((Note) m_notes[highIndex]).getHeight();
+			if (m_notes[lowIndex] instanceof MultiNote)
+				l = ((MultiNote) m_notes[lowIndex]).getLowestNote().getHeight();
+			else
+				l = ((Note) m_notes[lowIndex]).getHeight();
 
 			if (h <= Note.B) {
 				setStemUp(true);
@@ -198,14 +211,14 @@ class JGroupOfNotes extends JScoreElementAbstract {
 			//based on this, calculate the new stem Y end.
 			m_stemYend = (int)(highestNote.getStemBeginPosition().getY()
 					-getMetrics().getNoteHeight()/2
-					-getMetrics().getStemLength(NOTATION_CONTEXT));
+					-getMetrics().getStemLength(getNotationContext()));
 		} else {
 			//update the lowest note to calculate when the stem Y end should be after the base change.
 			updatedBase = lowestNote.getBase();
 			updatedBase.setLocation(currentBase);
 			((JScoreElementAbstract)lowestNote).setBase(updatedBase);
 			//based on this, calculate the new stem Y end.
-			m_stemYend = (int)(lowestNote.getStemBeginPosition().getY()+getMetrics().getStemLength(NOTATION_CONTEXT));
+			m_stemYend = (int)(lowestNote.getStemBeginPosition().getY()+getMetrics().getStemLength(getNotationContext()));
 		}
 
 		JGroupableNote firstNote = m_jNotes[0];
@@ -252,7 +265,10 @@ class JGroupOfNotes extends JScoreElementAbstract {
 			BasicStroke notesLinkStroke = getMetrics().getNotesLinkStroke();
 			context.setStroke(notesLinkStroke);
 			short[] longerRhythms = null;
-			short noteStrictDuration = m_notes[i].getStrictDuration();
+			short noteStrictDuration =
+				(m_notes[i] instanceof MultiNote)
+					?((MultiNote) m_notes[i]).getShortestNote().getStrictDuration()
+					:((Note) m_notes[i]).getStrictDuration();
 			switch (noteStrictDuration) {
 				case Note.EIGHTH: longerRhythms = new short[] { Note.EIGHTH }; break;
 				case Note.SIXTEENTH: longerRhythms = new short[] { Note.EIGHTH, Note.SIXTEENTH }; break;
@@ -280,10 +296,20 @@ class JGroupOfNotes extends JScoreElementAbstract {
 				boolean previousNoteIsShorterOrEquals = false;
 				boolean hasNext = i<m_jNotes.length-1;
 				boolean hasPrevious = i>0;
-				if (hasNext)
-					nextNoteIsShorterOrEquals = m_notes[i+1].getStrictDuration()<=longerRhythms[j];
-				if (hasPrevious)
-					previousNoteIsShorterOrEquals = m_notes[i-1].getStrictDuration()<=longerRhythms[j];
+				if (hasNext) {
+					nextNoteIsShorterOrEquals =
+						((m_notes[i+1] instanceof MultiNote)
+							?((MultiNote) m_notes[i+1]).getShortestNote().getStrictDuration()
+							:((Note) m_notes[i+1]).getStrictDuration())
+						<=longerRhythms[j];
+				}
+				if (hasPrevious) {
+					previousNoteIsShorterOrEquals =
+						((m_notes[i-1] instanceof MultiNote)
+							?((MultiNote) m_notes[i-1]).getShortestNote().getStrictDuration()
+							:((Note) m_notes[i-1]).getStrictDuration())
+					<=longerRhythms[j];
+				}
 				if (hasPrevious) {
 					if (previousNoteIsShorterOrEquals)
 						//the end is the stem of the previous note.
@@ -318,8 +344,8 @@ class JGroupOfNotes extends JScoreElementAbstract {
 				//straight line between start & end, if it doesn't
 				//intersect notes
 				Line2D line = new Line2D.Double(
-						((JNote) m_jNotes[0]).getSlurAboveAnchor(),
-						((JNote) m_jNotes[m_jNotes.length-1]).getSlurAboveAnchor()
+					((JNoteElementAbstract) m_jNotes[0]).getSlurAboveAnchor(),
+					((JNoteElementAbstract) m_jNotes[m_jNotes.length-1]).getSlurAboveAnchor()
 					);
 				boolean intersects = false;
 				for (int i = 0; i < m_jNotes.length; i++) {
@@ -328,7 +354,7 @@ class JGroupOfNotes extends JScoreElementAbstract {
 						break;
 					}
 				}
-				if (intersects) { //control point above bounds of the groupe
+				if (intersects) { //control point above bounds of the group
 					ctrlP = new Point2D.Double(
 						m_jNotes[0].getStemBeginPosition().getX()+(getWidth()-getMetrics().getNoteWidth())/2,
 						getBoundingBox().getMinY() - getMetrics().getTupletNumberYOffset());
@@ -346,18 +372,15 @@ class JGroupOfNotes extends JScoreElementAbstract {
 				.setTupletControlPoint(ctrlP);
 		}
 
-		/* * /java.awt.Color previousColor = context.getColor();
-		context.setColor(java.awt.Color.RED);
-		context.draw(getBoundingBox());
-		context.setColor(previousColor);/* */
-
+		//renderDebugBoundingBox(context);
+		
 		return getWidth();
 	}
 
 	public Rectangle2D getBoundingBox() {
 		Rectangle2D bb = new Rectangle2D.Double(getBase().getX(), getBase().getY(), 0, 0);
 		for (int i = 0; i < m_jNotes.length; i++) {
-			bb.add(((JNotePartOfGroup) m_jNotes[i]).getBoundingBox());
+			bb.add((/*(JNotePartOfGroup) */m_jNotes[i]).getBoundingBox());
 		}
 		return bb;
 	}

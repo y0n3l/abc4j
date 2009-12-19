@@ -17,17 +17,13 @@ package abc.ui.swing;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 import java.util.Vector;
 
 import abc.notation.Decoration;
-import abc.notation.MusicElement;
 import abc.notation.Note;
 import abc.notation.NoteAbstract;
-import abc.notation.Tune;
 
 /** This class defines a note rendition element.
  */
@@ -112,7 +108,7 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract {
 
 	public boolean isStemUp() {
 	  boolean isup = stemUp;
-	  if (autoStem) {
+	  if (autoStem && (note != null)) {
 		if (note.getHeight()<Note.B) {
 		  isup = true;
 		} else {
@@ -185,5 +181,25 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract {
  		}
 	}
 
+	protected void renderDebugSlurAnchors(Graphics2D context) {
+		Point2D[] anchors = { getSlurAboveAnchor(),
+				getSlurAboveAnchorOutOfStem(),
+				getSlurUnderAnchor(),
+				getSlurUnderAnchorOutOfStem() };
+		java.awt.Color previousColor = context.getColor();
+		context.setColor(java.awt.Color.BLUE);
+		for (int i = 0; i < anchors.length; i++) {
+			if (anchors[i] != null)
+				context.drawOval((int)anchors[i].getX(), (int)anchors[i].getY(), 1, 1);
+		}
+		context.setColor(previousColor);
+		System.out.println("renderDebugSlurAnchors : "+getMusicElement());
+		System.out.println("  object : "+getClass().getSimpleName());
+		System.out.println("  - base = "+getBase());
+		System.out.println("  - above = "+getSlurAboveAnchor());
+		System.out.println("  - above out = "+getSlurAboveAnchorOutOfStem());
+		System.out.println("  - under = "+getSlurUnderAnchor());
+		System.out.println("  - under out = "+getSlurUnderAnchorOutOfStem());
+	}
 
 }

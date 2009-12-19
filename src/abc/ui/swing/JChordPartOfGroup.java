@@ -21,7 +21,7 @@ import abc.notation.MultiNote;
 import abc.notation.Note;
 
 class JChordPartOfGroup extends JChord implements JGroupableNote {
-
+	
 	public JChordPartOfGroup(MultiNote multiNote, ScoreMetrics metrics, Point2D base){
 		super(multiNote, metrics, base);
 	}
@@ -41,8 +41,10 @@ class JChordPartOfGroup extends JChord implements JGroupableNote {
 	public void setStemYEnd(int value) {
 		if (m_normalizedChords!=null)
 			((JChordPartOfGroup)m_normalizedChords[0]).setStemYEnd(value);
-		else
+		else {
+			m_stemYEndForChord = value;
 			((JNotePartOfGroup)anchor).setStemYEnd(value);
+		}
 	}
 
 	public int getStemYEnd() {

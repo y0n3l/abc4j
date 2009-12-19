@@ -26,12 +26,6 @@ import abc.notation.Note;
 
 class JNotePartOfGroup extends JNote implements JGroupableNote {
 
-	// used to request glyph-specific metrics
-	// in a genric way that enables positioning, sizing, rendering
-	// to be done generically
-	// subclasses should override this attrribute.
-	private static final int NOTATION_CONTEXT = ScoreMetrics.NOTE_GLYPH;
-
 	/*protected int stemX = -1;
 	protected int stemYBegin = -1;  */
 	protected int stemYEnd = -1;
@@ -49,11 +43,25 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 		// are drawn programmatically
 		noteChars = ScoreMetrics.NOTE;
 	}
-
+	
+	/**
+	 * in a genric way that enables positioning, sizing,
+	 * rendering to be done generically
+	 * <p>subclasses should override this method. 
+	 * @return {@link ScoreMetrics#NOTE_GLYPH}
+	 */
+	protected int getNotationContext() {
+		return ScoreMetrics.NOTE_GLYPH;
+	}
+	
 	protected void onBaseChanged() {
 		super.onBaseChanged();
 		ScoreMetrics metrics = getMetrics();
-		Dimension glyphDimension = metrics.getGlyphDimension(NOTATION_CONTEXT);
+		//used for width can vary if note or grace note
+		Dimension glyphDimension = metrics.getGlyphDimension(getNotationContext());
+		//note glyph is used for vertical position of normal and graces notes
+		Dimension noteGlyphDimension = metrics.getGlyphDimension(ScoreMetrics.NOTE_GLYPH);
+
 		// FIXME: ... 1st time called this is always null. why ?
 		if (glyphDimension == null) {
 			System.err.println("JNotePartOfGroup : glyphDimension is null!");
@@ -64,29 +72,30 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 		//The displayed character is not the same.
 		//noteChars = ScoreMetrics.NOTE;
 		//The Y offset needs to be updated.
-		int noteY = (int)(getBase().getY()-getOffset(note)*glyphDimension.getHeight());
+		int noteY = (int)(getBase().getY()-getOffset(note)*noteGlyphDimension.getHeight()
+				- noteGlyphDimension.getHeight()/2 + glyphDimension.getHeight()/2);
 
 		//apply the new Y offset to the note location
 		int noteX = (int)displayPosition.getX();
 
 		displayPosition.setLocation(noteX, noteY);
 
-		int stemYBegin = (int)(noteY - glyphDimension.getHeight()/6);
+		int stemYBegin = (int)(noteY - glyphDimension.getHeight()/2);
 
 		if (isStemUp()) {
 			//stemYBegin = (int)(displayPosition.getY() - glyphDimension.getHeight()/6);
 			// if stemYEnd hasn't been set give it a default
-			if (stemYEnd < 0) stemYEnd = (int)(displayPosition.getY() - metrics.getStemLength(NOTATION_CONTEXT));
+			if (stemYEnd < 0) stemYEnd = (int)(displayPosition.getY() - metrics.getStemLength(getNotationContext()));
 		} else {
 			//stemYBegin = (int)(displayPosition.getY() + glyphDimension.getHeight()/6);
 			// if stemYEnd hasn't been set give it a default
-			if (stemYEnd < 0) stemYEnd = (int)(displayPosition.getY() + metrics.getStemLength(NOTATION_CONTEXT));
+			if (stemYEnd < 0) stemYEnd = (int)(displayPosition.getY() + metrics.getStemLength(getNotationContext()));
 		}
 
 		setStemUpBeginPosition(new Point2D.Double(noteX + glyphDimension.getWidth(), stemYBegin));
 		setStemDownBeginPosition(new Point2D.Double(noteX, stemYBegin));
 
-		notePosition = new Point2D.Double(displayPosition.getX(), displayPosition.getY()+glyphDimension.getHeight()*0.5);
+		notePosition = new Point2D.Double(displayPosition.getX(), displayPosition.getY());
 		onNotePositionChanged();
 
 	}
@@ -104,7 +113,7 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 	}*/
 
 	public Rectangle2D getBoundingBox() {
-		Dimension glyphDimension = getMetrics().getGlyphDimension(NOTATION_CONTEXT);
+		Dimension glyphDimension = getMetrics().getGlyphDimension(getNotationContext());
 		if (isStemUp()) {
 			return new Rectangle2D.Double(
 				(int)(getBase().getX()),
@@ -127,24 +136,7 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 		else
 			throw new IllegalStateException();
 	}
-/*
-	public static double getOffset(Note note) {
-		double positionOffset = 0;
-		byte noteHeight = note.getStrictHeight();
-		switch (noteHeight) {
-			case Note.C : positionOffset = -1; break;
-			case Note.D : positionOffset = -0.5;break;
-			case Note.E : positionOffset = 0;break;
-			case Note.F : positionOffset = 0.5;break;
-			case Note.G : positionOffset = 1;break;
-			case Note.A : positionOffset = 1.5;break;
-			case Note.B : positionOffset = 2;break;
-		}
-		positionOffset = positionOffset + note.getOctaveTransposition()*3.5;
-		//System.out.println("offset for " + note +"," + note.getOctaveTransposition() + " : " + positionOffset);
-		return positionOffset;
-	}
-*/
+
 	public double render(Graphics2D context){
 		super.render(context);
 		//context.drawChars(noteChars, 0, 1, (int)displayPosition.getX(), (int)displayPosition.getY());
@@ -166,6 +158,9 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 		context.drawLine((int)m_base.getX(), (int)m_base.getY(),
 				(int)m_base.getX(), (int)m_base.getY());
 		context.setColor(previousColor);/* */
+		
+		//renderDebugBoundingBox(context);
+		//renderDebugSlurAnchors(context);
 
 		return getWidth();
 	}

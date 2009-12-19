@@ -16,23 +16,14 @@
 package abc.ui.swing;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Stroke;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 
 import abc.notation.Note;
 
 class JGraceNotePartOfGroup extends JNotePartOfGroup {
-
-	// used to request glyph-specific metrics
-	// in a genric way that enables positioning, sizing, rendering
-	// to be done generically
-	// subclasses should override this attrribute.
-	protected int NOTATION_CONTEXT = ScoreMetrics.GRACENOTE_GLYPH;
 
 	public JGraceNotePartOfGroup(Note noteValue, Point2D base, ScoreMetrics c) {
 		super(noteValue, base, c);
@@ -55,10 +46,21 @@ class JGraceNotePartOfGroup extends JNotePartOfGroup {
 		// programmatically
 		noteChars = ScoreMetrics.NOTE;
 	}
+	
+	/**
+	 * used to request glyph-specific metrics
+	 * in a genric way that enables positioning, sizing, rendering
+	 * to be done generically
+	 * <p>subclasses should override this method.
+	 * @return {@link ScoreMetrics#GRACENOTE_GLYPH}
+	 */
+	protected int getNotationContext() {
+		return ScoreMetrics.GRACENOTE_GLYPH;
+	}
 
 	// correct for font glyph positioning
 	public double getCorrectedGlyphOffest(Note note) {
-		double positionOffset = getCorrectedOffset(note);
+		double positionOffset = getOffset(note);
 		return positionOffset -= 1; // move up 1px
 	}
 
@@ -67,15 +69,11 @@ class JGraceNotePartOfGroup extends JNotePartOfGroup {
 	protected void onBaseChanged() {
 		super.onBaseChanged();
 
-		Dimension glyphDimension = getMetrics().getGlyphDimension(NOTATION_CONTEXT);
-        /* TJM */ // bug ... 1st time called this is always null. why ?
+		Dimension glyphDimension = getMetrics().getGlyphDimension(getNotationContext());
+		/* TJM */ // bug ... 1st time called this is always null. why ?
         if (glyphDimension == null) return;
 
-		/* TJM */
-		// bug corection below:
-		// for some (unknown) reason, beaming moves one of the note positions
-		// down 1 note position. This line corrects for it.
-		int noteY = (int) ( notePosition.getY() - (getMetrics().getStaffLineHeight()/2) );
+		int noteY = (int) notePosition.getY();
 		int noteX = (int) notePosition.getX();
 		displayPosition.setLocation(noteX, noteY);
 
@@ -83,7 +81,7 @@ class JGraceNotePartOfGroup extends JNotePartOfGroup {
 
 		noteX = (int)displayPosition.getX();
 
-		int stemYBegin = (int)(displayPosition.getY() - glyphDimension.getHeight()/6);
+		int stemYBegin = (int)(displayPosition.getY() - glyphDimension.getHeight()/2);
 
 		stemUpBeginPosition = new Point2D.Double(noteX + getMetrics().getGraceNoteWidth(), stemYBegin);
 		stemDownBeginPosition = new Point2D.Double(noteX,stemYBegin);
@@ -100,6 +98,8 @@ class JGraceNotePartOfGroup extends JNotePartOfGroup {
 		} finally {
 			context.setFont(previousFont);
 		}
+		
+		//renderDebugBoundingBox(context);
 
 		return getWidth();
 	}

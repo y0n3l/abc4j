@@ -34,12 +34,6 @@ import abc.notation.Note;
  */
 class JNote extends JNoteElementAbstract {
 
-	// used to request glyph-specific metrics
-	// in a genric way that enables positioning, sizing, rendering
-	// to be done generically
-	// subclasses should override this attrribute.
-	protected int NOTATION_CONTEXT = ScoreMetrics.NOTE_GLYPH;
-
 	private static final double SPACE_RATIO_FOR_ACCIDENTALS = 1.2;
 
 	/** This position is independant from the note type (height or rhythm)
@@ -128,37 +122,48 @@ class JNote extends JNoteElementAbstract {
 		Point2D newBase = new Point2D.Double(getBase().getX()+xDelta, getBase().getY()+yDelta);
 		setBase(newBase);
 	}
+	
+	/**
+	 * in a genric way that enables positioning, sizing,
+	 * rendering to be done generically
+	 * <p>subclasses should override this method. 
+	 * @return {@link ScoreMetrics#NOTE_GLYPH}
+	 */
+	protected int getNotationContext() {
+		return ScoreMetrics.NOTE_GLYPH;
+	}
 
 	// all sizing/positioning is derived in this method!!
 	//
 	protected void onBaseChanged() {
-		//System.out.println("JNote.onBaseChanged : "+note.toString());
+		//System.out.println("JNote.onBaseChanged : "+note);
 		ScoreMetrics metrics = getMetrics();
-		Dimension glyphDimension = metrics.getGlyphDimension(NOTATION_CONTEXT);
+		//can be note or grace note
+		Dimension glyphDimension = metrics.getGlyphDimension(getNotationContext());
+		//note glyph is used for vertical position of graces notes
+		Dimension noteGlyphDimension = metrics.getGlyphDimension(ScoreMetrics.NOTE_GLYPH);
 
 		Point2D base = getBase();
 		int noteY = 0;
 		if (note.isRest())
-			noteY = (int)(base.getY()-2*glyphDimension.getHeight());
+			noteY = (int)(base.getY()-2*noteGlyphDimension.getHeight());
 		else
-			noteY = (int)(base.getY()-getCorrectedOffset(note)*glyphDimension.getHeight());
+			noteY = (int)(base.getY()-getOffset(note)*noteGlyphDimension.getHeight()
+				- noteGlyphDimension.getHeight()/2 + glyphDimension.getHeight()/2);
 		double graceNotesWidth = 0;
 		if (m_jGracenotes != null)
-			graceNotesWidth = m_jGracenotes.getWidth() + (getWidth()*SPACE_RATIO_FOR_GRACENOTES);
+			graceNotesWidth = m_jGracenotes.getWidth()
+				+ getMetrics().getGraceNotesSpacing();
+			// + (getWidth()*SPACE_RATIO_FOR_GRACENOTES);
 		double accidentalsWidth = 0;
-		if (note.getAccidental()!=AccidentalType.NONE) {
-			switch (note.getAccidental()) {
-				case AccidentalType.FLAT: accidentalsChars = ScoreMetrics.FLAT;
-					accidentalsWidth = metrics.getFlatBounds().getWidth();
-					break;
-				case AccidentalType.SHARP: accidentalsChars = ScoreMetrics.SHARP;
-					accidentalsWidth = metrics.getSharpBounds().getWidth();
-					break;
-				case AccidentalType.NATURAL: accidentalsChars = ScoreMetrics.NATURAL;
-					accidentalsWidth = metrics.getNaturalBounds().getWidth();
-					break;
-				default : throw new IllegalArgumentException("Incorrect accidental for " + note + " : " + note.getAccidental());
+		try {
+			if (note.hasAccidental()) {
+				accidentalsChars = getMetrics().getAccidentalGlyph(note.getAccidental());
+				accidentalsWidth = getMetrics()
+					.getBounds(accidentalsChars).getWidth();
 			}
+		} catch (IllegalArgumentException iae) {
+			throw new IllegalArgumentException("Incorrect accidental for " + note + " : " + note.getAccidental());
 		}
 
 		//System.out.println("note chars " + noteChars[0]);
@@ -194,7 +199,7 @@ class JNote extends JNoteElementAbstract {
 
 	protected void calcDotsPosition() {
 		if (note.countDots()!=0) {
-			Dimension glyphDimension = getMetrics().getGlyphDimension(NOTATION_CONTEXT);
+			Dimension glyphDimension = getMetrics().getGlyphDimension(getNotationContext());
 			dotsPosition = new Point2D.Double(notePosition.getX() + glyphDimension.getWidth()*1.2,
 					notePosition.getY()-glyphDimension.getHeight()*0.05);
 		}
@@ -319,8 +324,8 @@ class JNote extends JNoteElementAbstract {
 		//  go over any decorations
 		//if (note.getSlurDefinition()!=null)
 		ScoreMetrics metrics = getMetrics();
-		Dimension glyphDimension = metrics.getGlyphDimension(NOTATION_CONTEXT);
-		slurUnderAnchor = new Point2D.Double(notePosition.getX() + glyphDimension.getWidth()/2,
+		Dimension glyphDimension = metrics.getGlyphDimension(getNotationContext());
+		slurUnderAnchor = new Point2D.Double(displayPosition.getX() + glyphDimension.getWidth()/2,
 				notePosition.getY()+metrics.getSlurAnchorYOffset());
 		slurAboveAnchor = new Point2D.Double(displayPosition.getX() + glyphDimension.getWidth()/2,
 				notePosition.getY()-glyphDimension.getHeight()-metrics.getSlurAnchorYOffset());
@@ -338,12 +343,7 @@ class JNote extends JNoteElementAbstract {
 			:slurAboveAnchor;
 	}
 
-	/* FIXME : called from JKeySignature to calculate accidental positions */
-	/*public double getOffset(Note note) {
-		return (getOffset(m_metrics, note));
-	}*/
-
-	//TODO move getCorrectedOffset to ScoreMetrics
+	/** @deprecated use {@link #getOffset(Note)} */
 	public static double getCorrectedOffset(Note note) {
 		double positionOffset = getOffset(note);
 		/*if ((note.getOctaveTransposition() <= 0)
@@ -390,7 +390,7 @@ public Note getNote(){
 	}*/
 
 	public Rectangle2D getBoundingBox() {
-		Dimension glyphDimension = getMetrics().getGlyphDimension(NOTATION_CONTEXT);
+		Dimension glyphDimension = getMetrics().getGlyphDimension(getNotationContext());
 		double noteGlyphHeight = glyphDimension.getHeight()*4;
 		if (note.getStrictDuration() == Note.THIRTY_SECOND)
 			noteGlyphHeight = glyphDimension.getHeight()*5;
@@ -429,6 +429,9 @@ public Note getNote(){
 		renderDecorations(g);
 		renderNoteChars(g);
 		renderChordName(g);
+		
+		//renderDebugBoundingBox(g);
+		//renderDebugSlurAnchors(g);
 
 		return getWidth();
 	}
@@ -446,7 +449,8 @@ public Note getNote(){
 				Rectangle2D bounds = chordFont.getStringBounds(note.getChordName(), gfx.getFontRenderContext());
 				double y = getStaffLine().getBase().getY()/* not yet defined*/
 					//- (displayPosition.getY()%m_metrics.getStaffLinesSpacing())
-					- getMetrics().getStaffLinesSpacing()
+					- getMetrics().getStaffCharBounds().getHeight()
+					- getMetrics().getChordLineSpacing()
 					+ bounds.getHeight();
 				gfx.drawString(note.getChordName(), (int)displayPosition.getX(), (int)y);
 			} finally {
@@ -462,11 +466,14 @@ public Note getNote(){
 
 	protected void renderExtendedStaffLines(Graphics2D context, ScoreMetrics metrics, Point2D base){
 		//FIXME: "Gracing" branch changes not integrated here
-		Dimension glyphDimension = metrics.getGlyphDimension(NOTATION_CONTEXT);
+		//used for width which vary from normal to grace note
+		Dimension glyphDimension = metrics.getGlyphDimension(getNotationContext());
+		//used for height
+		Dimension noteGlyphDimension = metrics.getGlyphDimension(ScoreMetrics.NOTE_GLYPH);
 		int extSize = (int)glyphDimension.getWidth()/3;
 		if (note.getHeight()<=Note.C){
-			double currentOffset = getCorrectedOffset(new Note(Note.C, AccidentalType.NONE));
-			int currentPosition = (int)(base.getY()-currentOffset*glyphDimension.getHeight()/1.5);
+			double currentOffset = getOffset(new Note(Note.C, AccidentalType.NONE));
+			int currentPosition = (int)(base.getY()-currentOffset*noteGlyphDimension.getHeight()/1.5);
 			double offset = getOffset(note);
 			Stroke dfs = context.getStroke();
 			context.setStroke(metrics.getStemStroke());
@@ -475,14 +482,14 @@ public Note getNote(){
 						(int)(displayPosition.getX()-extSize), currentPosition,
 						(int)(displayPosition.getX()+glyphDimension.getWidth()+extSize), currentPosition);
 				currentOffset--;
-				currentPosition = (int)(currentPosition + glyphDimension.getHeight());
+				currentPosition = (int)(currentPosition + noteGlyphDimension.getHeight());
 				//System.out.println("current offset : " + currentOffset + " " + currentPosition);
 			}
 			context.setStroke(dfs);
 		}
 		else if (note.getHeight()>=Note.a){
-			double currentOffset = getCorrectedOffset(new Note(Note.a, AccidentalType.NONE));
-			int currentPosition = (int)(base.getY()-currentOffset*glyphDimension.getHeight()-glyphDimension.getHeight()/2);
+			double currentOffset = getOffset(new Note(Note.a, AccidentalType.NONE));
+			int currentPosition = (int)(base.getY()-currentOffset*noteGlyphDimension.getHeight()-noteGlyphDimension.getHeight()/2);
 			double offset = getOffset(note);
 			Stroke dfs = context.getStroke();
 			context.setStroke(metrics.getStemStroke());
@@ -491,7 +498,7 @@ public Note getNote(){
 						(int)(displayPosition.getX()-extSize), currentPosition,
 						(int)(displayPosition.getX()+glyphDimension.getWidth()+extSize), currentPosition);
 				currentOffset++;
-				currentPosition = (int)(currentPosition - glyphDimension.getHeight());
+				currentPosition = (int)(currentPosition - noteGlyphDimension.getHeight());
 				//System.out.println("current offset : " + currentOffset + " " + currentPosition);
 			}
 			context.setStroke(dfs);

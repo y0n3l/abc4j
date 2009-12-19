@@ -15,7 +15,6 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -23,7 +22,9 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
@@ -215,16 +216,28 @@ public class JScoreComponent extends JComponent {
 		repaint();
 	}
 
-	/** Writes the currently set tune score to a PNG file.
-	 * @param file The PNG output file.
+	/** Writes the currently set tune score to a PNG output stream.
+	 * @param os The PNG output stream
 	 * @throws IOException Thrown if the given file cannot be accessed. */
-	public void writeScoreTo(File file) throws IOException {
+	public void writeScoreTo(OutputStream os) throws IOException {
 		BufferedImage bufferedImage = new BufferedImage((int)m_dimension.getWidth(), (int)m_dimension.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		Graphics2D bufferedImageGfx = (Graphics2D)bufferedImage.createGraphics();
 		bufferedImageGfx.setColor(Color.WHITE);
 		bufferedImageGfx.fillRect(0, 0, (int)bufferedImage.getWidth(), (int)bufferedImage.getHeight());
 		drawIn(bufferedImageGfx);
-		ImageIO.write(bufferedImage, "png", file);
+		ImageIO.write(bufferedImage, "png", os);
+	}
+
+	/** Writes the currently set tune score to a PNG file.
+	 * @param file The PNG output file.
+	 * @throws IOException Thrown if the given file cannot be accessed. */
+	public void writeScoreTo(File file) throws IOException {
+		FileOutputStream fos = new FileOutputStream(file);
+		try {
+			writeScoreTo(fos);
+		} finally {
+			fos.close();
+		}
 	}
 
 	/** Sets the tune to be renderered.

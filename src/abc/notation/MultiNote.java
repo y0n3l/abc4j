@@ -290,7 +290,7 @@ public class MultiNote extends NoteAbstract
 	  return false;
   }
   
-  /** Returns a new vector containing all <TT>Note</TT> objects contained in
+  /** Returns a new vector containing <B>clones</B> of all <TT>Note</TT> objects contained in
    * this multi note.
    * @return a new vector containing all <TT>Note</TT> objects contained in
    * this multi note. */
@@ -308,5 +308,38 @@ public class MultiNote extends NoteAbstract
 	  }
 	  else
 		  return null;
+  }
+
+
+  public String toString()
+  {
+		String string2Return = super.toString();
+	  for (int i = 0; i < m_notes.size(); i++) {
+		  if (i == 0) string2Return = string2Return.concat("[");
+		  else string2Return = string2Return.concat(":");
+		Note n = (Note) m_notes.elementAt(i);
+		if (n.getStrictHeight() == Note.REST) 	string2Return = string2Return.concat("z"); else
+		if (n.getStrictHeight() == Note.C) 	string2Return = string2Return.concat("C"); else
+		if (n.getStrictHeight() == Note.D) 	string2Return = string2Return.concat("D"); else
+		if (n.getStrictHeight() == Note.E) 	string2Return = string2Return.concat("E"); else
+		if (n.getStrictHeight() == Note.F) 	string2Return = string2Return.concat("F"); else
+		if (n.getStrictHeight() == Note.G) 	string2Return = string2Return.concat("G"); else
+		if (n.getStrictHeight() == Note.A) 	string2Return = string2Return.concat("A"); else
+		if (n.getStrictHeight() == Note.B) 	string2Return = string2Return.concat("B"); /*else
+		if (n.getStrictHeight() == Note.c) 	string2Return = string2Return.concat("c"); else
+		if (n.getStrictHeight() == Note.d) 	string2Return = string2Return.concat("d"); else
+		if (n.getStrictHeight() == Note.e) 	string2Return = string2Return.concat("e"); else
+		if (n.getStrictHeight() == Note.f) 	string2Return = string2Return.concat("f"); else
+		if (n.getStrictHeight() == Note.g) 	string2Return = string2Return.concat("g"); else
+		if (n.getStrictHeight() == Note.a) 	string2Return = string2Return.concat("a"); else
+		if (n.getStrictHeight() == Note.b) 	string2Return = string2Return.concat("b");*/
+		if (n.getOctaveTransposition() == 1) 	string2Return = string2Return.concat("'"); else
+		if (n.getOctaveTransposition() == -1) 	string2Return = string2Return.concat(",");
+		if (n.getAccidental() == AccidentalType.FLAT)	string2Return = string2Return.concat("b");
+		if (n.getAccidental() == AccidentalType.SHARP)	string2Return = string2Return.concat("#");
+		//string2Return = string2Return.concat(relativeLength.toString());
+	  }
+	  string2Return = string2Return.concat("]");
+	return string2Return;
   }
 }

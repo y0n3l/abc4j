@@ -59,8 +59,6 @@ class JKeySignature extends JScoreElementAbstract {
 		Point2D m_base = getBase();
 		// easier to read, and may speed up a little :)
 		double noteHeight = c.getNoteHeight();
-		double sharpWidth = c.getSharpBounds().getWidth();
-		double flatWidth = c.getFlatBounds().getWidth();
 		double baseX = m_base.getX();
 		double baseY = m_base.getY() - noteHeight/2;
 		
@@ -111,7 +109,7 @@ class JKeySignature extends JScoreElementAbstract {
 			int[] order = (accidental == AccidentalType.FLAT)
 					?flatOrder:sharpOrder;
 			char[] glyph = ScoreMetrics.NATURAL;
-			double glyphWidth = c.getNaturalBounds().getWidth();
+			double glyphWidth = getMetrics().getBounds(glyph).getWidth();
 			double[] Ys = (accidental==AccidentalType.FLAT)
 					?flatYs:sharpYs;
 			byte[] previous_accidentals = previous_key.getAccidentals();
@@ -135,10 +133,8 @@ class JKeySignature extends JScoreElementAbstract {
 			byte accidental = twoPasses==1?firstAccidental:secondAccidental;
 			int[] order = (accidental == AccidentalType.FLAT)
 						?flatOrder:sharpOrder;
-			char[] glyph = (accidental==AccidentalType.FLAT)
-						?ScoreMetrics.FLAT:ScoreMetrics.SHARP;
-			double glyphWidth = (accidental==AccidentalType.FLAT)
-						?flatWidth:sharpWidth;
+			char[] glyph = getMetrics().getAccidentalGlyph(accidental);
+			double glyphWidth = getMetrics().getBounds(glyph).getWidth();
 			double[] Ys = (accidental==AccidentalType.FLAT)
 						?flatYs:sharpYs;
 			if (twoPasses == 2 && key.hasSharpsAndFlats()) {

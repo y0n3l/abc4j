@@ -26,15 +26,9 @@ import abc.notation.NoteAbstract;
 /** This class is in charge of rendering a group of grace notes whose stems should be linked. */
 class JGroupOfGraceNotes extends JGroupOfNotes {
 
-	// used to request glyph-specific metrics
-	// in a genric way that enables positioning, sizing, rendering
-	// to be done generically
-	// subclasses should override this attrribute.
-	protected int NOTATION_CONTEXT = ScoreMetrics.GRACENOTE_GLYPH;
-
 	protected boolean renderSlash = true;
-	protected Point2D slashStart = null;
-	protected Point2D slashEnd = null;
+	private Point2D slashStart = null;
+	private Point2D slashEnd = null;
 
 	public JGroupOfGraceNotes (ScoreMetrics metrics, Point2D base, NoteAbstract[] notes, Engraver engraver){
 		super(metrics, base, notes, engraver);
@@ -55,6 +49,17 @@ class JGroupOfGraceNotes extends JGroupOfNotes {
 		setStemUp(true);
 	}
 
+	/**
+	 * used to request glyph-specific metrics
+	 * in a genric way that enables positioning, sizing, rendering
+	 * to be done generically
+	 * <p>subclasses should override this method.
+	 * @return {@link ScoreMetrics#GRACENOTE_GLYPH}
+	 */
+	protected int getNotationContext() {
+		return ScoreMetrics.GRACENOTE_GLYPH;
+	}
+
 	public void setRenderSlash(boolean render) {
 		renderSlash = render;
 	}
@@ -63,7 +68,7 @@ class JGroupOfGraceNotes extends JGroupOfNotes {
 		super.onBaseChanged();
 
 		// calculate slash position
-		Dimension d = getMetrics().getGlyphDimension(NOTATION_CONTEXT);
+		Dimension d = getMetrics().getGlyphDimension(getNotationContext());
 
 		if (d == null) return;
 		JGroupableNote firstNote = m_jNotes[0];
@@ -84,8 +89,8 @@ class JGroupOfGraceNotes extends JGroupOfNotes {
 			startY = (int) (firstNote.getStemYEnd() - d.getWidth()*2.5);
 			endY = (int) (firstNote.getStemYEnd() + d.getWidth()*1.5);
 		}
-		slashStart.setLocation(startX, startY);
-		slashEnd.setLocation(endX, endY);
+		slashStart = new Point2D.Double(startX, startY);
+		slashEnd = new Point2D.Double(endX, endY);
 	}
 
 	public double render(Graphics2D context) {
@@ -97,6 +102,8 @@ class JGroupOfGraceNotes extends JGroupOfNotes {
 			context.drawLine((int)slashStart.getX(), (int)slashStart.getY(), (int)slashEnd.getX(), (int)slashEnd.getY());
 			context.setStroke(dfs);
 		}
+		
+		//renderDebugBoundingBox(context);
 		return getWidth();
 	}
 }

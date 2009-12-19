@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.sound.midi.Instrument;
 import javax.sound.midi.MidiSystem;
@@ -64,6 +65,7 @@ import abc.midi.TunePlayer;
 import abc.midi.TunePlayerListenerInterface;
 import abc.notation.MusicElement;
 import abc.notation.NoteAbstract;
+import abc.notation.SlurDefinition;
 import abc.notation.Tune;
 import abc.parser.TuneBook;
 import abc.util.PropertyManager;
@@ -286,7 +288,18 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
 					if (elmnt instanceof NoteAbstract) {
 						NoteAbstract note = (NoteAbstract)elmnt;
 						System.out.println("properties for " + elmnt + " : slur?="+ note.isPartOfSlur() + " isLastOfGroup?=");
-						String test = (note.getSlurDefinition()==null)?"no slur":"start:"+note.getSlurDefinition().getStart()+" end:"+note.getSlurDefinition().getEnd();
+						String test = "";
+						Vector slurs = note.getSlurDefinitions();
+						int size = slurs.size();
+						test = size==0?"no slur":(size+" slur"+(size>1?"s":""));
+						int i = 0;
+						while (i < size) {
+							SlurDefinition slur = (SlurDefinition) slurs.elementAt(i);
+							test += "start:"+slur.getStart()+" end:"+slur.getEnd();
+							if (size > 1)
+								test += " | ";
+							i++;
+						}
 						System.out.println(test);
 					}
 	    		}

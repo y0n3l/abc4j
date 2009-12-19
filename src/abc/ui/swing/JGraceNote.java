@@ -15,7 +15,6 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
@@ -25,15 +24,9 @@ import abc.notation.Note;
 
 class JGraceNote extends JNote {
 
-	// used to request glyph-specific metrics
-	// in a genric way that enables positioning, sizing, rendering
-	// to be done generically
-	// subclasses should override this attrribute.
-	protected int NOTATION_CONTEXT = ScoreMetrics.GRACENOTE_GLYPH;
-
 	protected boolean renderSlash = true;
-	protected Point2D slashStart = null;
-	protected Point2D slashEnd = null;
+	private Point2D slashStart = null;
+	private Point2D slashEnd = null;
 	
 	private double m_width = -1;
 
@@ -60,11 +53,21 @@ class JGraceNote extends JNote {
 		renderSlash = render;
 	}
 
+	/**
+	 * used to request glyph-specific metrics
+	 * in a genric way that enables positioning, sizing, rendering
+	 * to be done generically
+	 * <p>subclasses should override this method.
+	 * @return {@link ScoreMetrics#GRACENOTE_GLYPH}
+	 */
+	protected int getNotationContext() {
+		return ScoreMetrics.GRACENOTE_GLYPH;
+	}
 
 	// correct for font glyph positioning
 	public double getCorrectedGlyphOffest(Note note) {
 		double positionOffset = //
-			super.getCorrectedOffset(note);
+			super.getOffset(note);
 		return positionOffset -= 1; // move up 1px
 	}
 	
@@ -74,11 +77,7 @@ class JGraceNote extends JNote {
 
 	protected void onBaseChanged() {
 		super.onBaseChanged();
-		Dimension d = getMetrics().getGlyphDimension(NOTATION_CONTEXT);
-
-		if (d == null) return;
-
-		m_width = d.getWidth();
+		this.m_width = super.getWidth();
 
 		// calculate slash position
 		int startX = 0;
@@ -96,8 +95,8 @@ class JGraceNote extends JNote {
 			startY = (int) (displayPosition.getY() + m_width*2.5);
 			endY = (int) (displayPosition.getY() + m_width*3.5);
 		}
-		slashStart.setLocation(startX, startY);
-		slashEnd.setLocation(endX, endY);
+		slashStart = new Point2D.Double(startX, startY);
+		slashEnd = new Point2D.Double(endX, endY);
 
 	}
 
@@ -129,6 +128,8 @@ context.setColor(previousColor);
 			context.drawLine((int)slashStart.getX(), (int)slashStart.getY(), (int)slashEnd.getX(), (int)slashEnd.getY());
 			context.setStroke(dfs);
 		}
+		
+		//renderDebugBoundingBox(context);
 
 		return m_width;
 	}

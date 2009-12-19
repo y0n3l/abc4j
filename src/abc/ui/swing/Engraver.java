@@ -7,7 +7,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeSet;
 
+import abc.notation.MultiNote;
 import abc.notation.Note;
+import abc.notation.NoteAbstract;
 import abc.notation.Tune;
 import abc.notation.Tune.Music;
 
@@ -202,7 +204,11 @@ public class Engraver {
 		Note n1 = null;
 		if (e instanceof JGroupOfNotes) {
 			JGroupOfNotes jgon = (JGroupOfNotes) e;
-			n1 = jgon.m_notes[jgon.m_notes.length-1];
+			NoteAbstract na = jgon.m_notes[jgon.m_notes.length-1];
+			if (na instanceof MultiNote)
+				n1 = ((MultiNote) na).getShortestNote();
+			else
+				n1 = (Note) na;
 		} else if (e instanceof JNote) {
 			n1 = ((JNote) e).note;
 		}
@@ -210,7 +216,9 @@ public class Engraver {
 				+((n1!=null)?(n1.getHeight()+"\t"+n1.getDuration()
 						+"\t"+getSpaceAfter(n1.getDuration()))
 						:"null")); /* */
-		return (n1==null) ? 0 : (getSpaceAfter(n1.getDuration()));
+		return (n1==null)
+			? 0
+			: getSpaceAfter(n1.getDuration());
 	}
 	
 }

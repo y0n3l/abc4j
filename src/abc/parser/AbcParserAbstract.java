@@ -1135,10 +1135,19 @@ public class AbcParserAbstract
       {
         accept(AbcTokenType.END_SLUR, null, follow);
         if (!slursDefinitionStack.isEmpty()) {
-        	SlurDefinition slurDef = (SlurDefinition)slursDefinitionStack.elementAt(slursDefinitionStack.size()-1);
-        	slurDef.setEnd(lastParsedNote);
-        	slursDefinitionStack.removeElementAt(slursDefinitionStack.size()-1);
-        	lastParsedNote.setSlurDefinition(slurDef);
+        	//if last note is also a slur start, cherche for the first
+        	//slur definition where last note is not the start
+         	int i = slursDefinitionStack.size() - 1;
+        	while (i >= 0) {
+	        	SlurDefinition slurDef = (SlurDefinition)slursDefinitionStack.elementAt(i);
+	        	if (!slurDef.getStart().equals(lastParsedNote)) {
+		        	slurDef.setEnd(lastParsedNote);
+		        	slursDefinitionStack.removeElementAt(i);
+		        	lastParsedNote.addSlurDefinition(slurDef);
+		        	break;
+	        	}
+	        	i--;
+        	}
         }
         //m_isPartOfSlur = false;
       }
@@ -1331,6 +1340,7 @@ public class AbcParserAbstract
 
       String chordName = null;
       //======================guitar chord
+      //FIXME "C"(CEGc) doesn't work, ("C"CEGc) works
       current.remove(FIRST_GUITAR_CHORD);
       if(FIRST_GUITAR_CHORD.contains(m_tokenType))
         chordName = parseGuitarChord(current.createUnion(follow));
@@ -1381,10 +1391,14 @@ public class AbcParserAbstract
 		  note.setChordName(chordName);
 	    if (!slursDefinitionStack.isEmpty()){
 		  note.setPartOfSlur(true);
-		  SlurDefinition currentSlurDef = (SlurDefinition)slursDefinitionStack.elementAt(slursDefinitionStack.size()-1);
-		  if (currentSlurDef.getStart()==null){
-		  	  currentSlurDef.setStart(note);
-			  note.setSlurDefinition(currentSlurDef);
+		  int i = slursDefinitionStack.size() - 1;
+		  while (i >= 0) {
+			  SlurDefinition currentSlurDef = (SlurDefinition)slursDefinitionStack.elementAt(i);
+			  if (currentSlurDef.getStart()==null){
+			  	  currentSlurDef.setStart(note);
+				  note.addSlurDefinition(currentSlurDef);
+			  }
+			  i--;
 		  }
 	    }
 	    lastParsedNote = note;
@@ -1496,7 +1510,7 @@ public class AbcParserAbstract
         int length = endPosition.getCharactersOffset()-startPosition.getCharactersOffset();
         note.setBeginPosition(startPosition);
         note.setLength(length);
-        //TODO needs to be improved if a note starts a tie and ends a tie at the same time.
+        
         if (isTied) {
         	TieDefinition tieDef = new TieDefinition();
         	tieDef.setStart(note);

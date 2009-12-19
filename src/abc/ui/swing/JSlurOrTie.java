@@ -110,7 +110,7 @@ public class JSlurOrTie extends JScoreElementAbstract {
 	public void setTupletControlPoint(Point2D p) {
 		tupletControlPoint = p;
 	}
-	public Point2D getTupletcontrolPoint() {
+	public Point2D getTupletControlPoint() {
 		return tupletControlPoint;
 	}
 	

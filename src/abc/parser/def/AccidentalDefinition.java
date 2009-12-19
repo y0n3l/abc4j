@@ -25,6 +25,7 @@ public class AccidentalDefinition extends AutomataDefinition
 {
     public AccidentalDefinition()
     {
+    	//TODO for ABC v2, accept _/ and ^/ (half flat/sharp)
         State state = new State(AbcTokenType.ACCIDENTAL, true);
         Transition trans = new Transition(state,'^');
         getStartingState().addTransition(trans);
@@ -36,7 +37,7 @@ public class AccidentalDefinition extends AutomataDefinition
         trans = new Transition(state,'_');
         getStartingState().addTransition(trans);
         state1 = new State(AbcTokenType.ACCIDENTAL, true);
-        trans = new Transition(state1,'^');
+        trans = new Transition(state1,'_');
         state.addTransition(trans);
 
         state = new State(AbcTokenType.ACCIDENTAL, true);

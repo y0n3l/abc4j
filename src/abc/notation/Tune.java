@@ -449,17 +449,21 @@ public class Tune implements Cloneable
     }
     
     public int indexOf(MusicElement elmnt) {
-    	Object elmntIt = null;
-    	boolean isLooking4Note = elmnt instanceof Note;
-    	for (int i=0; i<size(); i++){
-    		elmntIt = elementAt(i);
-    		if (elementAt(i) instanceof MultiNote && isLooking4Note) {
-    			if (((MultiNote)elmntIt).contains((Note)elmnt))
-    					return i;
-    		}
-    		else
-    			if (elementAt(i).equals(elmnt))
-    				return i;
+    	if (elmnt != null) {
+	    	Object elmntIt = null;
+	    	boolean isLooking4Note = elmnt instanceof Note;
+	    	for (int i=0; i<size(); i++){
+	    		elmntIt = elementAt(i);
+	    		if (elmntIt != null) {
+		    		if (elementAt(i) instanceof MultiNote && isLooking4Note) {
+		    			if (((MultiNote)elmntIt).contains((Note)elmnt))
+		    					return i;
+		    		}
+		    		else
+		    			if (elementAt(i).equals(elmnt))
+		    				return i;
+	    		}
+	    	}
     	}
     	return -1;
     }
@@ -483,20 +487,109 @@ public class Tune implements Cloneable
      * of the highest note.
      * @param elmtEnd The music element where to end (included) the search
      * of the highest note.
-     * @return The highest note between two music elements. <TT>null</TT> if
+     * @return The highest note or multinote between two music elements. <TT>null</TT> if
      * no note has been found between the two music elements.
      * @throws IllegalArgumentException Thrown if one of the music elements hasn't been found 
      * in the music or if the <TT>elmtEnd</TT> param is located before the <TT>elmntBegin</TT> 
      * param in the music. */
-    public Note getHighestNoteBewteen(MusicElement elmtBegin, MusicElement elmtEnd)
+    public NoteAbstract getHighestNoteBewteen(MusicElement elmtBegin, MusicElement elmtEnd)
     	throws IllegalArgumentException {
-    	Note highestNote = null;
-    	//init
-    	if (elmtBegin instanceof Note)
-    		highestNote=(Note)elmtBegin;
-    	else
-    		if (elmtBegin instanceof MultiNote)
-    			highestNote = ((MultiNote)elmtBegin).getHighestNote();
+    	NoteAbstract highestNote = null;
+    	int highestNoteHeight = Note.REST;
+    	if (elmtBegin instanceof NoteAbstract) {
+    		if (!((elmtBegin instanceof Note) && ((Note)elmtBegin).isRest())) {
+    			highestNote = (NoteAbstract) elmtBegin;
+        		highestNoteHeight = 
+	    			(highestNote instanceof MultiNote)
+	    				?((MultiNote)elmtBegin).getHighestNote().getMidiLikeHeight()
+	    				:((Note) highestNote).getMidiLikeHeight();
+    		}
+    	}
+    	int idxBegin = indexOf(elmtBegin);
+    	int idxEnd = indexOf(elmtEnd);
+    	if (idxBegin==-1)
+    		throw new IllegalArgumentException("Note " + elmtBegin + " hasn't been found in tune");
+    	if (idxEnd==-1)
+        	throw new IllegalArgumentException("Note " + elmtEnd + " hasn't been found in tune");
+    	if (idxBegin>idxEnd)
+    		throw new IllegalArgumentException("Note " + elmtBegin + " is located after " + elmtEnd + " in the score");
+    	MusicElement currentScoreEl;
+    	int currentNoteHeight;
+    	for (int i=idxBegin+1; i<=idxEnd; i++) {
+    		currentScoreEl=(MusicElement)elementAt(i);
+    		if (currentScoreEl instanceof NoteAbstract) {
+    	    	currentNoteHeight = 
+    	    		(currentScoreEl instanceof MultiNote)
+    	    			?((MultiNote)currentScoreEl).getHighestNote().getMidiLikeHeight()
+    	    			:((Note)currentScoreEl).getMidiLikeHeight();
+    	    	if ((currentNoteHeight != Note.REST) && 
+    	    		((highestNoteHeight == Note.REST)
+    	    			|| (currentNoteHeight > highestNoteHeight))) {
+    	    		highestNoteHeight = currentNoteHeight;
+    	    		highestNote = (NoteAbstract) currentScoreEl;
+    	    	}
+    		}
+    	}
+    	return highestNote;
+	}
+    
+    /**  
+     * @param elmtBegin (included)
+     * @param elmtEnd (included)
+     * @return The lowest note or multinote between the two given score elements if found.
+     * <TT>null</TT> if no note has been found between the two music elements.
+     * @throws IllegalArgumentException
+     */
+    public NoteAbstract getLowestNoteBewteen(MusicElement elmtBegin, MusicElement elmtEnd)
+		throws IllegalArgumentException {
+    	NoteAbstract lowestNote = null;
+    	int lowestNoteHeight = Note.REST;
+    	if (elmtBegin instanceof NoteAbstract) {
+    		if (!((elmtBegin instanceof Note) && ((Note)elmtBegin).isRest())) {
+    			lowestNote = (NoteAbstract) elmtBegin;
+        		lowestNoteHeight = 
+	    			(lowestNote instanceof MultiNote)
+	    				?((MultiNote)elmtBegin).getLowestNote().getMidiLikeHeight()
+	    				:((Note) lowestNote).getMidiLikeHeight();
+    		}
+    	}
+    	int idxBegin = indexOf(elmtBegin);
+    	int idxEnd = indexOf(elmtEnd);
+    	if (idxBegin==-1)
+    		throw new IllegalArgumentException("Note " + elmtBegin + " hasn't been found in tune");
+    	if (idxEnd==-1)
+        	throw new IllegalArgumentException("Note " + elmtEnd + " hasn't been found in tune");
+    	if (idxBegin>idxEnd)
+    		throw new IllegalArgumentException("Note " + elmtBegin + " is located after " + elmtEnd + " in the score");
+    	MusicElement currentScoreEl;
+    	int currentNoteHeight;
+    	for (int i=idxBegin+1; i<=idxEnd; i++) {
+    		currentScoreEl=(MusicElement)elementAt(i);
+    		if (currentScoreEl instanceof NoteAbstract) {
+    	    	currentNoteHeight = 
+    	    		(currentScoreEl instanceof MultiNote)
+    	    			?((MultiNote)currentScoreEl).getLowestNote().getMidiLikeHeight()
+    	    			:((Note)currentScoreEl).getMidiLikeHeight();
+    	    	if ((currentNoteHeight != Note.REST) && 
+    	    		((lowestNoteHeight == Note.REST)
+    	    			|| (currentNoteHeight < lowestNoteHeight))) {
+    	    		lowestNoteHeight = currentNoteHeight;
+    	    		lowestNote = (NoteAbstract) currentScoreEl;
+    	    	}
+    		}
+    	}
+    	return lowestNote;
+
+	}
+    
+    /** Returns a collection of Note between begin and end included
+     * @param elmtBegin
+     * @param elmtEnd
+     * @return a Collection of NoteAbstract (Note or MultiNote)
+     * @throws IllegalArgumentException
+     */
+    public Collection getNotesBetween(MusicElement elmtBegin, MusicElement elmtEnd)
+    	throws IllegalArgumentException {
     	int idxBegin = indexOf(elmtBegin);
     	int idxEnd = this.indexOf(elmtEnd);
     	if (idxBegin==-1)
@@ -505,77 +598,12 @@ public class Tune implements Cloneable
         	throw new IllegalArgumentException("Note " + elmtEnd + " hasn't been found in tune");
     	if (idxBegin>idxEnd)
     		throw new IllegalArgumentException("Note " + elmtBegin + " is located after " + elmtEnd + " in the score");
-    	MusicElement currentScoreEl;
-    	for (int i=idxBegin+1; i<=idxEnd; i++) {
-    		currentScoreEl=(MusicElement)elementAt(i);
-    		if (currentScoreEl instanceof Note && ((Note)currentScoreEl).isHigherThan(highestNote))
-    			highestNote = (Note)currentScoreEl;
-    		/*else
-    			if (currentScoreEl instanceof MultiNote && ((MultiNote)currentScoreEl).getLowestNote().isHigherThan(highestNote))
-    					highestNote = ((MultiNote)currentScoreEl).getLowestNote();*/
-    	}
-    	return highestNote;
-    }
-    
-    /**  
-     * @param noteBegin (included)
-     * @param noteEnd (included)
-     * @return The lowest note between the two given score elements if found.
-     * @throws IllegalArgumentException
-     */
-    public Note getLowestNoteBewteen(MusicElement noteBegin, MusicElement noteEnd)
-		throws IllegalArgumentException {
-    	Note lowestNote = null;
-    	//init
-    	if (noteBegin instanceof Note)
-    		lowestNote=(Note)noteBegin;
-    	else
-    		if (noteBegin instanceof MultiNote)
-    			lowestNote = ((MultiNote)noteBegin).getLowestNote();
-    	int idxBegin = indexOf(noteBegin);
-    	int idxEnd = this.indexOf(noteEnd);
-    	if (idxBegin==-1)
-    		throw new IllegalArgumentException("Note " + noteBegin + " hasn't been found in tune");
-    	if (idxEnd==-1)
-        	throw new IllegalArgumentException("Note " + noteEnd + " hasn't been found in tune");
-    	if (idxBegin>idxEnd)
-    		throw new IllegalArgumentException("Note " + noteBegin + " is located after " + noteEnd + " in the score");
-    	MusicElement currentScoreEl;
-    	for (int i=idxBegin+1; i<=idxEnd; i++) {
-    		currentScoreEl=(MusicElement)elementAt(i);
-    		if (currentScoreEl instanceof Note && ((Note)currentScoreEl).isLowerThan(lowestNote))
-    			lowestNote = (Note)currentScoreEl;
-    		/* else
-    			if (currentScoreEl instanceof MultiNote && ((MultiNote)currentScoreEl).getLowestNote().isLowerThan(lowestNote))
-    					lowestNote = ((MultiNote)currentScoreEl).getLowestNote();*/
-    	}
-    	return lowestNote;
-
-	}
-    
-    /** <TT>MultiNote</TT> instances are ignored.  
-     * Returns a collection of Note between begin and end included
-     * @param noteBegin
-     * @param noteEnd
-     * @return a Collection of Note
-     * @throws IllegalArgumentException
-     */
-    public Collection getNotesBetween(MusicElement noteBegin, MusicElement noteEnd)
-    	throws IllegalArgumentException {
-    	int idxBegin = indexOf(noteBegin);
-    	int idxEnd = this.indexOf(noteEnd);
-    	if (idxBegin==-1)
-    		throw new IllegalArgumentException("Note " + noteBegin + " hasn't been found in tune");
-    	if (idxEnd==-1)
-        	throw new IllegalArgumentException("Note " + noteEnd + " hasn't been found in tune");
-    	if (idxBegin>idxEnd)
-    		throw new IllegalArgumentException("Note " + noteBegin + " is located after " + noteEnd + " in the score");
     	Collection ret = new Vector();
     	MusicElement currentScoreEl;
     	for (int i=idxBegin; i<=idxEnd; i++) {
     		currentScoreEl=(MusicElement)elementAt(i);
-    		if (currentScoreEl instanceof Note)
-    			ret.add((Note)currentScoreEl);
+    		if (currentScoreEl instanceof NoteAbstract)
+    			ret.add((NoteAbstract)currentScoreEl);
     	}
     	return ret;
     }
@@ -622,5 +650,23 @@ public class Tune implements Cloneable
     	}
     	return lowestNote;
     }*/
+
+	/**
+	 * Returns <TT>true</TT> if this tune music has chord names,
+	 * <TT>false</TT> otherwise.
+	 */
+    public boolean hasChordNames() {
+    	MusicElement currentScoreEl;
+       	Iterator it = iterator();
+    	while (it.hasNext()) {
+			currentScoreEl=(MusicElement)it.next();
+			if (currentScoreEl instanceof NoteAbstract) {
+				if (((NoteAbstract)currentScoreEl).getChordName() != null)
+					return true;
+			}
+		}
+		return false;
+	}
+	//TODO hasLyrics...
   }
 }

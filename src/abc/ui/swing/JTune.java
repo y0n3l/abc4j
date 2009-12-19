@@ -28,6 +28,7 @@ import java.awt.geom.QuadCurve2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
@@ -41,6 +42,7 @@ import abc.notation.NotesSeparator;
 import abc.notation.RepeatBarLine;
 import abc.notation.MusicElement;
 import abc.notation.EndOfStaffLine;
+import abc.notation.SlurDefinition;
 import abc.notation.TimeSignature;
 import abc.notation.Tune;
 import abc.notation.Tuplet;
@@ -54,6 +56,8 @@ import abc.notation.Words;
  */
 class JTune extends JScoreElementAbstract {
 
+	private static int DEBUG = 0;
+	
 	private final static short START = 0;
 	private final static short CONTROL = 1;
 	private final static short END = 2;
@@ -176,6 +180,36 @@ class JTune extends JScoreElementAbstract {
 	public Hashtable getRenditionObjectsMapping() {
 		return m_scoreElements;
 	}
+	
+	/**
+	 * Returns the rendition object (JNote, JChord...) for
+	 * the given notation (Note, MultiNote)
+	 * @param note
+	 * @return
+	 */
+	public JScoreElement getRenditionObjectFor(MusicElement musicElement) {
+		JScoreElement ret = (JScoreElement) m_scoreElements.get(musicElement);
+		//If it's a Note, look for chords which may contain this note
+		if (musicElement instanceof Note) {
+			Note note = (Note) musicElement;
+			Enumeration e = m_scoreElements.keys();
+			while (e.hasMoreElements()) {
+				MusicElement m = (MusicElement) e.nextElement();
+				if ((m instanceof MultiNote)
+						&& (((MultiNote) m).contains(note))) {
+					JChord chord = (JChord) m_scoreElements.get(m);
+					if (chord.m_normalizedChords == null) {
+						JNote[] jnotes = chord.getScoreElements();
+						for (int i = 0; i < jnotes.length; i++) {
+							if (jnotes[i].getMusicElement().equals(note))
+								return (jnotes[i]);
+						}
+					}
+				}
+			}
+		}
+		return ret;
+	}
 
 	/** Returns a vector of score elements that represent goups of notes.
 	 * rendition objects.
@@ -217,12 +251,17 @@ class JTune extends JScoreElementAbstract {
 		//m_staffLinesSpacing = (int)(m_metrics.getStaffCharBounds().getHeight()*2.5);
 		cursor = new Point(MARGIN_LEFT, MARGIN_TOP);
 		double componentWidth = 0, componentHeight = 0;
+		
+		System.out.println("Passage #"+(++DEBUG));
 
 		m_tune = tune;
 		m_scoreElements.clear();
         m_scoreNoteGroups.clear();
         m_staffLines.removeAllElements();
 		m_beginningNotesLinkElements.clear();
+		
+		currentKey = null;
+		previousKey = null;
 
 
 		// set headings, eg. titles, subtitles, composer, etc.
@@ -352,11 +391,13 @@ class JTune extends JScoreElementAbstract {
 			// ==== MultiNote ====
 			if (s instanceof MultiNote) {
 				NoteAbstract note = (NoteAbstract) s;
+				if (note.isBeginingSlur())
+					m_beginningNotesLinkElements.addElement(note);
 				tupletContainer = ((MultiNote)s).getTuplet();
 				Note[] tiesStart = ((MultiNote)s).getNotesBeginningTie();
 				if (tiesStart!=null)
 					for (int j=0; j<tiesStart.length; j++)
-					m_beginningNotesLinkElements.addElement(tiesStart[j]);
+						m_beginningNotesLinkElements.addElement(tiesStart[j]);
 				//checks if the shortest durations of the multi note is less than a quarter note.
 				// if yes, this multi note will be put into a group.
 				if (((MultiNote)s).getStrictDurations()[0]<Note.QUARTER)
@@ -462,8 +503,15 @@ class JTune extends JScoreElementAbstract {
 		int cursorNewLocationX = (int)(cursor.getX() + width);
 		
 		//fixed space + variable space (engraver)
-		cursorNewLocationX += getMetrics().getNotesSpacing()
-			+ getEngraver().getNoteSpacing(element);
+		if ((element instanceof JGraceNote)
+				|| (element instanceof JGroupOfGraceNotes)
+				|| (element instanceof JGraceNotePartOfGroup)) {
+			cursorNewLocationX += getMetrics().getGraceNotesSpacing()
+				+ getEngraver().getNoteSpacing(element);
+		} else {
+			cursorNewLocationX += getMetrics().getNotesSpacing()
+				+ getEngraver().getNoteSpacing(element);
+		}
 
 		cursor.setLocation(cursorNewLocationX, cursor.getY());
 
@@ -494,14 +542,14 @@ class JTune extends JScoreElementAbstract {
 		else
 		if (element instanceof JChord) {
 			JNote[] jnotes = ((JChord)element).getScoreElements();
-			Vector notes = ((MultiNote)((JChord)element).getMusicElement()).getNotesAsVector();
+			//Vector notes = ((MultiNote)((JChord)element).getMusicElement()).getNotes();
 			//adds all the notes of the chords into the hashtable
 			//TODO the ordering of the get notes as vector and the jnotes should be the same...
 			//System.out.println("Warning - abc4j - current limitation prevents you from using chords with different notes lengths.");
 			for (int i=0; i<jnotes.length; i++)
-				m_scoreElements.put(notes.elementAt(i), jnotes[i]);
+				m_scoreElements.put(jnotes[i].getMusicElement(), jnotes[i]);
 			//adds also the chords itself
-			m_scoreElements.put(((JScoreElementAbstract)element).getMusicElement(), element);
+			m_scoreElements.put(element.getMusicElement(), element);
 		}
 	}
 
@@ -556,6 +604,7 @@ class JTune extends JScoreElementAbstract {
 		g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+	    renderTitles(g2);
 		// staff line width
 		int staffCharNb = (int)(getWidth()/getMetrics().getStaffCharBounds().getWidth());
 		char[] staffS = new char[staffCharNb+1];
@@ -569,7 +618,6 @@ class JTune extends JScoreElementAbstract {
 			g2.drawChars(staffS, 0, staffS.length, MARGIN_LEFT, (int)(currentStaffLine.getBase().getY()));
 		}
 		renderSlursAndTies(g2);
-	    renderTitles(g2);
 
 		return getWidth();
 	}
@@ -604,13 +652,21 @@ class JTune extends JScoreElementAbstract {
 	}
 
 	protected void renderSlursAndTies(Graphics2D g2) {
+		//System.err.println("renderSlursAndTies");
 		for (int j=0; j<m_beginningNotesLinkElements.size(); j++) {
 			NoteAbstract n = (NoteAbstract)m_beginningNotesLinkElements.elementAt(j);
-			TwoNotesLink link = n.getSlurDefinition() ;
-			if (link==null)
-				link = n.getTieDefinition();
+			TwoNotesLink link = n.getTieDefinition();
 			if (link != null && link.getEnd() != null) {
 				drawLink(g2, link);
+			}
+			Vector slurs = n.getSlurDefinitions();
+			int i = 0;
+			while (i < slurs.size()) {
+				link = (SlurDefinition) slurs.elementAt(i);
+				if (link != null && link.getEnd() != null) {
+					drawLink(g2, link);
+				}
+				i++;
 			}
 		}
 	}
@@ -631,16 +687,20 @@ class JTune extends JScoreElementAbstract {
 		JSlurOrTie jSlurDef = getJSlurOrTie(slurDef);
 		if (jSlurDef.isTuplet()) {
 			//we consider tuplet are always above notes
-			if (jSlurDef.getTupletcontrolPoint() == null) {
+			if (jSlurDef.getTupletControlPoint() == null) {
 				jSlurDef.setTupletControlPoint(new Point2D.Double(
 					points[START].getX()+(points[END].getX()-points[START].getX())/2,
 					points[START].getY()-getMetrics().getSlurAnchorYOffset()*5
 				));
 			}
 			points[CONTROL].setLocation(
-				jSlurDef.getTupletcontrolPoint()
+				jSlurDef.getTupletControlPoint()
 			);
 		}
+		
+		System.out.println("drawLink "+slurDef);
+		System.out.println("  - start = "+points[START]);
+		System.out.println("  - end = "+points[END]);
 
 		Color previousColor = g2.getColor();
 		boolean isAboveNotes = false;
@@ -682,7 +742,13 @@ class JTune extends JScoreElementAbstract {
 	}
 
 	private JSlurOrTie getJSlurOrTie(TwoNotesLink slurDef) {
-		JNote elmtStart = (JNote)m_scoreElements.get(slurDef.getStart());
+		JNoteElementAbstract elmtStart;
+		if (slurDef.getStart() instanceof Note) {
+			elmtStart = (JNote)m_scoreElements.get(slurDef.getStart());
+		} else {
+			//instanceof MultiNote
+			elmtStart = (JChord)m_scoreElements.get(slurDef.getStart());
+		}
 		return elmtStart.getJSlurDefinition();
 	}
 
@@ -696,11 +762,34 @@ class JTune extends JScoreElementAbstract {
 	 * @return [0]=>start, [1]=control, [2]=end
 	 */
 	private Point2D[] getLinkPoints(TwoNotesLink slurDef) {
-		JNote elmtStart = (JNote)m_scoreElements.get(slurDef.getStart());
 		if (slurDef.getEnd()==null){
 			return new Point2D[] {};
 		}
-		JNote elmtEnd = (JNote)m_scoreElements.get(slurDef.getEnd());
+		JNoteElementAbstract elmtStart, elmtEnd;
+		//JNote elmtStartLow, elmtStartHigh, elmtEndLow, elmtEndHigh;
+		elmtStart = (JNoteElementAbstract) m_scoreElements.get(slurDef.getStart());
+		elmtEnd = (JNoteElementAbstract) m_scoreElements.get(slurDef.getEnd());
+		//elmtStart = (JNoteElementAbstract) getRenditionObjectFor(slurDef.getStart());
+		//elmtEnd = (JNoteElementAbstract) getRenditionObjectFor(slurDef.getEnd());
+		/*if (slurDef.getStart() instanceof MultiNote) {
+			elmtStart = (JChord)m_scoreElements.get(slurDef.getStart());
+			elmtStartLow = ((JChord)elmtStart).getLowestNote();
+			elmtStartHigh = ((JChord)elmtStart).getHighestNote();
+		} else {
+			//instanceof Note
+			elmtStart = (JNote)m_scoreElements.get(slurDef.getStart());
+			elmtStartLow = elmtStartHigh = (JNote) elmtStart;
+		}
+		if (slurDef.getEnd() instanceof MultiNote) {
+			elmtEnd = (JChord)m_scoreElements.get(slurDef.getEnd());
+			elmtEndLow = ((JChord)elmtEnd).getLowestNote();
+			elmtEndHigh = ((JChord)elmtEnd).getHighestNote();
+		} else {
+			//instanceof Note
+			elmtEnd = (JNote)m_scoreElements.get(slurDef.getEnd());
+			elmtEndLow = elmtEndHigh = (JNote) elmtEnd;
+		}*/
+		
 		if (!elmtStart.getStaffLine().equals(elmtEnd.getStaffLine())) {
 			System.err.println("Warning - abc4j limitation : Slurs / ties cannot be drawn accross several lines for now.");
 			return new Point2D[] {};
@@ -719,51 +808,60 @@ class JTune extends JScoreElementAbstract {
 		p[UNDER_OUT][END] = elmtEnd.getSlurUnderAnchorOutOfStem();
 		p[ABOVE_IN][END] = elmtEnd.getSlurAboveAnchor();
 		p[ABOVE_OUT][END] = elmtEnd.getSlurAboveAnchorOutOfStem();
-
+/*
+		p[UNDER_IN][START] = elmtStartLow.getSlurUnderAnchor();
+		p[UNDER_OUT][START] = elmtStartLow.getSlurUnderAnchorOutOfStem();
+		p[ABOVE_IN][START] = elmtStartHigh.getSlurAboveAnchor();
+		p[ABOVE_OUT][START] = elmtStartHigh.getSlurAboveAnchorOutOfStem();
+		p[UNDER_IN][END] = elmtEndLow.getSlurUnderAnchor();
+		p[UNDER_OUT][END] = elmtEndLow.getSlurUnderAnchorOutOfStem();
+		p[ABOVE_IN][END] = elmtEndHigh.getSlurAboveAnchor();
+		p[ABOVE_OUT][END] = elmtEndHigh.getSlurAboveAnchorOutOfStem();
+*/
 		//
 		//determinate peaks (lowest/highest) note and note glyph
 		// FIXME: ties should enclose note decorations
 		//
-		Note[] peakNote = new Note[4];
-		JNote[] peakNoteGlyph = new JNote[4];
+		NoteAbstract[] peakNote = new NoteAbstract[4];
+		JNoteElementAbstract[] peakNoteGlyph = new JNoteElementAbstract[4];
 
 		//under in
 		peakNote[UNDER_IN] = m_tune.getMusic().getLowestNoteBewteen(slurDef.getStart(), slurDef.getEnd());
-		peakNoteGlyph[UNDER_IN] = (JNote)m_scoreElements.get(peakNote[UNDER_IN]);
+		peakNoteGlyph[UNDER_IN] = (JNoteElementAbstract)m_scoreElements.get(peakNote[UNDER_IN]);
 
 		//under out of stems
 		peakNoteGlyph[UNDER_OUT] = getLowestNoteGlyphBetween(slurDef.getStart(), slurDef.getEnd(), true);
 		//enhance: if lowest glyph strictly between start/end is at same Y than start or end
 		if (peakNoteGlyph[UNDER_OUT] == null) { //no notes between start and end
 			peakNoteGlyph[UNDER_OUT] = p[UNDER_OUT][START].getY()>p[UNDER_OUT][END].getY()
-				?elmtStart:elmtEnd;
+				?elmtStart:elmtEnd; //Low
 		} else {
 			Point2D lowAnchor = peakNoteGlyph[UNDER_OUT].getSlurUnderAnchorOutOfStem();
 			if (lowAnchor.getY() < p[UNDER_OUT][START].getY())
-				peakNoteGlyph[UNDER_OUT] = elmtStart;
+				peakNoteGlyph[UNDER_OUT] = elmtStart;//Low;
 			if (lowAnchor.getY() < p[UNDER_OUT][END].getY())
-				peakNoteGlyph[UNDER_OUT] = elmtEnd;
+				peakNoteGlyph[UNDER_OUT] = elmtEnd;//Low;
 		}
-		peakNote[UNDER_OUT] = (Note) peakNoteGlyph[UNDER_OUT].getMusicElement();
+		peakNote[UNDER_OUT] = (NoteAbstract) peakNoteGlyph[UNDER_OUT].getMusicElement();
 
 		//above in
 		peakNote[ABOVE_IN] = m_tune.getMusic().getHighestNoteBewteen(slurDef.getStart(), slurDef.getEnd());
-		peakNoteGlyph[ABOVE_IN] = (JNote)m_scoreElements.get(peakNote[ABOVE_IN]);
+		peakNoteGlyph[ABOVE_IN] = (JNoteElementAbstract)m_scoreElements.get(peakNote[ABOVE_IN]);
 
 		//above out of stems (e.g. truplet)
 		peakNoteGlyph[ABOVE_OUT] = getHighestNoteGlyphBetween(slurDef.getStart(), slurDef.getEnd(), true);
 		//enhance: if lowest glyph strictly between start/end is at same Y than start or end
 		if (peakNoteGlyph[ABOVE_OUT] == null) { //no notes between start and end
 			peakNoteGlyph[ABOVE_OUT] = p[ABOVE_OUT][START].getY()<p[ABOVE_OUT][END].getY()
-				?elmtStart:elmtEnd;
+				?elmtStart:elmtEnd;//High
 		} else {
 			Point2D highAnchor = peakNoteGlyph[ABOVE_OUT].getSlurAboveAnchorOutOfStem();
 			if (highAnchor.getY() > p[ABOVE_OUT][START].getY())
-				peakNoteGlyph[ABOVE_OUT] = elmtStart;
+				peakNoteGlyph[ABOVE_OUT] = elmtStart;//High
 			if (highAnchor.getY() > p[ABOVE_OUT][END].getY())
-				peakNoteGlyph[ABOVE_OUT] = elmtEnd;
+				peakNoteGlyph[ABOVE_OUT] = elmtEnd;//High
 		}
-		peakNote[ABOVE_OUT] = (Note) peakNoteGlyph[ABOVE_OUT].getMusicElement();
+		peakNote[ABOVE_OUT] = (NoteAbstract) peakNoteGlyph[ABOVE_OUT].getMusicElement();
 
 		//
 		//if peak=start then control=start
@@ -965,12 +1063,12 @@ class JTune extends JScoreElementAbstract {
 	 * @param excludeStartAndEnd
 	 * @return a JNote. May return <code>null</code> if exclude is true and no notes between start and end!
 	 */
-	private JNote getHighestNoteGlyphBetween(NoteAbstract start, NoteAbstract end, boolean excludeStartAndEnd) {
+	private JNoteElementAbstract getHighestNoteGlyphBetween(NoteAbstract start, NoteAbstract end, boolean excludeStartAndEnd) {
 		Collection jnotes = getNoteGlyphesBetween(start, end);
-		JNote ret = null;
+		JNoteElementAbstract ret = null;
 		boolean first = true;
 		for (Iterator it = jnotes.iterator(); it.hasNext();) {
-			JNote n = (JNote) it.next();
+			JNoteElementAbstract n = (JNoteElementAbstract) it.next();
 			if (first && excludeStartAndEnd) {
 				//ignore start ?
 				first = false;
@@ -998,12 +1096,12 @@ class JTune extends JScoreElementAbstract {
 	 * @param excludeStartAndEnd
 	 * @return a JNote. May return <code>null</code> if exclude is true and no notes between start and end!
 	 */
-	private JNote getLowestNoteGlyphBetween(NoteAbstract start, NoteAbstract end, boolean excludeStartAndEnd) {
+	private JNoteElementAbstract getLowestNoteGlyphBetween(NoteAbstract start, NoteAbstract end, boolean excludeStartAndEnd) {
 		Collection jnotes = getNoteGlyphesBetween(start, end);
-		JNote ret = null;
+		JNoteElementAbstract ret = null;
 		boolean first = true;
 		for (Iterator it = jnotes.iterator(); it.hasNext();) {
-			JNote n = (JNote) it.next();
+			JNoteElementAbstract n = (JNoteElementAbstract) it.next();
 			if (first && excludeStartAndEnd) {
 				//ignore start ?
 				first = false;
@@ -1036,8 +1134,8 @@ class JTune extends JScoreElementAbstract {
 		try {
 			Collection notes = m_tune.getMusic().getNotesBetween(start, end);
 			for (Iterator it = notes.iterator(); it.hasNext();) {
-				Note n = (Note) it.next();
-				jnotes.add((JNote) m_scoreElements.get(n));
+				NoteAbstract n = (NoteAbstract) it.next();
+				jnotes.add((JNoteElementAbstract) m_scoreElements.get(n));
 			}
 		} catch (Exception e) {
 			// TODO: handle exception, shouldn't happen
@@ -1047,14 +1145,21 @@ class JTune extends JScoreElementAbstract {
 
 	private JStaffLine initNewStaffLine() {
 		JStaffLine sl = new JStaffLine(cursor, getMetrics());
-		if (m_staffLines.size() > 0) {
-			//add a space between each lines, the metric.getStaffLinesSpacing
-			//is not good, it has space above staff but not under
-			//(for lyrics or low notes!)
-			cursor.setLocation(MARGIN_LEFT, cursor.getY()+getMetrics().getStaffCharBounds().getHeight());
+		if (m_staffLines.size() == 0) {
+			//first staff top margin
+			cursor.setLocation(MARGIN_LEFT, cursor.getY()+getMetrics().getFirstStaffTopMargin());
+		} else /*if (m_staffLines.size() > 0)*/ {
+			//add a space between each lines
+			cursor.setLocation(MARGIN_LEFT, cursor.getY() + getMetrics().getStaffLinesSpacing());
 		}
+		//add space if tune has chord
+		Music music = m_tune.getMusic();
+		if (music.hasChordNames())
+			cursor.setLocation(MARGIN_LEFT, cursor.getY() + getMetrics().getChordLineSpacing());
+		//TODO add space for lyrics, high and low notes
+		
+		cursor.setLocation(MARGIN_LEFT, cursor.getY()+getMetrics().getStaffCharBounds().getHeight());
 		//Vector initElements = new Vector();
-		cursor.setLocation(MARGIN_LEFT, cursor.getY() + getMetrics().getStaffLinesSpacing());
 		JClef clef = new JClef(cursor, getMetrics());
 		sl.addElement(clef);
 		//initElements.addElement(clef);
@@ -1207,10 +1312,13 @@ class SlurInfos {
 		//
 		boolean start = true;
 		for (Iterator itGlyphs = noteGlyphs.iterator(); itGlyphs.hasNext();) {
-			JNote jnote = (JNote) itGlyphs.next();
-			Note note = (Note) jnote.getMusicElement();
-			if ((note.getDuration() < Note.WHOLE)
-				&& !note.isRest()) {
+			JNoteElementAbstract jnote = (JNoteElementAbstract) itGlyphs.next();
+			NoteAbstract note = (NoteAbstract) jnote.getMusicElement();
+			int duration = (note instanceof MultiNote)
+				?((MultiNote) note).getShortestNote().getDuration()
+				:((Note) note).getDuration();
+			boolean isRest = (note instanceof Note) && ((Note) note).isRest();
+			if ((duration < Note.WHOLE) && !isRest) {
 				if (jnote.isStemUp()) upNotes++;
 				else downNotes++;
 			}

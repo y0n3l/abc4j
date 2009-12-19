@@ -152,4 +152,16 @@ abstract class JScoreElementAbstract implements JScoreElement {
 		g2.setColor(previousColor);/**/
 		return getWidth();
 	}
+
+	/**
+	 * For debuggin purpose, draw the bounding box of
+	 * the element
+	 * @param context
+	 */
+	protected void renderDebugBoundingBox(Graphics2D context) {
+		/* */java.awt.Color previousColor = context.getColor();
+		context.setColor(java.awt.Color.RED);
+		context.draw(getBoundingBox());
+		context.setColor(previousColor);/* */
+	}
 }

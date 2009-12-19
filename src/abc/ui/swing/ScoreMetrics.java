@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import abc.notation.AccidentalType;
 import abc.notation.Clef;
 import abc.notation.Note;
 
@@ -58,7 +59,7 @@ public class ScoreMetrics {
 	/** The pure note character without any stem for notes such as whole & half */
 	public static final char[] NOTE_LONGER = {'\uF092'};
 
-	/** Tuplet digits */
+	/** Tuplet digits, in italics */
 	private static final char[] TUPLET_DIGITS = {
 		'\uF0C1', //1
 		'\uF0AA', //2
@@ -89,7 +90,13 @@ public class ScoreMetrics {
 
 	private static final char G_CLEF = '\uF026';
 	public static final char[] SHARP = {'\uF023'};
+	public static final char[] SHARP_DOUBLE = {'\uF099'};//F0DC
+	//TODO public static final char[] SHARP_HALF = {'\uF023'};
 	public static final char[] FLAT = {'\uF062'};
+	public static final char[] FLAT_DOUBLE = {'\uF0BA'};
+	//TODO public static final char[] FLAT_HALF = {'\uF062'};
+	//also exists "sharp and half", "flat and half" but
+	//don't know how to write them in ABC
 	public static final char[] NATURAL = {'\uF06E'};
 
 	//Notes glyphes stem up
@@ -163,6 +170,13 @@ public class ScoreMetrics {
 		/*FONT_LYRICS*/{"Palatino Linotype", "Arial", "Dialog"}
 	};
 
+	/**
+	 * Map to store the calculated bounds of various glyphes
+	 * 
+	 * Avoid numerous <TT>*Bounds</TT> members for this class
+	 */
+	private Map bounds = new HashMap();
+	
 	private double noteHeight = -1;
 	private double noteWidth = -1;
 
@@ -174,15 +188,14 @@ public class ScoreMetrics {
 	//private double staffCharWidth = -1;
 	double staffLineHeight = -1;
 	private int staffLinesSpacing = -1;
+	private int firstStaffTopMargin = -1;
+	private int chordLineSpacing = -1;
+	//TODO chordDiagramsSpacing
 
 	private Font[] textFonts = null;
 
-	private Rectangle2D sharpBounds = null;
-	private Rectangle2D naturalBounds = null;
-	private Rectangle2D flatBounds = null;
 	private double biggestAccidentalWidth = -1;
 
-	private Rectangle2D quarterNoteBounds = null;
 	private BasicStroke notesLinkStroke = null;
 	private BasicStroke stemStroke = null;
 	private int noteStrokeLength = -1;
@@ -201,6 +214,7 @@ public class ScoreMetrics {
 	int graceNoteStrokeLength = 0;
 	int graceNoteStemLength = 0;
 	int graceNotesSpacing = 0;
+	private float gracesSizeProportion = .6f;
 
 	// fonts
 	private Font baseNotationFont = null;
@@ -247,7 +261,7 @@ public class ScoreMetrics {
 			m_textFontSize = textSize;
 
 			initNoteFont(notationSize);
-			initGracingsFont(60.00f);
+			initGracingsFont();
 			initTextFonts();
 
 		} catch (Exception e){
@@ -269,7 +283,7 @@ public class ScoreMetrics {
 	 */
 	public void setNotationFontSize(float notationSize) {
 		initNoteFont(notationSize);
-		initGracingsFont(60.00f);
+		initGracingsFont();
 		setTextFontSize(notationSize/DEFAULT_NOTATION_SIZE * DEFAULT_TEXT_SIZE);
 	}
 	public float getNotationFontSize() {
@@ -298,6 +312,9 @@ public class ScoreMetrics {
 		try {
 			m_notationFontSize = size;
 
+			//reset the bounds collection
+			bounds.clear();
+			
 			//getClass().getResourceAsStream("SONORA.TTF");
 			//File file =new File("D:/Perso/musicfonts/MIDIDESI/TRUETYPE/SONORA.TTF");
 			//FileInputStream fontStream = new FileInputStream(file);
@@ -308,7 +325,7 @@ public class ScoreMetrics {
 			noteFontMetrics = g2.getFontMetrics(noteFont);
 
 			FontRenderContext frc = g2.getFontRenderContext();
-
+			
 			staffCharBounds = new TextLayout(new Character(STAFF_SIX_LINES).toString(), noteFont, frc).getBounds();
 			//staffCharWidth = staffCharBounds.getWidth();
 			staffLineHeight = staffCharBounds.getHeight()/STAFF_SIX_LINES_LINE_HEIGHT_RATIO;
@@ -323,28 +340,29 @@ public class ScoreMetrics {
 			//FIXME: get proper decoration height ... or adjust this to be more generalized ...
 			decorationHeight = (int)(noteLayout.getBounds().getHeight()*2.5);
 
-			staffLinesSpacing = (int)(staffCharBounds.getHeight()*2.5);
+			staffLinesSpacing = (int)(staffCharBounds.getHeight()*1.5);
+			firstStaffTopMargin = (int)(staffCharBounds.getHeight()*.75);
+			chordLineSpacing = (int)(staffCharBounds.getHeight()*1.25);
 
 			//slurs
 			slurAnchorYOffset = (noteHeight / 3);
 			slurThickness = Math.max(noteHeight / 7, 1);
 
 			//accidental
-			sharpBounds = new TextLayout(new Character(SHARP[0]).toString(), noteFont, frc).getBounds();
-			flatBounds = new TextLayout(new Character(FLAT[0]).toString(), noteFont, frc).getBounds();
-			naturalBounds = new TextLayout(new Character(NATURAL[0]).toString(), noteFont, frc).getBounds();
+			bounds.put(SHARP, new TextLayout(new Character(SHARP[0]).toString(), noteFont, frc).getBounds());
+			bounds.put(FLAT, new TextLayout(new Character(FLAT[0]).toString(), noteFont, frc).getBounds());
+			bounds.put(NATURAL, new TextLayout(new Character(NATURAL[0]).toString(), noteFont, frc).getBounds());
 			biggestAccidentalWidth = Math.max(
 					Math.max(getFlatBounds().getWidth(),
 							getNaturalBounds().getWidth()),
 						getSharpBounds().getWidth());
 
 
-			quarterNoteBounds = new TextLayout(new Character(QUARTER_NOTE[0]).toString(), noteFont, frc).getBounds();
-
 			//numbers, digits
 			Rectangle2D timeSignatureBounds = new TextLayout(new Character(getTimeSignatureDigitChar(2)).toString(), noteFont, frc).getBounds();
 			timeSignatureNumberWidth = timeSignatureBounds.getWidth();
 			timeSignatureNumberHeight = timeSignatureBounds.getHeight();
+			
 			tupletNumberYOffset = noteHeight / 4;
 
 			notesLinkStroke = new BasicStroke((float)(noteWidth/3), 0, 0);
@@ -362,10 +380,10 @@ public class ScoreMetrics {
 		}
 	}
 
-	private void initGracingsFont(float percentOfNotationSize) {
+	private void initGracingsFont() {
 		try {
 			int notationSize = noteFont.getSize();
-			float gracingsSize = notationSize*(percentOfNotationSize/100);
+			float gracingsSize = notationSize*getGracesSizeProportion();
 
 			gracingsFont = baseNotationFont.deriveFont(gracingsSize);
 			gracingsFontMetrics = g2.getFontMetrics(gracingsFont);
@@ -602,7 +620,19 @@ public class ScoreMetrics {
 	public void setStaffLinesSpacing(int i) {
 		staffLinesSpacing = i;
 	}
-
+	public int getFirstStaffTopMargin() {
+		return firstStaffTopMargin;
+	}
+	public void setFirstStaffTopMargin(int i) {
+		firstStaffTopMargin = i;
+	}
+	public int getChordLineSpacing() {
+		return chordLineSpacing;
+	}
+	public void setChordLineSpacing(int i) {
+		chordLineSpacing = i;
+	}
+	
 	public BasicStroke getStemStroke(){
 		return stemStroke;
 	}
@@ -631,29 +661,92 @@ public class ScoreMetrics {
 	}
 
 	/** Returns the bounding box of a sharp character.
-	 * @return Returns the bounding box of a sharp character. */
+	 * @return Returns the bounding box of a sharp character.
+	 * @deprecated use {@link #getAccidentalBounds(byte)}
+	 */
 	public Rectangle2D getSharpBounds(){
-		return sharpBounds;
+		return getAccidentalBounds(AccidentalType.SHARP);
 	}
 
 	/** Returns the bounding box of a natural character.
-	 * @return Returns the bounding box of a natural character. */
+	 * @return Returns the bounding box of a natural character.
+	 * @deprecated use {@link #getAccidentalBounds(byte)}
+	 */
 	public Rectangle2D getNaturalBounds(){
-		return naturalBounds;
+		return getAccidentalBounds(AccidentalType.NATURAL);
 	}
 
 	/** Returns the bounding box of a flat character.
-	 * @return Returns the bounding box of a flat character. */
+	 * @return Returns the bounding box of a flat character.
+	 * @deprecated use {@link #getAccidentalBounds(byte)}
+	 */
 	public Rectangle2D getFlatBounds(){
-		return flatBounds;
+		return getAccidentalBounds(AccidentalType.FLAT);
+	}
+	
+	/**
+	 * Get the bounds of a glyph
+	 * @param glyph {@link #SHARP}, {@link #FLAT}...
+	 * @return
+	 */
+	public Rectangle2D getBounds(char[] glyph) {
+		if (bounds.get(glyph) == null) {
+			FontRenderContext frc = g2.getFontRenderContext();
+			bounds.put(glyph, new TextLayout(
+					new Character(glyph[0]).toString(),
+					noteFont, frc).getBounds());
+		}
+		return (Rectangle2D) (bounds.get(glyph));
+	}
+	
+	/**
+	 * Return the glyph corresponding to the accidental, <TT>null</TT>
+	 * if accidental = {@link AccidentalType#NONE}
+	 * @param accidental
+	 * @return
+	 * @throws IllegalArgumentException
+	 */
+	public char[] getAccidentalGlyph(byte accidental)
+		throws IllegalArgumentException {
+		switch(accidental) {
+		case AccidentalType.NONE:
+			return null;
+		case AccidentalType.FLAT:
+			return FLAT;
+		case AccidentalType.NATURAL:
+			return NATURAL;
+		case AccidentalType.SHARP:
+			return SHARP;
+		case AccidentalType.DOUBLE_FLAT:
+			return FLAT_DOUBLE;
+		case AccidentalType.DOUBLE_SHARP:
+			return SHARP_DOUBLE;
+		//TODO half sharp, half flat
+		default: throw new IllegalArgumentException("Unknow accidental type : "+accidental);
+		}
+	}
+	
+	/**
+	 * Return the bounding box of an accidental
+	 * @return
+	 * @throws IllegalArgumentException
+	 */
+	public Rectangle2D getAccidentalBounds(byte accidental)
+		throws IllegalArgumentException {
+		if (accidental == AccidentalType.NONE)
+			return new Rectangle2D.Double(0, 0, 0, 0);
+		else {
+			return getBounds(getAccidentalGlyph(accidental));
+		}
 	}
 
+	//TODO what is it for?
 	public double getBiggestAccidentalWidth() {
 		return biggestAccidentalWidth;
 	}
 
 	public Rectangle2D getQuarterNoteBounds(){
-		return quarterNoteBounds;
+		return getBounds(QUARTER_NOTE);
 	}
 
 	/**
@@ -661,6 +754,9 @@ public class ScoreMetrics {
 	 */
 	public double getTupletNumberYOffset() {
 		return tupletNumberYOffset;
+	}
+	public void setTupletNumberYOffset(double d) {
+		tupletNumberYOffset = d;
 	}
 
 	/**
@@ -832,6 +928,23 @@ public class ScoreMetrics {
 	 * @return the font used for gracings in this score metrics. */
 	public Font getGracingsFont() {
 		return gracingsFont;
+	}
+
+	/**
+	 * Gets the proportion of graces size
+	 * @return Float value between 0 and 1
+	 */
+	public float getGracesSizeProportion() {
+		return gracesSizeProportion;
+	}
+
+	/**
+	 * Sets the proportion of graces size
+	 * @param f between 0f and 1f.
+	 */
+	public void setGracesSizeProportion(float f) {
+		this.gracesSizeProportion = Math.max(Math.min(f, 1), 0);
+		initGracingsFont();
 	}
 
 }

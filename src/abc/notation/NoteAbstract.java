@@ -16,6 +16,8 @@
 
 package abc.notation;
 
+import java.util.Vector;
+
 /** This is the abstract class to define notes or multi notes. */
 public class NoteAbstract implements MusicElement
 {
@@ -30,7 +32,8 @@ public class NoteAbstract implements MusicElement
   /** The number of dots for this note. */
   private byte m_dotted = 0;
 
-  protected SlurDefinition slurDefinition = null;
+  protected Vector slurDefinitions = new Vector(2);
+  //protected SlurDefinition slurDefinition = null;
   /** <TT>true</TT> if this note is part of a slur, <TT>false</TT>
    * otherwise. */
   protected boolean m_isPartOfSlur = false;
@@ -173,31 +176,66 @@ public class NoteAbstract implements MusicElement
   { m_tuplet = tuplet; }
 
   /**
-   * @return Returns the slurDefinition.
+   * @return Returns the slurDefinitions vector
+   */
+  public Vector getSlurDefinitions() {
+  	return slurDefinitions;
+  }
+  /**
+   * @deprecated use {@link #getSlurDefinitions()} to get
+   * the Vector of all slurs of the note, and test if
+   * size equals zero, then note has no slurs.
+   * @return a SlurDefinition (the last added) or
+   * <TT>null</TT> if no slur has been added.
    */
   public SlurDefinition getSlurDefinition() {
-  	return slurDefinition;
+	  if (slurDefinitions.size() > 0) {
+		  return (SlurDefinition) slurDefinitions
+		  	.elementAt(slurDefinitions.size() - 1);
+	  }
+	  //else
+	  return null;
   }
 
   public boolean isBeginingSlur() {
-  	if (slurDefinition==null || slurDefinition.getStart()==null)
-  		return false;
-  	else
-  		return slurDefinition.getStart().equals(this);
-  }
+		int i = 0;
+		while (i < slurDefinitions.size()) {
+			SlurDefinition slur = (SlurDefinition) slurDefinitions.elementAt(i);
+			if (slur.getStart() != null) {
+				if (slur.getStart().equals(this))
+					return true;
+			}
+			i++;
+		}
+		return false;
+	}
 
   public boolean isEndingSlur() {
-  	if (slurDefinition==null)
-  		return false;
-  	else
-  		return slurDefinition.getEnd().equals(this);
-  }
+		int i = 0;
+		while (i < slurDefinitions.size()) {
+			SlurDefinition slur = (SlurDefinition) slurDefinitions.elementAt(i);
+			if (slur.getEnd() != null) {
+				if (slur.getEnd().equals(this))
+					return true;
+			}
+			i++;
+		}
+		return false;
+	}
 
   /**
    * @param slurDefinition The slurDefinition to set.
    */
+  public void addSlurDefinition(SlurDefinition slurDefinition) {
+  	slurDefinitions.addElement(slurDefinition);
+  }
+  /**
+   * @deprecated see {@link #addSlurDefinition(SlurDefinition)}
+   * because one Note can have multiple slurs definitions
+   * @param slurDefinition
+   */
   public void setSlurDefinition(SlurDefinition slurDefinition) {
-  	this.slurDefinition = slurDefinition;
+	  addSlurDefinition(slurDefinition);
   }
 
   /** Sets the tie definition for this note.

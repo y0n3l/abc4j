@@ -15,15 +15,11 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
-import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Stroke;
 import java.awt.geom.Point2D;
-import java.util.Iterator;
-import java.util.Vector;
+import java.awt.geom.Rectangle2D;
 
-import abc.notation.Decoration;
 import abc.notation.MultiNote;
 import abc.notation.MusicElement;
 import abc.notation.Note;
@@ -38,6 +34,12 @@ class JChord extends JNoteElementAbstract {
 	protected JNote[] m_sNoteInstances = null;
 
 	protected JNote anchor = null;
+	
+	/**
+	 * Keeps a reference to the JTune, to use the added JNote,
+	 * note create new ones!
+	 */
+	private JTune m_tune = null;
 
 	/** When multi notes are made of notes with different durations, such chord
 	 * is decomposed into chords with same strict duration for normalization,
@@ -50,6 +52,7 @@ class JChord extends JNoteElementAbstract {
 	private double c_width = 0;
 	private double m_width = -1;
 
+	protected int m_stemYEndForChord = -1;
 
 	public JChord(MultiNote multiNote, ScoreMetrics metrics, Point2D base){
 		super(multiNote, base, metrics);
@@ -148,10 +151,38 @@ class JChord extends JNoteElementAbstract {
 		}
 		super.setBase(base);
 	}
+	
+	protected JNote getHighestNote() {
+		JNote highest = null;
+		JNote current;
+		for (int i=0; i<m_sNoteInstances.length; i++) {
+			current = ((JNote)m_sNoteInstances[i]);
+			if (highest == null)
+				highest = current;
+			else if (((Note) current.getMusicElement()).isHigherThan(
+					(Note) highest.getMusicElement()))
+				highest = current;
+		}
+		return highest;
+	}
+	
+	protected JNote getLowestNote() {
+		JNote lowest = null;
+		JNote current;
+		for (int i=0; i<m_sNoteInstances.length; i++) {
+			current = ((JNote)m_sNoteInstances[i]);
+			if (lowest == null)
+				lowest = current;
+			else if (((Note) current.getMusicElement()).isLowerThan(
+					(Note) lowest.getMusicElement()))
+				lowest = current;
+		}
+		return lowest;
+	}
 
 	/** Invoked when this chord base has changed. */
 	protected void onBaseChanged() {
-
+		//System.out.println("JChord.onBaseChanged : "+multiNote);
 		byte h = multiNote.getHighestNote().getHeight();
 		byte l = multiNote.getLowestNote().getHeight();
 
@@ -177,41 +208,26 @@ class JChord extends JNoteElementAbstract {
 
 		//recalculate anchor
 		setStemUp(stemUp);
-
+		
 		// set stemYEnd
 		//   get highest/lowest in group
 		//   set stems appropriately
-
-		int stemYEnd = (int)getBase().getY();
-		if (stemUp) {
-			stemYEnd = (int)(anchor.getStemBeginPosition().getY()-getMetrics().getStemLength(ScoreMetrics.NOTE_GLYPH));
+		int stemYEnd;
+		if (m_stemYEndForChord == -1) {
+			//auto calculated, chord is not part of group
+			int stemLength = getMetrics().getStemLength(ScoreMetrics.NOTE_GLYPH);
+			int halfNoteHeight = (int) (getMetrics().getNoteHeight() / 2);
+			int highestNoteY = (int) getHighestNote().getStemUpBeginPosition().getY() - stemLength - halfNoteHeight;
+			int lowestNoteY = (int) getLowestNote().getStemDownBeginPosition().getY() + stemLength + halfNoteHeight;
+			stemYEnd = stemUp?highestNoteY:lowestNoteY;
 		} else {
-			stemYEnd = (int)(anchor.getStemBeginPosition().getY()+getMetrics().getStemLength(ScoreMetrics.NOTE_GLYPH));
+			stemYEnd = m_stemYEndForChord;
 		}
+		
 		for (int i=0; i<m_sNoteInstances.length; i++) {
 			((JNotePartOfGroup)m_sNoteInstances[i]).setStemYEnd(stemYEnd);
-//XXX I tried to set the note glyph for a chord not in group which duration is 1/8 or lower... but doesn't work
-//			if (!(this instanceof JChordPartOfGroup)) {
-//				anchor.noteChars = getMetrics().getNoteStemUpChar(
-//					((Note) anchor.getMusicElement()).getStrictDuration());
-//				Note n = (Note) m_sNoteInstances[i].getMusicElement();
-//				short noteDuration = n.getStrictDuration();
-//				if (n.getHeight() == h && stemUp) {
-//					//((JNote) m_sNoteInstances[i]).setAutoStem(false);
-//					//((JNote) m_sNoteInstances[i]).setStemUp(true);
-//					((JNote) m_sNoteInstances[i]).noteChars
-//						= getMetrics().getNoteStemUpChar(noteDuration);
-//					//valuateNoteChars();
-//				} else if (n.getHeight() == l && !stemUp) {
-//					//((JNote) m_sNoteInstances[i]).setStemUp(false);
-//					((JNote) m_sNoteInstances[i]).noteChars
-//						= getMetrics().getNoteStemDownChar(noteDuration);
-//					//((JNote) m_sNoteInstances[i]).valuateNoteChars();
-//				}
-//			}
-			//		m_sNoteInstances[i] instanceof JNotePartOfGroup)
 		}
-
+		
 		double graceNotesWidth = 0;
 		// setBase for grace notes
 		if (m_jGracenotes != null) {
@@ -222,6 +238,14 @@ class JChord extends JNoteElementAbstract {
 		// TODO: setBase for decorations
 
 		if (m_normalizedChords==null) {
+			
+			// calculate slur/tie position last because slurs/ties must
+			//  go over any decorations
+			//if (note.getSlurDefinition()!=null)
+			/*for (int i=0; i<m_sNoteInstances.length; i++) {
+				((JNote)m_sNoteInstances[i]).calcSlursAndTiesPosition();
+			}*/
+
 			double biggestStemX = -1;
 			for (int i=0; i<m_sNoteInstances.length; i++) {
 				m_sNoteInstances[i].setBase(getBase());
@@ -244,13 +268,32 @@ class JChord extends JNoteElementAbstract {
 			}
 		}
 
-		for (int i=0; i<m_sNoteInstances.length; i++) {
-//				m_sNoteInstances[i].??
+		//slur anchors
+		if (m_normalizedChords == null) {
+			ScoreMetrics metrics = getMetrics();
+			slurUnderAnchor = m_sNoteInstances[0].getSlurUnderAnchor();
+			slurUnderAnchorOutOfStem = stemUp
+				?slurUnderAnchor
+				:new Point2D.Double(getBoundingBox().getMinX(),
+									getBoundingBox().getMaxY()+metrics.getSlurAnchorYOffset());
+			slurAboveAnchor = m_sNoteInstances[m_sNoteInstances.length-1].getSlurAboveAnchor();
+			slurAboveAnchorOutOfStem = stemUp
+				?new Point2D.Double(getBoundingBox().getMaxX(),
+									getBoundingBox().getMinY()-metrics.getSlurAnchorYOffset())
+				:slurAboveAnchor;
 		}
 
 		m_width = c_width + graceNotesWidth;
 	}
 
+	public Rectangle2D getBoundingBox() {
+		Rectangle2D bb = new Rectangle2D.Double(getBase().getX(), getBase().getY(), 0, 0);
+		for (int i = 0; i < m_sNoteInstances.length; i++) {
+			bb.add((/*(JNotePartOfGroup) */m_sNoteInstances[i]).getBoundingBox());
+		}
+		return bb;
+	}
+	
 	public double render(Graphics2D context){
 		//super.render(context);
 		//Stroke defaultStroke = context.getStroke();
@@ -264,6 +307,9 @@ System.out.println(n.getMusicElement().toString() +
 					":\tX=" + n.getStemBeginPosition().getX() +
 					",Y=" + n.getStemBeginPosition().getY() +
 					"\n\tisStemUp()=" + n.isStemUp() );
+				if (n instanceof JNotePartOfGroup) {
+System.out.println("\tstemYEnd="+((JNotePartOfGroup) n).getStemYEnd());
+				}
 
 			}
 		}
@@ -274,6 +320,8 @@ System.out.println(n.getMusicElement().toString() +
 		renderGraceNotes(context);
 //		renderDecorations(context);
 
+		//renderDebugBoundingBox(context);
+		//renderDebugSlurAnchors(context);
 
 		return m_width;
 	}

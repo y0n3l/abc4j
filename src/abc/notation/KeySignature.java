@@ -27,7 +27,7 @@ package abc.notation;
  * key, "b" is the key accidental and "aeolian" is the mode. */
 public class KeySignature implements MusicElement, Cloneable
 {
-    private final byte[][] accidentalsRules = {
+    private static final byte[][] accidentalsRules = {
 //	Flyd C Cmaj Cion Gmix Ddor Amin Am Aeol  Ephr Bloc
 //						C    					D    					E    					F    					G    					A    					B
 /*C*/ {AccidentalType.NATURAL, 	AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL },	// C
@@ -44,7 +44,7 @@ public class KeySignature implements MusicElement, Cloneable
 /*B*/ {AccidentalType.SHARP,	AccidentalType.SHARP,	AccidentalType.NATURAL, AccidentalType.SHARP,	AccidentalType.SHARP,	AccidentalType.SHARP,	AccidentalType.NATURAL }	// B
     };
     
-    private final byte[][] accidentalRulesFlat = {
+    private static final byte[][] accidentalRulesFlat = {
 /*C*/ {},
 /* */ {},
 /*D*/ {},
@@ -59,7 +59,7 @@ public class KeySignature implements MusicElement, Cloneable
 /*Cb*/{AccidentalType.FLAT, 		AccidentalType.FLAT, 	AccidentalType.FLAT, 	AccidentalType.FLAT, 	AccidentalType.FLAT, 	AccidentalType.FLAT, 	AccidentalType.FLAT }
     };
     
-    private final byte[][] accidentalRulesSharp = {
+    private static final byte[][] accidentalRulesSharp = {
 /*C*/ {},
 /*C#*/{AccidentalType.SHARP,		AccidentalType.SHARP,	AccidentalType.SHARP, 	AccidentalType.SHARP,	AccidentalType.SHARP,	AccidentalType.SHARP,	AccidentalType.SHARP },
 /*D*/ {},
@@ -146,13 +146,14 @@ public class KeySignature implements MusicElement, Cloneable
       key = keyNoteType;
       mode = modeType;
       m_keyAccidental = keyAccidental;
+      accidentals = accidentalsRules[0];
       keyIndex=0;
-      if (key == Note.D) keyIndex = keyIndex + 2;
-      else if (key == Note.E) keyIndex = keyIndex + 4;
-      else if (key == Note.F) keyIndex = keyIndex + 5;
-      else if (key == Note.G) keyIndex = keyIndex + 7;
-      else if (key == Note.A) keyIndex = keyIndex + 9;
-      else if (key == Note.B) keyIndex = keyIndex + 11;
+      if (key == Note.D) keyIndex = 2;
+      else if (key == Note.E) keyIndex = 4;
+      else if (key == Note.F) keyIndex = 5;
+      else if (key == Note.G) keyIndex = 7;
+      else if (key == Note.A) keyIndex = 9;
+      else if (key == Note.B) keyIndex = 11;
       if (m_keyAccidental == AccidentalType.SHARP) keyIndex = keyIndex + 1;
       else if (m_keyAccidental == AccidentalType.FLAT) keyIndex = keyIndex - 1;
       if (modeType == MINOR) keyIndex = keyIndex + 3;
@@ -168,21 +169,21 @@ public class KeySignature implements MusicElement, Cloneable
       // keyIndex was equals to -1 in that case.
       keyIndex = (keyIndex+12) % 12;
       if (keyIndex==6 && keyAccidental==AccidentalType.FLAT) //Gb (The C is flat)
-    		  accidentals = accidentalRulesFlat[keyIndex];
+    		  setAccidentals(accidentalRulesFlat[keyIndex]);
     	  else
     		  if (keyIndex==6 &&  keyAccidental==AccidentalType.SHARP) //F# (The E is sharp)
-    			  accidentals = accidentalRulesSharp[keyIndex];
+    			  setAccidentals(accidentalRulesSharp[keyIndex]);
     		  else
     			  if (keyIndex==6 &&  keyAccidental==AccidentalType.NATURAL)
     				  throw new RuntimeException("Cannot map " + keyNoteType + "/" + keyAccidental + "/" + modeType + " to a key signature");
     			  else
     				  if (keyIndex==11 && keyAccidental==AccidentalType.FLAT) // for Cb
-    					  accidentals = accidentalRulesFlat[keyIndex];
+    					  setAccidentals(accidentalRulesFlat[keyIndex]);
     				  else
     					  if (keyIndex==1 && keyAccidental==AccidentalType.SHARP) // C#
-    						  accidentals = accidentalRulesSharp[keyIndex];
+    						  setAccidentals(accidentalRulesSharp[keyIndex]);
     					  else
-    						  accidentals = accidentalsRules [keyIndex]; //apply normal rule.
+    						  setAccidentals(accidentalsRules [keyIndex]); //apply normal rule.
     }
 
     /** Creates a key signature with the specified accidentals.
@@ -190,13 +191,10 @@ public class KeySignature implements MusicElement, Cloneable
      * C to B. Possible values for accidentals are :
      * <TT>AccidentalType.SHARP</TT>, <TT>AccidentalType.NATURAL</TT>
      * or <TT>AccidentalType.FLAT</TT>. */
-    public KeySignature (byte[] accidentalsDefinition)
-    {
-      byte[] newArray = new byte[7];
-      System.arraycopy(accidentalsDefinition, 0, newArray, 0, 7);
-      accidentals = newArray;
+    public KeySignature (byte[] accidentalsDefinition) {
+    	setAccidentals(accidentalsDefinition);
     }
-
+    
     /** Returns the note of the mode.
      * @return The note of the mode. Possible values are
      * <TT>Note.A</TT>, <TT>Note.B</TT>, <TT>Note.C</TT>, <TT>Note.D</TT>,
@@ -224,6 +222,19 @@ public class KeySignature implements MusicElement, Cloneable
     public byte[] getAccidentals ()
     { return accidentals; }
 
+    /**
+     * Set the accidentals, ensure that the byte array is copied
+     * <TT>accidentals = accidentalRules...[...]</TT> keeps the reference
+     * to accidentalRules... so if you set an accidental with {@link #setAccidental(byte, byte)}
+     * the static accidentalRule...[] is altered.
+     * @param accidentalsDefinition
+     */
+    private void setAccidentals(byte[] accidentalsDefinition) {
+        byte[] newArray = new byte[7];
+        System.arraycopy(accidentalsDefinition, 0, newArray, 0, 7);
+        accidentals = newArray;
+    }
+
     /** Sets the accidental for the specified note.
      * @param noteHeigth The note heigth. Possible values are,
      * <TT>Note.A</TT>, <TT>Note.B</TT>, <TT>Note.C</TT>, <TT>Note.D</TT>,
@@ -247,6 +258,7 @@ public class KeySignature implements MusicElement, Cloneable
       else
         throw new IllegalArgumentException("Invalid note heigth : " + noteHeigth);
 
+      //TODO half sharp and half flat ? (may be hard)
       if (accidental==AccidentalType.NATURAL || accidental==AccidentalType.SHARP || accidental==AccidentalType.FLAT)
         accidentals[index] = accidental;
       else
@@ -300,8 +312,13 @@ public class KeySignature implements MusicElement, Cloneable
     public boolean hasSharpsAndFlats() {
     	boolean hasSharp = false, hasFlat = false;
     	for (int i = 0; i < accidentals.length; i++) {
-			hasSharp = hasSharp || accidentals[i] == AccidentalType.SHARP;
-			hasFlat = hasFlat || accidentals[i] == AccidentalType.FLAT;
+    		//TODO half flat and half sharp
+    		//theorically, double sharp and double flat
+    		//are never at key, but half sharp and half flat can
+			hasSharp = hasSharp || (accidentals[i] == AccidentalType.SHARP)
+							|| (accidentals[i] == AccidentalType.DOUBLE_SHARP);
+			hasFlat = hasFlat || (accidentals[i] == AccidentalType.FLAT)
+							|| (accidentals[i] == AccidentalType.DOUBLE_FLAT);
 		}
     	return hasSharp && hasFlat;
     }

@@ -58,4 +58,8 @@ public class TwoNotesLink {
 	public void setStart(NoteAbstract start) {
 		this.start = start;
 	}
+	
+	public String toString() {
+		return "TwoNotesLink("+start+" ; "+end+")";
+	}
 }

@@ -38,12 +38,6 @@ import abc.notation.Words;
  */
 class JDecoration extends JScoreElementAbstract {
 
-	// used to request glyph-specific metrics
-	// in a genric way that enables positioning, sizing, rendering
-	// to be done generically
-	// subclasses should override this attrribute.
-	protected int NOTATION_CONTEXT = ScoreMetrics.NOTE_GLYPH;
-
 	Decoration m_decoration = null;
 
 	/** The width of this rendition element */
@@ -77,6 +71,16 @@ class JDecoration extends JScoreElementAbstract {
 	 * @return The height of this score element. */
 	public double getHeight() {
 		return m_height;
+	}
+	
+	/**
+	 * in a genric way that enables positioning, sizing,
+	 * rendering to be done generically
+	 * <p>subclasses should override this method. 
+	 * @return {@link ScoreMetrics#NOTE_GLYPH}
+	 */
+	public int getNotationContext() {
+		return ScoreMetrics.NOTE_GLYPH;
 	}
 
 	/** Returns the width of this score element.

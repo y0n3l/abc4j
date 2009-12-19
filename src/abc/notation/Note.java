@@ -250,13 +250,25 @@ public class Note extends NoteAbstract
 	  return getDuration()<aNote.getDuration();
   }
 
-  private int getMidiLikeHeight() {
+  //FIXME should return a byte, like getHeight?
+  public int getMidiLikeHeight() {
 	  int midiLikeHeight = getHeight();
-	  if (accidental==AccidentalType.SHARP)
+	  switch(accidental) {
+	  //TODO case AccidentalType.HALF_SHARP:
+	  case AccidentalType.SHARP:
 		  midiLikeHeight++;
-	  else
-		  if (accidental==AccidentalType.FLAT)
-			  midiLikeHeight--;
+		  break;
+	  //TODO case AccidentalType.HALF_FLAT:
+	  case AccidentalType.FLAT:
+		  midiLikeHeight--;
+		  break;
+	  case AccidentalType.DOUBLE_SHARP:
+		  midiLikeHeight += 2;
+		  break;
+	  case AccidentalType.DOUBLE_FLAT:
+		  midiLikeHeight -= 2;
+		  break;
+	  }
 	  return midiLikeHeight;
   }
 
@@ -282,9 +294,9 @@ public class Note extends NoteAbstract
   public static byte getStrictHeight(byte height) {
 	  if (height==REST)
 		  return REST;
-	  // The +24 is needed to move the height of the note to a positive range
-	  // X*12 , 24 should be enough.
-	  byte sh = (byte)((height+24)%12);
+	  // The +96 is needed to move the height of the note to a positive range
+	  // X*12 , 96 should be enough.
+	  byte sh = (byte)((height+96)%12);
 	  if (!(sh==Note.C || sh==Note.D || sh==Note.E || sh==Note.F ||
 			  sh==Note.G || sh==Note.A || sh==Note.B))
 			  throw new IllegalArgumentException("The height " + height + " cannot be strictly mapped because of sharp or flat (sh=" + sh + ")");
@@ -443,8 +455,7 @@ public class Note extends NoteAbstract
   { return accidental; }
 
   public boolean hasAccidental() {
-	  return accidental==AccidentalType.FLAT || accidental==AccidentalType.SHARP ||
-	  accidental == AccidentalType.NATURAL;
+	  return accidental != AccidentalType.NONE;
   }
 
   /** A convenient method that returns <TT>true</TT> if this note is a rest.
@@ -497,11 +508,14 @@ public class Note extends NoteAbstract
 
   public static byte convertToAccidentalType(String accidental) throws IllegalArgumentException
   {
+	  //TODO double and half flat and sharp
     if (accidental==null) return AccidentalType.NONE;
     else if (accidental.equals("^")) return AccidentalType.SHARP;
-    else if (accidental.equals("^^")) return AccidentalType.SHARP;
+    else if (accidental.equals("^^")) return AccidentalType.DOUBLE_SHARP;
+    else if (accidental.equals("^/")) return AccidentalType.SHARP;
     else if (accidental.equals("_")) return AccidentalType.FLAT;
-    else if (accidental.equals("__")) return AccidentalType.FLAT;
+    else if (accidental.equals("__")) return AccidentalType.DOUBLE_FLAT;
+    else if (accidental.equals("_/")) return AccidentalType.FLAT;
     else if (accidental.equals("=")) return AccidentalType.NATURAL;
     else throw new IllegalArgumentException(accidental + " is not a valid accidental");
   }
@@ -576,7 +590,7 @@ public class Note extends NoteAbstract
 
   	public static Note getHighestNote(Note[] notes) {
 		Note highestNote = notes[0];
-		for (int i=0; i<notes.length; i++) {
+		for (int i=1; i<notes.length; i++) {
 			if(notes[i].getHeight()>highestNote.getHeight()) {
 				highestNote =notes[i];
 				//System.out.println("highest note is" + i);
@@ -585,12 +599,21 @@ public class Note extends NoteAbstract
 		return highestNote;
 	}
 
-  	public static int getLowestNoteIndex(Note[] notes) {
-		Note lowestNote = notes[0];
+  	public static int getLowestNoteIndex(NoteAbstract[] notes) {
+		NoteAbstract lowestNote = notes[0];
+		int lowestNoteHeight =
+			(lowestNote instanceof MultiNote)
+				?((MultiNote) lowestNote).getLowestNote().getHeight()
+				:((Note) lowestNote).getHeight();
 		int index = 0;
-		for (int i=0; i<notes.length; i++) {
-			if(notes[i].getHeight()<lowestNote.getHeight()) {
-				lowestNote =notes[i];
+		for (int i=1; i<notes.length; i++) {
+			int currentNoteHeight =
+				(notes[i] instanceof MultiNote)
+					?((MultiNote) notes[i]).getLowestNote().getHeight()
+					:((Note) notes[i]).getHeight();
+			if(currentNoteHeight<lowestNoteHeight) {
+				lowestNote = notes[i];
+				lowestNoteHeight = currentNoteHeight;
 				index = i;
 				//System.out.println("lowest note is" + i);
 			}
@@ -598,12 +621,21 @@ public class Note extends NoteAbstract
 		return index;
 	}
 
-  	public static int getHighestNoteIndex(Note[] notes) {
-		Note highestNote = notes[0];
+  	public static int getHighestNoteIndex(NoteAbstract[] notes) {
+		NoteAbstract highestNote = notes[0];
+		int highestNoteHeight =
+			(highestNote instanceof MultiNote)
+				?((MultiNote) highestNote).getHighestNote().getHeight()
+				:((Note) highestNote).getHeight();
 		int index = 0;
-		for (int i=0; i<notes.length; i++) {
-			if(notes[i].getHeight()>highestNote.getHeight()) {
-				highestNote =notes[i];
+		for (int i=1; i<notes.length; i++) {
+			int currentNoteHeight =
+				(notes[i] instanceof MultiNote)
+					?((MultiNote) notes[i]).getHighestNote().getHeight()
+					:((Note) notes[i]).getHeight();
+			if(currentNoteHeight>highestNoteHeight) {
+				highestNote = notes[i];
+				highestNoteHeight = currentNoteHeight;
 				index = i;
 				//System.out.println("highest note is" + i);
 			}
@@ -613,13 +645,53 @@ public class Note extends NoteAbstract
 
 	public static Note getLowestNote(Note[] notes) {
 		Note lowestNote = notes[0];
-		for (int i=0; i<notes.length; i++) {
+		for (int i=1; i<notes.length; i++) {
 			if(notes[i].getHeight()<lowestNote.getHeight()) {
 				lowestNote =notes[i];
 				//System.out.println("highest note is" + i);
 			}
 		}
 		return lowestNote;
+	}
+	
+	/**
+	 * Returns the textual name of the note, e.g. <TT>"C"</TT>,
+	 * <TT>"Eb"</TT>. Returns empty string <TT>""</TT> if this
+	 * note is a rest
+	 */
+	public String getName() {
+		try {
+			String acc = "";
+			switch(getAccidental()) {
+			case AccidentalType.SHARP:
+				acc = "#";
+				break;
+			case AccidentalType.FLAT:
+				acc = "b";
+				break;
+			}
+			switch(getStrictHeight()) {
+			case REST:
+				return "";
+			case C:
+				return "C"+acc;
+			case D:
+				return "D"+acc;
+			case E:
+				return "E"+acc;
+			case F:
+				return "F"+acc;
+			case G:
+				return "G"+acc;
+			case A:
+				return "A"+acc;
+			case B:
+				return "B"+acc;
+			}
+			return "";//should not happen
+		} catch (IllegalArgumentException shouldNeverHappen) {
+			return "";
+		}
 	}
 }
 
