@@ -160,6 +160,10 @@ public class ScoreMetrics {
 	 * @see #getTextFont(short)
 	 */
 	public static final short FONT_LYRICS = 5;
+	/** Textual font for part labels
+	 * @see #getTextFont(short)
+	 */
+	public static final short FONT_PART_LABEL = 6;
 	
 	private String[][] textFontPreferences = new String[][] {
 		/*FONT_TITLE*/{"Palatino Linotype", "Arial", "Dialog"},
@@ -167,7 +171,8 @@ public class ScoreMetrics {
 		/*FONT_COMPOSER*/{"Palatino Linotype", "Arial", "Dialog"},
 		/*FONT_ANNOTATION*/{"Palatino Linotype", "Arial", "Dialog"},
 		/*FONT_CHORDS*/{"Palatino Linotype", "Arial", "Dialog"},
-		/*FONT_LYRICS*/{"Palatino Linotype", "Arial", "Dialog"}
+		/*FONT_LYRICS*/{"Palatino Linotype", "Arial", "Dialog"},
+		/*FONT_PART_LABEL*/{"Georgia", "Verdana", "Dialog"}
 	};
 
 	/**
@@ -456,6 +461,7 @@ public class ScoreMetrics {
 			textFonts[FONT_ANNOTATION] = textFonts[FONT_ANNOTATION].deriveFont(Font.ITALIC, m_textFontSize);
 			textFonts[FONT_LYRICS] = textFonts[FONT_LYRICS].deriveFont(m_textFontSize);
 			textFonts[FONT_CHORDS] = textFonts[FONT_CHORDS].deriveFont(m_textFontSize);
+			textFonts[FONT_PART_LABEL] = textFonts[FONT_PART_LABEL].deriveFont(Font.BOLD, (float)(m_textFontSize*1.5));
 
 		} catch (Exception e){
 			e.printStackTrace();

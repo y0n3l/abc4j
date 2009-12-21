@@ -78,6 +78,17 @@ class JStaffLine extends JScoreElementAbstract {
 		m_staffElements.toArray(r);
 		return r;
 	}
+	
+	/**
+	 * Returns the last added element, <TT>null</TT> if
+	 * the staff line is empty
+	 */
+	public JScoreElement getLastElement() {
+		if (m_staffElements.size() > 0)
+			return (JScoreElement) m_staffElements.lastElement();
+		else
+			return null;
+	}
 
 	public JScoreElement getScoreElementAt(Point point) {
 		JScoreElement scoreEl = null;

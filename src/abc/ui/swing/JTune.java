@@ -39,6 +39,7 @@ import abc.notation.MultiNote;
 import abc.notation.Note;
 import abc.notation.NoteAbstract;
 import abc.notation.NotesSeparator;
+import abc.notation.PartLabel;
 import abc.notation.RepeatBarLine;
 import abc.notation.MusicElement;
 import abc.notation.EndOfStaffLine;
@@ -470,6 +471,11 @@ class JTune extends JScoreElementAbstract {
 			if (s instanceof Words) {
 				appendLyrics(new JWords(getMetrics(), (Words)s));
 			}
+			else
+			// ==== Part label ====
+			if (s instanceof PartLabel) {
+				appendToScore(new JPartLabel(getMetrics(), cursor, (PartLabel)s));
+			}
 		}// Enf of score elements iteration.
 
 		if (lessThanQuarter.size()!=0) {
@@ -497,20 +503,35 @@ class JTune extends JScoreElementAbstract {
 			currentStaffLineInitialized = true;
 			element.setBase(cursor);
 		}
+		
 		//element.setBase(cursor);
+		JScoreElement lastElement = currentStaffLine.getLastElement();
+		if (lastElement != null) {
+			if ((lastElement instanceof JPartLabel)
+				&& !(element instanceof JBar)) {
+				cursor.setLocation(cursor.getX()+getMetrics().getNotesSpacing(), cursor.getY());
+				element.setBase(cursor);
+			}
+		}
 		currentStaffLine.addElement(element);
 		double width = element.getWidth();
 		int cursorNewLocationX = (int)(cursor.getX() + width);
-		
-		//fixed space + variable space (engraver)
-		if ((element instanceof JGraceNote)
-				|| (element instanceof JGroupOfGraceNotes)
-				|| (element instanceof JGraceNotePartOfGroup)) {
-			cursorNewLocationX += getMetrics().getGraceNotesSpacing()
-				+ getEngraver().getNoteSpacing(element);
+
+		//a part label doesn't need space after it
+		//if the next element is a bar line.
+		if (!(element instanceof JPartLabel)) {
+			//fixed space + variable space (engraver)
+			if ((element instanceof JGraceNote)
+					|| (element instanceof JGroupOfGraceNotes)
+					|| (element instanceof JGraceNotePartOfGroup)) {
+				cursorNewLocationX += getMetrics().getGraceNotesSpacing()
+					+ getEngraver().getNoteSpacing(element);
+			} else {
+				cursorNewLocationX += getMetrics().getNotesSpacing()
+					+ getEngraver().getNoteSpacing(element);
+			}
 		} else {
-			cursorNewLocationX += getMetrics().getNotesSpacing()
-				+ getEngraver().getNoteSpacing(element);
+			System.out.println("JPartLabel!");
 		}
 
 		cursor.setLocation(cursorNewLocationX, cursor.getY());

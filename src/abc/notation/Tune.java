@@ -372,6 +372,7 @@ public class Tune implements Cloneable
       Part[] parts = m_multiPartsDef.toPartsArray();
       for (int i=0; i<parts.length; i++)
       {
+    	globalScore.addElement(new PartLabel(parts[i].getLabel()));
         Music score = parts[i].getMusic();
         for (int j=0; j<score.size(); j++)
           globalScore.addElement(score.elementAt(j));
