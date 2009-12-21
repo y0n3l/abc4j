@@ -41,23 +41,23 @@ class JRepeatBar extends JBar{
 	
 	public double render(Graphics2D context){
 		ScoreMetrics metrics = getMetrics();
-		double noteWidth = metrics.getNoteWidth();
+		double x = super.getWidth();// metrics.getNoteWidth();
 		double staffHeight = metrics.getStaffCharBounds().getHeight();
 		double staffWidth = metrics.getStaffCharBounds().getWidth();
 		char[] ch = DIGITS[((RepeatBarLine)m_barLine).getRepeatNumber()-1];
 		Point2D m_base = getBase();
 		context.drawChars(ch, 0, ch.length, 
-				(int)(m_base.getX()+noteWidth), 
+				(int)(m_base.getX()+x+1),
 				(int)(m_base.getY()-staffHeight*1.3));
 		context.drawLine(
-				(int)(m_base.getX()+noteWidth/2), 
+				(int)(m_base.getX()+x-1), 
 				(int)(m_base.getY()-staffHeight*1.1), 
-				(int)(m_base.getX()+noteWidth/2), 
+				(int)(m_base.getX()+x-1), 
 				(int)(m_base.getY()-staffHeight*1.7));
 		context.drawLine(
-				(int)(m_base.getX()+noteWidth/2), 
+				(int)(m_base.getX()+x-1), 
 				(int)(m_base.getY()-staffHeight*1.7), 
-				(int)(m_base.getX()+noteWidth/2+staffWidth), 
+				(int)(m_base.getX()+x-1+staffWidth), 
 				(int)(m_base.getY()-staffHeight*1.7));
 		return super.render(context);
 		

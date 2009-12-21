@@ -164,4 +164,18 @@ abstract class JScoreElementAbstract implements JScoreElement {
 		context.draw(getBoundingBox());
 		context.setColor(previousColor);/* */
 	}
+	
+	/**
+	 * For debuggin purpose, draw the outer of bounding box of
+	 * the element
+	 * @param context
+	 */
+	protected void renderDebugBoundingBoxOuter(Graphics2D context) {
+		/* */java.awt.Color previousColor = context.getColor();
+		context.setColor(java.awt.Color.RED);
+		Rectangle2D bb = getBoundingBox();
+		bb.setRect(bb.getX()-1, bb.getY()-1, bb.getWidth()+2, bb.getHeight()+2);
+		context.draw(bb);
+		context.setColor(previousColor);/* */
+	}
 }

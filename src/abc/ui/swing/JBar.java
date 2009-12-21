@@ -18,86 +18,144 @@ package abc.ui.swing;
 //import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 import abc.notation.BarLine;
 import abc.notation.MusicElement;
 
 /** This class renders a simple bar line. */
-class JBar extends JScoreElementAbstract{
+class JBar extends JScoreElementAbstract {
+	
+	// dots in case of repeat only.
+	private double m_barDotsSpacing = -1;
+
 	/** The encapsulated abc notation bar element */
 	protected BarLine m_barLine = null;
 
-	private int m_barWidth = -1;
-	//dots in case of repeat only.
-	private int m_barDotsSpacing = -1;
-	private int m_dotsRadius = -1;
-	private int m_topDotY = -1;
 	private int m_bottomDotY = -1;
-	
+
+	private int m_dotsRadius = -1;
+
+	// space between double bars [|, |:
+	private double m_doubleBarSpacing = -1;
+
+	private int m_thickBarWidth = -1;
+
+	private int m_thinBarWidth = -1;
+
+	private int m_topDotY = -1;
+
 	public JBar(BarLine barLine, Point2D base, ScoreMetrics mtrx) {
 		super(mtrx);
-		m_barLine = barLine; 
-		m_dotsRadius = (int)(mtrx.getNoteWidth()*0.3);
-		m_barWidth = (int)(mtrx.getNoteWidth()*0.5);
-		m_barDotsSpacing = (int)(mtrx.getNoteWidth()*0.2);
+		m_barLine = barLine;
+		m_dotsRadius = (int) (mtrx.getNoteWidth() * 0.3);
+		m_thickBarWidth = Math.max(2, (int) (mtrx.getNoteWidth() * 0.5));
+		m_thinBarWidth = Math.max(1, (int) mtrx
+				.getBounds(ScoreMetrics.BAR_LINE).getWidth());
+		m_barDotsSpacing = Math.max(1, mtrx.getNoteWidth() * 0.2);
+		m_doubleBarSpacing = Math.max(2, mtrx.getNoteWidth() * 0.3);
 		setBase(base);
 	}
-	
+
+	/**
+	 * Returns the bounding box for this score element.
+	 * 
+	 * @return the bounding box for this score element.
+	 */
+	public Rectangle2D getBoundingBox() {
+		Rectangle2D bb = new Rectangle2D.Double(getBase().getX(), getBase()
+				.getY()
+				- getHeight(), getWidth(), getHeight());
+		return bb;
+	}
+
+	private int getHeight() {
+		return (int) getMetrics().getStaffCharBounds().getHeight();
+	}
+
 	public MusicElement getMusicElement() {
 		return m_barLine;
 	}
-	
-	private int getHeight() {
-		return (int)getMetrics().getStaffCharBounds().getHeight();
-	}
-	
+
 	public double getWidth() {
+		double width = 0;
 		switch (m_barLine.getType()) {
-		case BarLine.SIMPLE :
-			return 0;
-		case BarLine.REPEAT_OPEN : 
-			return m_barWidth+2*m_barDotsSpacing+m_dotsRadius;
-		case BarLine.REPEAT_CLOSE : 
-			return m_barWidth+2*m_barDotsSpacing+m_dotsRadius;
+		case BarLine.REPEAT_OPEN:
+		case BarLine.REPEAT_CLOSE:
+			width = m_thickBarWidth + m_doubleBarSpacing + m_thinBarWidth
+					+ m_barDotsSpacing + m_dotsRadius;
+			break;
+		case BarLine.BEGIN:
+		case BarLine.END:
+			width = m_thickBarWidth + m_doubleBarSpacing + m_thinBarWidth;
+			break;
+		case BarLine.DOUBLE:
+			width = m_doubleBarSpacing + 2 * m_thinBarWidth;
+			break;
+		case BarLine.SIMPLE:
+		default:
+			width = m_thinBarWidth;
+			break;
 		}
-		return 0;
+		return width;
 	}
-	
+
 	protected void onBaseChanged() {
 		int height = getHeight();
-		m_topDotY = (int)(getBase().getY()-height*0.61);
-		m_bottomDotY = (int)(getBase().getY()-height*0.4);
+		m_topDotY = (int) (getBase().getY() - height * 0.61);
+		m_bottomDotY = (int) (getBase().getY() - height * 0.4);
 	}
-	
-	public double render(Graphics2D context){
+
+	public double render(Graphics2D context) {
 		super.render(context);
-		int height = getHeight();
-		//System.out.println("space between = " + m_barDotsSpacing);
-		Point2D m_base = getBase();
+		double x = getBase().getX();
 		switch (m_barLine.getType()) {
-			case BarLine.REPEAT_OPEN : 
-				context.fillRect((int)m_base.getX(), (int)m_base.getY()-height, m_barWidth, height);
-				context.drawLine((int)(m_base.getX()+m_barWidth + m_barDotsSpacing), (int)(m_base.getY()-height),
-												(int)(m_base.getX()+m_barWidth + m_barDotsSpacing), (int)(m_base.getY()));
-				context.fillOval((int)(m_base.getX()+m_barWidth + 2*m_barDotsSpacing), m_topDotY, m_dotsRadius, m_dotsRadius);
-				context.fillOval((int)(m_base.getX()+m_barWidth + 2*m_barDotsSpacing), m_bottomDotY, m_dotsRadius, m_dotsRadius);
-				break;
-			case BarLine.REPEAT_CLOSE : 
-				context.fillOval((int)(m_base.getX()), (int)(m_base.getY()-height*0.61), 
-													m_dotsRadius, m_dotsRadius);
-				context.fillOval((int)(m_base.getX()), (int)(m_base.getY()-height*0.4), 
-													m_dotsRadius, m_dotsRadius);
-				context.drawLine((int)(m_base.getX()+m_dotsRadius+m_barDotsSpacing), (int)(m_base.getY()-height),
-												(int)(m_base.getX()+m_dotsRadius+m_barDotsSpacing), (int)(m_base.getY()));
-				context.fillRect((int)(m_base.getX()+m_dotsRadius+2*m_barDotsSpacing), (int)m_base.getY()-height, 
-												m_barWidth, height);
-				break;
-			case BarLine.SIMPLE : context.drawChars(ScoreMetrics.BAR_LINE, 0, 1, 
-					(int)(m_base.getX()+getMetrics().getNoteWidth()/3), (int)(m_base.getY()));
-				break;
+		case BarLine.REPEAT_OPEN:
+			renderThickLine(context, x);
+			renderThinLine(context, x + m_thickBarWidth + m_doubleBarSpacing);
+			renderDots(context, x + m_thickBarWidth + m_doubleBarSpacing
+					+ m_thinBarWidth + m_barDotsSpacing);
+			break;
+		case BarLine.REPEAT_CLOSE:
+			renderDots(context, x);
+			renderThinLine(context, x + m_dotsRadius + m_barDotsSpacing);
+			renderThickLine(context, x + m_dotsRadius + m_barDotsSpacing
+					+ m_thinBarWidth + m_doubleBarSpacing);
+			break;
+		case BarLine.BEGIN:
+			renderThickLine(context, x);
+			renderThinLine(context, x + m_thickBarWidth + m_doubleBarSpacing);
+			break;
+		case BarLine.END:
+			renderThinLine(context, x);
+			renderThickLine(context, x + m_thinBarWidth + m_doubleBarSpacing);
+			break;
+		case BarLine.DOUBLE:
+			renderThinLine(context, x);
+			renderThinLine(context, x + m_doubleBarSpacing);
+			break;
+		case BarLine.SIMPLE:
+		default:
+			renderThinLine(context, x);
+			break;
 		}
+		// renderDebugBoundingBoxOuter(context);
 		return getWidth();
 	}
-	
-	
+
+	private void renderDots(Graphics2D context, double x) {
+		context.fillOval((int) x, m_topDotY, m_dotsRadius, m_dotsRadius);
+		context.fillOval((int) x, m_bottomDotY, m_dotsRadius, m_dotsRadius);
+	}
+
+	private void renderThickLine(Graphics2D context, double x) {
+		int height = getHeight();
+		context.fillRect((int) x, (int) (getBase().getY() - height),
+				m_thickBarWidth, height);
+	}
+
+	private void renderThinLine(Graphics2D context, double x) {
+		context.drawChars(ScoreMetrics.BAR_LINE, 0, 1, (int) x,
+				(int) (getBase().getY()));
+	}
 }
