@@ -26,6 +26,8 @@ import abc.notation.MusicElement;
 class JStaffLine extends JScoreElementAbstract {
 
 	protected Vector m_staffElements = null;
+	
+	private double topY = -1;
 
 	protected Vector m_lyrics = null;
 	//protected Vector m_beginningSlurElements = null;
@@ -35,6 +37,21 @@ class JStaffLine extends JScoreElementAbstract {
 		m_staffElements = new Vector();
 		m_lyrics = new Vector();
 		//m_beginningSlurElements = new Vector();
+	}
+	
+	/**
+	 * Sets the top Y of the staff line, including the space
+	 * above the staff, e.g. for chord line
+	 */
+	protected void setTopY(double d) {
+		topY = d;
+	}
+	/**
+	 * Returns the top Y of the staff line, including the space
+	 * above the staff, e.g. for chord line
+	 */
+	protected double getTopY() {
+		return topY;
 	}
 
 	public Point2D getBase() {
@@ -138,18 +155,34 @@ class JStaffLine extends JScoreElementAbstract {
 	}
 
 	public void scaleToWidth(double newWidth) {
+		//while this is true, don't move clef, key, time, bar and part
+		//turns false at first other element (e.g.) note encountered
+		//so if there's a key, time... change in the middle
+		//of the staff, it'll be scaled.
+		boolean dontMoveFirstElements = true;
+		//System.out.println("scaleToWidth("+newWidth+")");
 		for (int i=0; i<m_staffElements.size(); i++){
 			JScoreElementAbstract elmt = (JScoreElementAbstract)m_staffElements.elementAt(i);
-			if ( (!(elmt instanceof JClef)) && (!(elmt instanceof JKeySignature))
-					&& (!(elmt instanceof JTimeSignature))
-					)  {
-				double newXpos =(elmt.getBase().getX()*newWidth/getWidth());
-				Point2D base = elmt.getBase();
-				base.setLocation(newXpos, base.getY());
-				if (elmt instanceof JGroupOfNotes)
-					((JGroupOfNotes)elmt).setInternalSpacingRatio(newWidth/getWidth());
-				elmt.setBase(base);
+			//System.out.println(elmt);
+			if (dontMoveFirstElements) {
+				if ((elmt instanceof JClef)
+					|| (elmt instanceof JKeySignature)
+					|| (elmt instanceof JTimeSignature)
+					|| (elmt instanceof JBar)
+					|| (elmt instanceof JPartLabel)) {
+					continue;
+				}
 			}
+			//we are here because we encountered another element
+			//since now, scale all
+			dontMoveFirstElements = false;
+			double newXpos =(elmt.getBase().getX()*newWidth/getWidth());
+			Point2D base = elmt.getBase();
+			//System.out.println(" - oldX = "+(int)base.getX()+" - newX="+(int)newXpos);
+			base.setLocation(newXpos, base.getY());
+			if (elmt instanceof JGroupOfNotes)
+				((JGroupOfNotes)elmt).setInternalSpacingRatio(newWidth/getWidth());
+			elmt.setBase(base);
 		}
 		//System.out.println("StaffLine, required Width : " + newWidth + " | result width=" + getWidth());
 	}

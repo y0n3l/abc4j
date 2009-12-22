@@ -538,10 +538,19 @@ public class Note extends NoteAbstract
     if (strictHeight == g) 	string2Return = string2Return.concat("g"); else
     if (strictHeight == a) 	string2Return = string2Return.concat("a"); else
     if (strictHeight == b) 	string2Return = string2Return.concat("b");*/
-    if (octaveTransposition == 1) 	string2Return = string2Return.concat("'"); else
-    if (octaveTransposition == -1) 	string2Return = string2Return.concat(",");
-    if (accidental == AccidentalType.FLAT)	string2Return = string2Return.concat("b");
-    if (accidental == AccidentalType.SHARP)	string2Return = string2Return.concat("#");
+    switch(accidental) {
+    case AccidentalType.FLAT: string2Return = string2Return.concat("b"); break;
+    case AccidentalType.SHARP: string2Return = string2Return.concat("#"); break;
+    case AccidentalType.DOUBLE_FLAT: string2Return = string2Return.concat("bb"); break;
+    case AccidentalType.DOUBLE_SHARP: string2Return = string2Return.concat("##"); break;
+    }
+    if (octaveTransposition >= 1) {
+    	for (int i = 1; i <= octaveTransposition; i++)
+    		string2Return = string2Return.concat("'");
+    } else if (octaveTransposition <= -1) {
+    	for (int i = -1; i >= octaveTransposition; i--)
+        	string2Return = string2Return.concat(",");
+    }
     //string2Return = string2Return.concat(relativeLength.toString());
     return string2Return;
   }

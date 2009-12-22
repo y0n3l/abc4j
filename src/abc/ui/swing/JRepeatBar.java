@@ -45,20 +45,26 @@ class JRepeatBar extends JBar{
 		double staffHeight = metrics.getStaffCharBounds().getHeight();
 		double staffWidth = metrics.getStaffCharBounds().getWidth();
 		char[] ch = DIGITS[((RepeatBarLine)m_barLine).getRepeatNumber()-1];
-		Point2D m_base = getBase();
+		double topY = getStaffLine().getTopY();
+		Point2D base = getBase();
+		//ensure that there is enough space!
+		topY = Math.min(topY, base.getY()-staffHeight*1.7);
+		double digitHeight = metrics.getBounds(ch).getHeight();
 		context.drawChars(ch, 0, ch.length, 
-				(int)(m_base.getX()+x+1),
-				(int)(m_base.getY()-staffHeight*1.3));
+				(int)(base.getX()+x+1),
+				(int)(topY+digitHeight*1.5));
+		//vertical line
 		context.drawLine(
-				(int)(m_base.getX()+x-1), 
-				(int)(m_base.getY()-staffHeight*1.1), 
-				(int)(m_base.getX()+x-1), 
-				(int)(m_base.getY()-staffHeight*1.7));
+				(int)(base.getX()+x-1), 
+				(int)(base.getY()-staffHeight*1.1), 
+				(int)(base.getX()+x-1),
+				(int)topY);
+		//Horizontal line
 		context.drawLine(
-				(int)(m_base.getX()+x-1), 
-				(int)(m_base.getY()-staffHeight*1.7), 
-				(int)(m_base.getX()+x-1+staffWidth), 
-				(int)(m_base.getY()-staffHeight*1.7));
+				(int)(base.getX()+x-1),
+				(int)topY,
+				(int)(base.getX()+x-1+staffWidth),
+				(int)topY);
 		return super.render(context);
 		
 	}

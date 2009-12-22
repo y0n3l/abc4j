@@ -264,13 +264,14 @@ class JGroupOfNotes extends JScoreElementAbstract {
 			lastNote=firstNote;
 		double firstNoteAccidentalWidth = (firstNote.getWidth()-getMetrics().getNoteWidth());
 
-		if (isStemUp) {
+		/*if (isStemUp) {
 			m_width = (int)(lastNote.getStemBeginPosition().getX()-(firstNote).getBase().getX() + firstNoteAccidentalWidth);
 		}
 		else {
 			m_width = (int)(lastNote.getStemBeginPosition().getX()+getMetrics().getNoteWidth()
 						-firstNote.getBase().getX() + firstNoteAccidentalWidth);
-		}
+		}*/
+		m_width = getBoundingBox().getWidth();
 	}
 
 	public double render(Graphics2D context){

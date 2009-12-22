@@ -501,10 +501,10 @@ class JTune extends JScoreElementAbstract {
 			m_staffLines.addElement(currentStaffLine);
 			//currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
 			currentStaffLineInitialized = true;
-			element.setBase(cursor);
+		//	element.setBase(cursor);
 		}
 		
-		//element.setBase(cursor);
+		element.setBase(cursor);
 		JScoreElement lastElement = currentStaffLine.getLastElement();
 		if (lastElement != null) {
 			if ((lastElement instanceof JPartLabel)
@@ -1171,6 +1171,10 @@ class JTune extends JScoreElementAbstract {
 			//add a space between each lines
 			cursor.setLocation(MARGIN_LEFT, cursor.getY() + getMetrics().getStaffLinesSpacing());
 		}
+		//store the highest point of the staff area including
+		//space for chords and others...
+		sl.setTopY(cursor.getY());
+		
 		//add space if tune has chord
 		Music music = m_tune.getMusic();
 		if (music.hasChordNames())

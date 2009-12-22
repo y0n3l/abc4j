@@ -162,7 +162,8 @@ class JNote extends JNoteElementAbstract {
 			if (note.hasAccidental()) {
 				accidentalsChars = getMetrics().getAccidentalGlyph(note.getAccidental());
 				accidentalsWidth = getMetrics()
-					.getBounds(accidentalsChars).getWidth();
+					.getBounds(accidentalsChars).getWidth()
+					*SPACE_RATIO_FOR_ACCIDENTALS;
 			}
 		} catch (IllegalArgumentException iae) {
 			throw new IllegalArgumentException("Incorrect accidental for " + note + " : " + note.getAccidental());
@@ -171,7 +172,7 @@ class JNote extends JNoteElementAbstract {
 		//System.out.println("note chars " + noteChars[0]);
 		//double noteY =(int)(base.getY()-getOffset(note)*c.getNoteHeigth());
 		//double noteY =(int)(base.getY()-getOffset(note)*glyphDimension.getHeigth());
-		double noteX = base.getX()+graceNotesWidth+accidentalsWidth*SPACE_RATIO_FOR_ACCIDENTALS;
+		double noteX = base.getX()+graceNotesWidth+accidentalsWidth;
 		displayPosition = new Point2D.Double(noteX, noteY);
 		notePosition = (Point2D)displayPosition.clone();
 		stemUpBeginPosition = new Point2D.Double(notePosition.getX()+ glyphDimension.getWidth()*0.93,
@@ -411,16 +412,16 @@ public Note getNote(){
 			noteGlyphHeight = glyphDimension.getHeight();
 		if (isStemUp()) {
 			return new Rectangle2D.Double(
-					(int)(displayPosition.getX()),
+					(int)getBase().getX(),//(int)(displayPosition.getX()),
 					(int)(displayPosition.getY()-noteGlyphHeight),
-					boundingBox_width,
+					(int)m_width,//boundingBox_width,
 					noteGlyphHeight);
 		}
 		else {
 			return new Rectangle2D.Double(
-					(int)(displayPosition.getX()),
+					(int)getBase().getX(),//(int)(displayPosition.getX()),
 					(int)(displayPosition.getY()-glyphDimension.getHeight()),
-					boundingBox_width,
+					(int)m_width,//boundingBox_width,
 					noteGlyphHeight);
 		}
 	}
