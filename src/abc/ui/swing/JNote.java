@@ -198,13 +198,9 @@ class JNote extends JNoteElementAbstract {
 		//calc dots needed extra space
 		calcDotsPosition();
 		if (dotsPosition != null) {
-			System.out.println("last dot X = "+dotsPosition[dotsPosition.length - 1].getX());
-			System.out.println("notePosition X = "+notePosition.getX());
-			System.out.println("glyph width = "+glyphDimension.getWidth());
 			double extraWidthDots = dotsPosition[dotsPosition.length - 1].getX()
 				- notePosition.getX() - glyphDimension.getWidth()
 				+ metrics.getBounds(ScoreMetrics.DOT).getWidth();
-			System.out.println("extraWidthDots = "+extraWidthDots);
 			extraWidth = Math.max(extraWidth, extraWidthDots);
 		}
 		
@@ -439,8 +435,8 @@ public Note getNote(){
 		renderNoteChars(g);
 		renderChordName(g);
 		
-		renderDebugBoundingBox(g);
-		renderDebugSlurAnchors(g);
+		//renderDebugBoundingBox(g);
+		//renderDebugSlurAnchors(g);
 
 		return getWidth();
 	}
