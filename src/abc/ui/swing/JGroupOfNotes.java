@@ -40,6 +40,8 @@ class JGroupOfNotes extends JScoreElementAbstract {
 	protected JGroupableNote[] m_jNotes = null;
 	/** The Y coordinate where the line linking all the notes is put. */
 	private int m_stemYend = -1;
+	
+	private double m_internalSpacingRatio = -1;
 
 	private int nUpletSize = -1;
 
@@ -140,6 +142,16 @@ class JGroupOfNotes extends JScoreElementAbstract {
 			((JNoteElementAbstract)m_jNotes[i]).onBaseChanged();
 		}
 	}
+	
+	/**
+	 * When the score is justified, avoid big gaps between
+	 * group of notes, by enlarging the JGroupOfNote by adding
+	 * a space between each note of the group.
+	 * @param d <= 0 to cancel justification
+	 */
+	public void setInternalSpacingRatio(double d) {
+		m_internalSpacingRatio = d;
+	}
 
 	protected void onBaseChanged() {
 		Point2D currentBase =(Point2D)getBase().clone();
@@ -234,11 +246,17 @@ class JGroupOfNotes extends JScoreElementAbstract {
 
 			// gracenote group have fixed spacing, so only use engraver spacing if engraver is not null
 			// FIXME: fix this so gracenote groups use a proper engraver
-			if (m_engraver != null) engraverSpacing = m_engraver.getNoteSpacing(m_jNotes[i]);
+			if (m_engraver != null)
+				engraverSpacing = m_engraver.getNoteSpacing(m_jNotes[i]);
+			double justifySpacingCorrection = engraverSpacing
+				+ getMetrics().getNotesSpacing();
+			if (m_internalSpacingRatio > 0)
+				justifySpacingCorrection *= m_internalSpacingRatio;
 			currentBase.setLocation(currentBase.getX()
 							+ m_jNotes[i].getWidth()
-							+ getMetrics().getNotesSpacing()
-							+ engraverSpacing,
+							//+ getMetrics().getNotesSpacing()
+							//+ engraverSpacing,
+							+ justifySpacingCorrection,
 						getBase().getY());
 				//}
 		}

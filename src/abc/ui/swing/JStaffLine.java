@@ -146,6 +146,8 @@ class JStaffLine extends JScoreElementAbstract {
 				double newXpos =(elmt.getBase().getX()*newWidth/getWidth());
 				Point2D base = elmt.getBase();
 				base.setLocation(newXpos, base.getY());
+				if (elmt instanceof JGroupOfNotes)
+					((JGroupOfNotes)elmt).setInternalSpacingRatio(newWidth/getWidth());
 				elmt.setBase(base);
 			}
 		}

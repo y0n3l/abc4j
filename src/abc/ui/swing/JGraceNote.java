@@ -15,6 +15,7 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
@@ -78,22 +79,27 @@ class JGraceNote extends JNote {
 	protected void onBaseChanged() {
 		super.onBaseChanged();
 		this.m_width = super.getWidth();
-
+		
+		//grace note glyph dimension
+		Dimension glyphDimension = getMetrics()
+			.getGlyphDimension(getNotationContext());
+		double width = glyphDimension.getWidth();
+		
 		// calculate slash position
 		int startX = 0;
 		int endX = 0;
 		int startY = 0;
 		int endY = 0;
 		if (isStemUp()) {
-			startX = (int) (displayPosition.getX() + m_width*0.5);
-			endX = (int) (displayPosition.getX() + m_width*2.5);
-			startY = (int) (displayPosition.getY() - m_width*2.5);
-			endY = (int) (displayPosition.getY() - m_width*3.5);
+			startX = (int) (displayPosition.getX() + width*0.5);
+			endX = (int) (displayPosition.getX() + width*2.5);
+			startY = (int) (displayPosition.getY() - width*2.5);
+			endY = (int) (displayPosition.getY() - width*3.5);
 		} else {
-			startX = (int) (displayPosition.getX() - m_width*0.5);
-			endX = (int) (displayPosition.getX() - m_width*2.5);
-			startY = (int) (displayPosition.getY() + m_width*2.5);
-			endY = (int) (displayPosition.getY() + m_width*3.5);
+			startX = (int) (displayPosition.getX() - width*0.5);
+			endX = (int) (displayPosition.getX() - width*2.5);
+			startY = (int) (displayPosition.getY() + width*2.5);
+			endY = (int) (displayPosition.getY() + width*3.5);
 		}
 		slashStart = new Point2D.Double(startX, startY);
 		slashEnd = new Point2D.Double(endX, endY);

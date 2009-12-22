@@ -24,6 +24,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 
 import abc.notation.AccidentalType;
+import abc.notation.Clef;
 import abc.notation.Decoration;
 import abc.notation.MusicElement;
 import abc.notation.Note;
@@ -50,7 +51,7 @@ class JNote extends JNoteElementAbstract {
 
 	protected Point2D articulationPosition = null;
 
-	protected Point2D dotsPosition = null;
+	protected Point2D[] dotsPosition = null;
 	/** The chars from the font that represent the note to be displayed. */
 	protected char[] noteChars = null;
 	/** The chars from the font that represent the accidentals to be displayed.
@@ -61,6 +62,7 @@ class JNote extends JNoteElementAbstract {
 	protected Point2D stemDownBeginPosition = null;
 
 	private double m_width = -1;
+	private double boundingBox_width = -1;
 
 	public JNote(Note noteValue, Point2D base, ScoreMetrics c) {
 		super(noteValue, base, c);
@@ -182,9 +184,32 @@ class JNote extends JNoteElementAbstract {
 			stemUpBeginPosition.setLocation(stemUpBeginPosition.getX(), stemUpBeginPosition.getY()-glyphDimension.getHeight()/2);
 			stemDownBeginPosition.setLocation(stemDownBeginPosition.getX(), stemDownBeginPosition.getY()-glyphDimension.getHeight()/2);
 		}
+		
 		//reinit stem position
 		setStemUp(isStemUp());
-		m_width = (int)(graceNotesWidth+accidentalsWidth+glyphDimension.getWidth());
+		//if stem is up and {TODO !isHeadInverted), and < eight
+		//add an extra width.
+		double extraWidth = 0;
+		if (!(this instanceof JNotePartOfGroup)
+				&& !note.isRest() && isStemUp()
+				&& (note.getStrictDuration() <= Note.EIGHTH)) {
+			extraWidth = glyphDimension.getWidth();
+		}
+		//calc dots needed extra space
+		calcDotsPosition();
+		if (dotsPosition != null) {
+			System.out.println("last dot X = "+dotsPosition[dotsPosition.length - 1].getX());
+			System.out.println("notePosition X = "+notePosition.getX());
+			System.out.println("glyph width = "+glyphDimension.getWidth());
+			double extraWidthDots = dotsPosition[dotsPosition.length - 1].getX()
+				- notePosition.getX() - glyphDimension.getWidth()
+				+ metrics.getBounds(ScoreMetrics.DOT).getWidth();
+			System.out.println("extraWidthDots = "+extraWidthDots);
+			extraWidth = Math.max(extraWidth, extraWidthDots);
+		}
+		
+		m_width = (int)(graceNotesWidth+accidentalsWidth+glyphDimension.getWidth()+extraWidth);
+		boundingBox_width = (int)(glyphDimension.getWidth()+extraWidth);
 
 		onNotePositionChanged();
 	}
@@ -199,9 +224,19 @@ class JNote extends JNoteElementAbstract {
 
 	protected void calcDotsPosition() {
 		if (note.countDots()!=0) {
+			dotsPosition = new Point2D[note.countDots()];
 			Dimension glyphDimension = getMetrics().getGlyphDimension(getNotationContext());
-			dotsPosition = new Point2D.Double(notePosition.getX() + glyphDimension.getWidth()*1.2,
-					notePosition.getY()-glyphDimension.getHeight()*0.05);
+			//!isOnStaffLine() => the dot is between the lines
+			double y = notePosition.getY()+glyphDimension.getHeight()*0.05; //-...*0.05
+			if (!note.isRest() && isOnStaffLine()) {
+				//the dot is over the staff line
+				y = notePosition.getY()-glyphDimension.getHeight()*0.1;
+			}
+			double x = notePosition.getX() + glyphDimension.getWidth()*1.2; //1.2
+			for (int i = 0; i < note.countDots(); i++) {
+				x += Math.max(2.0, glyphDimension.getWidth()*.5);
+				dotsPosition[i] = new Point2D.Double(x, y);
+			}
 		}
 	}
 
@@ -329,35 +364,15 @@ class JNote extends JNoteElementAbstract {
 				notePosition.getY()+metrics.getSlurAnchorYOffset());
 		slurAboveAnchor = new Point2D.Double(displayPosition.getX() + glyphDimension.getWidth()/2,
 				notePosition.getY()-glyphDimension.getHeight()-metrics.getSlurAnchorYOffset());
-		if (note.getHeight()>=Note.c && note.getStrictDuration() <= Note.SIXTEENTH) {
-			slurAboveAnchor.setLocation(slurAboveAnchor.getX(), slurAboveAnchor.getY()-glyphDimension.getHeight()/2);
-			slurUnderAnchor.setLocation(slurUnderAnchor.getX(), slurUnderAnchor.getY()+glyphDimension.getHeight()/2);
-		}
-		slurUnderAnchorOutOfStem = isStemUp()
+		//TODO improve position for rests
+		slurUnderAnchorOutOfStem = (isStemUp() && !note.isRest())
 			?slurUnderAnchor
-			:new Point2D.Double(getBoundingBox().getMinX(),
-								getBoundingBox().getMaxY()+metrics.getSlurAnchorYOffset());
-		slurAboveAnchorOutOfStem = isStemUp()
-			?new Point2D.Double(getBoundingBox().getMaxX(),
+			:new Point2D.Double(stemDownBeginPosition.getX(),//getBoundingBox().getMinX(),
+					getBoundingBox().getMaxY()+metrics.getSlurAnchorYOffset());
+		slurAboveAnchorOutOfStem = (isStemUp() && !note.isRest())
+			?new Point2D.Double(stemUpBeginPosition.getX(),//getBoundingBox().getMaxX(),
 								getBoundingBox().getMinY()-metrics.getSlurAnchorYOffset())
 			:slurAboveAnchor;
-	}
-
-	/** @deprecated use {@link #getOffset(Note)} */
-	public static double getCorrectedOffset(Note note) {
-		double positionOffset = getOffset(note);
-		/*if ((note.getOctaveTransposition() <= 0)
-				|| (note.getStrictDuration() == Note.WHOLE)) {
-			short noteDuration = note.getStrictDuration();
-			switch (noteDuration) {
-				case Note.SIXTY_FOURTH:
-				case Note.THIRTY_SECOND :
-				case Note.SIXTEENTH :
-				case Note.WHOLE: positionOffset=positionOffset+0.5; break;
-			}
-			//System.out.println("offset : " + positionOffset );
-		}*/
-		return positionOffset;
 	}
 
 	public static double getOffset(Note note) {
@@ -398,24 +413,18 @@ public Note getNote(){
 			noteGlyphHeight = glyphDimension.getHeight()*6;
 		else if (note.getStrictDuration() == Note.WHOLE)
 			noteGlyphHeight = glyphDimension.getHeight();
-		double correctOffset = 0;
-		if (((note.getOctaveTransposition() <= 0)
-				&& (note.getStrictDuration() < Note.EIGHTH))
-				|| (note.getStrictDuration() == Note.WHOLE)) {
-			correctOffset = -glyphDimension.getHeight()/2;
-		}
 		if (isStemUp()) {
 			return new Rectangle2D.Double(
 					(int)(displayPosition.getX()),
-					(int)(displayPosition.getY()-correctOffset-noteGlyphHeight),
-					getWidth(),
+					(int)(displayPosition.getY()-noteGlyphHeight),
+					boundingBox_width,
 					noteGlyphHeight);
 		}
 		else {
 			return new Rectangle2D.Double(
 					(int)(displayPosition.getX()),
-					(int)(displayPosition.getY()-correctOffset-glyphDimension.getHeight()),
-					getWidth(),
+					(int)(displayPosition.getY()-glyphDimension.getHeight()),
+					boundingBox_width,
 					noteGlyphHeight);
 		}
 	}
@@ -430,8 +439,8 @@ public Note getNote(){
 		renderNoteChars(g);
 		renderChordName(g);
 		
-		//renderDebugBoundingBox(g);
-		//renderDebugSlurAnchors(g);
+		renderDebugBoundingBox(g);
+		renderDebugSlurAnchors(g);
 
 		return getWidth();
 	}
@@ -462,6 +471,26 @@ public Note getNote(){
 	protected void renderAccidentals(Graphics2D gfx) {
 		if (accidentalsPosition!=null)
 			gfx.drawChars(accidentalsChars, 0, 1, (int)accidentalsPosition.getX(), (int)accidentalsPosition.getY());
+	}
+	
+	/**
+	 * Returns true if the note is on staff line (or extended
+	 * line), e.g. in G clef, C E G B d f a c'...
+	 * 
+	 * Returns false if the note is between 2 lines
+	 */
+	private boolean isOnStaffLine() {
+		//TODO if (staffLine.getClef() == Clef.G) {
+		switch(note.getStrictHeight()) {
+		case Note.C:
+		case Note.E:
+		case Note.G:
+		case Note.B:
+			return (note.getOctaveTransposition() % 2) == 0;
+		default: //D F A
+			return (note.getOctaveTransposition() % 2) == 1;
+		}
+		//}
 	}
 
 	protected void renderExtendedStaffLines(Graphics2D context, ScoreMetrics metrics, Point2D base){
@@ -506,10 +535,11 @@ public Note getNote(){
 	}
 
 	protected void renderDots(Graphics2D context){
-		//FIXME draw 2 dots if note is double dotted
-		if (dotsPosition!=null){
-			context.drawChars(ScoreMetrics.DOT, 0, 1,
-				(int)dotsPosition.getX(), (int)dotsPosition.getY());
+		if (dotsPosition!=null) {
+			for (int i = 0; i < dotsPosition.length; i++) {
+				context.drawChars(ScoreMetrics.DOT, 0, 1,
+						(int)dotsPosition[i].getX(), (int)dotsPosition[i].getY());
+			}
 		}
 	}
 

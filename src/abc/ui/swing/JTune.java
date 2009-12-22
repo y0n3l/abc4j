@@ -530,8 +530,6 @@ class JTune extends JScoreElementAbstract {
 				cursorNewLocationX += getMetrics().getNotesSpacing()
 					+ getEngraver().getNoteSpacing(element);
 			}
-		} else {
-			System.out.println("JPartLabel!");
 		}
 
 		cursor.setLocation(cursorNewLocationX, cursor.getY());

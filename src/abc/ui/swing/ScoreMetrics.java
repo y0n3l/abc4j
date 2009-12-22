@@ -371,7 +371,7 @@ public class ScoreMetrics {
 			tupletNumberYOffset = noteHeight / 4;
 
 			notesLinkStroke = new BasicStroke((float)(noteWidth/3), 0, 0);
-			stemStroke = new BasicStroke((float)(noteWidth/12));
+			stemStroke = new BasicStroke(Math.max(1f, (float)(noteWidth/12)));
 			stemLength = (int)(noteHeight*3);
 			noteStrokeLength = 2;
 
