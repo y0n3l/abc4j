@@ -15,8 +15,6 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
-import java.awt.Font;
-import java.awt.Graphics2D;
 /** This class defines a score rendition element. Rendition scores elements
  * are graphical representations of tune score elements objects retrieved
  * from a tune object.
@@ -31,29 +29,7 @@ class JTitle extends JText {
 	 * @param mtrx The score metrics needed
 	 */
 	protected JTitle(ScoreMetrics mtrx, String text) {
-		super(mtrx, text);
-	}
-
-	/** Returns the height of this score element.
-	 * @return The height of this score element. */
-	public double getHeight() {
-		return (double)getMetrics().getTextFontHeight(ScoreMetrics.FONT_TITLE);
-	}
-
-	/** Returns the width of this score element.
-	 * @return The width of this score element. */
-	public double getWidth() {
-		return (double)getMetrics().getTextFontWidth(ScoreMetrics.FONT_TITLE, getText());
-	}
-
-	/** Renders this Score element to the given graphic context.
-	 * @param g2 */
-	public double render(Graphics2D g2) {
-		Font previousFont = g2.getFont();
-		g2.setFont(getMetrics().getTextFont(ScoreMetrics.FONT_TITLE));
-		g2.drawString(getText(), (int)getBase().getX(), (int)getBase().getY());
-		g2.setFont(previousFont);
-		return getWidth();
+		super(mtrx, text, ScoreMetrics.FONT_TITLE, ALIGN_CENTER);
 	}
 
 }

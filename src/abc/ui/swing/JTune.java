@@ -39,6 +39,7 @@ import abc.notation.MultiNote;
 import abc.notation.Note;
 import abc.notation.NoteAbstract;
 import abc.notation.NotesSeparator;
+import abc.notation.Part;
 import abc.notation.PartLabel;
 import abc.notation.RepeatBarLine;
 import abc.notation.MusicElement;
@@ -95,9 +96,7 @@ class JTune extends JScoreElementAbstract {
 	// titles and subtitles
 	// FIXME: m_showTitles shouldn't be static .... not sure why it doesn't work otherwise!!
 	static protected boolean m_showTitles = true;
-	protected ArrayList m_titles = null;
-	protected JText m_composer = null;
-	protected JText m_subtitles = null;
+	private ArrayList m_headersTexts = null;
 
 	//temporary variables used only to cumpute the score when tune is set.
 	private boolean currentStaffLineInitialized = false;
@@ -121,7 +120,7 @@ class JTune extends JScoreElementAbstract {
 		super(c);
 		MARGIN_LEFT = (int)base.getX();
 		MARGIN_TOP = (int)base.getY();
-		m_titles = new ArrayList();
+		m_headersTexts = new ArrayList();
 		m_staffLines = new Vector();
 		m_isJustified = isJustified;
 		m_scoreElements = new Hashtable();
@@ -265,74 +264,113 @@ class JTune extends JScoreElementAbstract {
 		previousKey = null;
 
 
-		// set headings, eg. titles, subtitles, composer, etc.
-		// TODO: align center, left and right as appropriate
-		m_titles.clear();
-		m_subtitles = null;
-		m_composer = null;
+		// clear headings, eg. titles, subtitles, composer, etc.
+		m_headersTexts.clear();
 
 		if (m_showTitles) {
 
-			JText text = null;
-			String [] titles = tune.getTitles();
-			double textHeight = 0;
-			double textWidth = 0;
-			double y = 0;
-
+			String[] titles = tune.getTitles();
 			for (int i=0; i< titles.length; i++) {
 				if (titles[i].length() == 0)
 					continue;
 				if (i == 0) {
 					//title
-					text = new JTitle(getMetrics(), titles[i]);
+					m_headersTexts.add(new JTitle(getMetrics(), titles[i]));
 				} else {
 					// subtitles
-					text = new JSubtitle(getMetrics(), titles[i]);
+					m_headersTexts.add(new JSubtitle(getMetrics(), titles[i], JText.ALIGN_CENTER));
 				}
-
-				// should be center aligned .... but cannot align without ability to
-				//  get JScoreComponent width
-				textHeight = text.getHeight();
-				textWidth = text.getWidth();
-				y = cursor.getY();
-				y+= textHeight;
-				cursor.setLocation(MARGIN_LEFT, y);
-				m_titles.add(text);
-				text.setBase(cursor);
 			}
 
 			String txt = null;
-			// should be left aligned .... but cannot align without ability to
-			//  get JScoreComponent width
+			//Rythme R:hornpipe, R:waltz...
 			txt = tune.getRhythm();
 			if ((txt != null) && (txt.length() > 0)) {
-				m_subtitles = new JSubtitle(getMetrics(), txt);
-				textHeight = m_subtitles.getHeight();
-				textWidth = m_subtitles.getWidth();
-				y = cursor.getY();
-				y+= textHeight;
-				cursor.setLocation(MARGIN_LEFT, y);
-				m_subtitles.setBase(cursor);
+				m_headersTexts.add(new JSubtitle(getMetrics(), txt));
 			}
-
-			// should be right aligned .... but cannot align without ability to
-			//  get JScoreComponent width
+			//composer, right align
 			txt = tune.getComposer();
 			if ((txt != null) && (txt.length() > 0)) {
-				m_composer = new JSubtitle(getMetrics(), txt);
-				textHeight = m_composer.getHeight();
-				textWidth = m_composer.getWidth();
-				y = cursor.getY();
-				y+= textHeight;
-				cursor.setLocation(MARGIN_LEFT, y);
-				m_composer.setBase(cursor);
+				m_headersTexts.add(
+					new JText(getMetrics(), txt,
+							ScoreMetrics.FONT_COMPOSER,
+							JText.ALIGN_RIGHT));
 			}
-
+			//area
+			txt = tune.getArea();
+			if ((txt != null) && (txt.length() > 0)) {
+				m_headersTexts.add(
+						new JText(getMetrics(), txt,
+								ScoreMetrics.FONT_COMPOSER,
+								JText.ALIGN_RIGHT));
+			}
+			//Parts order
+			if (tune.getMultiPartsDefinition() != null) {
+				try {
+					Part[] parts = tune.getMultiPartsDefinition().toPartsArray();
+					txt = "";
+					//if all parts are only played one time
+					//no need to add this information
+					//e.g. A B C D
+					//but A B A C D will display (because 2 A)
+					boolean hasDouble = false;
+					for (int i = 0; i < parts.length; i++) {
+						char c = parts[i].getLabel();
+						if (txt.indexOf(c) != -1)
+							hasDouble = true;
+						if (txt.length() > 0)
+							txt += ", ";
+						txt += c;
+					}
+					if (hasDouble) {
+						m_headersTexts.add(
+								new JAnnotation(getMetrics(), txt));
+					}
+				} catch (Exception e) {
+					System.err.println(e.getMessage());
+				}
+			}
+			
+			//calculate Y position
+			Iterator itHeaders = m_headersTexts.iterator();
+			double y = cursor.getY();
+			double yLeft = y, yCenter = y, yRight = y;
+			while (itHeaders.hasNext()) {
+				JText oneText = (JText) itHeaders.next();
+				short align = oneText.getAlignment();
+				//double textWidth = oneText.getWidth();
+				if (align == JText.ALIGN_CENTER)
+					y = Math.max(yLeft, Math.max(yCenter, yRight));
+				else if (align == JText.ALIGN_RIGHT)
+					y = Math.max(yRight, yCenter);
+				else //if (align == JText.ALIGN_LEFT)
+					y = Math.max(yLeft, yCenter);
+				y+= oneText.getHeight();
+				//now it's aligned on left, we'll recalculate
+				//X later (see renderTitles)
+				//for centered and right texts
+				cursor.setLocation(MARGIN_LEFT, y);
+				if (align == JText.ALIGN_CENTER)
+					yCenter = y;
+				else if (align == JText.ALIGN_RIGHT)
+					yRight = y;
+				else //if (align == JText.ALIGN_LEFT)
+					yLeft = y;
+				oneText.setBase(cursor);
+			}
+			//move the cursor at the max Y of the headers
+			double headerHeight = Math.max(yLeft, Math.max(yCenter, yRight));
+			cursor.setLocation(MARGIN_LEFT, headerHeight);
 		}
 
-
-		Music score = tune.getMusic();
-
+		//if tune has part, tune.getMusic() will return
+		//duplicate parts when repeated
+		//e.g. structure ABBA, P:A one line, P:B one line
+		//getMusic() returns 4 lines
+		//it's ok for audio rendition, but for graphical
+		//we just need one occurence of each part.
+		Music score = tune.getMusicForGraphicalRendition();
+		
 		ArrayList lessThanQuarter = new ArrayList();
 		//int durationInGroup = 0;
 		//int maxDurationInGroup = Note.QUARTER;
@@ -504,16 +542,16 @@ class JTune extends JScoreElementAbstract {
 		//	element.setBase(cursor);
 		}
 		
-		element.setBase(cursor);
 		JScoreElement lastElement = currentStaffLine.getLastElement();
 		if (lastElement != null) {
 			if ((lastElement instanceof JPartLabel)
 				&& !(element instanceof JBar)) {
 				cursor.setLocation(cursor.getX()+getMetrics().getNotesSpacing(), cursor.getY());
-				element.setBase(cursor);
+				//element.setBase(cursor);
 			}
 		}
 		currentStaffLine.addElement(element);
+		element.setBase(cursor);
 		double width = element.getWidth();
 		int cursorNewLocationX = (int)(cursor.getX() + width);
 
@@ -532,6 +570,7 @@ class JTune extends JScoreElementAbstract {
 			}
 		}
 
+		//Position the cursor for next element
 		cursor.setLocation(cursorNewLocationX, cursor.getY());
 
 		if (element instanceof JNote)
@@ -634,7 +673,9 @@ class JTune extends JScoreElementAbstract {
 		for (int i=0; i<m_staffLines.size(); i++) {
 			currentStaffLine = (JStaffLine)m_staffLines.elementAt(i);
 			currentStaffLine.render(g2);
-			g2.drawChars(staffS, 0, staffS.length, MARGIN_LEFT, (int)(currentStaffLine.getBase().getY()));
+			g2.drawChars(staffS, 0, staffS.length,
+					(int)(currentStaffLine.getBase().getX()),
+					(int)(currentStaffLine.getBase().getY()));
 		}
 		renderSlursAndTies(g2);
 
@@ -642,14 +683,19 @@ class JTune extends JScoreElementAbstract {
 	}
 
 	protected void renderTitles(Graphics2D g2) {
-		Iterator iter = m_titles.iterator();
+		Iterator iter = m_headersTexts.iterator();
 		while (iter.hasNext()) {
-			((JText)iter.next()).render(g2);
+			JText text = (JText) iter.next();
+			short align = text.getAlignment();
+			double textWidth = text.getWidth();
+			double y = text.getBase().getY();
+			if (align == JText.ALIGN_CENTER) {
+				text.setBase(new Point2D.Double(m_width/2 - textWidth/2, y));
+			} else if (align == JText.ALIGN_RIGHT) {
+				text.setBase(new Point2D.Double(m_width - textWidth, y));
+			} //else left, do not change anything
+			text.render(g2);
 		}
-		if (m_subtitles != null)
-			((JText)m_subtitles).render(g2);
-		if (m_composer != null)
-			((JText)m_composer).render(g2);
 	}
 
 	/** Triggers the re computation of all staff lines elements in order to
@@ -809,9 +855,11 @@ class JTune extends JScoreElementAbstract {
 			elmtEndLow = elmtEndHigh = (JNote) elmtEnd;
 		}*/
 		
-		if (!elmtStart.getStaffLine().equals(elmtEnd.getStaffLine())) {
-			System.err.println("Warning - abc4j limitation : Slurs / ties cannot be drawn accross several lines for now.");
-			return new Point2D[] {};
+		if ((elmtStart.getStaffLine() != null) && (elmtEnd.getStaffLine() != null)) {
+			if (!elmtStart.getStaffLine().equals(elmtEnd.getStaffLine())) {
+				System.err.println("Warning - abc4j limitation : Slurs / ties cannot be drawn accross several lines for now.");
+				return new Point2D[] {};
+			}
 		}
 		final short UNDER_IN = 0; //the only existing in old abc4j
 		final short UNDER_OUT = 1; //down and out of stems
@@ -1166,22 +1214,24 @@ class JTune extends JScoreElementAbstract {
 		JStaffLine sl = new JStaffLine(cursor, getMetrics());
 		if (m_staffLines.size() == 0) {
 			//first staff top margin
-			cursor.setLocation(MARGIN_LEFT, cursor.getY()+getMetrics().getFirstStaffTopMargin());
+			cursor.setLocation(MARGIN_LEFT + getMetrics().getFirstStaffLeftMargin(),
+					cursor.getY() + getMetrics().getFirstStaffTopMargin());
 		} else /*if (m_staffLines.size() > 0)*/ {
 			//add a space between each lines
 			cursor.setLocation(MARGIN_LEFT, cursor.getY() + getMetrics().getStaffLinesSpacing());
 		}
 		//store the highest point of the staff area including
 		//space for chords and others...
+		sl.setBase(cursor);
 		sl.setTopY(cursor.getY());
 		
 		//add space if tune has chord
 		Music music = m_tune.getMusic();
 		if (music.hasChordNames())
-			cursor.setLocation(MARGIN_LEFT, cursor.getY() + getMetrics().getChordLineSpacing());
+			cursor.setLocation(cursor.getX(), cursor.getY() + getMetrics().getChordLineSpacing());
 		//TODO add space for lyrics, high and low notes
 		
-		cursor.setLocation(MARGIN_LEFT, cursor.getY()+getMetrics().getStaffCharBounds().getHeight());
+		cursor.setLocation(cursor.getX(), cursor.getY()+getMetrics().getStaffCharBounds().getHeight());
 		//Vector initElements = new Vector();
 		JClef clef = new JClef(cursor, getMetrics());
 		sl.addElement(clef);

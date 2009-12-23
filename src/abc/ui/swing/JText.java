@@ -15,37 +15,93 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
+import java.awt.Font;
 import java.awt.Graphics2D;
 
 import abc.notation.MusicElement;
 
-
-/** TODO doc
+/**
+ * TODO doc
  */
-abstract class JText extends JScoreElementAbstract {
-	
+public class JText extends JScoreElementAbstract {
+
+	protected static final short ALIGN_CENTER = 1;
+
+	protected static final short ALIGN_LEFT = 0;
+
+	protected static final short ALIGN_RIGHT = 2;
+
+	private short m_fontType;
+
 	private String m_text = null;
 
-	/** Constructor
-	 * @param mtrx The score metrics needed
+	private short m_textAlign;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param mtrx
+	 *            The score metrics needed
+	 * @param text
+	 *            The text
+	 * @param fontType
+	 *            One of {@link ScoreMetrics#FONT_TITLE},
+	 *            {@link ScoreMetrics#FONT_SUBTITLE},
+	 *            {@link ScoreMetrics#FONT_COMPOSER},
+	 *            {@link ScoreMetrics#FONT_ANNOTATION},
+	 *            {@link ScoreMetrics#FONT_PART_LABEL},
+	 *            {@link ScoreMetrics#FONT_CHORDS},
+	 *            {@link ScoreMetrics#FONT_LYRICS}...
 	 */
-	protected JText(ScoreMetrics mtrx, String text) {
-		super(mtrx);
-		this.m_text = text;
+	protected JText(ScoreMetrics mtrx, String text, short fontType) {
+		this(mtrx, text, fontType, ALIGN_LEFT);
 	}
 
-	/** Returns the height of this score element.
-	 * @return The height of this score element. */
-	public abstract double getHeight();
+	/**
+	 * Constructor
+	 * 
+	 * @param mtrx
+	 *            The score metrics needed
+	 * @param text
+	 *            The text
+	 * @param fontType
+	 *            One of {@link ScoreMetrics#FONT_TITLE},
+	 *            {@link ScoreMetrics#FONT_SUBTITLE},
+	 *            {@link ScoreMetrics#FONT_COMPOSER},
+	 *            {@link ScoreMetrics#FONT_ANNOTATION},
+	 *            {@link ScoreMetrics#FONT_PART_LABEL},
+	 *            {@link ScoreMetrics#FONT_CHORDS},
+	 *            {@link ScoreMetrics#FONT_LYRICS}...
+	 * @param textAlign
+	 *            {@link #ALIGN_LEFT}, {@link #ALIGN_CENTER},
+	 *            {@link #ALIGN_RIGHT}.
+	 */
+	protected JText(ScoreMetrics mtrx, String text, short fontType,
+			short textAlign) {
+		super(mtrx);
+		this.m_text = text;
+		this.m_fontType = fontType;
+		this.m_textAlign = textAlign;
+	}
 
-	/** Returns the width of this score element.
-	 * @return The width of this score element. */
-	public abstract double getWidth();
+	/**
+	 * Returns the height of this score element.
+	 * 
+	 * @return The height of this score element.
+	 */
+	public double getHeight() {
+		return (double) getMetrics().getTextFontHeight(m_fontType);
+	}
 
-	/** Returns the tune's music element represented by this graphical score element.
-	 * @return The tune's music element represented by this graphical score element. <TT>null</TT>
-	 * if this graphical score element is not related to any music element.
-	 * @see MusicElement  */
+	/**
+	 * Returns the tune's music element represented by this graphical score
+	 * element.
+	 * 
+	 * @return The tune's music element represented by this graphical score
+	 *         element. <TT>null</TT> if this graphical score element is not
+	 *         related to any music element.
+	 * @see MusicElement
+	 */
 	public MusicElement getMusicElement() {
 		return null;
 	}
@@ -54,13 +110,49 @@ abstract class JText extends JScoreElementAbstract {
 		return m_text;
 	}
 
+	/** Returns the alignment */
+	public short getAlignment() {
+		return m_textAlign;
+	}
+
+	/**
+	 * Returns the width of this score element.
+	 * 
+	 * @return The width of this score element.
+	 */
+	public double getWidth() {
+		return (double) getMetrics().getTextFontWidth(m_fontType, getText());
+	}
+
 	/** Callback invoked when the base has changed for this object. */
 	protected void onBaseChanged() {
 		// does nothing
 	}
 
-	/** Renders this Score element to the given graphic context.
-	 * @param g2 */
-	public abstract double render(Graphics2D g2);
+	/**
+	 * Renders this Score element to the given graphic context.
+	 * 
+	 * @param g2
+	 */
+	public double render(Graphics2D g2) {
+		Font previousFont = g2.getFont();
+		g2.setFont(getMetrics().getTextFont(m_fontType));
+		g2
+				.drawString(getText(), (int) getBase().getX(), (int) getBase()
+						.getY());
+		g2.setFont(previousFont);
+		return getWidth();
+	}
+
+	/**
+	 * Sets the text alignment
+	 * 
+	 * @param textAlign
+	 *            {@link #ALIGN_LEFT}, {@link #ALIGN_CENTER},
+	 *            {@link #ALIGN_RIGHT}.
+	 */
+	public void setAlignment(short textAlign) {
+		this.m_textAlign = textAlign;
+	}
 
 }

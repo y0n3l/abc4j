@@ -15,39 +15,24 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
-import java.awt.Font;
-import java.awt.Graphics2D;
-
 /** TODO doc */
 class JSubtitle extends JText {
 
 	/** Constructor
 	 * @param mtrx The score metrics needed
+	 * @param text
 	 */
 	protected JSubtitle(ScoreMetrics mtrx, String text) {
-		super(mtrx, text);
+		this(mtrx, text, ALIGN_LEFT);
 	}
-
-	/** Returns the height of this score element.
-	 * @return The height of this score element. */
-	public double getHeight() {
-		return (double)getMetrics().getTextFontHeight(ScoreMetrics.FONT_SUBTITLE);
-	}
-
-	/** Returns the width of this score element.
-	 * @return The width of this score element. */
-	public double getWidth() {
-		return (double)getMetrics().getTextFontWidth(ScoreMetrics.FONT_SUBTITLE, getText());
-	}
-
-	/** Renders this Score element to the given graphic context.
-	 * @param g2 */
-	public double render(Graphics2D g2) {
-		Font previousFont = g2.getFont();
-		g2.setFont(getMetrics().getTextFont(ScoreMetrics.FONT_SUBTITLE));
-		g2.drawString(getText(), (int)getBase().getX(), (int)getBase().getY());
-		g2.setFont(previousFont);
-		return getWidth();
+	
+	/** Constructor
+	 * @param mtrx The score metrics needed
+	 * @param text
+	 * @param textAlign
+	 */
+	protected JSubtitle(ScoreMetrics mtrx, String text, short textAlign) {
+		super(mtrx, text, ScoreMetrics.FONT_SUBTITLE, textAlign);
 	}
 
 }

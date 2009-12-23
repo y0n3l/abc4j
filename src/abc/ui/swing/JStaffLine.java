@@ -141,7 +141,8 @@ class JStaffLine extends JScoreElementAbstract {
 			staffS[j] = ScoreMetrics.STAFF_SIX_LINES;
 		//1 avoid a small gap (antialiased but really here)
 		//I can't explain what, but it fixes the gap :)
-		g.drawChars(staffS, 0, staffS.length, 1, (int)getBase().getY());
+		g.drawChars(staffS, 0, staffS.length,
+				1+(int)getBase().getX(), (int)getBase().getY());
 
 		// render lyrics, annotations, etc.
 		Iterator iter = m_lyrics.iterator();

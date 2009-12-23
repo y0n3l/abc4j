@@ -20,7 +20,8 @@ public class JPartLabel extends JText {
 	 * @param mtrx The score metrics needed
 	 */
 	protected JPartLabel(ScoreMetrics mtrx, Point2D base, PartLabel partLabel) {
-		super(mtrx, String.valueOf(partLabel.getLabel()));
+		super(mtrx, String.valueOf(partLabel.getLabel()),
+				ScoreMetrics.FONT_PART_LABEL);
 	}
 
 	/** Returns the height of this score element.
@@ -44,7 +45,7 @@ public class JPartLabel extends JText {
 	
 	public Rectangle2D getBoundingBox() {
 		double framesize = getFrameSize();
-		double x = getBase().getX() - framesize/2;
+		double x = getBase().getX() - framesize/2 + framesize/6;
 		double y = getBase().getY()
 				- getMetrics().getStaffCharBounds().getHeight()
 				- getMetrics().getStaffLineHeight()
@@ -60,7 +61,7 @@ public class JPartLabel extends JText {
 		Font previousFont = g2.getFont();
 		Rectangle2D bb = getBoundingBox();
 		g2.setFont(getMetrics().getTextFont(ScoreMetrics.FONT_PART_LABEL));
-		g2.drawString(getText(), (int)(getBase().getX()-labelSize/2),
+		g2.drawString(getText(), (int)(getBase().getX()-labelSize/2+getFrameSize()/6),
 				(int)(bb.getY() + bb.getHeight() - 2));
 		g2.setFont(previousFont);
 		g2.draw(bb);

@@ -351,14 +351,49 @@ public class Tune implements Cloneable
    * @return Transcription notes of this tune. */
   public String getTranscriptionNotes()
   { return m_transcriptionNotes; }
+  
+  /**
+	 * Return the music for graphical rendition, i.e. if structure is ABBA, and
+	 * score contains 2 parts P:A and P:B, returns a music composed of the 2
+	 * parts. {@link #getMusic()} returns a music composed of 4 parts which is
+	 * ok for audio/midi rendition, but not good for graphical score rendition.
+	 */
+	public Music getMusicForGraphicalRendition() {
+		if (m_multiPartsDef == null)
+			return (m_defaultPart.getMusic());
+		else {
+			Vector alreadyAddedParts = new Vector();
+			Music globalScore = new Music();
+			Music defaultScore = m_defaultPart.getMusic();
+			for (int i = 0; i < defaultScore.size(); i++)
+				globalScore.addElement(defaultScore.elementAt(i));
+			Part[] parts = m_multiPartsDef.toPartsArray();
+			for (int i = 0; i < parts.length; i++) {
+				char label = parts[i].getLabel();
+				// already added, skip it!
+				if (alreadyAddedParts.contains(new Character(label)))
+					continue;
+				globalScore.addElement(new PartLabel(label));
+				Music score = parts[i].getMusic();
+				for (int j = 0; j < score.size(); j++)
+					globalScore.addElement(score.elementAt(j));
+				alreadyAddedParts.add(new Character(label));
+			}
+			return globalScore;
+		}
+	}
 
-  /** Returns the music part of this tune.
-   * @return The music part of this tune. If this tune isn't composed of several parts
-   * this method returns the "normal" music part. If this tune is composed of several
-   * parts the returned music is generated so that the tune looks like a "single-part"
-   * one. If you want to retrieve the music related to each part separatly just
-   * do <TT>getPart(char partLabel).getScore()</TT>.
-   * @see #getPart(char) */
+  /**
+	 * Returns the music part of this tune.
+	 * 
+	 * @return The music part of this tune. If this tune isn't composed of
+	 *         several parts this method returns the "normal" music part. If
+	 *         this tune is composed of several parts the returned music is
+	 *         generated so that the tune looks like a "single-part" one. If you
+	 *         want to retrieve the music related to each part separatly just do
+	 *         <TT>getPart(char partLabel).getScore()</TT>.
+	 * @see #getPart(char)
+	 */
   public Music getMusic()
   {
     if (m_multiPartsDef==null)

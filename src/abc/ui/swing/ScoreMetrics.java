@@ -194,6 +194,7 @@ public class ScoreMetrics {
 	double staffLineHeight = -1;
 	private int staffLinesSpacing = -1;
 	private int firstStaffTopMargin = -1;
+	private int firstStaffLeftMargin = -1;
 	private int chordLineSpacing = -1;
 	//TODO chordDiagramsSpacing
 
@@ -347,6 +348,7 @@ public class ScoreMetrics {
 
 			staffLinesSpacing = (int)(staffCharBounds.getHeight()*1.5);
 			firstStaffTopMargin = (int)(staffCharBounds.getHeight()*.75);
+			firstStaffLeftMargin = 0;//*(int)staffCharBounds.getWidth();
 			chordLineSpacing = (int)(staffCharBounds.getHeight()*1.25);
 
 			//slurs
@@ -631,6 +633,12 @@ public class ScoreMetrics {
 	}
 	public void setFirstStaffTopMargin(int i) {
 		firstStaffTopMargin = i;
+	}
+	public int getFirstStaffLeftMargin() {
+		return firstStaffLeftMargin;
+	}
+	public void setFirstStaffLeftMargin(int i) {
+		firstStaffLeftMargin = i;
 	}
 	public int getChordLineSpacing() {
 		return chordLineSpacing;
