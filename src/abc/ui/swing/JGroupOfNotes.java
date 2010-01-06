@@ -28,9 +28,11 @@ import abc.notation.MusicElement;
 import abc.notation.Note;
 import abc.notation.NoteAbstract;
 import abc.notation.SlurDefinition;
+import abc.ui.swing.JScoreElement.JStemmableElement;
 
 /** This class is in charge of rendering a group of notes whose stems should be linked. */
-class JGroupOfNotes extends JScoreElementAbstract {
+class JGroupOfNotes extends JScoreElementAbstract
+				implements JStemmableElement {
 
 	/** All the {@link Note}s and {@link MultiNote}s that are part of the group. */
 	protected NoteAbstract[] m_notes = null;
@@ -97,10 +99,10 @@ class JGroupOfNotes extends JScoreElementAbstract {
 	 * in a genric way that enables positioning, sizing,
 	 * rendering to be done generically
 	 * <p>subclasses should override this method. 
-	 * @return {@link ScoreMetrics#NOTE_GLYPH}
+	 * @return {@link ScoreMetrics#NOTATION_CONTEXT_NOTE}
 	 */
 	protected int getNotationContext() {
-		return ScoreMetrics.NOTE_GLYPH;
+		return ScoreMetrics.NOTATION_CONTEXT_NOTE;
 	}
 	
 	public double getWidth() {

@@ -29,6 +29,8 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 	/*protected int stemX = -1;
 	protected int stemYBegin = -1;  */
 	protected int stemYEnd = -1;
+	
+	private boolean anchor = false;
 
 	public JNotePartOfGroup(Note noteValue, Point2D base, ScoreMetrics c) {
 		super(noteValue, base, c);
@@ -48,10 +50,10 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 	 * in a genric way that enables positioning, sizing,
 	 * rendering to be done generically
 	 * <p>subclasses should override this method. 
-	 * @return {@link ScoreMetrics#NOTE_GLYPH}
+	 * @return {@link ScoreMetrics#NOTATION_CONTEXT_NOTE}
 	 */
 	protected int getNotationContext() {
-		return ScoreMetrics.NOTE_GLYPH;
+		return ScoreMetrics.NOTATION_CONTEXT_NOTE;
 	}
 	
 	protected void onBaseChanged() {
@@ -60,7 +62,7 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 		//used for width can vary if note or grace note
 		Dimension glyphDimension = metrics.getGlyphDimension(getNotationContext());
 		//note glyph is used for vertical position of normal and graces notes
-		Dimension noteGlyphDimension = metrics.getGlyphDimension(ScoreMetrics.NOTE_GLYPH);
+		Dimension noteGlyphDimension = metrics.getGlyphDimension(ScoreMetrics.NOTATION_CONTEXT_NOTE);
 
 		// FIXME: ... 1st time called this is always null. why ?
 		if (glyphDimension == null) {
@@ -141,13 +143,15 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 		super.render(context);
 		//context.drawChars(noteChars, 0, 1, (int)displayPosition.getX(), (int)displayPosition.getY());
 
-		//draw stem
-		Stroke defaultS = context.getStroke();
-		context.setStroke(getMetrics().getStemStroke());
-		context.drawLine((int)getStemBeginPosition().getX(), (int)getStemBeginPosition().getY(),
-				(int)getStemBeginPosition().getX(), stemYEnd);
-		context.setStroke(defaultS);
-
+		//draw stem, except for whole+ (in chord)
+		if (!note.isRest() && (note.getStrictDuration() < Note.WHOLE)) {
+			Stroke defaultS = context.getStroke();
+			context.setStroke(getMetrics().getStemStroke());
+			context.drawLine((int)getStemBeginPosition().getX(), (int)getStemBeginPosition().getY(),
+					(int)getStemBeginPosition().getX(), stemYEnd);
+			context.setStroke(defaultS);
+		}
+		
 		/* * /java.awt.Color previousColor = context.getColor();
 		context.setColor(java.awt.Color.RED);
 		context.drawLine((int)getStemBegin().getX(), (int)getStemBegin().getY(),
@@ -169,6 +173,20 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 	  // always false, instances are stemmed by the aggregating class
 	  autoStem = false;
 
+	}
+
+	/**
+	 * @return Returns the anchor.
+	 */
+	protected boolean isAnchor() {
+		return anchor;
+	}
+
+	/**
+	 * @param anchor The anchor to set.
+	 */
+	protected void setAnchor(boolean anchor) {
+		this.anchor = anchor;
 	}
 
 }

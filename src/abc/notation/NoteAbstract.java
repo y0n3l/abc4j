@@ -23,7 +23,7 @@ public class NoteAbstract implements MusicElement
 {
 
   /** The chord name. */
-  private String m_chordName = null;
+  private Chord m_chord = null;
   private Decoration[] m_decorations = null;
   private Note[] m_gracingNotes = null;
   private boolean generalGracing		= false;
@@ -36,10 +36,10 @@ public class NoteAbstract implements MusicElement
   //protected SlurDefinition slurDefinition = null;
   /** <TT>true</TT> if this note is part of a slur, <TT>false</TT>
    * otherwise. */
-  protected boolean m_isPartOfSlur = false;
+  private boolean m_isPartOfSlur = false;
 
   //private boolean m_isTied = false;
-  protected TieDefinition tieDefinition = null;
+  private TieDefinition tieDefinition = null;
 
   /** The tuplet this note may belongs to. <TT>null</TT>
    * if this note does not belong to any tuplet. */
@@ -48,12 +48,26 @@ public class NoteAbstract implements MusicElement
   /** Sets the name of the chord.
    * @param chordName The name of the chord, ex: Gm6. */
   public void setChordName(String chordName)
-  { m_chordName = chordName; }
+  { m_chord = new Chord(chordName); }
+  
+  /**
+   * Sets the chord instead of only the chord name
+   * @param chord e.g. new Chord("Gm6")
+   */
+  public void setChord(Chord chord)
+  { m_chord = chord; }
 
   /** Returns the name of the chord.
-   * @return The name of the chord, <TT>null</TT> if no chord has been set. */
-  public String getChordName ()
-  { return m_chordName; }
+   * @return The name of the chord, <TT>null</TT> if no chord has been set.
+   * @see #getChord()
+   */
+  public String getChordName()
+  { return m_chord!=null?m_chord.getText():null; }
+  
+  /** Returns the Chord object instead of its name
+   * @return a {@link Chord} object, or <TT>null</TT> */
+  public Chord getChord()
+  { return m_chord; }
 
   /** Returns the decorations for this note.
    * @return The decorations for this note. <TT>null</TT> if
@@ -281,7 +295,7 @@ public class NoteAbstract implements MusicElement
   public String toString()
   {
     String string2Return = "";
-    if (m_chordName!=null) 				string2Return = string2Return.concat(m_chordName);
+    if (m_chord!=null) 				string2Return = string2Return.concat("\""+m_chord.getText()+"\"");
     if (generalGracing)
       string2Return = string2Return.concat("~");
     if (m_gracingNotes!=null)	string2Return = string2Return.concat("{"+m_gracingNotes.toString()+"}");

@@ -496,7 +496,7 @@ public class Abc2xml {
 		byte[] acc = signature.getAccidentals();
 		if (Arrays.equals(acc, KEY_NO_ACCIDENTAL))
 			fifthEl.appendChild(doc.createTextNode("0"));
-		else if (signature.hasOnlySharps()) {
+		else if (signature.isSharpDominant()) {
 			if (Arrays.equals(acc, KEY_SHARP_1ST))
 				fifthEl.appendChild(doc.createTextNode("1"));
 			else if (Arrays.equals(acc, KEY_SHARP_2ND))

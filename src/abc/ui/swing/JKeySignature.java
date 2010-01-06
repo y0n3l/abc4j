@@ -87,10 +87,7 @@ class JKeySignature extends JScoreElementAbstract {
 		
 		byte firstAccidental, secondAccidental;
 
-		//key.hasOnlyFlat/Sharp are bogus
-		//should be rename key.isFlat/SharpDominant or something like that
-		//e.g. K:Dm ^c (D minor with all C sharp, can appear in oriental scales)
-		if (key.hasOnlySharps()) {
+		if (key.isSharpDominant()) {
 			firstAccidental = AccidentalType.SHARP;
 			secondAccidental = AccidentalType.FLAT;
 		} else /*if (key.hasOnlyFlats())*/ {
@@ -104,7 +101,7 @@ class JKeySignature extends JScoreElementAbstract {
 		if ((previous_key != null) && !previous_key.equals(key)) {
 			//Before switching to a new key, maybe we need to
 			//print naturals
-			byte accidental = previous_key.hasOnlySharps()
+			byte accidental = previous_key.isSharpDominant()
 					?AccidentalType.SHARP:AccidentalType.FLAT;
 			int[] order = (accidental == AccidentalType.FLAT)
 					?flatOrder:sharpOrder;

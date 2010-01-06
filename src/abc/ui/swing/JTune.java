@@ -45,6 +45,8 @@ import abc.notation.RepeatBarLine;
 import abc.notation.MusicElement;
 import abc.notation.EndOfStaffLine;
 import abc.notation.SlurDefinition;
+import abc.notation.Tempo;
+import abc.notation.TieDefinition;
 import abc.notation.TimeSignature;
 import abc.notation.Tune;
 import abc.notation.Tuplet;
@@ -56,16 +58,30 @@ import abc.notation.Words;
  * This class role is to render properly a tune using Java 2D.
  * @see #setTune(Tune)
  */
-class JTune extends JScoreElementAbstract {
+public class JTune extends JScoreElementAbstract {
 
 	private static int DEBUG = 0;
 	
 	private final static short START = 0;
 	private final static short CONTROL = 1;
 	private final static short END = 2;
+	
+	public final static byte STEMS_AUTO = 0;
+	public final static byte STEMS_UP = 1;
+	public final static byte STEMS_DOWN = 2;
+	
+	private Tune m_tuneBeforeTransposition = null;
 
 	/** The tune to be displayed. */
 	private Tune m_tune = null;
+
+	/**
+	 * Sets this to <TT>true</TT> each time you need that
+	 * {@link #render(Graphics2D)} recalculate the complete
+	 * tune
+	 */
+	private boolean m_isOutdated = true;
+	
 	/**
 	 * Hashmap that associates <DEL>ScoreElement</DEL> <B>MusicElement</B> instances (key) and JScoreElement instances(value).
 	 * It contains : JChord, JNote, JNotePartOfGroup, JChordNote,
@@ -74,19 +90,16 @@ class JTune extends JScoreElementAbstract {
 	private Hashtable m_scoreElements = null;
 	private Vector m_scoreNoteGroups = null;
 
-
 	/** Note instances starting Slurs and ties. */
 	private Vector m_beginningNotesLinkElements = null;
 
-	/** WTF ??? does not seem to be really taken into account anyway... */
-	private int MARGIN_LEFT = 0;
-	/** Top margin */
-	private int MARGIN_TOP = 0;
 	/** The staff lines drawings. */
 	private Vector m_staffLines = null;
 	/** <TT>true</TT> if the rendition of the score should be justified,
 	 * <TT>false</TT> otherwise. */
 	private boolean m_isJustified = false;
+	/** Stems policy */
+	private byte m_stemPolicy = STEMS_AUTO;
 
 	private double m_height = -1;
 	private double m_width = -1;
@@ -94,9 +107,13 @@ class JTune extends JScoreElementAbstract {
 	private Engraver m_engraver = null;
 
 	// titles and subtitles
-	// FIXME: m_showTitles shouldn't be static .... not sure why it doesn't work otherwise!!
-	static protected boolean m_showTitles = true;
+	private boolean m_showTitles = true;
+	
+	private Color m_color = Color.BLACK;
+	
 	private ArrayList m_headersTexts = null;
+	
+	private int m_transposition = 0;
 
 	//temporary variables used only to cumpute the score when tune is set.
 	private boolean currentStaffLineInitialized = false;
@@ -107,45 +124,91 @@ class JTune extends JScoreElementAbstract {
 	private TimeSignature currentTime = null;
 	private Point2D cursor = null;
 
-	public JTune(Tune tune, Point2D base, ScoreMetrics c) {
-		this(tune, base, c, false);
-	}
-
-	public JTune(Tune tune, Point2D base, ScoreMetrics c, boolean isJustified) {
-		this(tune, base, c, new Engraver(Engraver.NONE), isJustified);
-	}
-
-	public JTune(Tune tune, Point2D base, ScoreMetrics c,
-			Engraver e, boolean isJustified) {
-		super(c);
-		MARGIN_LEFT = (int)base.getX();
-		MARGIN_TOP = (int)base.getY();
+	protected JTune(Tune tune, Point2D base, ScoreMetrics c,
+			Engraver e) {
+		super(base, c);
 		m_headersTexts = new ArrayList();
 		m_staffLines = new Vector();
-		m_isJustified = isJustified;
 		m_scoreElements = new Hashtable();
 		m_scoreNoteGroups = new Vector();
 		m_beginningNotesLinkElements = new Vector();
-		e.adaptToTune(tune, c);
 		m_engraver = e;
 		setTune(tune);
 		setBase(base);
 	}
 
+	/** @deprecated use {@link JScoreElementAbstract#getBase()} */
 	public void setMarginLeft(int margin) {
-		MARGIN_LEFT = margin;
+		Point2D base = getBase();
+		base.setLocation(margin, base.getY());
+		setBase(base);
 	}
 
+	/** @deprecated use {@link JScoreElementAbstract#getBase()} */
 	public void setMarginTop(int margin) {
-		MARGIN_TOP = margin;
+		Point2D base = getBase();
+		base.setLocation(base.getX(), margin);
+		setBase(base);
 	}
-
-	public void displayTitles(boolean show) {
+	
+	public void setJustified(boolean b) {
+		if (b != m_isJustified)
+			m_isOutdated = true;
+		m_isJustified = b;
+	}
+	public boolean isJustified() {
+		return m_isJustified;
+	}
+	
+	//TODO find a way to choose which titles to show
+	public void setShowTitles(boolean show) {
+		if (show != m_showTitles)
+			m_isOutdated = true;
 		m_showTitles = show;
+	}
+	public boolean isShowTitles() {
+		return m_showTitles;
+	}
+	/** @deprecated use {@link #setShowTitles(boolean)} */
+	public void displayTitles(boolean show) {
+		setShowTitles(show);
+	}
+	
+	/**
+	 * Sets the stemming policy, auto or forced, up or down
+	 * 
+	 * @param b
+	 *            one of {@link #STEMS_AUTO}, {@link #STEMS_DOWN} and
+	 *            {@link #STEMS_UP}.
+	 */
+	public void setStemmingPolicy(byte b) {
+		if ((b != STEMS_AUTO) && (b != STEMS_UP)
+				&& (b != STEMS_DOWN))
+			b = STEMS_AUTO;
+		if (b != m_stemPolicy)
+			m_isOutdated = true;
+		m_stemPolicy = b;
+	}
+	public byte getStemmingPolicy() {
+		return m_stemPolicy;
+	}
+	public void setColor(Color c) {
+		m_color = c;
+	}
+	public Color getColor() {
+		return m_color;
+	}
+	public void setTransposition(int transpo) {
+		if (transpo != m_transposition)
+			m_isOutdated = true;
+		m_transposition = transpo;
+	}
+	public int getTransposition() {
+		return m_transposition;
 	}
 
 	public void onBaseChanged() {
-
+		m_isOutdated = true;
 	}
 
 	public MusicElement getMusicElement() {
@@ -153,28 +216,33 @@ class JTune extends JScoreElementAbstract {
 	}
 
 	public double getHeight() {
-		return m_height; //suppose it has been calculated
+		if (m_isOutdated)
+			compute();
+		return m_height;
 	}
 	public double getWidth() {
-		return m_width; //suppose it has been calculated
+		if (m_isOutdated)
+			compute();
+		return m_width;
+	}
+	public Rectangle2D getBoundingBox() {
+		Rectangle2D bb = new Rectangle2D.Double(
+				getBase().getX(),
+				getBase().getY(),
+				getWidth(),
+				getHeight());
+		return bb;
 	}
 
-	/*public void setStaffLinesSpacing(int staffLinesSpacing) {
-		m_staffLinesSpacing = staffLinesSpacing;
-		setTune(m_tune);
-	}*/
-
-	/*public int getStaffLinesSpacing() {
-		return m_staffLinesSpacing;
-	}*/
-
 	public Tune getTune() {
+		if (m_tuneBeforeTransposition != null)
+			return m_tuneBeforeTransposition;
 		return m_tune;
 	}
 
 	/** Returns the hashtable that maps pure music objects to their corresponding
 	 * rendition objects.
-	 * * @return Returns the hashtable that maps pure music objects (<DEL>ScoreElement</DEL> <B>MusicElement</B> instances
+	 * @return Returns the hashtable that maps pure music objects (<DEL>ScoreElement</DEL> <B>MusicElement</B> instances
 	 * from abc.notation.* package) to rendition objects (JScoreElement instances from
 	 * abc.ui.swing.score.* package) */
 	public Hashtable getRenditionObjectsMapping() {
@@ -225,6 +293,10 @@ class JTune extends JScoreElementAbstract {
 			m_engraver = new Engraver();
 		return m_engraver;
 	}
+	
+	protected Hashtable getScoreElements() {
+		return m_scoreElements;
+	}
 
 	/** Returns the part of the score (as a JScoreElement instance) located
 	 * at a given point.
@@ -246,15 +318,28 @@ class JTune extends JScoreElementAbstract {
 
 	/** Sets the tune to be renderered.
 	 * @param tune The tune to be displayed. */
-	public void setTune(Tune tune) {
-		//The spacing between two staff lines
-		//m_staffLinesSpacing = (int)(m_metrics.getStaffCharBounds().getHeight()*2.5);
-		cursor = new Point(MARGIN_LEFT, MARGIN_TOP);
+	protected void setTune(Tune tune) {
+		m_tune = tune;
+		m_tuneBeforeTransposition = null;
+		m_isOutdated = true;
+	}
+	
+	/**
+	 * (Re)calculate everything for the tune.
+	 */
+	private void compute() {
+		m_isOutdated = false;
+		cursor = (Point2D) getBase().clone();
 		double componentWidth = 0, componentHeight = 0;
 		
 		System.out.println("Passage #"+(++DEBUG));
+		
+		if (m_tuneBeforeTransposition == null)
+			m_tuneBeforeTransposition = (Tune) m_tune.clone();
+		m_tune = Tune.transpose(m_tuneBeforeTransposition, getTransposition());
 
-		m_tune = tune;
+		getEngraver().adaptToTune(m_tune, getMetrics());
+
 		m_scoreElements.clear();
         m_scoreNoteGroups.clear();
         m_staffLines.removeAllElements();
@@ -263,13 +348,12 @@ class JTune extends JScoreElementAbstract {
 		currentKey = null;
 		previousKey = null;
 
-
 		// clear headings, eg. titles, subtitles, composer, etc.
 		m_headersTexts.clear();
 
-		if (m_showTitles) {
+		if (isShowTitles()) {
 
-			String[] titles = tune.getTitles();
+			String[] titles = m_tune.getTitles();
 			for (int i=0; i< titles.length; i++) {
 				if (titles[i].length() == 0)
 					continue;
@@ -284,30 +368,46 @@ class JTune extends JScoreElementAbstract {
 
 			String txt = null;
 			//Rythme R:hornpipe, R:waltz...
-			txt = tune.getRhythm();
+			txt = m_tune.getRhythm();
 			if ((txt != null) && (txt.length() > 0)) {
 				m_headersTexts.add(new JSubtitle(getMetrics(), txt));
 			}
 			//composer, right align
-			txt = tune.getComposer();
+			txt = m_tune.getComposer();
 			if ((txt != null) && (txt.length() > 0)) {
 				m_headersTexts.add(
 					new JText(getMetrics(), txt,
 							ScoreMetrics.FONT_COMPOSER,
 							JText.ALIGN_RIGHT));
 			}
-			//area
-			txt = tune.getArea();
-			if ((txt != null) && (txt.length() > 0)) {
+			//area, origin, source
+			txt = "";
+			String[] aos = new String[] {m_tune.getArea(),
+					m_tune.getOrigin(), m_tune.getSource() };
+			for (int i = 0; i < aos.length; i++) {
+				if ((aos[i] != null) && (aos[i].length() > 0)) {
+					if (txt.length() > 0)
+						txt += ", ";
+					txt += aos[i];
+				}
+			}
+			if (txt.length() > 0) {
 				m_headersTexts.add(
 						new JText(getMetrics(), txt,
 								ScoreMetrics.FONT_COMPOSER,
 								JText.ALIGN_RIGHT));
 			}
+			//general tempo
+			Tempo generalTempo = m_tune.getGeneralTempo();
+			if (generalTempo != null) {
+				m_headersTexts.add(
+						new JTempo(getMetrics(), cursor, generalTempo)
+						);
+			}
 			//Parts order
-			if (tune.getMultiPartsDefinition() != null) {
+			if (m_tune.getMultiPartsDefinition() != null) {
 				try {
-					Part[] parts = tune.getMultiPartsDefinition().toPartsArray();
+					Part[] parts = m_tune.getMultiPartsDefinition().toPartsArray();
 					txt = "";
 					//if all parts are only played one time
 					//no need to add this information
@@ -343,24 +443,24 @@ class JTune extends JScoreElementAbstract {
 					y = Math.max(yLeft, Math.max(yCenter, yRight));
 				else if (align == JText.ALIGN_RIGHT)
 					y = Math.max(yRight, yCenter);
-				else //if (align == JText.ALIGN_LEFT)
+				else //ALIGN_LEFT || ALIGN_LEFT_TAB
 					y = Math.max(yLeft, yCenter);
-				y+= oneText.getHeight();
+				y += oneText.getHeight();
 				//now it's aligned on left, we'll recalculate
 				//X later (see renderTitles)
 				//for centered and right texts
-				cursor.setLocation(MARGIN_LEFT, y);
+				cursor.setLocation(getBase().getX(), y);
 				if (align == JText.ALIGN_CENTER)
 					yCenter = y;
 				else if (align == JText.ALIGN_RIGHT)
 					yRight = y;
-				else //if (align == JText.ALIGN_LEFT)
+				else //ALIGN_LEFT || ALIGN_LEFT_TAB
 					yLeft = y;
 				oneText.setBase(cursor);
 			}
 			//move the cursor at the max Y of the headers
 			double headerHeight = Math.max(yLeft, Math.max(yCenter, yRight));
-			cursor.setLocation(MARGIN_LEFT, headerHeight);
+			cursor.setLocation(getBase().getX(), headerHeight);
 		}
 
 		//if tune has part, tune.getMusic() will return
@@ -369,7 +469,7 @@ class JTune extends JScoreElementAbstract {
 		//getMusic() returns 4 lines
 		//it's ok for audio rendition, but for graphical
 		//we just need one occurence of each part.
-		Music score = tune.getMusicForGraphicalRendition();
+		Music score = m_tune.getMusicForGraphicalRendition();
 		
 		ArrayList lessThanQuarter = new ArrayList();
 		//int durationInGroup = 0;
@@ -378,7 +478,7 @@ class JTune extends JScoreElementAbstract {
 		Tuplet tupletContainer = null;
 		int staffLineNb = 0;
 		//init attributes that are for iterating through the score of the tune.
-		currentKey = tune.getKey();
+		currentKey = m_tune.getKey();
 		if (currentKey != null)
 			previousKey = (KeySignature) currentKey.clone();
 		else
@@ -514,6 +614,11 @@ class JTune extends JScoreElementAbstract {
 			if (s instanceof PartLabel) {
 				appendToScore(new JPartLabel(getMetrics(), cursor, (PartLabel)s));
 			}
+			else
+			// ==== Tempo ====
+			if ((s instanceof Tempo) && (s != m_tune.getGeneralTempo())) {
+				appendToScore(new JTempo(getMetrics(), cursor, (Tempo)s));
+			}
 		}// Enf of score elements iteration.
 
 		if (lessThanQuarter.size()!=0) {
@@ -525,21 +630,24 @@ class JTune extends JScoreElementAbstract {
 			componentWidth = (int)cursor.getX();
 		componentHeight = (int)cursor.getY();
 
-		m_width = componentWidth+getMetrics().getStaffCharBounds().getWidth();
+		m_width = componentWidth;//+getMetrics().getStaffCharBounds().getWidth();
 		m_height = componentHeight+getMetrics().getStaffCharBounds().getHeight();
 
-		if (m_isJustified)
+		if (isJustified())
 			justify();
 
 	}
 
-	protected void appendToScore(JScoreElementAbstract element) {
+	/**
+	 * Append an element to the score, calculating its
+	 * position
+	 * @param element
+	 */
+	private void appendToScore(JScoreElementAbstract element) {
 		if (!currentStaffLineInitialized) {
-			currentStaffLine=initNewStaffLine();
+			currentStaffLine = initNewStaffLine();
 			m_staffLines.addElement(currentStaffLine);
-			//currentStaffLine=initNewStaffLine(currentKey, null, cursor, m_metrics);
 			currentStaffLineInitialized = true;
-		//	element.setBase(cursor);
 		}
 		
 		JScoreElement lastElement = currentStaffLine.getLastElement();
@@ -551,6 +659,7 @@ class JTune extends JScoreElementAbstract {
 			}
 		}
 		currentStaffLine.addElement(element);
+		applyStemmingPolicy(element);
 		element.setBase(cursor);
 		double width = element.getWidth();
 		int cursorNewLocationX = (int)(cursor.getX() + width);
@@ -586,12 +695,13 @@ class JTune extends JScoreElementAbstract {
 				else
 				if (g.getRenditionElements()[j] instanceof JChord){
 					JNote[] jnotes = ((JChord)g.getRenditionElements()[j]).getScoreElements();
-					Vector notes = ((MultiNote)((JChord)g.getRenditionElements()[j]).getMusicElement()).getNotesAsVector();
+					//Vector ...=... getNotesAsVector() <-- CLONES!!!
+					//Note[] notes = ((MultiNote)((JChord)g.getRenditionElements()[j]).getMusicElement()).toArray();
 					//adds all the notes of the chords into the hashtable
 					//TODO the ordering of the get notes as vector and the jnotes should be the same...
 					//System.out.println("Warning - abc4j - current limitation prevents you from using chords with different notes lengths.");
 					for (int i=0; i<jnotes.length; i++)
-						m_scoreElements.put(notes.elementAt(i), jnotes[i]);
+						m_scoreElements.put(jnotes[i].getMusicElement(), jnotes[i]);
 					//adds also the chords itself
 					m_scoreElements.put(g.getRenditionElements()[j].getMusicElement(), g.getRenditionElements()[j]);
 				}
@@ -649,40 +759,57 @@ class JTune extends JScoreElementAbstract {
 		y += adjustment;
 		// lyrics always occur under a staff line, so it should be safe
 		// to reset base to X=0, Y=(current Y + height of char in lyrics font)
-		cursor.setLocation(MARGIN_LEFT, y);
+		cursor.setLocation(getBase().getX(), y);
 
 		currentStaffLine.addLyrics(lyrics);
 //		lyrics.setStaffLine(currentStaffLine);
 		lyrics.setBase(cursor);
 	}
+	
+	/** apply stemming policy to an element */
+	private void applyStemmingPolicy(JScoreElementAbstract element) {
+		if (element != null && element instanceof JStemmableElement) {
+			JStemmableElement stemmable = (JStemmableElement) element;
+			if (getStemmingPolicy() == STEMS_AUTO) {
+				stemmable.setAutoStem(true);
+			} else {
+				boolean isup = (getStemmingPolicy() == STEMS_UP) ? true : false;
+				stemmable.setAutoStem(false);
+				stemmable.setStemUp(isup);
+			}
+		}
+	}
 
 	public double render(Graphics2D g2) {
+		if (m_isOutdated)
+			compute();
+		
 		g2.setFont(getMetrics().getNotationFont());
-		g2.setColor(Color.BLACK);
+		g2.setColor(m_color);
 		g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 	    renderTitles(g2);
 		// staff line width
-		int staffCharNb = (int)(getWidth()/getMetrics().getStaffCharBounds().getWidth());
-		char[] staffS = new char[staffCharNb+1];
-		for (int i=0; i<staffS.length; i++)
-			staffS[i] = ScoreMetrics.STAFF_SIX_LINES;
+//		int staffCharNb = (int)(getWidth()/getMetrics().getStaffCharBounds().getWidth());
+//		char[] staffS = new char[staffCharNb-1];
+//		for (int i=0; i<staffS.length; i++)
+//			staffS[i] = ScoreMetrics.STAFF_SIX_LINES;
 
 		JStaffLine currentStaffLine = null;
 		for (int i=0; i<m_staffLines.size(); i++) {
 			currentStaffLine = (JStaffLine)m_staffLines.elementAt(i);
 			currentStaffLine.render(g2);
-			g2.drawChars(staffS, 0, staffS.length,
-					(int)(currentStaffLine.getBase().getX()),
-					(int)(currentStaffLine.getBase().getY()));
+//			g2.drawChars(staffS, 0, staffS.length,
+//					(int)(currentStaffLine.getBase().getX()),
+//					(int)(currentStaffLine.getBase().getY()));
 		}
 		renderSlursAndTies(g2);
 
 		return getWidth();
 	}
 
-	protected void renderTitles(Graphics2D g2) {
+	private void renderTitles(Graphics2D g2) {
 		Iterator iter = m_headersTexts.iterator();
 		while (iter.hasNext()) {
 			JText text = (JText) iter.next();
@@ -690,17 +817,22 @@ class JTune extends JScoreElementAbstract {
 			double textWidth = text.getWidth();
 			double y = text.getBase().getY();
 			if (align == JText.ALIGN_CENTER) {
-				text.setBase(new Point2D.Double(m_width/2 - textWidth/2, y));
+				text.setBase(new Point2D.Double(getWidth()/2 - textWidth/2, y));
 			} else if (align == JText.ALIGN_RIGHT) {
-				text.setBase(new Point2D.Double(m_width - textWidth, y));
-			} //else left, do not change anything
+				text.setBase(new Point2D.Double(getWidth() - textWidth, y));
+			} else if (align == JText.ALIGN_LEFT_TAB) {
+				text.setBase(new Point2D.Double(getBase().getX()
+						+ getMetrics().getFirstStaffLeftMargin() + 30, y));
+			} else {//ALIGN_LEFT
+				text.setBase(new Point2D.Double(getBase().getX(), y));
+			}
 			text.render(g2);
 		}
 	}
 
 	/** Triggers the re computation of all staff lines elements in order to
 	 * get the alignment justified. */
-	protected void justify() {
+	private void justify() {
 		if (m_staffLines.size()>0) {
 			double maxWidth = ((JStaffLine)m_staffLines.elementAt(0)).getWidth();
 			for (int i=1; i<m_staffLines.size();i++){
@@ -716,7 +848,7 @@ class JTune extends JScoreElementAbstract {
 		}
 	}
 
-	protected void renderSlursAndTies(Graphics2D g2) {
+	private void renderSlursAndTies(Graphics2D g2) {
 		//System.err.println("renderSlursAndTies");
 		for (int j=0; j<m_beginningNotesLinkElements.size(); j++) {
 			NoteAbstract n = (NoteAbstract)m_beginningNotesLinkElements.elementAt(j);
@@ -763,9 +895,9 @@ class JTune extends JScoreElementAbstract {
 			);
 		}
 		
-		System.out.println("drawLink "+slurDef);
-		System.out.println("  - start = "+points[START]);
-		System.out.println("  - end = "+points[END]);
+//		System.out.println("drawLink "+slurDef);
+//		System.out.println("  - start = "+points[START]);
+//		System.out.println("  - end = "+points[END]);
 
 		Color previousColor = g2.getColor();
 		boolean isAboveNotes = false;
@@ -854,6 +986,10 @@ class JTune extends JScoreElementAbstract {
 			elmtEnd = (JNote)m_scoreElements.get(slurDef.getEnd());
 			elmtEndLow = elmtEndHigh = (JNote) elmtEnd;
 		}*/
+		if (elmtStart == null || elmtStart == null) {
+			System.err.println("getLinkPoints error: elmtStart or elmtEnd are null");
+			return new Point2D[] {};
+		}
 		
 		if ((elmtStart.getStaffLine() != null) && (elmtEnd.getStaffLine() != null)) {
 			if (!elmtStart.getStaffLine().equals(elmtEnd.getStaffLine())) {
@@ -867,6 +1003,54 @@ class JTune extends JScoreElementAbstract {
 		final short ABOVE_OUT = 3; //up and out of stems (e.g. for tuplet)
 		Point2D[][] p = new Point2D[4][3];
 
+		//it's a tie, anchors are different and curve is flater
+		if (slurDef instanceof TieDefinition) {
+			Point2D[] above = new Point2D[3];
+			Point2D[] under = new Point2D[3];
+			Point2D[] ret;
+			above[START] = elmtStart.getTieStartAboveAnchor();
+			above[END] = elmtEnd.getTieEndAboveAnchor();
+			under[START] = elmtStart.getTieStartUnderAnchor();
+			under[END] = elmtEnd.getTieEndUnderAnchor();
+		
+			short position = elmtStart.getJSlurDefinition().getPosition();
+			if (position==JSlurOrTie.POSITION_AUTO
+				&& (elmtStart instanceof JChordNote)) {
+				if (elmtStart.isStemUp()) {
+					//in a chord stem up, all ties are under
+					//the highest note tie is above
+					position = ((JChordNote) elmtStart).isHighest()
+						?JSlurOrTie.POSITION_ABOVE
+						:JSlurOrTie.POSITION_UNDER;
+				} else {
+					//in a chord stem down, all ties are above
+					//the lowest note tie is under
+					position = ((JChordNote) elmtStart).isLowest()
+						?JSlurOrTie.POSITION_UNDER
+						:JSlurOrTie.POSITION_ABOVE;
+				}
+			}
+			int factor;
+			if ((position==JSlurOrTie.POSITION_ABOVE)
+				|| (position==JSlurOrTie.POSITION_AUTO
+						&& (!elmtStart.isStemUp() || !elmtEnd.isStemUp()))) {
+				//tie above
+				ret = above;
+				factor = -1;
+			} else {// if ((position==JSlurOrTie.POSITION_UNDER)
+					//|| (position==JSlurOrTie.POSITION_AUTO
+					//		&& elmtStart.isStemUp() && elmtEnd.isStemUp())) {
+				//tie under
+				ret = under;
+				factor = 1;
+			}
+			ret[CONTROL] = new Point2D.Double(
+					ret[START].getX() + (ret[END].getX()-ret[START].getX())/2,
+					ret[START].getY() + factor*getMetrics().getSlurAnchorYOffset()
+				);
+			return ret;
+		}
+		
 		p[UNDER_IN][START] = elmtStart.getSlurUnderAnchor();
 		p[UNDER_OUT][START] = elmtStart.getSlurUnderAnchorOutOfStem();
 		p[ABOVE_IN][START] = elmtStart.getSlurAboveAnchor();
@@ -1211,14 +1395,14 @@ class JTune extends JScoreElementAbstract {
 	}
 
 	private JStaffLine initNewStaffLine() {
-		JStaffLine sl = new JStaffLine(cursor, getMetrics());
+		JStaffLine sl = new JStaffLine(cursor, getMetrics(), getEngraver());
 		if (m_staffLines.size() == 0) {
 			//first staff top margin
-			cursor.setLocation(MARGIN_LEFT + getMetrics().getFirstStaffLeftMargin(),
+			cursor.setLocation(getBase().getX() + getMetrics().getFirstStaffLeftMargin(),
 					cursor.getY() + getMetrics().getFirstStaffTopMargin());
 		} else /*if (m_staffLines.size() > 0)*/ {
 			//add a space between each lines
-			cursor.setLocation(MARGIN_LEFT, cursor.getY() + getMetrics().getStaffLinesSpacing());
+			cursor.setLocation(getBase().getX(), cursor.getY() + getMetrics().getStaffLinesSpacing());
 		}
 		//store the highest point of the staff area including
 		//space for chords and others...

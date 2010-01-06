@@ -35,8 +35,6 @@ import abc.notation.Note;
  */
 class JNote extends JNoteElementAbstract {
 
-	private static final double SPACE_RATIO_FOR_ACCIDENTALS = 1.2;
-
 	/** This position is independant from the note type (height or rhythm)
 	 * and, as a way of consequence, can be used to render elements such as sharp,
 	 * flats etc around the note.
@@ -129,10 +127,10 @@ class JNote extends JNoteElementAbstract {
 	 * in a genric way that enables positioning, sizing,
 	 * rendering to be done generically
 	 * <p>subclasses should override this method. 
-	 * @return {@link ScoreMetrics#NOTE_GLYPH}
+	 * @return {@link ScoreMetrics#NOTATION_CONTEXT_NOTE}
 	 */
 	protected int getNotationContext() {
-		return ScoreMetrics.NOTE_GLYPH;
+		return ScoreMetrics.NOTATION_CONTEXT_NOTE;
 	}
 
 	// all sizing/positioning is derived in this method!!
@@ -143,7 +141,7 @@ class JNote extends JNoteElementAbstract {
 		//can be note or grace note
 		Dimension glyphDimension = metrics.getGlyphDimension(getNotationContext());
 		//note glyph is used for vertical position of graces notes
-		Dimension noteGlyphDimension = metrics.getGlyphDimension(ScoreMetrics.NOTE_GLYPH);
+		Dimension noteGlyphDimension = metrics.getGlyphDimension(ScoreMetrics.NOTATION_CONTEXT_NOTE);
 
 		Point2D base = getBase();
 		int noteY = 0;
@@ -163,7 +161,7 @@ class JNote extends JNoteElementAbstract {
 				accidentalsChars = getMetrics().getAccidentalGlyph(note.getAccidental());
 				accidentalsWidth = getMetrics()
 					.getBounds(accidentalsChars).getWidth()
-					*SPACE_RATIO_FOR_ACCIDENTALS;
+					*ScoreMetrics.SPACE_RATIO_FOR_ACCIDENTALS;
 			}
 		} catch (IllegalArgumentException iae) {
 			throw new IllegalArgumentException("Incorrect accidental for " + note + " : " + note.getAccidental());
@@ -191,9 +189,12 @@ class JNote extends JNoteElementAbstract {
 		//if stem is up and {TODO !isHeadInverted), and < eight
 		//add an extra width.
 		double extraWidth = 0;
-		if (!(this instanceof JNotePartOfGroup)
+		//if (!(this instanceof JNotePartOfGroup)
+		if (((this instanceof JNote) || (this instanceof JChordNote))
+				&& !(this instanceof JGraceNote)
 				&& !note.isRest() && isStemUp()
-				&& (note.getStrictDuration() <= Note.EIGHTH)) {
+				&& (note.getStrictDuration() <= Note.EIGHTH)
+				&& (noteChars != ScoreMetrics.NOTE)) {
 			extraWidth = glyphDimension.getWidth();
 		}
 		//calc dots needed extra space
@@ -370,6 +371,16 @@ class JNote extends JNoteElementAbstract {
 			?new Point2D.Double(stemUpBeginPosition.getX(),//getBoundingBox().getMaxX(),
 								getBoundingBox().getMinY()-metrics.getSlurAnchorYOffset())
 			:slurAboveAnchor;
+		Rectangle2D tieAnchors = new Rectangle2D.Double(
+				displayPosition.getX(),
+				displayPosition.getY()-glyphDimension.getHeight(),
+				glyphDimension.getWidth(),
+				glyphDimension.getHeight());
+		//ties start and end in a corner of the glyph rectangle
+		tieStartAboveAnchor = new Point2D.Double(tieAnchors.getMaxX(), tieAnchors.getMinY());
+		tieStartUnderAnchor = new Point2D.Double(tieAnchors.getMaxX(), tieAnchors.getMaxY());
+		tieEndAboveAnchor = new Point2D.Double(tieAnchors.getMinX(), tieAnchors.getMinY());
+		tieEndUnderAnchor = new Point2D.Double(tieAnchors.getMinX(), tieAnchors.getMaxY());
 	}
 
 	public static double getOffset(Note note) {
@@ -495,7 +506,7 @@ public Note getNote(){
 		//used for width which vary from normal to grace note
 		Dimension glyphDimension = metrics.getGlyphDimension(getNotationContext());
 		//used for height
-		Dimension noteGlyphDimension = metrics.getGlyphDimension(ScoreMetrics.NOTE_GLYPH);
+		Dimension noteGlyphDimension = metrics.getGlyphDimension(ScoreMetrics.NOTATION_CONTEXT_NOTE);
 		int extSize = (int)glyphDimension.getWidth()/3;
 		if (note.getHeight()<=Note.C){
 			double currentOffset = getOffset(new Note(Note.C, AccidentalType.NONE));

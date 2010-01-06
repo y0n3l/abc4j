@@ -69,7 +69,8 @@ public class Tune implements Cloneable
 	  this.m_group = tune.m_group;
 	  this.m_history = tune.m_history;
 	  this.m_information = tune.m_information;
-	  this.m_key = (KeySignature)tune.m_key.clone();
+	  if (tune.m_key != null)
+		  this.m_key = (KeySignature)tune.m_key.clone();
 	  this.m_notes = tune.m_notes;
 	  this.m_origin = tune.m_origin;
 	  this.m_rhythm = tune.m_rhythm;
@@ -77,10 +78,14 @@ public class Tune implements Cloneable
 	  this.m_referenceNumber = tune.m_referenceNumber;
 	  this.m_transcriptionNotes = tune.m_transcriptionNotes;
 	  this.m_elemskip = tune.m_elemskip;
-	  this.m_titles = (Vector)tune.m_titles.clone();
-	  this.m_parts = (Hashtable)tune.m_parts.clone(); 
-	  this.m_defaultPart = (Part)tune.m_defaultPart.clone();
-	  this.m_multiPartsDef = (MultiPartsDefinition)tune.m_multiPartsDef.clone();
+	  if (tune.m_titles != null)
+		  this.m_titles = (Vector)tune.m_titles.clone();
+	  if (tune.m_parts != null)
+		  this.m_parts = (Hashtable)tune.m_parts.clone();
+	  if (tune.m_defaultPart != null)
+		  this.m_defaultPart = (Part)tune.m_defaultPart.clone();
+	  if (tune.m_multiPartsDef != null)
+		  this.m_multiPartsDef = (MultiPartsDefinition)tune.m_multiPartsDef.clone();
   }
 
   /** Sets the geographic area where this tune comes from.
@@ -352,7 +357,130 @@ public class Tune implements Cloneable
   public String getTranscriptionNotes()
   { return m_transcriptionNotes; }
   
-  /**
+	static public Tune transpose(Tune t, int semitones) {
+		Tune ret = (Tune) t.clone();
+		if (semitones == 0)
+			return ret;
+		// collect all part's music to transpose
+		Vector musics = new Vector();
+		musics.add(ret.m_defaultPart.getMusic());
+		if (ret.m_multiPartsDef != null) {
+			Vector alreadyAddedParts = new Vector();
+			Part[] parts = ret.m_multiPartsDef.toPartsArray();
+			for (int i = 0; i < parts.length; i++) {
+				char label = parts[i].getLabel();
+				// already added, skip it!
+				if (alreadyAddedParts.contains(new Character(label)))
+					continue;
+				musics.add(parts[i].getMusic());
+				alreadyAddedParts.add(new Character(label));
+			}
+		}
+
+		KeySignature lastKey = ret.getKey();
+		Note lastKeyNote = new Note(lastKey.getNote(), lastKey.getAccidental());
+		KeySignature noneTranspKey = lastKey;
+		Note noneTranspKeyNote = lastKeyNote;
+		ret.setKey(KeySignature.transpose(noneTranspKey, semitones));
+		Iterator itMusics = musics.iterator();
+		int musiccount = 0;
+		while (itMusics.hasNext()) {
+			musiccount++;
+			Music music = (Music) itMusics.next();
+			for (int i = 0, j = music.size(); i<j; i++) {
+				MusicElement element = (MusicElement) music.elementAt(i);
+				if (element instanceof KeySignature) {
+					noneTranspKey = (KeySignature) element;
+					noneTranspKeyNote = new Note(noneTranspKey.getNote(), noneTranspKey.getAccidental());
+					KeySignature transposed = KeySignature
+						.transpose(noneTranspKey, semitones);
+					music.setElementAt(transposed, i);
+					lastKey = transposed;
+					byte octav = 0;
+					try {
+						octav = Note.getOctaveTransposition((byte) (noneTranspKeyNote.getHeight()+semitones));
+					} catch (Exception e) { //Illegal arg if transp note is accidented
+						octav = Note.getOctaveTransposition((byte) (noneTranspKeyNote.getHeight()+semitones-1));
+					}
+					lastKeyNote = new Note(lastKey.getNote(), lastKey.getAccidental(), octav);
+				} else if ((element instanceof Note)
+						&& !((Note) element).isRest()) {
+					Note original = (Note) element;
+					Note transp = (Note) transpose_Note(original, noneTranspKeyNote,
+							noneTranspKey, lastKeyNote, lastKey);
+					music.setElementAt(transp, i);
+				} else if (element instanceof MultiNote) {
+					MultiNote multi = (MultiNote) element;
+					MultiNote transp = (MultiNote) transpose_Note(multi, noneTranspKeyNote,
+							noneTranspKey, lastKeyNote, lastKey);
+					music.setElementAt(transp, i);
+				}
+			}// end for each element in the music
+		}// end while there are more music part
+		return ret;
+	}
+	
+	/**
+	 * Subfunction of {@link #transpose(Tune, int)} which transpose
+	 * a Note, its graces notes (recursively)
+	 */
+	static private NoteAbstract transpose_Note(NoteAbstract original,
+			Note noneTranspKeyNote, KeySignature noneTranspKey,
+			Note lastKeyNote, KeySignature lastKey) {
+		NoteAbstract transp = null;
+		if (original instanceof Note) {
+			Interval interval = new Interval(noneTranspKeyNote, (Note) original,
+					noneTranspKey);
+			// Note transp = Note.transpose(original, semitones, lastKey);
+			Note transpHeight = interval.calculateSecondNote(lastKeyNote, lastKey);
+			transp = (Note) ((Note) original).clone();
+			((Note) transp).setHeight(transpHeight.getHeight());
+			((Note) transp).setOctaveTransposition(transpHeight.getOctaveTransposition());
+			((Note) transp).setAccidental(transpHeight.getAccidental());
+		} else if (original instanceof MultiNote) {
+			transp = (MultiNote) ((MultiNote) original).clone();
+			Note[] notes = ((MultiNote) transp).toArray();
+			for (int k = 0; k < notes.length; k++) {
+				notes[k] = (Note) transpose_Note(notes[k], noneTranspKeyNote,
+						noneTranspKey, lastKeyNote, lastKey);
+			}
+			((MultiNote) transp).setNotes(notes);
+		}
+		TieDefinition tie = original.getTieDefinition();
+		if (tie != null) {
+			if (tie.getStart() == original)
+				tie.setStart(transp);
+			else if (tie.getEnd() == original)
+				tie.setEnd(transp);
+		}
+		Vector slurs = original.getSlurDefinitions();
+		for (Iterator it = slurs.iterator(); it.hasNext();) {
+			SlurDefinition slur = (SlurDefinition) it.next();
+			if (slur.getStart() == original)
+				slur.setStart(transp);
+			else if (slur.getEnd() == original)
+				slur.setEnd(transp);
+		}
+		Chord chord = transp.getChord();
+		if (chord != null) {
+			if (chord.hasNote())
+				chord.setNote((Note) transpose_Note(chord.getNote(),
+						noneTranspKeyNote, null, lastKeyNote, null));
+			if (chord.hasBass())
+				chord.setBass((Note) transpose_Note(chord.getBass(),
+						noneTranspKeyNote, null, lastKeyNote, null));
+		}
+		if (transp.hasGracingNotes()) {
+			Note[] graces = transp.getGracingNotes();
+			for (int k = 0; k < graces.length; k++) {
+				graces[k] = (Note) transpose_Note(graces[k], noneTranspKeyNote,
+						noneTranspKey, lastKeyNote, lastKey);
+			}
+		}
+		return transp;
+	}
+
+	/**
 	 * Return the music for graphical rendition, i.e. if structure is ABBA, and
 	 * score contains 2 parts P:A and P:B, returns a music composed of the 2
 	 * parts. {@link #getMusic()} returns a music composed of 4 parts which is
@@ -416,6 +544,18 @@ public class Tune implements Cloneable
     }
   }
   
+  public Tempo getGeneralTempo() {
+	  Music music = getMusic();
+	  for (int i = 0; i < music.size(); i++) {
+		  if (music.elementAt(i) instanceof Tempo) //got it!
+			  return (Tempo) music.elementAt(i);
+		  if (music.elementAt(i) instanceof NoteAbstract)
+			  return null; //Found some notes, meaning it's
+		  //a tempo change, but no general tempo defined
+	  }
+	  return null; //no tempo object found
+  }
+  
   /** Returns a string representation of this tune.
    * @return A string representation of this tune. */
   public String toString()
@@ -438,6 +578,9 @@ public class Tune implements Cloneable
   Music createMusic()
   { return new Music(); }
 
+  /**
+   * A Music is a collection of {@link MusicElement} (notes, bars...).
+   */
   public class Music extends Vector {
 	  
 	private static final long serialVersionUID = 5411161761359626571L;
@@ -644,7 +787,7 @@ public class Tune implements Cloneable
     	return ret;
     }
 
-    /** <TT>MultiNote</TT> instances are ignored.  
+    /**
      * @return The shortest note in the tune.
      */
     public Note getShortestNote() throws IllegalArgumentException {
@@ -659,10 +802,13 @@ public class Tune implements Cloneable
     				shortestNote = (Note)currentScoreEl;
     			else if (((Note)currentScoreEl)
     						.isShorterThan(shortestNote))
-    			shortestNote = (Note)currentScoreEl;
-    		/* else
-    			if (currentScoreEl instanceof MultiNote && ((MultiNote)currentScoreEl).getLowestNote().isLowerThan(lowestNote))
-    					lowestNote = ((MultiNote)currentScoreEl).getLowestNote();*/
+    				shortestNote = (Note)currentScoreEl;
+    		} else if (currentScoreEl instanceof MultiNote) {
+    			Note shortestInChrod = ((MultiNote) currentScoreEl).getShortestNote();
+    			if (shortestNote == null)
+    				shortestNote = shortestInChrod;
+    			else if (shortestInChrod.isShorterThan(shortestNote))
+    				shortestNote = shortestInChrod;
     		}
     	}
     	return shortestNote;

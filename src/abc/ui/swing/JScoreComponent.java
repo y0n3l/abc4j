@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
@@ -80,7 +79,8 @@ public class JScoreComponent extends JComponent {
 	//protected int staffLinesSpacing = -1;
 
 	private boolean m_showTitles = true;
-	private byte m_stemPolicy = 0;
+	private byte m_stemPolicy = JTune.STEMS_AUTO;
+	private int m_transposition = 0;
 
 	/** Default constructor. */
 	public JScoreComponent() {
@@ -126,8 +126,6 @@ public class JScoreComponent extends JComponent {
 			m_isBufferedImageOutdated=false;
 		}
 		((Graphics2D)g).drawImage(m_bufferedImage, 0, 0, null);
-		//if (m_jTune!=null)
-		//	m_jTune.render((Graphics2D)g);
 	}
 
 	/** The size of the font used to display the music score.
@@ -135,6 +133,7 @@ public class JScoreComponent extends JComponent {
 	 * @deprecated use {@link #getScoreMetrics() getScoreMetrics()}.{@link ScoreMetrics#setNotationSize(float) setNotationSize(float)} and then {@link #refresh()}
 	 */
 	public void setSize(float size){
+		System.err.println("Warning! deprecated method setSize");
 		getScoreMetrics().setNotationFontSize(size);
 		refresh();
 	}
@@ -150,55 +149,21 @@ public class JScoreComponent extends JComponent {
      *  0=auto 1=up 2=down
      */
     public void setStemmingPolicy (byte policy) {
-    	if (m_stemPolicy == policy)
-    		return;
-
-    	m_stemPolicy = policy;
+     	m_stemPolicy = policy;
+     	if (m_jTune!=null)
+     		m_jTune.setStemmingPolicy(m_stemPolicy);
     }
-
-    private void resetNoteStems() {
-	  if (m_jTune!=null) {
-
-		// get all JNoteElementAbstract instances and set stemming
-		Object obj = null;
-		JNoteElementAbstract note = null;
-		Iterator iter = m_jTune.getRenditionObjectsMapping().values().iterator();
-		while (iter.hasNext()) {
-		  obj = iter.next();
- 		  if (obj != null && obj instanceof JNoteElementAbstract) {
-			  if (m_stemPolicy == 0) {
-			    ((JNoteElementAbstract)obj).setAutoStem(true);
-			 } else {
-		        boolean isup = (m_stemPolicy == 1) ? true :  false;
-			    note = (JNoteElementAbstract)obj;
-			    note.setAutoStem(false);
-			    note.setStemUp(isup);
-				note.onBaseChanged();
-			  }
-		  }
-		}
-		iter = m_jTune.getNoteGroups().iterator();
-		while (iter.hasNext()) {
-		  obj = iter.next();
-		  if (obj != null && obj instanceof JGroupOfNotes) {
-			  if (m_stemPolicy == 0 ) {
-				((JGroupOfNotes)obj).setAutoStem(true);
-			  } else {
-				boolean isup = (m_stemPolicy == 1) ? true :  false;
-				((JGroupOfNotes)obj).setAutoStem(false);
-				((JGroupOfNotes)obj).setStemUp(isup);
-				((JGroupOfNotes)obj).onBaseChanged();
-			  }
-		  }
-	    }
-
-      }
-	}
-
-	private void resetDisplayTitles () {
-	  if (m_jTune!=null)
-		m_jTune.displayTitles(m_showTitles);
-	}
+    public byte getStemmingPolicy() {
+    	return m_stemPolicy;
+    }
+    public void setTransposition(int transpo) {
+    	m_transposition = transpo;
+    	if (m_jTune!=null)
+    		m_jTune.setTransposition(transpo);
+    }
+    public int getTransposition() {
+    	return m_transposition;
+    }
 
 	/**
 	 * Refresh the score, blanks the component, compute and draw
@@ -209,9 +174,9 @@ public class JScoreComponent extends JComponent {
 	public void refresh() {
 		initGfx();
 		if (m_jTune!=null) {
-			resetDisplayTitles();
+			//resetDisplayTitles();
 			setTune(m_jTune.getTune());
- 			resetNoteStems();
+ 			//resetNoteStems();
 		}
 		repaint();
 	}
@@ -248,20 +213,17 @@ public class JScoreComponent extends JComponent {
 		m_jTune = new JTune(tune,
 							new Point(XOffset, 0),
 							getScoreMetrics(),
-							getEngraver(),
-							isJustified());
-		//m_jTune.setStaffLinesSpacing(staffLinesSpacing);
-		m_jTune.displayTitles(m_showTitles);
-		m_jTune.setTune(m_jTune.getTune());
-		resetNoteStems();
+							getEngraver());
+		m_jTune.setShowTitles(m_showTitles);
+		m_jTune.setJustified(m_isJustified);
+		m_jTune.setStemmingPolicy(m_stemPolicy);
+		m_jTune.setTransposition(getTransposition());
+		m_jTune.setColor(getForeground());
 
 		m_selectedItem = null;
 		m_dimension.setSize(m_jTune.getWidth(), m_jTune.getHeight());
-				//componentHeight+m_metrics.getStaffCharBounds().getHeight());
 		setPreferredSize(m_dimension);
 		setSize(m_dimension);
-		//if (m_isJustified)
-		//	justify();
 		m_isBufferedImageOutdated=true;
 		repaint();
 	}
@@ -277,7 +239,7 @@ public class JScoreComponent extends JComponent {
 	 * settings (justification, engraving, score metrics...)
 	 */
 	public void setJustification(boolean isJustified) {
-		m_isJustified = isJustified;
+		setJustified(isJustified);
 		//triggers the recalculation of the tune
 		if (m_jTune!=null)
 			setTune(m_jTune.getTune());
@@ -294,22 +256,9 @@ public class JScoreComponent extends JComponent {
 	 */
 	public void setJustified(boolean isJustified) {
 		m_isJustified = isJustified;
+		if (m_jTune != null)
+			m_jTune.setJustified(isJustified);
 	}
-
-	/*public void setStaffLinesSpacing(int spacing) {
-		staffLinesSpacing = spacing;
-		//triggers the recalculation of the tune
-		if (m_jTune!=null)
-			setTune(m_jTune.getTune());
-		//if (m_jTune!=null)
-		//	setTune(m_jTune.getTune());
-		//m_jTune = new m_jTune(m_jTune.getTune(), )
-		//repaint();
-	}  */
-
-	/*public int getStaffLinesSpacing() {
-		return staffLinesSpacing;
-	}*/
 
 	/** Return <TT>true</TT> if the rendition staff lines alignment is
 	 * justified, <TT>false</TT> otherwise.

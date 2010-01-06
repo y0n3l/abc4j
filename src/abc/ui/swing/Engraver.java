@@ -209,16 +209,14 @@ public class Engraver {
 				n1 = ((MultiNote) na).getShortestNote();
 			else
 				n1 = (Note) na;
+		} else if (e instanceof JChord) {
+			n1 = ((JChord) e).multiNote.getShortestNote();
 		} else if (e instanceof JNote) {
 			n1 = ((JNote) e).note;
 		}
-		/*System.out.println(e.getClass().getSimpleName()+"\t"
-				+((n1!=null)?(n1.getHeight()+"\t"+n1.getDuration()
-						+"\t"+getSpaceAfter(n1.getDuration()))
-						:"null")); /* */
 		return (n1==null)
 			? 0
-			: getSpaceAfter(n1.getDuration());
+			: getSpaceAfter(n1.getDuration())/* * spaceFactor*/;
 	}
 	
 }

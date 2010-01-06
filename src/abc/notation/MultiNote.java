@@ -19,7 +19,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 /** A multi note is a group of notes that should be played together. */
-public class MultiNote extends NoteAbstract
+public class MultiNote extends NoteAbstract implements Cloneable
 {
   /** Notes contained in this multinote. */
   private Vector m_notes;
@@ -151,7 +151,7 @@ public class MultiNote extends NoteAbstract
    * returned if no note begins a tie.
    * @see Note#isBeginningTie() */
   public Note[] getNotesBeginningTie() {
-	  Vector notesBT = new Vector();
+	  Vector notesBT = new Vector(m_notes.size());
 	  for (int i=0; i<m_notes.size(); i++)
 		  if (((Note)m_notes.elementAt(i)).isBeginningTie())
 			  notesBT.addElement(m_notes.elementAt(i));
@@ -293,7 +293,8 @@ public class MultiNote extends NoteAbstract
   /** Returns a new vector containing <B>clones</B> of all <TT>Note</TT> objects contained in
    * this multi note.
    * @return a new vector containing all <TT>Note</TT> objects contained in
-   * this multi note. */
+   * this multi note.
+   * @see #toArray() to get an array of notes not cloned */
   public Vector getNotesAsVector()
   { return (Vector)m_notes.clone(); }
   
@@ -309,6 +310,14 @@ public class MultiNote extends NoteAbstract
 	  else
 		  return null;
   }
+  
+  protected void setNotes(Note[] notes) {
+	  Vector v = new Vector(notes.length);
+	  for (int i = 0; i < notes.length; i++) {
+		v.addElement(notes[i]);
+	  }
+	  m_notes = fromLowestToHighest(v);
+	}
 
 
   public String toString()
@@ -342,4 +351,14 @@ public class MultiNote extends NoteAbstract
 	  string2Return = string2Return.concat("]");
 	return string2Return;
   }
+
+	public Object clone() {
+		Object o = null;
+		try {
+			o = super.clone();
+		} catch (CloneNotSupportedException never) {
+			System.err.println(never.getMessage());
+		}
+		return o;
+	}
 }

@@ -17,6 +17,7 @@ package abc.ui.swing;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
 
 import abc.notation.MusicElement;
 
@@ -30,6 +31,8 @@ public class JText extends JScoreElementAbstract {
 	protected static final short ALIGN_LEFT = 0;
 
 	protected static final short ALIGN_RIGHT = 2;
+	
+	protected static final short ALIGN_LEFT_TAB = 3;
 
 	private short m_fontType;
 
@@ -74,7 +77,7 @@ public class JText extends JScoreElementAbstract {
 	 *            {@link ScoreMetrics#FONT_LYRICS}...
 	 * @param textAlign
 	 *            {@link #ALIGN_LEFT}, {@link #ALIGN_CENTER},
-	 *            {@link #ALIGN_RIGHT}.
+	 *            {@link #ALIGN_RIGHT}...
 	 */
 	protected JText(ScoreMetrics mtrx, String text, short fontType,
 			short textAlign) {
@@ -82,6 +85,18 @@ public class JText extends JScoreElementAbstract {
 		this.m_text = text;
 		this.m_fontType = fontType;
 		this.m_textAlign = textAlign;
+	}
+
+	/** Returns the alignment */
+	public short getAlignment() {
+		return m_textAlign;
+	}
+
+	public Rectangle2D getBoundingBox() {
+		return new Rectangle2D.Double(getBase().getX(),
+				getBase().getY(),
+				getWidth(),
+				getHeight());
 	}
 
 	/**
@@ -108,11 +123,6 @@ public class JText extends JScoreElementAbstract {
 
 	public String getText() {
 		return m_text;
-	}
-
-	/** Returns the alignment */
-	public short getAlignment() {
-		return m_textAlign;
 	}
 
 	/**

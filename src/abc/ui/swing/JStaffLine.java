@@ -27,13 +27,16 @@ class JStaffLine extends JScoreElementAbstract {
 
 	protected Vector m_staffElements = null;
 	
+	private Engraver m_engraver;
+	
 	private double topY = -1;
 
 	protected Vector m_lyrics = null;
 	//protected Vector m_beginningSlurElements = null;
 
-	public JStaffLine(Point2D base, ScoreMetrics c) {
-		super (c);
+	public JStaffLine(Point2D base, ScoreMetrics c, Engraver e) {
+		super(c);
+		m_engraver = e;
 		m_staffElements = new Vector();
 		m_lyrics = new Vector();
 		//m_beginningSlurElements = new Vector();
@@ -134,6 +137,7 @@ class JStaffLine extends JScoreElementAbstract {
 
 			}*/
 		}
+		/*
 		int staffCharNb = (int)(getWidth()/getMetrics().getStaffCharBounds().getWidth());
 		//System.out.println("char staff nb : " + staffCharNb);
 		char[] staffS = new char[staffCharNb+2];
@@ -143,6 +147,21 @@ class JStaffLine extends JScoreElementAbstract {
 		//I can't explain what, but it fixes the gap :)
 		g.drawChars(staffS, 0, staffS.length,
 				1+(int)getBase().getX(), (int)getBase().getY());
+		*/
+		double width = getWidth();
+		int charX = (int) getBase().getX();
+		int charY = (int)getBase().getY();
+		char[] charGlyph = new char[] {ScoreMetrics.STAFF_SIX_LINES};
+		//-1 to "overwrite" 1px to avoid small gap
+		int charWidth = (int)(getMetrics().getStaffCharBounds().getWidth() - 1);
+		while (charX+charWidth < width) {
+			g.drawChars(charGlyph, 0, 1, charX, charY);
+			charX += charWidth;
+		}
+		//write the last
+		charX = (int) (width - charWidth - 1);
+		g.drawChars(charGlyph, 0, 1, charX, charY);
+		
 
 		// render lyrics, annotations, etc.
 		Iterator iter = m_lyrics.iterator();
@@ -151,6 +170,8 @@ class JStaffLine extends JScoreElementAbstract {
 			lyrics = (JWords)iter.next();
 			lyrics.render(g);
 		}
+		
+		//renderDebugBoundingBox(g);
 
 		return getWidth();
 	}
@@ -190,7 +211,11 @@ class JStaffLine extends JScoreElementAbstract {
 
 	public double getWidth() {
 		JScoreElementAbstract lastElmt = (JScoreElementAbstract)m_staffElements.lastElement();
-		return lastElmt.getBase().getX()+lastElmt.getWidth();
+		double width = lastElmt.getBase().getX()+lastElmt.getWidth();
+		if (!(lastElmt instanceof JBar))
+			width += getMetrics().getNotesSpacing()
+					+ m_engraver.getNoteSpacing(lastElmt);
+		return width;
 	}
 
 }

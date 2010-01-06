@@ -335,9 +335,11 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
     {
       switch (accidental)
       {
-          case AccidentalType.FLAT : midiNoteNumber --; break;
-          case AccidentalType.NATURAL	: break;
-          case AccidentalType.SHARP : midiNoteNumber ++; break;
+          case AccidentalType.DOUBLE_FLAT: midiNoteNumber -= 2; break;
+          case AccidentalType.FLAT: midiNoteNumber --; break;
+          case AccidentalType.NATURAL: break;
+          case AccidentalType.SHARP: midiNoteNumber ++; break;
+          case AccidentalType.DOUBLE_SHARP: midiNoteNumber += 2; break;
       }
     }
     return midiNoteNumber;

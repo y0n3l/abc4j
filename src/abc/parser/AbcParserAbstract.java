@@ -943,7 +943,7 @@ public class AbcParserAbstract
       byte[] globalAccidental = new byte[2];
 
       String keyAcc = accept(AbcTokenType.ACCIDENTAL, current, follow);
-      byte accidentalType = Note.convertToAccidentalType(keyAcc);
+      byte accidentalType = AccidentalType.convertToAccidentalType(keyAcc);
 
       current.remove(AbcTokenType.BASE_NOTE);
       String noteHeigthString = accept(AbcTokenType.BASE_NOTE, current, follow);
@@ -1558,7 +1558,7 @@ public class AbcParserAbstract
       byte octaveTransposition = 0;
 
       if (m_tokenType.equals(AbcTokenType.ACCIDENTAL))
-        accidental = Note.convertToAccidentalType(accept(AbcTokenType.ACCIDENTAL, current, follow));
+        accidental = AccidentalType.convertToAccidentalType(accept(AbcTokenType.ACCIDENTAL, current, follow));
       current.remove(FIRST_BASE_NOTE);
       String heigth = accept(AbcTokenType.BASE_NOTE, current, follow, true);
       if (heigth!=null) noteHeigth = Note.convertToNoteType(heigth);

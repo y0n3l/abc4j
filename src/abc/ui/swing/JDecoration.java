@@ -77,10 +77,10 @@ class JDecoration extends JScoreElementAbstract {
 	 * in a genric way that enables positioning, sizing,
 	 * rendering to be done generically
 	 * <p>subclasses should override this method. 
-	 * @return {@link ScoreMetrics#NOTE_GLYPH}
+	 * @return {@link ScoreMetrics#NOTATION_CONTEXT_NOTE}
 	 */
 	public int getNotationContext() {
-		return ScoreMetrics.NOTE_GLYPH;
+		return ScoreMetrics.NOTATION_CONTEXT_NOTE;
 	}
 
 	/** Returns the width of this score element.

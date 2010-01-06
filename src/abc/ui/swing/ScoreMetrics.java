@@ -43,12 +43,13 @@ import abc.notation.Note;
  */
 public class ScoreMetrics {
 
-	public static final int NOTE_GLYPH = 100;
-	public static final int GRACENOTE_GLYPH = 200;
+	public static final int NOTATION_CONTEXT_NOTE = 100;
+	public static final int NOTATION_CONTEXT_GRACENOTE = 200;
+	public static final int NOTATION_CONTEXT_TEMPO = 150;
 
 	public static final char STAFF_SIX_LINES = '\uF03D';
 	/** staff six lines / ratio = note height */
-	public static final double STAFF_SIX_LINES_LINE_HEIGHT_RATIO = 4.1;
+	private static final double STAFF_SIX_LINES_LINE_HEIGHT_RATIO = 4.1;
 	public static final char[] BAR_LINE = {'\uF05C'};
 
 	public static final char[] DOT = {'\uF06B'};
@@ -135,6 +136,7 @@ public class ScoreMetrics {
 	private static final float DEFAULT_TEXT_SIZE = DEFAULT_NOTATION_SIZE / 4;
 	private static final String NOTATION_FONT = "SONORA3.TTF";
 //	private static final String DEFAULT_TEXT_FONT = "Dialog";
+	public static final double SPACE_RATIO_FOR_ACCIDENTALS = 1.2;
 
 	/** Textual font for title
 	 * @see #getTextFont(short)
@@ -182,14 +184,9 @@ public class ScoreMetrics {
 	 */
 	private Map bounds = new HashMap();
 	
-	private double noteHeight = -1;
-	private double noteWidth = -1;
-
-	private double timeSignatureNumberWidth = -1;
-	private double timeSignatureNumberHeight = -1;
 	private double tupletNumberYOffset = -1;
 
-	private Rectangle2D staffCharBounds = null;
+	//private Rectangle2D staffCharBounds = null;
 	//private double staffCharWidth = -1;
 	double staffLineHeight = -1;
 	private int staffLinesSpacing = -1;
@@ -213,22 +210,21 @@ public class ScoreMetrics {
 	private double slurThickness = -1;
 
 	//	 gracings support
-	double graceNoteHeight = 0;
-	double graceNoteWidth = 0;
-	BasicStroke graceNotesLinkStroke = null;
-	BasicStroke graceNoteStemStroke = null;
-	int graceNoteStrokeLength = 0;
-	int graceNoteStemLength = 0;
-	int graceNotesSpacing = 0;
+	private BasicStroke graceNotesLinkStroke = null;
+	private BasicStroke graceNoteStemStroke = null;
+	private int graceNoteStrokeLength = 0;
+	private int graceNoteStemLength = 0;
+	private int graceNotesSpacing = 0;
 	private float gracesSizeProportion = .6f;
 
 	// fonts
 	private Font baseNotationFont = null;
 	private Font noteFont = null;
 	private Font gracingsFont = null;
+	private Font tempoFont = null;
 
 	private FontMetrics noteFontMetrics  = null;
-	private FontMetrics gracingsFontMetrics  = null;
+	//private FontMetrics gracingsFontMetrics  = null;
 
 	private int decorationHeight = -1;
 
@@ -329,22 +325,20 @@ public class ScoreMetrics {
 			//noteFont = noteFont.deriveFont(size);
 			noteFont = baseNotationFont.deriveFont(size);
 			noteFontMetrics = g2.getFontMetrics(noteFont);
-
-			FontRenderContext frc = g2.getFontRenderContext();
 			
-			staffCharBounds = new TextLayout(new Character(STAFF_SIX_LINES).toString(), noteFont, frc).getBounds();
+			tempoFont = baseNotationFont.deriveFont(size * .75f);
+			
+			Rectangle2D staffCharBounds = getStaffCharBounds();
 			//staffCharWidth = staffCharBounds.getWidth();
 			staffLineHeight = staffCharBounds.getHeight()/STAFF_SIX_LINES_LINE_HEIGHT_RATIO;
 
-			TextLayout noteLayout = null;
-			noteLayout = new TextLayout(new Character(NOTE[0]).toString(), noteFont, frc);
-			noteHeight = noteLayout.getBounds().getHeight();
-			noteWidth = noteLayout.getBounds().getWidth();
+			double noteHeight = getNoteHeight();
+			double noteWidth = getNoteWidth();
 			//noteHeight = staffCharBounds.getHeight()/STAFF_SIX_LINES_LINE_HEIGHT_RATIO; //4.1
 			//noteWidth = new TextLayout(new Character(NOTE[0]).toString(), noteFont, frc).getBounds().getWidth();
 
 			//FIXME: get proper decoration height ... or adjust this to be more generalized ...
-			decorationHeight = (int)(noteLayout.getBounds().getHeight()*2.5);
+			decorationHeight = (int)(noteHeight*2.5);
 
 			staffLinesSpacing = (int)(staffCharBounds.getHeight()*1.5);
 			firstStaffTopMargin = (int)(staffCharBounds.getHeight()*.75);
@@ -356,20 +350,11 @@ public class ScoreMetrics {
 			slurThickness = Math.max(noteHeight / 7, 1);
 
 			//accidental
-			bounds.put(SHARP, new TextLayout(new Character(SHARP[0]).toString(), noteFont, frc).getBounds());
-			bounds.put(FLAT, new TextLayout(new Character(FLAT[0]).toString(), noteFont, frc).getBounds());
-			bounds.put(NATURAL, new TextLayout(new Character(NATURAL[0]).toString(), noteFont, frc).getBounds());
 			biggestAccidentalWidth = Math.max(
 					Math.max(getFlatBounds().getWidth(),
 							getNaturalBounds().getWidth()),
 						getSharpBounds().getWidth());
 
-
-			//numbers, digits
-			Rectangle2D timeSignatureBounds = new TextLayout(new Character(getTimeSignatureDigitChar(2)).toString(), noteFont, frc).getBounds();
-			timeSignatureNumberWidth = timeSignatureBounds.getWidth();
-			timeSignatureNumberHeight = timeSignatureBounds.getHeight();
-			
 			tupletNumberYOffset = noteHeight / 4;
 
 			notesLinkStroke = new BasicStroke((float)(noteWidth/3), 0, 0);
@@ -393,14 +378,10 @@ public class ScoreMetrics {
 			float gracingsSize = notationSize*getGracesSizeProportion();
 
 			gracingsFont = baseNotationFont.deriveFont(gracingsSize);
-			gracingsFontMetrics = g2.getFontMetrics(gracingsFont);
+			//gracingsFontMetrics = g2.getFontMetrics(gracingsFont);
 
-			FontRenderContext frc = g2.getFontRenderContext();
-
-			TextLayout layout = null;
-			layout = new TextLayout(new Character(NOTE[0]).toString(), gracingsFont, frc);
-			graceNoteHeight = layout.getBounds().getHeight();
-			graceNoteWidth = layout.getBounds().getWidth();
+			double graceNoteHeight = getGraceNoteHeight();
+			double graceNoteWidth = getGraceNoteWidth();
 
 			graceNotesLinkStroke = new BasicStroke((float)(graceNoteWidth/3), 0, 0);
 			graceNoteStemStroke = new BasicStroke((float)(graceNoteWidth/12));
@@ -472,20 +453,13 @@ public class ScoreMetrics {
 
 	/**
 	 *
-	 * @param notationContext {@link #NOTE_GLYPH}, {@link #GRACENOTE_GLYPH}
+	 * @param notationContext {@link #NOTATION_CONTEXT_NOTE}, {@link #NOTATION_CONTEXT_GRACENOTE}
 	 * @return
 	 */
 	public Dimension getGlyphDimension(int notationContext) {
-		Dimension d = null;
-		switch (notationContext) {
-			case NOTE_GLYPH: 		d = new Dimension((int)noteHeight, (int)noteWidth);
-									break;
-			case GRACENOTE_GLYPH : 	d = new Dimension((int)graceNoteHeight, (int)graceNoteWidth);
-									break;
-			default:
-					break;
-		}
-		return (d);
+		Rectangle2D bounds = getBounds(NOTE[0], notationContext);
+		return new Dimension((int)bounds.getHeight(),
+				(int)bounds.getWidth());
 	}
 
 	/**
@@ -545,7 +519,7 @@ public class ScoreMetrics {
 	}
 	
 	public double getNoteHeight() {
-		return noteHeight;
+		return getBounds(NOTE[0]).getHeight();
 	}
 	/** @deprecated {@link getNoteHeight()} */
 	public double getNoteHeigth() {
@@ -587,15 +561,15 @@ public class ScoreMetrics {
 	}
 
 	public double getNoteWidth() {
-		return noteWidth;
+		return getBounds(NOTE[0]).getWidth();
 	}
 
 	public double getTimeSignatureNumberWidth() {
-		return timeSignatureNumberWidth;
+		return getBounds(getTimeSignatureDigitChar(2)).getWidth();
 	}
 
 	public double getTimeSignatureNumberHeight() {
-		return timeSignatureNumberHeight;
+		return getBounds(getTimeSignatureDigitChar(2)).getHeight();
 	}
 
 	/**
@@ -615,7 +589,7 @@ public class ScoreMetrics {
 	/** Returns the bounding box of a staff line character.
 	 * @return Returns the bounding box of a staff line character. */
 	public Rectangle2D getStaffCharBounds(){
-		return staffCharBounds;
+		return getBounds(STAFF_SIX_LINES);
 	}
 
 	public double getStaffLineHeight() {
@@ -657,16 +631,16 @@ public class ScoreMetrics {
 
 	/**
 	 *
-	 * @param notationContext {@link #NOTE_GLYPH}, {@link #GRACENOTE_GLYPH}
+	 * @param notationContext {@link #NOTATION_CONTEXT_NOTE}, {@link #NOTATION_CONTEXT_GRACENOTE}
 	 * @return
 	 */
 	public int getStemLength(int notationContext){
 		int len = 0;
 
 		switch (notationContext) {
-			case NOTE_GLYPH: 		len = getStemLength();
+			case NOTATION_CONTEXT_NOTE: 		len = getStemLength();
 									break;
-			case GRACENOTE_GLYPH : 	len = getGraceNoteStemLength();
+			case NOTATION_CONTEXT_GRACENOTE : 	len = getGraceNoteStemLength();
 									break;
 			default:
 					break;
@@ -699,18 +673,49 @@ public class ScoreMetrics {
 	}
 	
 	/**
-	 * Get the bounds of a glyph
+	 * Get the bounds of a glyph in the default notation
+	 * context.
+	 * @param glyph {@link #getTimeSignatureDigitChar(int)}
+	 */
+	public Rectangle2D getBounds(char glyph) {
+		return getBounds(new char[]{glyph}, NOTATION_CONTEXT_NOTE);
+	}
+	
+	/**
+	 * Get the bounds of a glyph in the default notation
+	 * context.
 	 * @param glyph {@link #SHARP}, {@link #FLAT}...
-	 * @return
 	 */
 	public Rectangle2D getBounds(char[] glyph) {
-		if (bounds.get(glyph) == null) {
+		return getBounds(glyph, NOTATION_CONTEXT_NOTE);
+	}
+	
+	/**
+	 * Get the bounds of a glyph in the default notation
+	 * context.
+	 * @param glyph {@link #getTimeSignatureDigitChar(int)}
+	 * @param notationContext {@link #NOTATION_CONTEXT_NOTE} or {@link #NOTATION_CONTEXT_GRACENOTE}
+	 */
+	public Rectangle2D getBounds(char glyph, int notationContext) {
+		return getBounds(new char[]{glyph}, notationContext);
+	}
+	
+	/**
+	 * Get the bounds of a glyph in the given notation context
+	 * @param glyph {@link #SHARP}, {@link #FLAT}...
+	 * @param notationContext {@link #NOTATION_CONTEXT_NOTE} or {@link #NOTATION_CONTEXT_GRACENOTE}
+	 */
+	public Rectangle2D getBounds(char[] glyph, int notationContext) {
+		String key = String.valueOf(notationContext)
+			+ "-" + String.valueOf(glyph);
+		if (bounds.get(key) == null) {
 			FontRenderContext frc = g2.getFontRenderContext();
-			bounds.put(glyph, new TextLayout(
-					new Character(glyph[0]).toString(),
-					noteFont, frc).getBounds());
+			bounds.put(key, new TextLayout(
+					String.valueOf(glyph),//new Character(glyph[0]).toString(),
+					getNotationFontForContext(notationContext),
+					frc).getBounds());
 		}
-		return (Rectangle2D) (bounds.get(glyph));
+		return (Rectangle2D) (bounds.get(key));
 	}
 	
 	/**
@@ -879,11 +884,11 @@ public class ScoreMetrics {
 
 	/* *** graceNotes support *** */
 	public double getGraceNoteHeight() {
-		return graceNoteHeight;
+		return getBounds(NOTE[0], NOTATION_CONTEXT_GRACENOTE).getHeight();
 	}
 
 	public double getGraceNoteWidth() {
-		return graceNoteWidth;
+		return getBounds(NOTE[0], NOTATION_CONTEXT_GRACENOTE).getWidth();
 	}
 
 	/** Returns the spacing between graceNotes.
@@ -934,9 +939,25 @@ public class ScoreMetrics {
 	/** Returns the notation font used for this score metrics.
 	 * @return the notation font used for this score metrics. */
 	public Font getNotationFont() {
-		return noteFont;
+		return getNotationFontForContext(NOTATION_CONTEXT_NOTE);
 	}
 
+	/**
+	 * Return the notation for from the given notation context
+	 * 
+	 * @param notationContext
+	 *            {@link #NOTATION_CONTEXT_NOTE},
+	 *            {@link #NOTATION_CONTEXT_GRACENOTE}...
+	 */
+	public Font getNotationFontForContext(int notationContext) {
+		switch(notationContext) {
+		case NOTATION_CONTEXT_GRACENOTE: return gracingsFont;
+		case NOTATION_CONTEXT_TEMPO: return tempoFont;
+		case NOTATION_CONTEXT_NOTE:
+		default:
+			return noteFont;
+		}
+	}
 
 	/** Returns the font used for gracings in this score metrics.
 	 * @return the font used for gracings in this score metrics. */
@@ -958,6 +979,7 @@ public class ScoreMetrics {
 	 */
 	public void setGracesSizeProportion(float f) {
 		this.gracesSizeProportion = Math.max(Math.min(f, 1), 0);
+		bounds.clear();
 		initGracingsFont();
 	}
 

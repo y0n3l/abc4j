@@ -15,6 +15,9 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.notation;
 
+import java.util.Iterator;
+import java.util.Vector;
+
 /**
  * This class defines a (single) Note : height, rhythm, part of tuplet, rest etc...
  * There can be some tricky representation of a duration for a note.
@@ -56,7 +59,7 @@ package abc.notation;
  *		</UL>
  * </UL>
  */
-public class Note extends NoteAbstract
+public class Note extends NoteAbstract implements Cloneable
 {
   /** The <TT>C</TT> note height type. */
   public static final byte C		= 0;
@@ -120,6 +123,257 @@ public class Note extends NoteAbstract
   public static final short DOTTED_SIXTY_FOURTH	= (short)(LENGTH_RESOLUTION * 1.5);
   /** The <TT>SIXTY_FOURTH</TT> length type. */
   public static final short SIXTY_FOURTH	= LENGTH_RESOLUTION;      // quadruple croche
+  
+	/**
+	 * Create a Note from a given midi like height see {@link #getMidiLikeHeight()}
+	 * and a KeySignature, to choose the proper enharmonic.
+	 * 
+	 * e.g.: a midi height of 15 is d# or eb above A440Hz. The key signature
+	 * will determinate if alteration is sharp (E major, B major) or flat (Bb
+	 * major, C minor).
+	 * 
+	 * If the key has no accidental, sharp is preferred. If the note is just
+	 * under the key note, sharp is preferred (e.g. f# instead of gb for G
+	 * minor).
+	 * 
+	 * @param midiHeight
+	 * @param key
+	 */
+	static public Note createFromMidiLikeHeight(int midiHeight, KeySignature key) {
+		byte acc = key.isFlatDominant() ? AccidentalType.FLAT
+				: AccidentalType.SHARP;
+		return createFromMidiLikeHeight(midiHeight, acc);
+	}
+
+	/**
+	 * Create a Note from a given midi like height see {@link #getMidiLikeHeight()}
+	 * and a preferred accidental type, to choose the proper enharmonic.
+	 * 
+	 * e.g.: a midi height of 15 is d# or eb above A440Hz. The key signature
+	 * will determinate if alteration is sharp (E major, B major) or flat (Bb
+	 * major, C minor).
+	 * 
+	 * <B>Be careful!</B> note without accidental ({@link AccidentalType#NONE})
+	 * is considered as NATURAL. In fact it depends on the key!
+	 * If height = Note.E and accidental = NONE, it could be
+	 * E flat if key is Bb major, C minor...!
+	 * 
+	 * @param midiHeight
+	 * @param key
+	 */
+	static public Note createFromMidiLikeHeight(int midiHeight,
+			byte preferredAccidental) {
+		return createEnharmonic(
+				createFromMidiLikeHeight(midiHeight),
+				new byte[] {preferredAccidental});
+	}
+
+	/**
+	 * Create a Note from a given midi like height see {@link #getMidiLikeHeight()}.
+	 * Accidental is always NATURAL or SHARP
+	 * 
+	 * e.g.:
+	 * <ul>
+	 * <li>midiHeight = 0 returns C
+	 * <li>midiHeight = 13 returns ^c never _d
+	 * <li>midiHeight = -1 returns B,
+	 * </ul>
+	 * 
+	 * @param midiHeight
+	 * @throws NoteHeightException
+	 */
+	static public Note createFromMidiLikeHeight(int midiHeight)
+		throws NoteHeightException {
+		if (midiHeight == REST)
+			return new Note(REST);
+		if ((midiHeight < Byte.MIN_VALUE) || (midiHeight > Byte.MAX_VALUE))
+			throw new NoteHeightException(midiHeight);
+		// +132: we are sure we have a positive value
+		int strictHeight = (midiHeight + 132) % 12;
+		byte accident = AccidentalType.NATURAL;
+		if ((strictHeight != C) && (strictHeight != D) && (strictHeight != E)
+				&& (strictHeight != F) && (strictHeight != G)
+				&& (strictHeight != A) && (strictHeight != B)) {
+			accident = AccidentalType.SHARP;
+			strictHeight -= 1;
+			midiHeight -= 1;
+		}
+		byte octave = getOctaveTransposition((byte) midiHeight);
+		return new Note((byte) strictHeight, accident, octave);
+	}
+	
+	/**
+	 * If possible, returns the enharmonic note with the given accidental type.
+	 * If impossible, returns the note (cloned).
+	 * 
+	 * e.g.: enharmonics of _E (E flat) are ^D (D sharp) and __F (F double
+	 * flat).
+	 * 
+	 * @param note
+	 * @param key
+	 */
+	static public Note createEnharmonic(Note note, KeySignature key) {
+		Note ret = (Note) note.clone();
+		if (note.getAccidental() == AccidentalType.NONE)
+			return ret; //is in the key
+		if ((note.getAccidental() == AccidentalType.DOUBLE_FLAT)
+				|| (note.getAccidental() == AccidentalType.DOUBLE_SHARP))
+			ret = createEnharmonic(note, new byte[] {AccidentalType.NATURAL, AccidentalType.SHARP});
+		if (ret.getAccidental() ==
+				key.getAccidentalFor(ret.getStrictHeight())) {
+			//no need to change
+			ret.setAccidental(AccidentalType.NONE);
+		}
+		//1st degree with different accidental than key accidental
+		else if (ret.getStrictHeight() == key.getDegree(Degree.TONIC)) {
+			if (key.getAccidental() == AccidentalType.SHARP)
+				ret = createEnharmonic(ret, new byte[] {AccidentalType.DOUBLE_SHARP, AccidentalType.SHARP, AccidentalType.NATURAL});
+			else if (key.getAccidental() == AccidentalType.FLAT)
+				ret = createEnharmonic(ret, new byte[] {AccidentalType.NATURAL, AccidentalType.FLAT});
+			else {//NATURAL
+				byte acc = key.hasOnlySharps()?AccidentalType.SHARP:AccidentalType.FLAT;
+				ret = createEnharmonic(ret, new byte[] {AccidentalType.NATURAL, acc});
+			}
+		}
+		//7th degree (leading note) is always sharp, never key note flat
+		else if (ret.getStrictHeight() == key.getDegree(Degree.LEADING_TONE)) {
+			if (key.getAccidental() == AccidentalType.FLAT)
+				ret = createEnharmonic(ret, new byte[] {AccidentalType.NATURAL, AccidentalType.FLAT});
+			else if (key.getAccidental() == AccidentalType.SHARP)
+				ret = createEnharmonic(ret, new byte[] {AccidentalType.DOUBLE_SHARP, AccidentalType.SHARP, AccidentalType.NATURAL});
+			else
+				ret = createEnharmonic(ret, new byte[] {AccidentalType.SHARP, AccidentalType.NATURAL});
+		}
+		//2nd degree (supertonic) flat is never 1st sharp
+//		else if (((ret.getStrictHeight() == key.getDegree(1))
+//				&& (ret.getAccidental() == AccidentalType.SHARP))
+//				|| ((ret.getStrictHeight() == key.getDegree(2))
+//				&& (ret.getAccidental() == AccidentalType.FLAT))) {
+//			ret = createEnharmonic(note,
+//				new byte[] {AccidentalType.NATURAL, AccidentalType.FLAT});
+//		}
+		else {
+			//1st prefered accidental is given by the key
+			//2nd is flat or sharp depends on key dominant accidental
+			byte dominant = AccidentalType.NATURAL;
+			if (key.hasOnlyFlats())
+				dominant = AccidentalType.FLAT;
+			else if (key.hasOnlySharps())
+				dominant = AccidentalType.SHARP;
+			//other degrees
+			for (int i = Degree.SUPERTONIC; i <= Degree.SUBMEDIANT; i++) {
+				if (ret.getStrictHeight() == key.getDegree(i))
+					ret = createEnharmonic(note, new byte[] {
+						key.getAccidentalFor(ret.getStrictHeight()),
+						AccidentalType.NATURAL, dominant });
+			}
+		}
+
+		//second time, for cases where new note has been computed
+		if (ret.getAccidental() ==
+				key.getAccidentalFor(ret.getStrictHeight())) {
+			//set accidental to NONE
+			ret.setAccidental(AccidentalType.NONE);
+		}
+		return ret;
+	}
+
+	/**
+	 * If possible, returns the enharmonic note with the given accidental type.
+	 * If impossible, returns the note (cloned).
+	 * 
+	 * e.g.: enharmonics of _E (E flat) are ^D (D sharp) and __F (F double
+	 * flat).
+	 * 
+	 * <B>Be careful!</B> note without accidental ({@link AccidentalType#NONE})
+	 * is considered as NATURAL. In fact it depends on the key!
+	 * If height = Note.E and accidental = NONE, it could be
+	 * E flat if key is Bb major, C minor...!
+	 * 
+	 * @param note
+	 * @param accidentalTypes array of accidental types, by order of preference
+	 * @see #createEnharmonic(Note, KeySignature)
+	 */
+	static public Note createEnharmonic(Note note, byte[] accidentalTypes) {
+		Note ret = (Note) note.clone();
+		if (ret.isRest() || (accidentalTypes[0] == ret.getAccidental()))
+			return ret;
+		Vector nearNotes = new Vector(9);
+		for (int i = -4; i <= 4; i++) {
+			if (i == 0)
+				continue;
+			try {
+				nearNotes.add(transpose(ret, i));
+			} catch (NoteHeightException ignoreIt) {
+			}
+		}
+		try {
+			nearNotes.add(transpose(ret, 0));
+		} catch (NoteHeightException ignoreIt) {
+		}
+		for (int i = 0; i < accidentalTypes.length; i++) {
+			for (Iterator it = nearNotes.iterator(); it.hasNext();) {
+				Note nearNote = (Note) it.next();
+				nearNote.setAccidental(accidentalTypes[i]);
+				if (nearNote.getMidiLikeHeight() == note.getMidiLikeHeight())
+					return nearNote;
+			}
+		}
+		return ret;
+	}
+	
+	/**
+	 * Transpose a note by the given number of semi-tones. The returned note is
+	 * a clone which only height is changed. If any, the accidental is always
+	 * sharp, never flat.
+	 * 
+	 * To transpose and specify accidental, use
+	 * {@link #transpose(Note, int, KeySignature)} which apply
+	 * {@link #createEnharmonic(Note, KeySignature)} after
+	 * transposing.
+	 * 
+	 * @param note
+	 * @param semitones
+	 * @return
+	 * @throws NoteHeightException
+	 *             if transposition is going to low or to high.
+	 */
+	static public Note transpose(Note note, int semitones)
+			throws NoteHeightException {
+		Note ret = (Note) note.clone();
+		//if semitones == 0, E## will be transposed as F#
+		//ensure that we will return NATURAL or SHARP accidental
+		if (ret.isRest()/* || (semitones == 0)*/)
+			return ret;
+		int newMidiHeight = ret.getMidiLikeHeight() + semitones;
+		if ((newMidiHeight < Byte.MIN_VALUE)
+				|| (newMidiHeight > Byte.MAX_VALUE))
+			throw new NoteHeightException(newMidiHeight);
+		Note newHeight = createFromMidiLikeHeight(newMidiHeight);
+		ret.setHeight(newHeight.getHeight());
+		ret.setAccidental(newHeight.getAccidental());
+		ret.setOctaveTransposition(newHeight.getOctaveTransposition());
+		return ret;
+	}
+	
+	/**
+	 * Transpose a note by the given number of semi-tones. The returned note is
+	 * a clone which only height is changed. The accidental is deduced from the
+	 * key signature.
+	 * 
+	 * @param note
+	 * @param semitones
+	 * @param keySig
+	 * @return
+	 * @throws NoteHeightException
+	 *             if transposition is going to low or to high.
+	 */
+	static public Note transpose(Note note, int semitones,
+			KeySignature keySig) throws NoteHeightException {
+		return createEnharmonic(transpose(note, semitones), keySig);
+	}
+
+  
   /** The height of the note AS A CONSTANT such as C D E F G A B <B>only</B> !!
    * This strict height must be used with the octave transposition (if defined) to know the
    * real height of this note. Accidentals are not taken into account in this value. */
@@ -182,12 +436,18 @@ public class Note extends NoteAbstract
     this(heightValue, accidentalValue);
     setOctaveTransposition((byte)(octaveTransposition+octaveTranspositionValue));
   }
-
-  /** Sets the height of this note.
-   * @param heigthValue The height of this note. The height is <TT>REST</TT> if
-   * this note is a rest.
-   * @deprecated use setHeight(byte heigthValue) instead. sorry for the typo...
-   * @see #setHeight(byte) */
+  
+	
+  /**
+	 * Sets the height of this note.
+	 * 
+	 * @param heigthValue
+	 *            The height of this note. The height is <TT>REST</TT> if this
+	 *            note is a rest.
+	 * @deprecated use setHeight(byte heigthValue) instead. sorry for the
+	 *             typo...
+	 * @see #setHeight(byte)
+	 */
   public void setHeigth(byte heigthValue)
   { setHeight(heigthValue); }
 
@@ -233,52 +493,141 @@ public class Note extends NoteAbstract
 	  return (byte)(strictHeight + octaveTransposition*12);
   }
 
-  /** Returns <TT>true</TT> if the given note is strictly higher than this one.
-   * @param aNote A note instance.
-   * @return <TT>true</TT> if the given note is strictly higher than this one,
-   * <TT>false</TT> otherwise.
-   * @see #isLowerThan(Note) */
-  public boolean isHigherThan (Note aNote) {
-	  return getMidiLikeHeight()>aNote.getMidiLikeHeight();
-  }
+	/**
+	 * Returns <TT>true</TT> if the given note is higher than this one.
+	 * 
+	 * <B>Be careful!</B> without key signature parameter, impossible to know
+	 * the real accidental of a note which have no accidental (NONE); it could
+	 * be SHARP at the key! Use {@link #isHigherThan(Note, KeySignature)}
+	 * 
+	 * @param aNote
+	 *            A note instance.
+	 * @return <TT>true</TT> if the given note is strictly higher than this
+	 *         one, <TT>false</TT> otherwise.
+	 * @see #isLowerThan(Note)
+	 */
+	public boolean isHigherThan(Note aNote) {
+		return isHigherThan(aNote, null);
+	}
 
-  public boolean isLowerThan (Note aNote) {
-	  return getMidiLikeHeight()<aNote.getMidiLikeHeight();
-  }
+	/**
+	 * Returns <TT>true</TT> if the given note is higher than this one.
+	 * 
+	 * @param aNote
+	 *            A note instance.
+	 * @param key
+	 *            Helps to determinate the real accidental of a note which have
+	 *            NONE. Give an accurate result. <TT>null</TT> accepted.
+	 * @return <TT>true</TT> if the given note is strictly higher than this
+	 *         one, <TT>false</TT> otherwise.
+	 * @see #isLowerThan(Note, KeySignature)
+	 */
+	public boolean isHigherThan(Note aNote, KeySignature key) {
+		return getMidiLikeHeight(key) > aNote.getMidiLikeHeight(key);
+	}
+  
+	/**
+	 * Returns <TT>true</TT> if the given note is lower than this one.
+	 * 
+	 * <B>Be careful!</B> without key signature parameter, impossible to know
+	 * the real accidental of a note which have no accidental (NONE); it could
+	 * be SHARP at the key! Use {@link #isHigherThan(Note, KeySignature)}
+	 * 
+	 * @param aNote
+	 *            A note instance.
+	 * @return <TT>true</TT> if the given note is strictly higher than this
+	 *         one, <TT>false</TT> otherwise.
+	 * @see #isLowerThan(Note)
+	 */
+	public boolean isLowerThan(Note aNote) {
+		return isLowerThan(aNote, null);
+	}
 
-  public boolean isShorterThan(Note aNote) {
-	  return getDuration()<aNote.getDuration();
-  }
+	/**
+	 * Returns <TT>true</TT> if the given note is higher than this one.
+	 * 
+	 * @param aNote
+	 *            A note instance.
+	 * @param key
+	 *            Helps to determinate the real accidental of a note which have
+	 *            NONE. Give an accurate result. <TT>null</TT> accepted.
+	 * @return <TT>true</TT> if the given note is strictly higher than this
+	 *         one, <TT>false</TT> otherwise.
+	 * @see #isHigherThan(Note, KeySignature)
+	 */
+	public boolean isLowerThan(Note aNote, KeySignature key) {
+		return getMidiLikeHeight(key) < aNote.getMidiLikeHeight(key);
+	}
 
-  //FIXME should return a byte, like getHeight?
-  public int getMidiLikeHeight() {
-	  int midiLikeHeight = getHeight();
-	  switch(accidental) {
-	  //TODO case AccidentalType.HALF_SHARP:
-	  case AccidentalType.SHARP:
-		  midiLikeHeight++;
-		  break;
-	  //TODO case AccidentalType.HALF_FLAT:
-	  case AccidentalType.FLAT:
-		  midiLikeHeight--;
-		  break;
-	  case AccidentalType.DOUBLE_SHARP:
-		  midiLikeHeight += 2;
-		  break;
-	  case AccidentalType.DOUBLE_FLAT:
-		  midiLikeHeight -= 2;
-		  break;
-	  }
-	  return midiLikeHeight;
-  }
+	public boolean isShorterThan(Note aNote) {
+		return getDuration() < aNote.getDuration();
+	}
 
-  /** Returns this note absolute height. This height doesn't take in account
-   * octave transposition.
-   * @return The height of this note on the first octave. Possible values are
-   * <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>, <TT>A</TT>(440Hz),
-   * <TT>B</TT> or <TT>REST</TT> only.
-   * @see #getHeight()
-   * @see #setHeight(byte) */
+	/**
+	 * Returns a "midi-like" height.
+	 * <ul>
+	 * <li>C = 0
+	 * <li>^c = 13
+	 * <li>B, = -1
+	 * </ul>
+	 * 
+	 * <B>Be careful!</B> note without accidental ({@link AccidentalType#NONE})
+	 * is considered as NATURAL. In fact it depends on the key! If height =
+	 * Note.E and accidental = NONE, it could be E flat if key is Bb major, C
+	 * minor...!
+	 * 
+	 * @see #getMidiLikeHeight(KeySignature)
+	 */
+	// FIXME should return a byte, like getHeight?
+	public int getMidiLikeHeight() {
+		return getMidiLikeHeight(null);
+	}
+	
+	/**
+	 * Returns a "midi-like" height.
+	 * <ul>
+	 * <li>C = 0
+	 * <li>^c = 13
+	 * <li>B, = -1
+	 * </ul>
+	 * 
+	 * @param key To determinate the midi-like height when
+	 * note has no accidental ({@link AccidentalType#NONE})
+	 */
+	// FIXME should return a byte, like getHeight?
+	public int getMidiLikeHeight(KeySignature key) {
+		int midiLikeHeight = getHeight();
+		byte acc = accidental;
+		if ((acc == AccidentalType.NONE) && (key != null))
+			acc = key.getAccidentalFor(getStrictHeight());
+		switch (acc) {
+		// TODO case AccidentalType.HALF_SHARP & HALF_FLAT:
+		case AccidentalType.SHARP:
+			midiLikeHeight++;
+			break;
+		case AccidentalType.FLAT:
+			midiLikeHeight--;
+			break;
+		case AccidentalType.DOUBLE_SHARP:
+			midiLikeHeight += 2;
+			break;
+		case AccidentalType.DOUBLE_FLAT:
+			midiLikeHeight -= 2;
+			break;
+		}
+		return midiLikeHeight;
+	}
+
+  /**
+	 * Returns this note absolute height. This height doesn't take in account
+	 * octave transposition.
+	 * 
+	 * @return The height of this note on the first octave. Possible values are
+	 *         <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>,
+	 *         <TT>A</TT>(440Hz), <TT>B</TT> or <TT>REST</TT> only.
+	 * @see #getHeight()
+	 * @see #setHeight(byte)
+	 */
   public byte getStrictHeight() {
 	  return getStrictHeight(strictHeight);
   }
@@ -294,9 +643,8 @@ public class Note extends NoteAbstract
   public static byte getStrictHeight(byte height) {
 	  if (height==REST)
 		  return REST;
-	  // The +96 is needed to move the height of the note to a positive range
-	  // X*12 , 96 should be enough.
-	  byte sh = (byte)((height+96)%12);
+	  // The +132 is needed to move the height of the note to a positive range
+	  byte sh = (byte)((height+132)%12);
 	  if (!(sh==Note.C || sh==Note.D || sh==Note.E || sh==Note.F ||
 			  sh==Note.G || sh==Note.A || sh==Note.B))
 			  throw new IllegalArgumentException("The height " + height + " cannot be strictly mapped because of sharp or flat (sh=" + sh + ")");
@@ -454,6 +802,21 @@ public class Note extends NoteAbstract
   public byte getAccidental()
   { return accidental; }
 
+  /** Returns accidental for this note.
+   * If the note has no accidental, returns the accidental at key for
+   * this note (if key is not null)
+   * @return Accidental for this note if any. Possible values are
+   * <TT>AccidentalType.NATURAL</TT>, <TT>AccidentalType.FLAT</TT>, <TT>AccidentalType.SHARP</TT>
+   * or <TT>AccidentalType.NONE</TT>.
+   * If key is not null, AccidentalType.NONE is never returned
+   */
+  public byte getAccidental(KeySignature key) {
+	  if ((key != null) && (accidental == AccidentalType.NONE)) {
+		  return key.getAccidentalFor(getStrictHeight());
+	  }
+	  return accidental;
+  }
+
   public boolean hasAccidental() {
 	  return accidental != AccidentalType.NONE;
   }
@@ -506,20 +869,6 @@ public class Note extends NoteAbstract
     else throw new IllegalArgumentException(num + "/" + denom + " doesn't correspond to any strict note length");
   }
 
-  public static byte convertToAccidentalType(String accidental) throws IllegalArgumentException
-  {
-	  //TODO double and half flat and sharp
-    if (accidental==null) return AccidentalType.NONE;
-    else if (accidental.equals("^")) return AccidentalType.SHARP;
-    else if (accidental.equals("^^")) return AccidentalType.DOUBLE_SHARP;
-    else if (accidental.equals("^/")) return AccidentalType.SHARP;
-    else if (accidental.equals("_")) return AccidentalType.FLAT;
-    else if (accidental.equals("__")) return AccidentalType.DOUBLE_FLAT;
-    else if (accidental.equals("_/")) return AccidentalType.FLAT;
-    else if (accidental.equals("=")) return AccidentalType.NATURAL;
-    else throw new IllegalArgumentException(accidental + " is not a valid accidental");
-  }
-
   public String toString()
   {
     String string2Return = super.toString();
@@ -539,6 +888,7 @@ public class Note extends NoteAbstract
     if (strictHeight == a) 	string2Return = string2Return.concat("a"); else
     if (strictHeight == b) 	string2Return = string2Return.concat("b");*/
     switch(accidental) {
+    case AccidentalType.NATURAL: string2Return = string2Return.concat("="); break;
     case AccidentalType.FLAT: string2Return = string2Return.concat("b"); break;
     case AccidentalType.SHARP: string2Return = string2Return.concat("#"); break;
     case AccidentalType.DOUBLE_FLAT: string2Return = string2Return.concat("bb"); break;
@@ -701,6 +1051,16 @@ public class Note extends NoteAbstract
 		} catch (IllegalArgumentException shouldNeverHappen) {
 			return "";
 		}
+	}
+	
+	public Object clone() {
+		Object o = null;
+		try {
+			o = super.clone();
+		} catch (CloneNotSupportedException never) {
+			System.err.println(never.getMessage());
+		}
+		return o;
 	}
 }
 

@@ -82,19 +82,19 @@ class JBar extends JScoreElementAbstract {
 		switch (m_barLine.getType()) {
 		case BarLine.REPEAT_OPEN:
 		case BarLine.REPEAT_CLOSE:
-			width = m_thickBarWidth + m_doubleBarSpacing + m_thinBarWidth
+			width = m_thickBarWidth + m_doubleBarSpacing + m_thinBarWidth - 1
 					+ m_barDotsSpacing + m_dotsRadius;
 			break;
 		case BarLine.BEGIN:
 		case BarLine.END:
-			width = m_thickBarWidth + m_doubleBarSpacing + m_thinBarWidth;
+			width = m_thickBarWidth + m_doubleBarSpacing + m_thinBarWidth - 1;
 			break;
 		case BarLine.DOUBLE:
-			width = m_doubleBarSpacing + 2 * m_thinBarWidth;
+			width = m_doubleBarSpacing + 2 * m_thinBarWidth - 2;
 			break;
 		case BarLine.SIMPLE:
 		default:
-			width = m_thinBarWidth;
+			width = m_thinBarWidth - 1;
 			break;
 		}
 		return width;
@@ -139,7 +139,7 @@ class JBar extends JScoreElementAbstract {
 			renderThinLine(context, x);
 			break;
 		}
-		// renderDebugBoundingBoxOuter(context);
+		//renderDebugBoundingBoxOuter(context);
 		return getWidth();
 	}
 

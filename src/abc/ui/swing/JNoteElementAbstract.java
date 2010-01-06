@@ -24,10 +24,12 @@ import java.util.Vector;
 import abc.notation.Decoration;
 import abc.notation.Note;
 import abc.notation.NoteAbstract;
+import abc.ui.swing.JScoreElement.JStemmableElement;
 
 /** This class defines a note rendition element.
  */
-abstract class JNoteElementAbstract extends JScoreElementAbstract {
+abstract class JNoteElementAbstract extends JScoreElementAbstract
+								implements JStemmableElement {
 
 	protected static final double SPACE_RATIO_FOR_GRACENOTES = 0.3;
 
@@ -47,6 +49,8 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract {
 
 	protected Point2D slurUnderAnchor = null, slurAboveAnchor = null;
 	protected Point2D slurUnderAnchorOutOfStem = null, slurAboveAnchorOutOfStem = null;
+	protected Point2D tieStartAboveAnchor = null, tieStartUnderAnchor = null;
+	protected Point2D tieEndAboveAnchor = null, tieEndUnderAnchor = null;
 
 	/** <TT>true</TT> if the stem is up for this chord, <TT>false</TT> otherwise. */
 	// private attribute so all classes are forced to accessor methods
@@ -145,6 +149,22 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract {
 	 */
 	public void setJSlurDefinition(JSlurOrTie slurDefinition) {
 		jSlurDefinition = slurDefinition;
+	}
+	
+	public Point2D getTieStartAboveAnchor() {
+		return tieStartAboveAnchor;
+	}
+	
+	public Point2D getTieStartUnderAnchor() {
+		return tieStartUnderAnchor;
+	}
+	
+	public Point2D getTieEndAboveAnchor() {
+		return tieEndAboveAnchor;
+	}
+	
+	public Point2D getTieEndUnderAnchor() {
+		return tieEndUnderAnchor;
 	}
 
 	public Point2D getSlurAboveAnchor() {

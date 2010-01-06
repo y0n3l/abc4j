@@ -21,18 +21,29 @@ import java.awt.geom.Point2D;
 import abc.notation.Note;
 
 class JChordNote extends JNotePartOfGroup {
+	
+	private boolean m_isLowest = false;
+	private boolean m_isHighest = false;
 
 	public JChordNote(Note noteValue, Point2D base, ScoreMetrics c) {
 		super(noteValue, base, c);
 		//onBaseChanged();
+		//System.err.println(toString() + ": note="+noteValue.toString());
 	}
 
 	protected void valuateNoteChars() {
-		if (note.getStrictDuration()==Note.HALF || note.getStrictDuration()==Note.WHOLE) {
-			noteChars = ScoreMetrics.NOTE_LONGER;
+		if (!isAnchor()) {
+			if (note.getStrictDuration()==Note.HALF || note.getStrictDuration()==Note.WHOLE)
+				noteChars = ScoreMetrics.NOTE_LONGER;
+			else
+				noteChars = ScoreMetrics.NOTE;
+		} else {//isAnchor
+			//from JNote.valuateNoteChars()
+			if (isStemUp())
+				noteChars = getMetrics().getNoteStemUpChar(((Note) getMusicElement()).getStrictDuration());
+			else
+				noteChars = getMetrics().getNoteStemDownChar(((Note) getMusicElement()).getStrictDuration());
 		}
-		else
-			noteChars = ScoreMetrics.NOTE;
 	}
 
 	public double render(Graphics2D context){
@@ -47,5 +58,35 @@ class JChordNote extends JNotePartOfGroup {
 		context.setColor(previousColor);
 */
 		return getWidth();
+	}
+
+	/**
+	 * return <TT>true</TT> if this note is the highest in the chord
+	 */
+	protected boolean isHighest() {
+		return m_isHighest;
+	}
+
+	/**
+	 * Sets to <TT>true</TT> to tells that this is note is the
+	 * highest in the chord
+	 */
+	protected void setIsHighest(boolean highest) {
+		m_isHighest = highest;
+	}
+
+	/**
+	 * return <TT>true</TT> if this note is the lowest in the chord
+	 */
+	protected boolean isLowest() {
+		return m_isLowest;
+	}
+
+	/**
+	 * Sets to <TT>true</TT> to tells that this is note is the
+	 * lowest in the chord
+	 */
+	protected void setIsLowest(boolean lowest) {
+		m_isLowest = lowest;
 	}
 }

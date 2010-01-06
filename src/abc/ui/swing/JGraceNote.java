@@ -59,10 +59,10 @@ class JGraceNote extends JNote {
 	 * in a genric way that enables positioning, sizing, rendering
 	 * to be done generically
 	 * <p>subclasses should override this method.
-	 * @return {@link ScoreMetrics#GRACENOTE_GLYPH}
+	 * @return {@link ScoreMetrics#NOTATION_CONTEXT_GRACENOTE}
 	 */
 	protected int getNotationContext() {
-		return ScoreMetrics.GRACENOTE_GLYPH;
+		return ScoreMetrics.NOTATION_CONTEXT_GRACENOTE;
 	}
 
 	// correct for font glyph positioning
