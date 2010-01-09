@@ -20,6 +20,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import abc.notation.Note;
 import abc.notation.Tempo;
 
 public class JTempo extends JText {
@@ -38,20 +39,13 @@ public class JTempo extends JText {
 	protected JTempo(ScoreMetrics mtrx, Point2D base, Tempo tempo) {
 		super(mtrx, "", ScoreMetrics.FONT_ANNOTATION, JText.ALIGN_LEFT_TAB);
 		m_tempo = tempo;
-		m_refNote = mtrx.getNoteStemUpChar(m_tempo.getReference());
+		m_refNote = new char[] { mtrx.getMusicalFont().getNoteStemUpChar(m_tempo.getReference()) };
 		m_refNoteBounds = getMetrics().getBounds(m_refNote,
 				ScoreMetrics.NOTATION_CONTEXT_TEMPO);
-		m_noteHeadBounds = getMetrics().getBounds(ScoreMetrics.NOTE[0],
+		m_noteHeadBounds = getMetrics().getBounds(
+				getMetrics().getMusicalFont().getNoteWithoutStem(Note.QUARTER),
 				ScoreMetrics.NOTATION_CONTEXT_TEMPO);
-		char[] s = String.valueOf(m_tempo.getNotesNumberPerMinute()).toCharArray();
-		//s = [1, 2, 0]
-		StringBuffer sb = new StringBuffer(s.length);
-		for (int i = 0; i < s.length; i++) {
-			sb.append(mtrx.getTimeSignatureDigitChar(
-					Integer.parseInt(s[i]+"")
-					));
-		}
-		m_number = sb.toString();
+		m_number = new String(getMetrics().getMusicalFont().getTimeSignatureDigits(m_tempo.getNotesNumberPerMinute()));
 		m_numberBounds = getMetrics().getBounds(m_number.toCharArray(),
 				ScoreMetrics.NOTATION_CONTEXT_TEMPO);
 	}

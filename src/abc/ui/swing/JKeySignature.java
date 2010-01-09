@@ -105,7 +105,7 @@ class JKeySignature extends JScoreElementAbstract {
 					?AccidentalType.SHARP:AccidentalType.FLAT;
 			int[] order = (accidental == AccidentalType.FLAT)
 					?flatOrder:sharpOrder;
-			char[] glyph = ScoreMetrics.NATURAL;
+			char[] glyph = getMetrics().getAccidentalGlyph(AccidentalType.NATURAL);
 			double glyphWidth = getMetrics().getBounds(glyph).getWidth();
 			double[] Ys = (accidental==AccidentalType.FLAT)
 					?flatYs:sharpYs;

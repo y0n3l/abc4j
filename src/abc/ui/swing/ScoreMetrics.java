@@ -21,11 +21,8 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
-import java.awt.Shape;
 import java.awt.font.FontRenderContext;
-import java.awt.font.GlyphVector;
 import java.awt.font.TextLayout;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,6 +32,9 @@ import java.util.Set;
 import abc.notation.AccidentalType;
 import abc.notation.Clef;
 import abc.notation.Note;
+import abc.ui.fonts.MissingGlyphException;
+import abc.ui.fonts.MusicalFont;
+import abc.ui.fonts.SonoraFont;
 
 /**
  * This class encapsulates all requiered dimensions needed to draw
@@ -47,96 +47,15 @@ public class ScoreMetrics {
 	public static final int NOTATION_CONTEXT_GRACENOTE = 200;
 	public static final int NOTATION_CONTEXT_TEMPO = 150;
 
-	public static final char STAFF_SIX_LINES = '\uF03D';
 	/** staff six lines / ratio = note height */
-	private static final double STAFF_SIX_LINES_LINE_HEIGHT_RATIO = 4.1;
-	public static final char[] BAR_LINE = {'\uF05C'};
-
-	public static final char[] DOT = {'\uF06B'};
-
-	public static final char[] STROKE = {'\uF05F'};
-	/** The pure note character without any stem for notes such as 1/4, 1/8 and quicker... */
-	public static final char[] NOTE = {'\uF0CF'};
-	/** The pure note character without any stem for notes such as whole & half */
-	public static final char[] NOTE_LONGER = {'\uF092'};
-
-	/** Tuplet digits, in italics */
-	private static final char[] TUPLET_DIGITS = {
-		'\uF0C1', //1
-		'\uF0AA', //2
-		'\uF0A3', //3
-		'\uF0A2', //4
-		'\uF0B0', //5
-		'\uF0A4', //6
-		'\uF0A6', //7
-		'\uF0A5', //8
-		'\uF0BB'}; //9
-
-	/** Digits for time signature */
-	private static final char[] TIME_SIGNATURE_DIGITS = {
-			'\uF030', //0
-			'\uF031', //1
-			'\uF032', //2
-			'\uF033', //3
-			'\uF034', //4
-			'\uF035', //5
-			'\uF036', //6
-			'\uF037', //7
-			'\uF038', //8
-			'\uF039', //9
-			};
-
-	public static final char STEM_COMBINE_UP_SINGLE = '\uF021';
-	public static final char STEM_COMBINE_UP_DOUBLE = '\uF040';
-
-	private static final char G_CLEF = '\uF026';
-	public static final char[] SHARP = {'\uF023'};
-	public static final char[] SHARP_DOUBLE = {'\uF099'};//F0DC
-	//TODO public static final char[] SHARP_HALF = {'\uF023'};
-	public static final char[] FLAT = {'\uF062'};
-	public static final char[] FLAT_DOUBLE = {'\uF0BA'};
-	//TODO public static final char[] FLAT_HALF = {'\uF062'};
-	//also exists "sharp and half", "flat and half" but
-	//don't know how to write them in ABC
-	public static final char[] NATURAL = {'\uF06E'};
-
-	//Notes glyphes stem up
-	private static final char[] WHOLE_NOTE = {'\uF092'};
-	private static final char[] HALF_NOTE = {'\uF068'};
-	private static final char[] QUARTER_NOTE = {'\uF071'};
-	private static final char[] EIGHTH_NOTE = {'\uF065'};
-	private static final char[] SIXTEENTH_NOTE = {'\uF072'};
-	private static final char[] THIRTY_SECOND_NOTE = {'\uF078'};
-	private static final char[] SIXTY_FOURTH_NOTE = {'\uF01C'};
-
-	//Notes glyphes stem down
-	private static final char[] WHOLE_NOTE_STEM_DOWN = {'\uF092'};
-	private static final char[] HALF_NOTE_STEM_DOWN = {'\uF048'};
-	private static final char[] QUARTER_NOTE_STEM_DOWN = {'\uF051'};
-	private static final char[] EIGHTH_NOTE_STEM_DOWN = {'\uF045'};
-	private static final char[] SIXTEENTH_NOTE_STEM_DOWN = {'\uF052'};
-	private static final char[] THIRTY_SECOND_NOTE_STEM_DOWN = {'\uF058'};
-	private static final char[] SIXTY_FOURTH_NOTE_STEM_DOWN = {'\uF01D'};
-
-	//Rests glyphes
-	private static final char[] DOUBLE_REST = {'\uF0E3'};
-	private static final char[] WHOLE_REST = {'\uF0B7'};
-	private static final char[] HALF_REST = {'\uF0EE'};
-	private static final char[] QUARTER_REST = {'\uF0CE'};
-	private static final char[] EIGHTH_REST = {'\uF0E4'};
-	private static final char[] SIXTEENTH_REST = {'\uF0C5'};
-	private static final char[] THIRTY_SECOND_REST = {'\uF0A8'};
-	private static final char[] SIXTY_FOURTH_REST = {'\uF0F4'};
-
-	/** Unknown note length */
-	private static final char[] UNKNWON_NOTE = {'\uF0AD'};
+	private static final double STAFF_FIVE_LINES_LINE_HEIGHT_RATIO = 4.1;
 
 	/** Default font size for musical symbols and texts */
 	private static final float DEFAULT_NOTATION_SIZE = 45;
 	private static final float DEFAULT_TEXT_SIZE = DEFAULT_NOTATION_SIZE / 4;
 	private static final String NOTATION_FONT = "SONORA3.TTF";
 //	private static final String DEFAULT_TEXT_FONT = "Dialog";
-	public static final double SPACE_RATIO_FOR_ACCIDENTALS = 1.2;
+	public static final double SPACE_RATIO_FOR_ACCIDENTALS = 0.3;
 
 	/** Textual font for title
 	 * @see #getTextFont(short)
@@ -232,6 +151,8 @@ public class ScoreMetrics {
 
 	private float m_notationFontSize = -1;
 	private float m_textFontSize = -1;
+	private MusicalFont m_musicalFont = new SonoraFont();
+	private char m_noteHeadWithoutStem;
 
 	/**
 	 * ScoreMetrics with {@link #DEFAULT_NOTATION_SIZE default size}
@@ -317,6 +238,8 @@ public class ScoreMetrics {
 			//reset the bounds collection
 			bounds.clear();
 			
+			m_noteHeadWithoutStem = getMusicalFont().getNoteWithoutStem(Note.QUARTER);
+			
 			//getClass().getResourceAsStream("SONORA.TTF");
 			//File file =new File("D:/Perso/musicfonts/MIDIDESI/TRUETYPE/SONORA.TTF");
 			//FileInputStream fontStream = new FileInputStream(file);
@@ -330,7 +253,7 @@ public class ScoreMetrics {
 			
 			Rectangle2D staffCharBounds = getStaffCharBounds();
 			//staffCharWidth = staffCharBounds.getWidth();
-			staffLineHeight = staffCharBounds.getHeight()/STAFF_SIX_LINES_LINE_HEIGHT_RATIO;
+			staffLineHeight = staffCharBounds.getHeight()/STAFF_FIVE_LINES_LINE_HEIGHT_RATIO;
 
 			double noteHeight = getNoteHeight();
 			double noteWidth = getNoteWidth();
@@ -457,7 +380,7 @@ public class ScoreMetrics {
 	 * @return
 	 */
 	public Dimension getGlyphDimension(int notationContext) {
-		Rectangle2D bounds = getBounds(NOTE[0], notationContext);
+		Rectangle2D bounds = getBounds(m_noteHeadWithoutStem, notationContext);
 		return new Dimension((int)bounds.getHeight(),
 				(int)bounds.getWidth());
 	}
@@ -519,7 +442,7 @@ public class ScoreMetrics {
 	}
 	
 	public double getNoteHeight() {
-		return getBounds(NOTE[0]).getHeight();
+		return getBounds(m_noteHeadWithoutStem).getHeight();
 	}
 	/** @deprecated {@link getNoteHeight()} */
 	public double getNoteHeigth() {
@@ -561,16 +484,9 @@ public class ScoreMetrics {
 	}
 
 	public double getNoteWidth() {
-		return getBounds(NOTE[0]).getWidth();
+		return getBounds(m_noteHeadWithoutStem).getWidth();
 	}
 
-	public double getTimeSignatureNumberWidth() {
-		return getBounds(getTimeSignatureDigitChar(2)).getWidth();
-	}
-
-	public double getTimeSignatureNumberHeight() {
-		return getBounds(getTimeSignatureDigitChar(2)).getHeight();
-	}
 
 	/**
 	 * Returns the spacing between notes.
@@ -589,7 +505,7 @@ public class ScoreMetrics {
 	/** Returns the bounding box of a staff line character.
 	 * @return Returns the bounding box of a staff line character. */
 	public Rectangle2D getStaffCharBounds(){
-		return getBounds(STAFF_SIX_LINES);
+		return getBounds(getMusicalFont().getStaffFiveLines());
 	}
 
 	public double getStaffLineHeight() {
@@ -675,7 +591,7 @@ public class ScoreMetrics {
 	/**
 	 * Get the bounds of a glyph in the default notation
 	 * context.
-	 * @param glyph {@link #getTimeSignatureDigitChar(int)}
+	 * @param glyph
 	 */
 	public Rectangle2D getBounds(char glyph) {
 		return getBounds(new char[]{glyph}, NOTATION_CONTEXT_NOTE);
@@ -693,7 +609,7 @@ public class ScoreMetrics {
 	/**
 	 * Get the bounds of a glyph in the default notation
 	 * context.
-	 * @param glyph {@link #getTimeSignatureDigitChar(int)}
+	 * @param glyph
 	 * @param notationContext {@link #NOTATION_CONTEXT_NOTE} or {@link #NOTATION_CONTEXT_GRACENOTE}
 	 */
 	public Rectangle2D getBounds(char glyph, int notationContext) {
@@ -727,21 +643,10 @@ public class ScoreMetrics {
 	 */
 	public char[] getAccidentalGlyph(byte accidental)
 		throws IllegalArgumentException {
-		switch(accidental) {
-		case AccidentalType.NONE:
-			return null;
-		case AccidentalType.FLAT:
-			return FLAT;
-		case AccidentalType.NATURAL:
-			return NATURAL;
-		case AccidentalType.SHARP:
-			return SHARP;
-		case AccidentalType.DOUBLE_FLAT:
-			return FLAT_DOUBLE;
-		case AccidentalType.DOUBLE_SHARP:
-			return SHARP_DOUBLE;
-		//TODO half sharp, half flat
-		default: throw new IllegalArgumentException("Unknow accidental type : "+accidental);
+		try {
+			return new char[] { getMusicalFont().getAccidental(accidental) };
+		} catch (MissingGlyphException mge) {
+			throw new IllegalArgumentException("Unknow accidental type : "+accidental);
 		}
 	}
 	
@@ -764,10 +669,6 @@ public class ScoreMetrics {
 		return biggestAccidentalWidth;
 	}
 
-	public Rectangle2D getQuarterNoteBounds(){
-		return getBounds(QUARTER_NOTE);
-	}
-
 	/**
 	 * @return Returns the tupletNumberYOffset.
 	 */
@@ -779,93 +680,18 @@ public class ScoreMetrics {
 	}
 
 	/**
-	 * Return the font char for a tuplet number
-	 * @param tupletNumber from 1 to 9
-	 * @return
-	 */
-	public char getTupletDigitChar(int tupletNumber) {
-		return TUPLET_DIGITS[tupletNumber - 1];
-	}
-
-	/**
-	 * Returns the font char for a digit of the time signature
-	 * @param digit from 0 to 9
-	 * @return
-	 */
-	public char getTimeSignatureDigitChar(int digit) {
-		return TIME_SIGNATURE_DIGITS[digit];
-	}
-
-	/**
 	 * Return the font char for the clef
 	 * @param clef {@link Clef#G} is the only one supported
 	 * @return {@link #G_CLEF}
 	 * @throws IllegalArgumentException if clefType is not equal to "G"
+	 * @throws MissingGlyphException
 	 */
 	public char getClefChar(Clef clef)
-		throws IllegalArgumentException {
+		throws IllegalArgumentException, MissingGlyphException {
 		if (clef.equals(Clef.G))
-			return G_CLEF;
+			return getMusicalFont().getClef(clef);
 		else
 			throw new IllegalArgumentException("Unsupported clef type "+clef.getName());
-	}
-
-	/**
-	 * Return the char for a given note with a stem up
-	 * @param strictDuration {@link Note#getStrictDuration()}, for
-	 * example {@link {@link Note#QUARTER}
-	 * @return a char[] containing glyph
-	 */
-	protected char[] getNoteStemUpChar(short strictDuration) {
-		switch (strictDuration) {
-			case Note.SIXTY_FOURTH: return SIXTY_FOURTH_NOTE;
-			case Note.THIRTY_SECOND: return THIRTY_SECOND_NOTE;
-			case Note.SIXTEENTH : return SIXTEENTH_NOTE;
-			case Note.EIGHTH : return EIGHTH_NOTE;
-			case Note.QUARTER: return QUARTER_NOTE;
-			case Note.HALF: return HALF_NOTE;
-			case Note.WHOLE: return WHOLE_NOTE;
-			default : return UNKNWON_NOTE;
-		}
-	}
-
-	/**
-	 * Return the char for a given note with a stem down
-	 * @param strictDuration {@link Note#getStrictDuration()}, for
-	 * example {@link {@link Note#QUARTER}
-	 * @return a char[] containing glyph
-	 */
-	protected char[] getNoteStemDownChar(short strictDuration) {
-		switch (strictDuration) {
-			case Note.SIXTY_FOURTH: return SIXTY_FOURTH_NOTE_STEM_DOWN;
-			case Note.THIRTY_SECOND: return THIRTY_SECOND_NOTE_STEM_DOWN;
-			case Note.SIXTEENTH : return SIXTEENTH_NOTE_STEM_DOWN;
-			case Note.EIGHTH : return EIGHTH_NOTE_STEM_DOWN;
-			case Note.QUARTER: return QUARTER_NOTE_STEM_DOWN;
-			case Note.HALF: return HALF_NOTE_STEM_DOWN;
-			case Note.WHOLE: return WHOLE_NOTE_STEM_DOWN;
-			default: return UNKNWON_NOTE;
-		}
-	}
-
-	/**
-	 * Return the char for a given rest.
-	 * @param strictDuration {@link Note#getStrictDuration()}, for
-	 * example {@link {@link Note#QUARTER}
-	 * @return a char[] containing glyph
-	 */
-	protected char[] getRestChar(short strictDuration) {
-		switch (strictDuration) {
-			case Note.SIXTY_FOURTH: return SIXTY_FOURTH_REST;
-			case Note.THIRTY_SECOND: return THIRTY_SECOND_REST;
-			case Note.SIXTEENTH : return SIXTEENTH_REST;
-			case Note.EIGHTH : return EIGHTH_REST;
-			case Note.QUARTER: return QUARTER_REST;
-			case Note.HALF: return HALF_REST;
-			case Note.WHOLE: return WHOLE_REST;
-			//case Note.DOUBLE: return DOUBLE_REST; //is it breve?
-			default: return UNKNWON_NOTE;
-		}
 	}
 
 	/** Returns height of character rendered in the Decorations font.
@@ -884,11 +710,11 @@ public class ScoreMetrics {
 
 	/* *** graceNotes support *** */
 	public double getGraceNoteHeight() {
-		return getBounds(NOTE[0], NOTATION_CONTEXT_GRACENOTE).getHeight();
+		return getBounds(m_noteHeadWithoutStem, NOTATION_CONTEXT_GRACENOTE).getHeight();
 	}
 
 	public double getGraceNoteWidth() {
-		return getBounds(NOTE[0], NOTATION_CONTEXT_GRACENOTE).getWidth();
+		return getBounds(m_noteHeadWithoutStem, NOTATION_CONTEXT_GRACENOTE).getWidth();
 	}
 
 	/** Returns the spacing between graceNotes.
@@ -912,29 +738,6 @@ public class ScoreMetrics {
 	public int getGraceNoteStemLength(){
 		return graceNoteStemLength;
 	}
-
-//fontrenderingcontext specific transformations
-
-	public Shape getRotatedDecoration(Graphics2D g2, char[] chars, double radians) {
-		Shape glyphOutline = null;
-		AffineTransform transform = AffineTransform.getRotateInstance(radians);
-		GlyphVector glyphVector = getNotationFont()
-										.createGlyphVector(g2.getFontRenderContext(),chars);
-
-		if (glyphVector.getNumGlyphs() > 0) {
-
-			glyphOutline = glyphVector.getGlyphOutline(0);
-			glyphOutline = transform.createTransformedShape(glyphOutline);
-
-		}
-
-		return(glyphOutline);
-	}
-
-
-
-// get various font instances
-
 
 	/** Returns the notation font used for this score metrics.
 	 * @return the notation font used for this score metrics. */
@@ -981,6 +784,11 @@ public class ScoreMetrics {
 		this.gracesSizeProportion = Math.max(Math.min(f, 1), 0);
 		bounds.clear();
 		initGracingsFont();
+	}
+	
+	/** Returns the musical font definition */
+	public MusicalFont getMusicalFont() {
+		return m_musicalFont;
 	}
 
 }

@@ -95,6 +95,10 @@ public class Note extends NoteAbstract implements Cloneable
 
   //max short possible = 290, else transform to int = 560 (9:2 64th)
   private static final short LENGTH_RESOLUTION = 12;
+  /** The <TT>LONG</TT> (double breve) length type. */
+  public static final short LONG = LENGTH_RESOLUTION * 256;
+  /** The <TT>BREVE</TT> (double whole) length type. */
+  public static final short BREVE = LENGTH_RESOLUTION * 128;
   /** The <TT>DOTTED_WHOLE</TT> length type. */
   public static final short DOTTED_WHOLE	= LENGTH_RESOLUTION * 96;
   /** The <TT>WHOLE</TT> length type. <IMG src="../../images/whole.jpg"/>*/

@@ -13,25 +13,21 @@
 //
 // You should have received a copy of the GNU Lesser General Public License
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
-package abc.parser.def;
+package abc.ui.fonts;
 
-import scanner.AutomataDefinition;
-import scanner.State;
-import scanner.Transition;
-import abc.parser.AbcTokenType;
+public class MissingGlyphException extends RuntimeException {
 
-/** This scanner extends the capabilities of the default scanner to implement
- *  abc tokens scannig. **/
-public class GracingDefinition extends AutomataDefinition
-{
+	private static final long serialVersionUID = -4681153095189221311L;
 
-    public GracingDefinition()
-    {
-      State state = new State(AbcTokenType.GRACING, true);
-      char[] chars = {'~', '.', 'v', 'u'};
-      //TODO v2.0 char[] chars = {'~', '.', 'v', 'u', 'T', 'H', 'L', 'M', 'P', 'S', 'O'};
-      
-      getStartingState().addTransition(new Transition(state, chars));
-    }
+	protected MissingGlyphException(String oToString,
+			MusicalFont font) {
+		super("Missing glyph for " + oToString
+				+ " in font " + font.getName());
+	}
+
+	protected MissingGlyphException(Object o,
+			MusicalFont font) {
+		this(o.toString(), font);
+	}
+	
 }
-

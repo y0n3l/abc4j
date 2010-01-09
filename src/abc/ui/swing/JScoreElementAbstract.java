@@ -19,7 +19,10 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Iterator;
+import java.util.Vector;
 
+import abc.notation.Decoration;
 import abc.notation.MusicElement;
 import abc.notation.Tune;
 
@@ -41,13 +44,20 @@ abstract class JScoreElementAbstract implements JScoreElement {
 	 * Use {@link #getBase()} which is sometimes extended
 	 */
 	private Point2D m_base = null;
-	/** The width of this rendition element */
-	//protected double m_width = -1;
+	
+	/** vector of JDecoration instances for this note. */
+	protected Vector m_jDecorations = null;
+	
+	/**
+	 * Array of anchors (Point2D) for decorations
+	 * <TT>m_decorationAnchors[JDecoration.ABOVE_STAFF]</TT>...
+	 */
+	protected Point2D[] m_decorationAnchors = new Point2D[JDecoration.POSITIONS_COUNT];
+
 	/** Teh bounding box (more or less humm....) that encapsulates
 	 * this graphical score element. */
 	protected Rectangle2D m_boundingBox = null;
 
-	//protected Color m_color = null;
 	/** The staff line that contains this score element. */
 	protected JStaffLine staffLine = null;
 
@@ -131,6 +141,16 @@ abstract class JScoreElementAbstract implements JScoreElement {
 		m_base = (Point2D)base.clone();
 		onBaseChanged();
 	}
+	
+	/** Add decoration if it hasn't been added previously */
+	protected void addDecoration (JDecoration decoration) {
+		if (m_jDecorations == null) {
+			m_jDecorations = new Vector();
+		}
+		if (!m_jDecorations.contains(decoration)) {
+			m_jDecorations.add(decoration);
+		}
+	}
 
 	/** Sets the color used for the rendition of this score element.
 	 * @param color The color used for the rendition of this score element. */
@@ -144,17 +164,27 @@ abstract class JScoreElementAbstract implements JScoreElement {
 	/** Renders this Score element to the given graphic context.
 	 * @param g2 */
 	public double render(Graphics2D g2) {
-		/* * /java.awt.Color previousColor = g2.getColor();
-		g2.setColor(java.awt.Color.RED);
-		m_boundingBox = getBoundingBox();
-		g2.drawRect((int)(m_boundingBox.getX()), (int)(m_boundingBox.getY()),
-				(int)(m_boundingBox.getWidth()), (int)(m_boundingBox.getHeight()));
-		g2.setColor(previousColor);/**/
 		return getWidth();
 	}
 
+	protected void renderDecorations(Graphics2D context){
+		if (m_jDecorations != null && m_jDecorations.size() > 0) {
+			Iterator iter = m_jDecorations.iterator();
+			JDecoration jDeco = null;
+			while (iter.hasNext()) {
+				jDeco = (JDecoration)iter.next();
+				byte position = jDeco.getPosition();
+				boolean inverted = (this instanceof JStemmableElement)
+					&& !((JStemmableElement) this).isStemUp();
+				jDeco.setInverted(inverted);
+				jDeco.setBase(m_decorationAnchors[position]);
+				jDeco.render(context);
+ 			}
+ 		}
+	}
+	
 	/**
-	 * For debuggin purpose, draw the bounding box of
+	 * For debugging purpose, draw the bounding box of
 	 * the element
 	 * @param context
 	 */
@@ -166,16 +196,30 @@ abstract class JScoreElementAbstract implements JScoreElement {
 	}
 	
 	/**
-	 * For debuggin purpose, draw the outer of bounding box of
+	 * For debugging purpose, draw the outer of bounding box of
 	 * the element
 	 * @param context
 	 */
 	protected void renderDebugBoundingBoxOuter(Graphics2D context) {
-		/* */java.awt.Color previousColor = context.getColor();
+		java.awt.Color previousColor = context.getColor();
 		context.setColor(java.awt.Color.RED);
 		Rectangle2D bb = getBoundingBox();
 		bb.setRect(bb.getX()-1, bb.getY()-1, bb.getWidth()+2, bb.getHeight()+2);
 		context.draw(bb);
-		context.setColor(previousColor);/* */
+		context.setColor(previousColor);
 	}
+
+	protected void renderDebugDecorationAnchors(Graphics2D context) {
+		java.awt.Color previousColor = context.getColor();
+		context.setColor(java.awt.Color.ORANGE);
+		for (int i = 0; i < m_decorationAnchors.length; i++) {
+			if (m_decorationAnchors[i] != null) {
+				context.drawOval((int)m_decorationAnchors[i].getX(),
+								(int)m_decorationAnchors[i].getY(),
+								1, 1);
+			}
+		}
+		context.setColor(previousColor);
+	}
+
 }

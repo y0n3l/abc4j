@@ -33,7 +33,6 @@ package abc.notation;
  * <b>NOTE:</b>The symbols T,H,L,M,P,S,O and ABC2.0 features and are not supported
  * by the abc4j 1.6 parser.
  */
-//FIXME (Sylvain) move this in FontMetrics !!! maybe m_metrics.getMusicalFont().getGlyph(Decoration.STACCATO)...
 public class Decoration implements MusicElement
 {
 
@@ -41,47 +40,73 @@ public class Decoration implements MusicElement
 
   /** The  type. Ex:  */
   public static final byte STACCATO = 1;
-  public static final char[] STACCATO_CHARS = {'\uF02E'};
 
   /** The  type. Ex:  */
   public static final byte ROLL = 2;
-  // this character is for a left bracket - must rotate 90CW for display
-  public static final char[] ROLL_CHARS = {'\uF028'};
 
   /** The  type. Ex:  */
   public static final byte UPBOW = 3;
-  public static final char[] UPBOW_CHARS = {'\uF076'};
 
   /** The  type. Ex:  */
   public static final byte DOWNBOW = 4;
-  public static final char[] DOWNBOW_CHARS = {'\uF0B3'};
   /** The  type. Ex:  */
   public static final byte TRILL = 5;
-  public static final char[] TRILL_CHARS = {'\uF0D9'};
 
   /** The  type. Ex:  */
   public static final byte FERMATA = 6;
-  public static final char[] FERMATA_CHARS = {'\uF055'};
 
-  /** The  type. Ex:  */
+  /** The <TT>></TT> accent type, also named "marcato" */
   public static final byte ACCENT = 7;
-  public static final char[] ACCENT_CHARS = {'\uF04B'};
+  /** The <TT>></TT> marcato (accent) type */
+  public static final byte MARCATO = 7;
 
   /** The  type. Ex:  */
   public static final byte LOWERMORDENT = 8;
-  public static char[] LOWERMORDENT_CHARS = {'\uF06D'};
 
   /** The  type. Ex:  */
   public static final byte UPPERMORDENT = 9;
-  public static char[] UPPERMORDENT_CHARS = {'\uF06D'};
 
+  //TODO move SEGNO and CODA to RepeatBarLine
   /** The  type. Ex:  */
   public static final byte SEGNO = 10;
-  public static char[] SEGNO_CHARS = {'\uF025'};
 
   /** The  type. Ex:  */
   public static final byte CODA = 11;
-  public static char[] CODA_CHARS = {'\uF0DE'};
+  
+  public static final byte STACCATISSIMO = 12;
+  
+  /** The <TT>,</TT> symbol, pause */
+  public static final byte PAUSE = 13;
+
+  /** The <TT>//</TT> symbol, grand pause */
+  public static final byte GRAND_PAUSE = 14;
+  
+  /** The tenuto <TT>-</TT> symbol */
+  public static final byte TENUTO = 15;
+
+  /** The sforzando <TT>/\</TT> symbol */
+  public static final byte SFORZANDO = 16;
+  
+  /** The marcato <TT>></TT> with staccato <TT>.</TT> under */
+  public static final byte MARCATO_STACCATO = 17;
+
+  /** The tenuto <TT>-</TT> with staccato <TT>.</TT> under */
+  public static final byte MEZZO_STACCATO = 18;
+
+  /** The <TT>/\</TT> with a staccato <TT>.</TT> under */
+  public static final byte MARTELATO_STACCATO = 19;
+  
+  /** The <I>Ped.</I> symbol */
+  public static final byte PEDAL_DOWN = 20;
+  /** The <I>*</I> symbol, when pedal is released */
+  public static final byte PEDAL_UP = 21;
+  
+  public static final byte STEM_COMBINE_UP_SINGLE = 22;
+  public static final byte STEM_COMBINE_UP_DOUBLE = 23;
+  public static final byte STEM_COMBINE_UP_TRIPLE = 24;
+  
+  /** The v1.6 ~ roll */
+  public static final byte GENERAL_GRACING = 99;
 
   /** The type of this Decoration. */
   private byte m_type = UNKNOWN;
@@ -166,26 +191,6 @@ public class Decoration implements MusicElement
       return type;
 
     }
-
-  /** Returns the characters of this object.
-   * @return A character array representation of this object. */
-  public char [] getChars()
-  {
-
-	if (m_type == STACCATO) return (STACCATO_CHARS);
-    else if (m_type == UPBOW) return (UPBOW_CHARS);
-    else if (m_type == DOWNBOW) return (DOWNBOW_CHARS);
-    else if (m_type == ROLL) return (ROLL_CHARS);
-    else if (m_type == TRILL) return (TRILL_CHARS);
-    else if (m_type == FERMATA) return (FERMATA_CHARS);
-    else if (m_type == ACCENT) return (ACCENT_CHARS);
-    else if (m_type == LOWERMORDENT) return (LOWERMORDENT_CHARS);
-    else if (m_type == UPPERMORDENT) return (UPPERMORDENT_CHARS);
-    else if (m_type == SEGNO) return (SEGNO_CHARS);
-    else if (m_type == CODA) return (CODA_CHARS);
-
-    return "".toCharArray();
-  }
 
   /** Returns a string representation of this object.
    * @return A string representation of this object. */

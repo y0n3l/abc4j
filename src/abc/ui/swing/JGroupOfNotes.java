@@ -135,6 +135,10 @@ class JGroupOfNotes extends JScoreElementAbstract
 		}
 		setStemUp(isStemUp);
 	}
+	
+	public boolean isStemUp() {
+		return isStemUp;
+	}
 
 	public void setStemUp(boolean isUp) {
 		isStemUp = isUp;
@@ -350,7 +354,8 @@ class JGroupOfNotes extends JScoreElementAbstract
 		}
 
 		if (nUpletSize!=-1) {
-			char[] chars = {getMetrics().getTupletDigitChar(nUpletSize)};
+			char[] chars = getMetrics().getMusicalFont().getTupletDigits(nUpletSize);
+			Rectangle2D numberBounds = getMetrics().getBounds(chars);
 			//TODO replace with commented line but needs to be improved because of the get display position.
 			//context.drawChars(chars, 0, 1, (int)(((JNote)m_jNotes[0]).getDisplayPosition().getX()+m_width/2), (int)(m_stemYend - m_metrics.getNoteHeigth()/4));
 			Point2D ctrlP = null;
@@ -387,8 +392,8 @@ class JGroupOfNotes extends JScoreElementAbstract
 				context.drawChars(chars, 0, 1, (int)ctrlP.getX(), (int)ctrlP.getY());
 			}
 			ctrlP.setLocation(
-				ctrlP.getX()+getMetrics().getTimeSignatureNumberWidth()/2,
-				ctrlP.getY()-getMetrics().getTimeSignatureNumberHeight()-getMetrics().getTupletNumberYOffset());
+				ctrlP.getX()+numberBounds.getWidth()/2,
+				ctrlP.getY()-numberBounds.getHeight()-getMetrics().getTupletNumberYOffset());
 			((JNoteElementAbstract) m_jNotes[0]).getJSlurDefinition()
 				.setTupletControlPoint(ctrlP);
 		}

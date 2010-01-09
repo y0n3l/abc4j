@@ -44,7 +44,7 @@ class JGraceNotePartOfGroup extends JNotePartOfGroup {
 		// beamed notes are always 1/8th notes or less
 		// so just display a stemless note - stems and beams are drawn
 		// programmatically
-		noteChars = ScoreMetrics.NOTE;
+		noteChars = new char[] { getMetrics().getMusicalFont().getNoteWithoutStem() };
 	}
 	
 	/**

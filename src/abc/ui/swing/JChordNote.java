@@ -33,16 +33,13 @@ class JChordNote extends JNotePartOfGroup {
 
 	protected void valuateNoteChars() {
 		if (!isAnchor()) {
-			if (note.getStrictDuration()==Note.HALF || note.getStrictDuration()==Note.WHOLE)
-				noteChars = ScoreMetrics.NOTE_LONGER;
-			else
-				noteChars = ScoreMetrics.NOTE;
+			noteChars = new char[] { getMetrics().getMusicalFont().getNoteWithoutStem(note.getStrictDuration()) };
 		} else {//isAnchor
 			//from JNote.valuateNoteChars()
 			if (isStemUp())
-				noteChars = getMetrics().getNoteStemUpChar(((Note) getMusicElement()).getStrictDuration());
+				noteChars = new char[] { getMetrics().getMusicalFont().getNoteStemUpChar(((Note) getMusicElement()).getStrictDuration()) };
 			else
-				noteChars = getMetrics().getNoteStemDownChar(((Note) getMusicElement()).getStrictDuration());
+				noteChars = new char[] { getMetrics().getMusicalFont().getNoteStemDownChar(((Note) getMusicElement()).getStrictDuration()) };
 		}
 	}
 

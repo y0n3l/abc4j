@@ -1,0 +1,316 @@
+// Copyright 2006-2008 Lionel Gueganton
+// This file is part of abc4j.
+//
+// abc4j is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// abc4j is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
+package abc.ui.fonts;
+
+import abc.notation.AccidentalType;
+import abc.notation.BarLine;
+import abc.notation.Clef;
+import abc.notation.Decoration;
+import abc.notation.Dynamic;
+import abc.notation.Note;
+import abc.notation.TimeSignature;
+
+/**
+ * Font definition for SONORA.TTF
+ */
+public class SonoraFont implements MusicalFont {
+	
+	/** Digits for time signature */
+	private static final char[] DIGITS = {
+		'\uF030', //0
+		'\uF031', //1
+		'\uF032', //2
+		'\uF033', //3
+		'\uF034', //4
+		'\uF035', //5
+		'\uF036', //6
+		'\uF037', //7
+		'\uF038', //8
+		'\uF039'}; //9
+	
+	/** Tuplet digits, in italics */
+	private static final char[] ITALICS_DIGITS = {
+		'\uF0BC', //0
+		'\uF0C1', //1
+		'\uF0AA', //2
+		'\uF0A3', //3
+		'\uF0A2', //4
+		'\uF0B0', //5
+		'\uF0A4', //6
+		'\uF0A6', //7
+		'\uF0A5', //8
+		'\uF0BB'}; //9
+	
+	/** Unknown note length */
+	private static final char UNKNWON_NOTE = '\uF0AD';
+
+	public SonoraFont() {
+		//voided
+	}
+
+	public char getAccidental(byte accidentalType)
+	throws MissingGlyphException, IllegalArgumentException {
+		switch(accidentalType) {
+		case AccidentalType.NONE: throw new IllegalAccessError("No glyph for NONE accidental type");
+		case AccidentalType.FLAT: return '\uF062';
+		case AccidentalType.NATURAL: return '\uF06E';
+		case AccidentalType.SHARP: return '\uF023';
+		case AccidentalType.DOUBLE_FLAT: return '\uF0BA';
+		case AccidentalType.DOUBLE_SHARP: return '\uF099';//F0DC
+		//TODO HALF_SHARP derived from F023
+		//TODO HALF_FLAT derived from F062
+		//also exists "sharp and half", "flat and half" but
+		//don't know how to write them in ABC
+		}
+		throw new MissingGlyphException("Accidental type "+accidentalType, this);
+	}
+	
+	/** Returns the simple bar line glyph */
+	public char getBarLine(byte barLine) {
+		switch(barLine) {
+		case BarLine.SIMPLE:
+		//all other are drawn in JBarLine
+		default:
+			return '\uF05C';
+		}
+	}
+	
+	public char getClef(Clef clef) throws MissingGlyphException {
+		if (clef.equals(Clef.G)) return '\uF026';
+		else if (clef.equals(Clef.F)) return '\uF03F';
+		else if (clef.equals(Clef.C)) return '\uF042';
+		else if (clef.equals(Clef.DRUM)) return '\uF03A';
+		else if (clef.equals(Clef.G_8va)) return '\uF0A0';
+		else if (clef.equals(Clef.G_8vb)) return '\uF056';
+		else if (clef.equals(Clef.F_8vb)) return '\uF074';
+		else if (clef.equals(Clef.ottava_8va)) return '\uF0C3';
+		else if (clef.equals(Clef.ottava_8vb)) return '\uF0D7';
+		else if (clef.equals(Clef.ottava_15ma)) return '\uF0DB';
+		else if (clef.equals(Clef.ottava_15mb)) return '\uF100';
+		throw new MissingGlyphException(clef, this);
+	}
+	
+	public char getDecoration(Decoration decoration) {
+		return getDecoration(decoration, false);
+	}
+	public char getDecoration(Decoration decoration, boolean inverted) {
+		return getDecoration(decoration.getType(), inverted);
+	}
+	public char getDecoration(int decoration) {
+		return getDecoration(decoration, false);
+	}
+	
+	public char getDecoration(int decoration, boolean inverted) {
+		switch(decoration) {
+		case Decoration.ACCENT:
+		//case Decoration.MARCATO: marcato=accent
+			return '\uF03E'; // ">"
+		case Decoration.STACCATO: return '\uF02E'; // "."
+		case Decoration.STACCATISSIMO:
+			return !inverted?'\uF04E'//under note
+							:'\uF054';//above note
+		case Decoration.UPBOW: return '\uF076';
+		case Decoration.DOWNBOW: return '\uF0B3';
+		case Decoration.TRILL: return '\uF0D9'; // "tr"
+		case Decoration.FERMATA:
+			return !inverted?'\uF055' //above staff
+							:'\uF075';//under staff
+		case Decoration.LOWERMORDENT: return '\uF101';
+		case Decoration.UPPERMORDENT: return '\uF06D';
+		case Decoration.SEGNO: return '\uF025';
+		case Decoration.CODA: return '\uF0DE';
+		case Decoration.PAUSE: return '\uF02C'; // ","
+		case Decoration.GRAND_PAUSE: return '\uF022'; // "//"
+		case Decoration.TENUTO: return '\uF05F';
+		case Decoration.SFORZANDO:
+			return !inverted?'\uF05E':'\uF076';
+		case Decoration.MARCATO_STACCATO:
+			return !inverted?'\uF0DF':'\uF091';
+		case Decoration.MEZZO_STACCATO:
+			return !inverted?'\uF090':'\uF03C';
+		case Decoration.MARTELATO_STACCATO:
+			return !inverted?'\uF0AC':'\uF0E8';
+		case Decoration.PEDAL_DOWN: return '\uF0A1';
+		case Decoration.PEDAL_UP: return '\uF02A';
+		case Decoration.ROLL:
+			return !inverted?'\uF017':'\uF016';
+		case Decoration.STEM_COMBINE_UP_SINGLE: return '\uF021';
+		case Decoration.STEM_COMBINE_UP_DOUBLE: return '\uF040';
+		case Decoration.STEM_COMBINE_UP_TRIPLE: return '\uF0BE';
+		case Decoration.GENERAL_GRACING:
+			return '\uF015';
+		default:
+			throw new MissingGlyphException("Decoration "
+					+ decoration, this);
+		}
+	}
+	
+	public char[] getDigits(int number) {
+		char[] iChars = String.valueOf(number).toCharArray();
+		for (int i = 0; i < iChars.length; i++) {
+			iChars[i] = DIGITS[Integer.parseInt(""+iChars[i])];
+		}
+		return iChars;
+	}
+	
+	public char getDot() {
+		return '\uF06B';
+	}
+	
+	public char getDynamic(byte dynamic) {
+		switch(dynamic) {
+		case Dynamic.PPPP: return '\uF0AF';
+		case Dynamic.PPP: return '\uF0B8';
+		case Dynamic.PP: return '\uF0B9';
+		case Dynamic.P: return '\uF070';
+		case Dynamic.MP: return '\uF050';
+		case Dynamic.MF: return '\uF046';
+		case Dynamic.F: return '\uF066';
+		case Dynamic.FF: return '\uF0C4';
+		case Dynamic.FFF: return '\uF0EB';
+		case Dynamic.FFFF: return '\uF0EC';
+		//case Dynamic.M: return '\uF0BD';
+		//case Dynamic.S: return '\uF073';
+		//case Dynamic.Z: return '\uF07A';
+		case Dynamic.FP: return '\uF0EA';
+		case Dynamic.SF: return '\uF053';
+		case Dynamic.SFPP: return '\uF0B6';
+		case Dynamic.SFP: return '\uF082';
+		case Dynamic.SFZ: return '\uF0A7';
+		case Dynamic.FZ: return '\uF05A';
+		case Dynamic.SFFZ: return '\uF08D';
+		default:
+			throw new MissingGlyphException("Dynamic "+dynamic, this);
+		}
+	}
+	
+	public char[] getItalicDigits(int number) {
+		char[] iChars = String.valueOf(number).toCharArray();
+		for (int i = 0; i < iChars.length; i++) {
+			iChars[i] = ITALICS_DIGITS[Integer.parseInt(""+iChars[i])];
+		}
+		return iChars;
+	}
+	
+	public String getName() {
+		return "SONORA";
+	}
+	
+	public char getNoteStemDownChar(short strictDuration) {
+		switch (strictDuration) {
+		case Note.SIXTY_FOURTH: return '\uF01D';
+		case Note.THIRTY_SECOND: return '\uF058';
+		case Note.SIXTEENTH: return '\uF052';
+		case Note.EIGHTH: return '\uF045';
+		case Note.QUARTER: return '\uF051';
+		case Note.HALF: return '\uF048';
+		case Note.WHOLE: return '\uF092';
+		case Note.BREVE: return '\uF057';
+		case Note.LONG: return '\uF0DD';
+		default: return UNKNWON_NOTE;
+		}
+	}
+	
+	public char getNoteStemUpChar(short strictDuration) {
+		switch (strictDuration) {
+		case Note.SIXTY_FOURTH: return '\uF01C';
+		case Note.THIRTY_SECOND: return '\uF078';
+		case Note.SIXTEENTH: return '\uF072';
+		case Note.EIGHTH: return '\uF065';
+		case Note.QUARTER: return '\uF071';
+		case Note.HALF: return '\uF068';
+		case Note.WHOLE: return '\uF092';
+		case Note.BREVE: return '\uF057';
+		case Note.LONG: return '\uF0DD';
+		default: return UNKNWON_NOTE;
+		}
+	}
+	
+	public char getNoteWithoutStem() {
+		return getNoteWithoutStem(Note.QUARTER);
+	}
+	
+	public char getNoteWithoutStem(short strictDuration) {
+		if (strictDuration >= Note.HALF)
+			return '\uF092';
+		else
+			return '\uF0CF';
+	}
+	
+	public char getRestChar(short strictDuration) {
+		switch (strictDuration) {
+		case Note.SIXTY_FOURTH: return '\uF0F4';
+		case Note.THIRTY_SECOND: return '\uF0A8';
+		case Note.SIXTEENTH: return '\uF0C5';
+		case Note.EIGHTH: return '\uF0E4';
+		case Note.QUARTER: return '\uF0CE';
+		case Note.HALF: return '\uF0EE';
+		case Note.WHOLE: return '\uF0B7';
+		//case Note.BREVE: return '\uF0E3';
+		default: return UNKNWON_NOTE;
+		}
+	}
+
+	public char getStaffFiveLines() {
+		return '\uF03D';
+	}
+
+	public char getStemWithoutNoteDownChar(short strictDuration) {
+		switch (strictDuration) {
+		case Note.SIXTY_FOURTH: return '\uF01B';
+		case Note.THIRTY_SECOND: return '\uF041';
+		case Note.SIXTEENTH: return '\uF049';
+		case Note.EIGHTH: return '\uF050';
+		case Note.QUARTER:
+		case Note.HALF: return '\uF019';
+		//whole, breve and long have no stem
+		default: return UNKNWON_NOTE;
+		}
+	}
+	
+	public char getStemWithoutNoteUpChar(short strictDuration) {
+		switch (strictDuration) {
+		case Note.SIXTY_FOURTH: return '\uF01A';
+		case Note.THIRTY_SECOND: return '\uF061';
+		case Note.SIXTEENTH: return '\uF069';
+		case Note.EIGHTH: return '\uF06A';
+		case Note.QUARTER:
+		case Note.HALF: return '\uF018';
+		//whole, breve and long have no stem
+		default: return UNKNWON_NOTE;
+		}
+	}
+	
+	public char getTimeSignatureAbbreviated(TimeSignature ts)
+	throws IllegalArgumentException {
+		if (ts.equals(TimeSignature.SIGNATURE_4_4)) {
+			return '\uF063';
+		} else if (ts.equals(TimeSignature.SIGNATURE_2_2)) {
+			return '\uF043';
+		} else
+			throw new IllegalArgumentException("There is no " +
+					"abbreviated symbol for time signature " +
+					ts.toString());
+	}
+	
+	public char[] getTimeSignatureDigits(int number) {
+		return getDigits(number);
+	}
+	
+	public char[] getTupletDigits(int nuplet) {
+		return getItalicDigits(nuplet);
+	}
+}

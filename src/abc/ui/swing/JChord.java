@@ -307,6 +307,8 @@ class JChord extends JNoteElementAbstract {
 				?new Point2D.Double(getBoundingBox().getMaxX(),
 									getBoundingBox().getMinY()-metrics.getSlurAnchorYOffset())
 				:slurAboveAnchor;
+				
+			calcDecorationPosition();
 		}
 
 		//m_width = /*c_width + */graceNotesWidth + accidentalsWidth + chordWidth;

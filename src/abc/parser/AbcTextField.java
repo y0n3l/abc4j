@@ -15,6 +15,9 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.parser;
 
+import java.util.Enumeration;
+import java.util.regex.Pattern;
+
 class AbcTextField
 {
   public static final byte AREA = 1;
@@ -32,6 +35,8 @@ class AbcTextField
   public static final byte TITLE = 15;
   public static final byte TRANSCRNOTES = 13;
   public static final byte WORDS = 14;
+  
+  public static final AbcTextReplacements bundle = AbcTextReplacements.getInstance();
 
   private byte m_type = 0;
   private String m_text = null;
@@ -40,18 +45,39 @@ class AbcTextField
   public AbcTextField(byte type, String text)
   {
     m_type = type;
-    m_text = text;
+    setText(text);
   }
 
   public AbcTextField(byte type, String text, String comment)
   {
     m_type = type;
-    m_text = text;
+    setText(text);
     m_comment = comment;
   }
 
   public String getText()
   {return m_text;}
+  
+  /**
+   * Sets the text replacing all escaped combination to unicode
+   * char, e.g. <TT>\^a</TT> is replace by <TT>â</TT>
+   * @param text
+   */
+  private void setText(String text) {
+	  Enumeration e = bundle.getKeys();
+	  while (e.hasMoreElements()) {
+		  String key = (String) e.nextElement();
+		  if (text.indexOf(key) != -1)
+			  text = stringReplace(text, key, bundle.getString(key));
+	  }
+	  m_text = text;
+  }
+  
+  /** String.replace(String arg0, String arg1) in java 1.5 */
+  private String stringReplace(String text, String target, String replacement) {
+	  return Pattern.compile(target.toString(), Pattern.LITERAL).matcher(
+			  text).replaceAll(replacement);
+  }
 
   public byte getType()
   {return m_type;}

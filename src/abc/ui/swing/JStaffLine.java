@@ -56,6 +56,15 @@ class JStaffLine extends JScoreElementAbstract {
 	protected double getTopY() {
 		return topY;
 	}
+	
+	/** Return the y coordinate of the 5th (from low to high) line */
+	protected double get5thLineY() {
+		return getBase().getY() - getMetrics().getStaffCharBounds().getHeight();
+	}
+	/** Return the y coordinate of the 1st (from low to high) line */
+	protected double get1stLineY() {
+		return getBase().getY();
+	}
 
 	public Point2D getBase() {
 		return ((JScoreElementAbstract)m_staffElements.elementAt(0)).getBase();
@@ -129,29 +138,13 @@ class JStaffLine extends JScoreElementAbstract {
 		g.setColor(previousColor);*/
 		JScoreElementAbstract[] elmts = toArray();
 		for (int j=0; j<elmts.length; j++) {
-			elmts[j].render((Graphics2D)g);
-			/*if (elmts[j] instanceof SNote) {
-				Note note = ((SNote)elmts[j]).getNote();
-				if (note.isBeginingSlur())
-					m_beginningSlurElements.addElement(note);
-
-			}*/
+			elmts[j].render(g);
 		}
-		/*
-		int staffCharNb = (int)(getWidth()/getMetrics().getStaffCharBounds().getWidth());
-		//System.out.println("char staff nb : " + staffCharNb);
-		char[] staffS = new char[staffCharNb+2];
-		for (int j=0; j<staffS.length; j++)
-			staffS[j] = ScoreMetrics.STAFF_SIX_LINES;
-		//1 avoid a small gap (antialiased but really here)
-		//I can't explain what, but it fixes the gap :)
-		g.drawChars(staffS, 0, staffS.length,
-				1+(int)getBase().getX(), (int)getBase().getY());
-		*/
+		
 		double width = getWidth();
 		int charX = (int) getBase().getX();
-		int charY = (int)getBase().getY();
-		char[] charGlyph = new char[] {ScoreMetrics.STAFF_SIX_LINES};
+		int charY = (int) getBase().getY();
+		char[] charGlyph = new char[] { getMetrics().getMusicalFont().getStaffFiveLines() };
 		//-1 to "overwrite" 1px to avoid small gap
 		int charWidth = (int)(getMetrics().getStaffCharBounds().getWidth() - 1);
 		while (charX+charWidth < width) {

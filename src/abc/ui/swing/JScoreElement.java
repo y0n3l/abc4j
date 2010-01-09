@@ -76,6 +76,12 @@ public interface JScoreElement {
 		 */
 		public void setStemUp(boolean b);
 		
+		/**
+		 * Returns <TT>true</TT> if stem is up, <TT>false</TT>
+		 * if down.
+		 */
+		public boolean isStemUp();
+		
 	}
 
 }

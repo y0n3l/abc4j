@@ -34,25 +34,16 @@ class JTimeSignature extends JScoreElementAbstract {
 	public JTimeSignature(TimeSignature ts, Point2D base, ScoreMetrics c) {
 		super(c);
 		m_ts = ts;
-		//Transform number into char (via String)
-		m_numChars = String.valueOf(m_ts.getNumerator()).toCharArray();
-		m_denomChars = String.valueOf(m_ts.getDenominator()).toCharArray();
-		//m_numChars = DIGITS[m_ts.getNumerator()];
-		//m_denomChars = DIGITS[m_ts.getDenominator()];
-		//transform each char representing a number into it's font digit
-		for (int i = 0; i < m_numChars.length; i++) {
-			m_numChars[i] = c.getTimeSignatureDigitChar(Integer.valueOf(""+m_numChars[i]).intValue());
-		}
-		for (int i = 0; i < m_denomChars.length; i++) {
-			m_denomChars[i] = c.getTimeSignatureDigitChar(Integer.valueOf(""+m_denomChars[i]).intValue());
-		}
+		m_numChars = getMetrics().getMusicalFont().getTimeSignatureDigits(ts.getNumerator());
+		m_denomChars = getMetrics().getMusicalFont().getTimeSignatureDigits(ts.getDenominator());
 		setBase(base);
 	}
 	
 	public double getWidth() {
 		//compute width, no limit, we can have 16/128 if we want ;)
-		return Math.max(m_numChars.length, m_denomChars.length)
-				* getMetrics().getTimeSignatureNumberWidth();
+		return Math.max(
+			getMetrics().getBounds(m_numChars).getWidth(),
+			getMetrics().getBounds(m_denomChars).getWidth());
 	}
 	
 	public MusicElement getMusicElement() {
@@ -68,12 +59,13 @@ class JTimeSignature extends JScoreElementAbstract {
 	public double render(Graphics2D context){
 		super.render(context);
 		double width = getWidth();
-		double timeSigNumberWidth = getMetrics().getTimeSignatureNumberWidth();
 		context.drawChars(m_numChars, 0, m_numChars.length,
-				(int)(getBase().getX()+width/2-m_numChars.length*timeSigNumberWidth/2),
+				(int)(getBase().getX() + width/2
+						- (getMetrics().getBounds(m_numChars).getWidth())/2),
 				m_topNumY);
 		context.drawChars(m_denomChars, 0, m_denomChars.length,
-				(int)(getBase().getX()+width/2-m_denomChars.length*timeSigNumberWidth/2),
+				(int)(getBase().getX() + width/2
+						- (getMetrics().getBounds(m_denomChars).getWidth())/2),
 				m_bottomNumY);
 		return width;
 	}

@@ -21,11 +21,8 @@ import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Iterator;
 
 import abc.notation.AccidentalType;
-import abc.notation.Clef;
-import abc.notation.Decoration;
 import abc.notation.MusicElement;
 import abc.notation.Note;
 
@@ -91,14 +88,14 @@ class JNote extends JNoteElementAbstract {
 	protected void valuateNoteChars() {
 		short noteDuration = note.getStrictDuration();
 		if (note.isRest()){
-			noteChars = getMetrics().getRestChar(noteDuration);
+			noteChars = new char[] { getMetrics().getMusicalFont().getRestChar(noteDuration) };
 			//System.out.println("duration of the rest is " + noteDuration);
 		}
 		else {
 			if (isStemUp())
-				noteChars = getMetrics().getNoteStemUpChar(noteDuration);
+				noteChars = new char[] { getMetrics().getMusicalFont().getNoteStemUpChar(noteDuration) };
 			else
-				noteChars = getMetrics().getNoteStemDownChar(noteDuration);
+				noteChars = new char[] { getMetrics().getMusicalFont().getNoteStemDownChar(noteDuration) };
 		}
 	}
 
@@ -159,9 +156,9 @@ class JNote extends JNoteElementAbstract {
 		try {
 			if (note.hasAccidental()) {
 				accidentalsChars = getMetrics().getAccidentalGlyph(note.getAccidental());
-				accidentalsWidth = getMetrics()
-					.getBounds(accidentalsChars).getWidth()
-					*ScoreMetrics.SPACE_RATIO_FOR_ACCIDENTALS;
+				accidentalsWidth = 
+					getMetrics().getBounds(accidentalsChars).getWidth() +
+					Math.max(3, getMetrics().getNoteWidth()*ScoreMetrics.SPACE_RATIO_FOR_ACCIDENTALS);
 			}
 		} catch (IllegalArgumentException iae) {
 			throw new IllegalArgumentException("Incorrect accidental for " + note + " : " + note.getAccidental());
@@ -194,7 +191,7 @@ class JNote extends JNoteElementAbstract {
 				&& !(this instanceof JGraceNote)
 				&& !note.isRest() && isStemUp()
 				&& (note.getStrictDuration() <= Note.EIGHTH)
-				&& (noteChars != ScoreMetrics.NOTE)) {
+				&& (noteChars[0] != getMetrics().getMusicalFont().getNoteWithoutStem())) {
 			extraWidth = glyphDimension.getWidth();
 		}
 		//calc dots needed extra space
@@ -202,7 +199,7 @@ class JNote extends JNoteElementAbstract {
 		if (dotsPosition != null) {
 			double extraWidthDots = dotsPosition[dotsPosition.length - 1].getX()
 				- notePosition.getX() - glyphDimension.getWidth()
-				+ metrics.getBounds(ScoreMetrics.DOT).getWidth();
+				+ metrics.getBounds(metrics.getMusicalFont().getDot()).getWidth();
 			extraWidth = Math.max(extraWidth, extraWidthDots);
 		}
 		
@@ -234,120 +231,6 @@ class JNote extends JNoteElementAbstract {
 			for (int i = 0; i < note.countDots(); i++) {
 				x += Math.max(2.0, glyphDimension.getWidth()*.5);
 				dotsPosition[i] = new Point2D.Double(x, y);
-			}
-		}
-	}
-
-	protected void calcDecorationPosition() {
-		/* ********************************************* */
-		// TODO move this in JDecoration (or subclass) ?
-		// GENERAL RULES implemented here:
-		// Articulations:
-		//		upbow          -> always above staff
-		//		downbow        -> always above staff
-		//		staccato       -> placed with note
-		//		staccatissimo  -> placed with note
-		//		tenuto         -> placed with note
-		//		[the rest]     ->
-		//
-		// Decorations/Ornaments
-		//		[all]          -> above staff
-		//
-		// Dynamics:
-		//		single staff   -> place below
-		//		double staff   -> between staffs
-		//		vocal music    -> above staff
-		//
-		/* ********************************************* */
-		//TODO getDecorations.size==0, return (if null, =new Vector)
-		if (m_jDecorations != null && m_jDecorations.size() > 0){
-
-			ScoreMetrics metrics = getMetrics();
-			double decorationHeight = metrics.getDecorationHeight();
-			double decorationWidth = 0;
-
-			double yOverStaff = 0;
-			double yOnStaff = 0;
-			double yUnderStaff = 0;
-			// always use full note height ... even if this is a gracenote
-			double noteHeight = metrics.getNoteHeight() + metrics.getStemLength();
-			double stemedNoteHeight = noteHeight + metrics.getStemLength();
-
-			// a little convience multiplier so that Y co-ord can be
-			// incremented up/down without isStemUp testing
-			int yCoordMultiplier = 1;
-
-			if (isStemUp()) {
-
-				// ensure yOver is over stave AND higher than top of stem
-				yOverStaff = getBase().getY() - metrics.getStaffLineHeight()*5 - decorationHeight;
-				if (yOverStaff <= notePosition.getY() - stemedNoteHeight) {
-					yOverStaff = notePosition.getY() - stemedNoteHeight - decorationHeight;
-				}
-
-				// yOnStaff starts under the note head
-				yOnStaff = notePosition.getY() + decorationHeight*0.25;
-
-				// yUnderStaff starts under the note head
-				yUnderStaff = getBase().getY() + decorationHeight;
-				if (yUnderStaff <= notePosition.getY()) {
-					yUnderStaff = notePosition.getY() + decorationHeight;
-				}
-
-			} else {
-
-				yCoordMultiplier = -1;
-
-				// ensure yOver is over stave AND higher than note head
-				yOverStaff = notePosition.getY() - metrics.getStaffLineHeight()*5 - decorationHeight;
-				if (yOverStaff <= notePosition.getY() - noteHeight) {
-					yOverStaff = notePosition.getY() - noteHeight - decorationHeight*0.75;
-				}
-
-				// yOnStaff starts over the note head
-				yOnStaff = notePosition.getY() /*- noteHeight*/ - decorationHeight*0.25;
-
-				// yUnderStaff starts under the stem
-				yUnderStaff = getBase().getY() + decorationHeight;
-				if (yUnderStaff <= notePosition.getY() + stemedNoteHeight) {
-					yUnderStaff = notePosition.getY() /*+ stemedNoteHeight*/ + decorationHeight;
-				}
-
-			}
-
-			JDecoration decoration = null;
-			Point2D pos = null;
-			Iterator iter = m_jDecorations.iterator();
-			byte dType = -1;
-			while (iter.hasNext()) {
-				decoration = (JDecoration)iter.next();
-				dType = ((Decoration)decoration.getMusicElement()).getType();
-				switch (dType) {
-					case Decoration.STACCATO:
-							decorationWidth = metrics.getDecorationWidth(((Decoration)decoration.getMusicElement()).getChars());
-
-							pos = new Point2D.Double(notePosition.getX() + decorationWidth/3, yOnStaff);
-							decoration.setBase(pos);
-							yOnStaff += (decorationHeight*yCoordMultiplier);
-						break;
-
-					case Decoration.UPBOW:
-					case Decoration.DOWNBOW:
-					case Decoration.ROLL:
-					case Decoration.TRILL:
-					case Decoration.FERMATA:
-					case Decoration.ACCENT:
-					case Decoration.LOWERMORDENT:
-					case Decoration.UPPERMORDENT:
-					case Decoration.SEGNO:
-					case Decoration.CODA:
-							pos = new Point2D.Double(notePosition.getX(), yOverStaff);
-							decoration.setBase(pos);
-							yOverStaff += (decorationHeight*yCoordMultiplier);
-						break;
-
-					default: break;
-				}
 			}
 		}
 	}
@@ -407,11 +290,6 @@ class JNote extends JNoteElementAbstract {
 		return displayPosition;
 	}
 
-	/*
-public Note getNote(){
-		return note;
-	}*/
-
 	public Rectangle2D getBoundingBox() {
 		Dimension glyphDimension = getMetrics().getGlyphDimension(getNotationContext());
 		double noteGlyphHeight = glyphDimension.getHeight()*4;
@@ -449,6 +327,7 @@ public Note getNote(){
 		
 		//renderDebugBoundingBox(g);
 		//renderDebugSlurAnchors(g);
+		//renderDebugDecorationAnchors(g);
 
 		return getWidth();
 	}
@@ -544,8 +423,11 @@ public Note getNote(){
 
 	protected void renderDots(Graphics2D context){
 		if (dotsPosition!=null) {
+			char[] glyph = new char[] {
+				getMetrics().getMusicalFont().getDot()
+			};
 			for (int i = 0; i < dotsPosition.length; i++) {
-				context.drawChars(ScoreMetrics.DOT, 0, 1,
+				context.drawChars(glyph, 0, 1,
 						(int)dotsPosition[i].getX(), (int)dotsPosition[i].getY());
 			}
 		}

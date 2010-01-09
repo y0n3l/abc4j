@@ -18,8 +18,7 @@ package abc.ui.swing;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
-import java.util.Iterator;
-import java.util.Vector;
+import java.awt.geom.Rectangle2D;
 
 import abc.notation.Decoration;
 import abc.notation.Note;
@@ -38,9 +37,6 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 
 	// instance of JGraceNotes or JGroupOfGraceNotes
 	protected JScoreElementAbstract m_jGracenotes = null;
-
-	// vector of JDecoration instances for this note.
-	protected Vector m_jDecorations = null;
 
 	private JSlurOrTie jSlurDefinition = null;
 
@@ -68,8 +64,6 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 	/** Callback invoked when the base has changed for this object. */
 	protected abstract void onBaseChanged();
 
-
-
 	public JNoteElementAbstract(NoteAbstract noteValue, Point2D base, ScoreMetrics metrics) {
 		super(base, metrics);
 
@@ -80,9 +74,9 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 				m_jGracenotes = new JGraceNote(graceNotes[0], base, getMetrics());
 				base.setLocation(base.getX()+m_jGracenotes.getWidth(),base.getY());
 			} else if (graceNotes.length>1) {
-				// FIXME: gracenote groups should use a proper engraver!!
+				// FIXME gracenote groups should use a proper engraver!!
 				m_jGracenotes = new JGroupOfGraceNotes(getMetrics(), base, graceNotes, null);
-//				base.setLocation(base.getX()+m_jGracenotes.getWidth(),base.getY());
+				//base.setLocation(base.getX()+m_jGracenotes.getWidth(),base.getY());
 			}
 		}
 
@@ -90,7 +84,18 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 		if (noteValue.hasDecorations()) {
 			Decoration[] decorations = noteValue.getDecorations();
 			for (int i=0; i<decorations.length;i++) {
-				addDecoration(new JDecoration(decorations[i], getMetrics()));
+				if ((decorations[i].getType() == Decoration.ROLL)
+						&& noteValue.hasGeneralGracing()) {
+					addDecoration(
+						new JDecoration(
+							new Decoration(Decoration.GENERAL_GRACING),
+							getMetrics()
+						));
+				} else {
+					addDecoration(
+						new JDecoration(
+							decorations[i], getMetrics()));
+				}
 			}
 		}
 	}
@@ -121,17 +126,104 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 	  }
 	  return isup;
 	}
+	
 
+	protected void calcDecorationPosition() {
+		/* ********************************************* */
+		// TODO move this in JDecoration (or subclass) ?
+		// GENERAL RULES implemented here:
+		// Articulations:
+		//		upbow          -> always above staff
+		//		downbow        -> always above staff
+		//		staccato       -> placed with note
+		//		staccatissimo  -> placed with note
+		//		tenuto         -> placed with note
+		//		[the rest]     ->
+		//
+		// Decorations/Ornaments
+		//		[all]          -> above staff
+		//
+		// Dynamics:
+		//		single staff   -> place below
+		//		double staff   -> between staffs
+		//		vocal music    -> above staff
+		//
+		/* ********************************************* */
+		//TODO getDecorations.size==0, return (if null, =new Vector)
+		if (m_jDecorations != null && m_jDecorations.size() > 0){
 
-
-	/** Add decoration if it hasn't been added previously */
-	/* FIXME: move into a common base class */
-	private void addDecoration (JDecoration decoration) {
-		if (m_jDecorations == null) {
-			m_jDecorations = new Vector();
-		}
-		if (!m_jDecorations.contains(decoration)) {
-			m_jDecorations.add(decoration);
+			JNote lowest, highest;
+			if (this instanceof JChord) {
+				lowest = ((JChord) this).getLowestNote();
+				highest = ((JChord) this).getHighestNote();
+			}
+			else {//if (this instanceof JNote) {
+				lowest = (JNote) this; highest = (JNote) this;
+			}
+			
+			ScoreMetrics metrics = getMetrics();
+			Rectangle2D bb = getBoundingBox();
+			double noteHeight = metrics.getNoteHeight();
+			double noteWidth = metrics.getNoteWidth();
+			double noteHeadX = lowest.getNotePosition().getX() + noteWidth * 0.5;
+			double aboveNoteHeadY = highest.getNotePosition().getY() - noteHeight*1.5;
+			double underNoteHeadY = lowest.getNotePosition().getY() + noteHeight*0.5;
+			double stemX = lowest.getStemBeginPosition().getX();
+			double endStemY = isStemUp()
+							?(bb.getMinY()-noteHeight*0.5)
+							:(bb.getMaxY()+noteHeight*0.5);
+			double middleStemY = isStemUp()
+							?(endStemY + noteHeight*1.5)
+							:(endStemY - noteHeight*1.5);
+			double aboveStaffY = (getStaffLine()!=null
+							?getStaffLine().get5thLineY()
+							:aboveNoteHeadY) - noteHeight;
+			double aboveStaffAfterNoteY = aboveStaffY - noteHeight;
+			double aboveStaffAfterNoteX = noteHeadX + noteWidth*2;
+			double underStaffY = (getStaffLine()!=null
+							?getStaffLine().get1stLineY()
+							:underNoteHeadY) + noteHeight;
+			double noteHeadY = lowest.getNotePosition().getY() - noteHeight*0.5;
+			double leftNoteHeadX = (lowest.accidentalsPosition!=null
+										?lowest.accidentalsPosition.getX()
+										:lowest.notePosition.getX())
+									- noteWidth*0.5;
+			double rightNoteHeadX = (lowest.dotsPosition!=null
+										?lowest.dotsPosition[lowest.dotsPosition.length-1].getX()
+										:(lowest.notePosition.getX()+noteWidth))
+									+ noteWidth*0.5;
+			aboveStaffY = Math.min(aboveStaffY,
+							Math.min(aboveNoteHeadY, endStemY));
+			underStaffY = Math.max(underStaffY,
+					Math.max(underNoteHeadY, endStemY));
+			double endStemOutOfStaffY = isStemUp()
+							?Math.min(endStemY, aboveStaffY)
+							:Math.max(endStemY, underStaffY);
+			
+			m_decorationAnchors[JDecoration.ABOVE_STAFF]
+				= new Point2D.Double(noteHeadX, aboveStaffY);
+			m_decorationAnchors[JDecoration.UNDER_STAFF]
+				= new Point2D.Double(noteHeadX, underStaffY);
+			m_decorationAnchors[JDecoration.ABOVE_NOTE]
+				= new Point2D.Double(noteHeadX, aboveNoteHeadY);
+			m_decorationAnchors[JDecoration.UNDER_NOTE]
+				= new Point2D.Double(noteHeadX, underNoteHeadY);
+			m_decorationAnchors[JDecoration.VERTICAL_NEAR_STEM]
+				= new Point2D.Double(noteHeadX, isStemUp()?aboveNoteHeadY:underNoteHeadY);
+			m_decorationAnchors[JDecoration.VERTICAL_AWAY_STEM]
+				= new Point2D.Double(noteHeadX, isStemUp()?underNoteHeadY:aboveNoteHeadY);
+			m_decorationAnchors[JDecoration.HORIZONTAL_NEAR_STEM]
+				= new Point2D.Double(isStemUp()?rightNoteHeadX:leftNoteHeadX, noteHeadY);
+			m_decorationAnchors[JDecoration.HORIZONTAL_AWAY_STEM]
+				= new Point2D.Double(isStemUp()?leftNoteHeadX:rightNoteHeadX, noteHeadY);
+			m_decorationAnchors[JDecoration.STEM_END]
+				= new Point2D.Double(stemX, endStemY);
+			m_decorationAnchors[JDecoration.STEM_END_OUT_OF_STAFF]
+				= new Point2D.Double(stemX, endStemOutOfStaffY);
+			m_decorationAnchors[JDecoration.STEM_MIDDLE]
+				= new Point2D.Double(stemX, middleStemY);
+			m_decorationAnchors[JDecoration.ABOVE_STAFF_AFTER_NOTE]
+				= new Point2D.Double(aboveStaffAfterNoteX, aboveStaffAfterNoteY);
 		}
 	}
 
@@ -189,18 +281,7 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 		if (m_jGracenotes != null)
 			m_jGracenotes.render(context);
 	}
-
-	protected void renderDecorations(Graphics2D context){
-		if (m_jDecorations != null && m_jDecorations.size() > 0) {
-			Iterator iter = m_jDecorations.iterator();
-			JDecoration decoration = null;
-			while (iter.hasNext()) {
-				decoration = (JDecoration)iter.next();
-				decoration.render(context);
- 			}
- 		}
-	}
-
+	
 	protected void renderDebugSlurAnchors(Graphics2D context) {
 		Point2D[] anchors = { getSlurAboveAnchor(),
 				getSlurAboveAnchorOutOfStem(),
