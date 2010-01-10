@@ -109,9 +109,12 @@ public class JTune extends JScoreElementAbstract {
 	// titles and subtitles
 	private boolean m_showTitles = true;
 	
+	// transcriber (transcriptions notes), file url...
+	private boolean m_showFootNotes = false;
+	
 	private Color m_color = Color.BLACK;
 	
-	private ArrayList m_headersTexts = null;
+	private ArrayList m_headerAndFooterTexts = null;
 	
 	private int m_transposition = 0;
 
@@ -127,7 +130,7 @@ public class JTune extends JScoreElementAbstract {
 	protected JTune(Tune tune, Point2D base, ScoreMetrics c,
 			Engraver e) {
 		super(base, c);
-		m_headersTexts = new ArrayList();
+		m_headerAndFooterTexts = new ArrayList();
 		m_staffLines = new Vector();
 		m_scoreElements = new Hashtable();
 		m_scoreNoteGroups = new Vector();
@@ -160,7 +163,7 @@ public class JTune extends JScoreElementAbstract {
 		return m_isJustified;
 	}
 	
-	//TODO find a way to choose which titles to show
+	//TODO find a way to choose which titles and footnotes to show
 	public void setShowTitles(boolean show) {
 		if (show != m_showTitles)
 			m_isOutdated = true;
@@ -168,6 +171,14 @@ public class JTune extends JScoreElementAbstract {
 	}
 	public boolean isShowTitles() {
 		return m_showTitles;
+	}
+	public void setShowFootNotes(boolean show) {
+		if (show != m_showFootNotes)
+			m_isOutdated = true;
+		m_showFootNotes = show;
+	}
+	public boolean isShowFootNotes() {
+		return m_showFootNotes;
 	}
 	/** @deprecated use {@link #setShowTitles(boolean)} */
 	public void displayTitles(boolean show) {
@@ -349,20 +360,19 @@ public class JTune extends JScoreElementAbstract {
 		previousKey = null;
 
 		// clear headings, eg. titles, subtitles, composer, etc.
-		m_headersTexts.clear();
-
+		m_headerAndFooterTexts.clear();
+		
 		if (isShowTitles()) {
-
 			String[] titles = m_tune.getTitles();
 			for (int i=0; i< titles.length; i++) {
 				if (titles[i].length() == 0)
 					continue;
 				if (i == 0) {
 					//title
-					m_headersTexts.add(new JTitle(getMetrics(), titles[i]));
+					m_headerAndFooterTexts.add(new JTitle(getMetrics(), titles[i]));
 				} else {
 					// subtitles
-					m_headersTexts.add(new JSubtitle(getMetrics(), titles[i], JText.ALIGN_CENTER));
+					m_headerAndFooterTexts.add(new JSubtitle(getMetrics(), titles[i], JText.ALIGN_CENTER));
 				}
 			}
 
@@ -370,12 +380,12 @@ public class JTune extends JScoreElementAbstract {
 			//Rythme R:hornpipe, R:waltz...
 			txt = m_tune.getRhythm();
 			if ((txt != null) && (txt.length() > 0)) {
-				m_headersTexts.add(new JSubtitle(getMetrics(), txt));
+				m_headerAndFooterTexts.add(new JSubtitle(getMetrics(), txt));
 			}
 			//composer, right align
 			txt = m_tune.getComposer();
 			if ((txt != null) && (txt.length() > 0)) {
-				m_headersTexts.add(
+				m_headerAndFooterTexts.add(
 					new JText(getMetrics(), txt,
 							ScoreMetrics.FONT_COMPOSER,
 							JText.ALIGN_RIGHT));
@@ -392,7 +402,7 @@ public class JTune extends JScoreElementAbstract {
 				}
 			}
 			if (txt.length() > 0) {
-				m_headersTexts.add(
+				m_headerAndFooterTexts.add(
 						new JText(getMetrics(), txt,
 								ScoreMetrics.FONT_COMPOSER,
 								JText.ALIGN_RIGHT));
@@ -400,7 +410,7 @@ public class JTune extends JScoreElementAbstract {
 			//general tempo
 			Tempo generalTempo = m_tune.getGeneralTempo();
 			if (generalTempo != null) {
-				m_headersTexts.add(
+				m_headerAndFooterTexts.add(
 						new JTempo(getMetrics(), cursor, generalTempo)
 						);
 			}
@@ -423,7 +433,7 @@ public class JTune extends JScoreElementAbstract {
 						txt += c;
 					}
 					if (hasDouble) {
-						m_headersTexts.add(
+						m_headerAndFooterTexts.add(
 								new JAnnotation(getMetrics(), txt));
 					}
 				} catch (Exception e) {
@@ -432,7 +442,7 @@ public class JTune extends JScoreElementAbstract {
 			}
 			
 			//calculate Y position
-			Iterator itHeaders = m_headersTexts.iterator();
+			Iterator itHeaders = m_headerAndFooterTexts.iterator();
 			double y = cursor.getY();
 			double yLeft = y, yCenter = y, yRight = y;
 			while (itHeaders.hasNext()) {
@@ -626,12 +636,43 @@ public class JTune extends JScoreElementAbstract {
 			lessThanQuarter.clear();
 			//durationInGroup = 0;
 		}
+		
+		cursor.setLocation(cursor.getX(),
+				cursor.getY()+getMetrics().getStaffCharBounds().getHeight());
+
+		if (isShowFootNotes()) {
+			String[] txts = new String[] {m_tune.getNotes(),
+					m_tune.getTranscriptionNotes(),
+					m_tune.getFileURL() };
+			double height = 0;
+			for (int i = 0; i < txts.length; i++) {
+				if ((txts[i] != null) && (txts[i].length() > 0)) {
+					JText jText = new JText(getMetrics(), txts[i],
+								ScoreMetrics.FONT_FOOTNOTES,
+								JText.ALIGN_LEFT);
+					height = jText.getHeight()*1.3;
+					cursor.setLocation(cursor.getX(),
+							cursor.getY() + height);
+					jText.setBase(cursor);
+					m_headerAndFooterTexts.add(jText);
+				}
+			}
+			//a little more space for bottom baseline letters (like p, q...)
+			cursor.setLocation(cursor.getX(), cursor.getY()+height/2);
+		}
+
 		if (cursor.getX()>componentWidth)
 			componentWidth = (int)cursor.getX();
+		//if header/footer texts are too long, extend component width
+		Iterator it = m_headerAndFooterTexts.iterator();
+		while (it.hasNext()) {
+			JText jt = (JText) it.next();
+			componentWidth = Math.max(componentWidth, jt.getWidth());
+		}
 		componentHeight = (int)cursor.getY();
 
-		m_width = componentWidth;//+getMetrics().getStaffCharBounds().getWidth();
-		m_height = componentHeight+getMetrics().getStaffCharBounds().getHeight();
+		m_width = componentWidth;
+		m_height = componentHeight;
 
 		if (isJustified())
 			justify();
@@ -789,7 +830,7 @@ public class JTune extends JScoreElementAbstract {
 		g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-	    renderTitles(g2);
+	    renderTitlesAndFootnotes(g2);
 		// staff line width
 //		int staffCharNb = (int)(getWidth()/getMetrics().getStaffCharBounds().getWidth());
 //		char[] staffS = new char[staffCharNb-1];
@@ -809,8 +850,8 @@ public class JTune extends JScoreElementAbstract {
 		return getWidth();
 	}
 
-	private void renderTitles(Graphics2D g2) {
-		Iterator iter = m_headersTexts.iterator();
+	private void renderTitlesAndFootnotes(Graphics2D g2) {
+		Iterator iter = m_headerAndFooterTexts.iterator();
 		while (iter.hasNext()) {
 			JText text = (JText) iter.next();
 			short align = text.getAlignment();

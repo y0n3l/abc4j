@@ -41,8 +41,9 @@ public class Tune implements Cloneable
   private String m_rhythm = null;         //yes         yes       index   R:R, R:reel
   private String m_source = null;         //yes                           S:collected in Brittany
   private int m_referenceNumber = -1;    //first                         X:1, X:2
-  private String m_transcriptionNotes = null;//yes                         Z:from photocopy
+  private String m_transcriptionNotes = null;//yes                         Z:from photocopy, Z:Transcriber <email> <website>...
   private int m_elemskip = 0;            //yes    yes                    see Line Breaking
+  private String m_fileurl = null;		//yes                           F:http://www.url.com/thisfile.abc
   private Vector m_titles;              //second yes                    T:Paddy O'Rafferty
   //private AbcMultiPartsDefinition abcMultiPartsDefinition = null;  //yes    yes                    P:ABAC, P:A, P:B
   //private AbcScore m_abcScore = null;
@@ -66,6 +67,8 @@ public class Tune implements Cloneable
 	  this.m_book = tune.m_book;
 	  this.m_composer = tune.m_composer;
 	  this.m_discography = tune.m_discography;
+	  this.m_elemskip = tune.m_elemskip;
+	  this.m_fileurl = tune.m_fileurl;
 	  this.m_group = tune.m_group;
 	  this.m_history = tune.m_history;
 	  this.m_information = tune.m_information;
@@ -77,7 +80,6 @@ public class Tune implements Cloneable
 	  this.m_source = tune.m_source;
 	  this.m_referenceNumber = tune.m_referenceNumber;
 	  this.m_transcriptionNotes = tune.m_transcriptionNotes;
-	  this.m_elemskip = tune.m_elemskip;
 	  if (tune.m_titles != null)
 		  this.m_titles = (Vector)tune.m_titles.clone();
 	  if (tune.m_parts != null)
@@ -356,6 +358,13 @@ public class Tune implements Cloneable
    * @return Transcription notes of this tune. */
   public String getTranscriptionNotes()
   { return m_transcriptionNotes; }
+  
+  /** Sets the url of the file */
+  public void setFileURL(String fileurl)
+  { m_fileurl = fileurl; }
+  /** Returns the URL of the file */
+  public String getFileURL()
+  { return m_fileurl; }
   
 	static public Tune transpose(Tune t, int semitones) {
 		Tune ret = (Tune) t.clone();

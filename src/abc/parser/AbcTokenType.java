@@ -31,7 +31,9 @@ public class AbcTokenType implements TokenType
     /** The  discography field token type : <TT>D:</TT>. */
     public static AbcTokenType FIELD_DISCOGRAPHY = new AbcTokenType("FIELD DISCOGRAPHY");
     /** The  elemskip field token type : <TT>E:</TT>. */
-    //public static AbcTokenType FIELD_ELEMSKIP = new AbcTokenType("FIELD ELEMSKIP");
+    public static AbcTokenType FIELD_ELEMSKIP = new AbcTokenType("FIELD ELEMSKIP");
+    /** The  elemskip field token type : <TT>F:</TT>. */
+    public static AbcTokenType FIELD_FILEURL = new AbcTokenType("FIELD FILE");
     /** The  group field token type : <TT>G:</TT>. */
     public static AbcTokenType FIELD_GROUP = new AbcTokenType("FIELD GROUP");
     /** The  history field token type : <TT>H:</TT>. */

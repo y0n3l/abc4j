@@ -93,14 +93,16 @@ public class AbcParserAbstract
   protected static final Set FIRST_FIELD_INFORMATION = new Set(AbcTokenType.FIELD_INFORMATION);
   protected static final Set FIRST_FIELD_HISTORY = new Set(AbcTokenType.FIELD_HISTORY);
   protected static final Set FIRST_FIELD_GROUP = new Set(AbcTokenType.FIELD_GROUP);
-  //protected static final Set FIRST_FIELD_ELEMSKIP = new Set(AbcTokenType.FIELD_ELEMSKIP);
+  protected static final Set FIRST_FIELD_FILE = new Set(AbcTokenType.FIELD_FILEURL);
+  protected static final Set FIRST_FIELD_ELEMSKIP = new Set(AbcTokenType.FIELD_ELEMSKIP);
   protected static final Set FIRST_FIELD_DISCOGRAPHY = new Set(AbcTokenType.FIELD_DISCOGRAPHY);
   protected static final Set FIRST_FIELD_COMPOSER = new Set(AbcTokenType.FIELD_COMPOSER);
   protected static final Set FIRST_FIELD_BOOK = new Set(AbcTokenType.FIELD_BOOK);
   protected static final Set FIRST_FIELD_AREA = new Set(AbcTokenType.FIELD_AREA);
   protected static Set FIRST_COMMENT = new Set(AbcTokenType.COMMENT);
   protected static final Set FIRST_OTHER_FIELDS = new Set(FIRST_FIELD_AREA).union(FIRST_FIELD_BOOK).union(FIRST_FIELD_COMPOSER)
-                                                            .union(FIRST_FIELD_DISCOGRAPHY)/*.union(FIRST_FIELD_ELEMSKIP)*/
+                                                            .union(FIRST_FIELD_DISCOGRAPHY).union(FIRST_FIELD_ELEMSKIP)
+                                                            .union(FIRST_FIELD_FILE)
                                                             .union(FIRST_FIELD_GROUP).union(FIRST_FIELD_HISTORY)
                                                             .union(FIRST_FIELD_INFORMATION).union(FIRST_FIELD_DEFAULT_LENGTH)
                                                             .union(FIRST_FIELD_METER).union(FIRST_FIELD_NOTES).union(FIRST_FIELD_ORIGIN)
@@ -379,8 +381,9 @@ public class AbcParserAbstract
           if (field!=null)
             if (field.getType() == AbcTextField.AREA) m_tune.setArea(field.getText());
             else if (field.getType() == AbcTextField.BOOK) m_tune.setBook(field.getText());
-            else if (field.getType() ==  AbcTextField.COMPOSER) m_tune.setComposer(field.getText());
+            else if (field.getType() == AbcTextField.COMPOSER) m_tune.setComposer(field.getText());
             else if (field.getType() == AbcTextField.DISCOGRAPHY) m_tune.setDiscography(field.getText());
+            else if (field.getType() == AbcTextField.FILEURL) m_tune.setFileURL(field.getText());
             else if (field.getType() == AbcTextField.GROUP) m_tune.setGroup(field.getText());
             else if (field.getType() == AbcTextField.HISTORY) m_tune.addHistory(field.getText());
             else if (field.getType() == AbcTextField.INFORMATION) m_tune.setInformation(field.getText());
@@ -412,6 +415,7 @@ public class AbcParserAbstract
           else if (tokenType.equals(AbcTokenType.FIELD_COMPOSER)) return new AbcTextField(AbcTextField.COMPOSER, text);
           else if (tokenType.equals(AbcTokenType.FIELD_DISCOGRAPHY)) return new AbcTextField(AbcTextField.DISCOGRAPHY, text);
           //else if (tokenType.equals(AbcTokenType.FIELD_ELEMSKIP)) return new AbcTextField(AbcTextField.ELEMSKIP, text);
+          else if (tokenType.equals(AbcTokenType.FIELD_FILEURL)) return new AbcTextField(AbcTextField.FILEURL, text);
           else if (tokenType.equals(AbcTokenType.FIELD_GROUP)) return new AbcTextField(AbcTextField.GROUP, text);
           else if (tokenType.equals(AbcTokenType.FIELD_INFORMATION)) return new AbcTextField(AbcTextField.INFORMATION, text);
           else if (tokenType.equals(AbcTokenType.FIELD_NOTES)) return new AbcTextField(AbcTextField.NOTES, text);

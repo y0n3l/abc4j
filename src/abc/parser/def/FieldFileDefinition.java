@@ -21,17 +21,17 @@ import scanner.Transition;
 import abc.parser.AbcTokenType;
 
 /** **/
-public class FieldElemskipDefinition extends AutomataDefinition
+public class FieldFileDefinition extends AutomataDefinition
 {
-    public FieldElemskipDefinition()
+    public FieldFileDefinition()
     { buildDefinition(); }
 
     protected void buildDefinition()
     {
         State startingState = new State(AbcTokenType.UNKNOWN, false);
-        Transition trans = new Transition(startingState,'E');
+        Transition trans = new Transition(startingState,'F');
         getStartingState().addTransition(trans);
-        startingState.addTransition(new IsColonTransition(new State(AbcTokenType.FIELD_ELEMSKIP, true)));
+        startingState.addTransition(new IsColonTransition(new State(AbcTokenType.FIELD_FILEURL, true)));
     }
 
 }

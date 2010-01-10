@@ -79,6 +79,7 @@ public class JScoreComponent extends JComponent {
 	//protected int staffLinesSpacing = -1;
 
 	private boolean m_showTitles = true;
+	private boolean m_showFootNotes = false;
 	private byte m_stemPolicy = JTune.STEMS_AUTO;
 	private int m_transposition = 0;
 
@@ -143,6 +144,14 @@ public class JScoreComponent extends JComponent {
      */
 	public void showTitles(boolean show) {
 		m_showTitles = show;
+	}
+
+    /** Toggles display of foot notes texts such as transcription
+     * notes and URL.
+     * true=show false=hide
+     */
+	public void showFootNotes(boolean show) {
+		m_showFootNotes = show;
 	}
 
     /** Sets the note stem direction on a score.
@@ -215,6 +224,7 @@ public class JScoreComponent extends JComponent {
 							getScoreMetrics(),
 							getEngraver());
 		m_jTune.setShowTitles(m_showTitles);
+		m_jTune.setShowFootNotes(m_showFootNotes);
 		m_jTune.setJustified(m_isJustified);
 		m_jTune.setStemmingPolicy(m_stemPolicy);
 		m_jTune.setTransposition(getTransposition());

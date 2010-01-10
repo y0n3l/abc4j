@@ -27,7 +27,7 @@ class AbcTextField
   public static final byte ELEMSKIP = 5;
   public static final byte GROUP = 6;
   public static final byte HISTORY = 7;
-  public static final byte INFORMATION = 8;
+  public static final byte INFORMATION = 8; //or instruction
   public static final byte NOTES = 9;
   public static final byte ORIGIN = 10;
   public static final byte RHYTHM = 11;
@@ -35,6 +35,8 @@ class AbcTextField
   public static final byte TITLE = 15;
   public static final byte TRANSCRNOTES = 13;
   public static final byte WORDS = 14;
+  public static final byte FILEURL = 15;
+  public static final byte AUTHOR_OF_LYRICS = 16; //v2.0 A: field
   
   public static final AbcTextReplacements bundle = AbcTextReplacements.getInstance();
 

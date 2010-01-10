@@ -129,10 +129,11 @@ class JDecoration extends JScoreElementAbstract {
 		super(mtrx);
 		m_decoration = decoration;
 		if (base != null) setBase(base);
-		m_height = getMetrics().getDecorationHeight();
-		m_width = getMetrics().getBounds(
-			getMetrics().getMusicalFont().getDecoration(m_decoration)
-			).getWidth();
+		Rectangle2D bounds = getMetrics().getBounds(
+				getMetrics().getMusicalFont().getDecoration(m_decoration)
+			);
+		m_height = bounds.getHeight();
+		m_width = bounds.getWidth();
 	}
 
 	/** Returns the height of this score element.

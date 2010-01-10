@@ -86,6 +86,11 @@ public class ScoreMetrics {
 	 */
 	public static final short FONT_PART_LABEL = 6;
 	
+	/** Textual font for foot notes
+	 * @see #getTextFont(short)
+	 */
+	public static final short FONT_FOOTNOTES = 7;
+	
 	private String[][] textFontPreferences = new String[][] {
 		/*FONT_TITLE*/{"Palatino Linotype", "Arial", "Dialog"},
 		/*FONT_SUBTITLE*/{"Palatino Linotype", "Arial", "Dialog"},
@@ -93,7 +98,8 @@ public class ScoreMetrics {
 		/*FONT_ANNOTATION*/{"Palatino Linotype", "Arial", "Dialog"},
 		/*FONT_CHORDS*/{"Palatino Linotype", "Arial", "Dialog"},
 		/*FONT_LYRICS*/{"Palatino Linotype", "Arial", "Dialog"},
-		/*FONT_PART_LABEL*/{"Georgia", "Verdana", "Dialog"}
+		/*FONT_PART_LABEL*/{"Georgia", "Verdana", "Dialog"},
+		/*FONT_FOOTNOTES*/{"Arial", "Dialog"}
 	};
 
 	/**
@@ -141,11 +147,6 @@ public class ScoreMetrics {
 	private Font noteFont = null;
 	private Font gracingsFont = null;
 	private Font tempoFont = null;
-
-	private FontMetrics noteFontMetrics  = null;
-	//private FontMetrics gracingsFontMetrics  = null;
-
-	private int decorationHeight = -1;
 
 	private Graphics2D g2 = null;
 
@@ -247,7 +248,6 @@ public class ScoreMetrics {
 			//			getClass().getResourceAsStream("SONORA2.TTF"));
 			//noteFont = noteFont.deriveFont(size);
 			noteFont = baseNotationFont.deriveFont(size);
-			noteFontMetrics = g2.getFontMetrics(noteFont);
 			
 			tempoFont = baseNotationFont.deriveFont(size * .75f);
 			
@@ -259,9 +259,6 @@ public class ScoreMetrics {
 			double noteWidth = getNoteWidth();
 			//noteHeight = staffCharBounds.getHeight()/STAFF_SIX_LINES_LINE_HEIGHT_RATIO; //4.1
 			//noteWidth = new TextLayout(new Character(NOTE[0]).toString(), noteFont, frc).getBounds().getWidth();
-
-			//FIXME: get proper decoration height ... or adjust this to be more generalized ...
-			decorationHeight = (int)(noteHeight*2.5);
 
 			staffLinesSpacing = (int)(staffCharBounds.getHeight()*1.5);
 			firstStaffTopMargin = (int)(staffCharBounds.getHeight()*.75);
@@ -301,7 +298,6 @@ public class ScoreMetrics {
 			float gracingsSize = notationSize*getGracesSizeProportion();
 
 			gracingsFont = baseNotationFont.deriveFont(gracingsSize);
-			//gracingsFontMetrics = g2.getFontMetrics(gracingsFont);
 
 			double graceNoteHeight = getGraceNoteHeight();
 			double graceNoteWidth = getGraceNoteWidth();
@@ -368,7 +364,7 @@ public class ScoreMetrics {
 			textFonts[FONT_LYRICS] = textFonts[FONT_LYRICS].deriveFont(m_textFontSize);
 			textFonts[FONT_CHORDS] = textFonts[FONT_CHORDS].deriveFont(m_textFontSize);
 			textFonts[FONT_PART_LABEL] = textFonts[FONT_PART_LABEL].deriveFont(Font.BOLD, (float)(m_textFontSize*1.5));
-
+			textFonts[FONT_FOOTNOTES] = textFonts[FONT_FOOTNOTES].deriveFont(Font.ITALIC, (float)(m_textFontSize*0.8));
 		} catch (Exception e){
 			e.printStackTrace();
 		}
@@ -692,20 +688,6 @@ public class ScoreMetrics {
 			return getMusicalFont().getClef(clef);
 		else
 			throw new IllegalArgumentException("Unsupported clef type "+clef.getName());
-	}
-
-	/** Returns height of character rendered in the Decorations font.
-	 * @return the width of a string in this font used for this score metrics.
-	 */
-	public int getDecorationHeight(){
-		return (decorationHeight);
-	}
-
-	/** Returns width of character rendered in the Decorations font.
-	 * @return the width of a string in this font used for this score metrics.
-	 */
-	public int getDecorationWidth(char[] c){
-		return (noteFontMetrics.charsWidth(c,0,c.length));
 	}
 
 	/* *** graceNotes support *** */
