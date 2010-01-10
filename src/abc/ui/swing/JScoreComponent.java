@@ -100,10 +100,16 @@ public class JScoreComponent extends JComponent {
 			m_metrics = new ScoreMetrics(m_bufferedImageGfx);
 		return m_metrics;
 	}
+	public void setScoreMetrics(ScoreMetrics sm) {
+		m_metrics = sm;
+	}
 	public Engraver getEngraver() {
 		if (m_engraver == null)
 			m_engraver = new Engraver(Engraver.DEFAULT);
 		return m_engraver;
+	}
+	public void setEngraver(Engraver e) {
+		m_engraver = e;
 	}
 
 	/** Draws the current tune score into the given graphic context.
