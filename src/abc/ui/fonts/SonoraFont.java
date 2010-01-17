@@ -15,6 +15,9 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.fonts;
 
+import java.awt.Font;
+import java.io.Serializable;
+
 import abc.notation.AccidentalType;
 import abc.notation.BarLine;
 import abc.notation.Clef;
@@ -26,8 +29,10 @@ import abc.notation.TimeSignature;
 /**
  * Font definition for SONORA.TTF
  */
-public class SonoraFont implements MusicalFont {
+public class SonoraFont implements MusicalFont, Serializable {
 	
+	private static final long serialVersionUID = 659612792568835733L;
+
 	/** Digits for time signature */
 	private static final char[] DIGITS = {
 		'\uF030', //0
@@ -40,6 +45,8 @@ public class SonoraFont implements MusicalFont {
 		'\uF037', //7
 		'\uF038', //8
 		'\uF039'}; //9
+	
+	private static transient Font font = null;
 	
 	/** Tuplet digits, in italics */
 	private static final char[] ITALICS_DIGITS = {
@@ -59,6 +66,15 @@ public class SonoraFont implements MusicalFont {
 
 	public SonoraFont() {
 		//voided
+	}
+	
+	public Font getFont() throws Exception {
+		if (font == null) {
+			font = Font.createFont(
+					Font.TRUETYPE_FONT,
+					getClass().getResourceAsStream("SONORA3.TTF"));
+		}
+		return font;
 	}
 
 	public char getAccidental(byte accidentalType)

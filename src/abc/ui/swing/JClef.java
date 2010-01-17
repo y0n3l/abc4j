@@ -48,7 +48,7 @@ class JClef extends JScoreElementAbstract {
 		/*char[] chars2 = {ScoreMetrics.STAFF_SIX_LINES};
 		context.drawChars(chars2, 0, chars2.length, 
 				(int)m_base.getX(), (int)(m_base.getY()));*/
-		char[] chars = {getMetrics().getClefChar(Clef.G)};
+		char[] chars = {getMusicalFont().getClef(Clef.G)};
 		context.drawChars(chars, 0, chars.length, 
 				(int)(getBase().getX()+getMetrics().getNoteWidth()/4),
 				(int)(getBase().getY()-getMetrics().getNoteHeight()));

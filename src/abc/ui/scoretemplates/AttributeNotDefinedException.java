@@ -13,18 +13,19 @@
 //
 // You should have received a copy of the GNU Lesser General Public License
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
-package abc.ui.swing;
+package abc.ui.scoretemplates;
 
-import abc.ui.scoretemplates.TextFields;
+/**
+ * Exception thrown when a score component or score metrics try
+ * to access an attribute which has not been defined in score
+ * template.
+ */
+public class AttributeNotDefinedException extends RuntimeException {
 
-/** TODO doc */
-class JAnnotation extends JText {
+	private static final long serialVersionUID = 5286728276592495102L;
 
-	/** Constructor
-	 * @param mtrx The score metrics needed
-	 */
-	protected JAnnotation(ScoreMetrics mtrx, String text) {
-		super(mtrx, text, TextFields.ANNOTATIONS);
+	public AttributeNotDefinedException(ScoreAttribute sa) {
+		super("Attribute not defined: "+sa.toString());
 	}
-
+	
 }

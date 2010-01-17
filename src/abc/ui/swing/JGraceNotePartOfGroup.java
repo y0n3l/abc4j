@@ -15,7 +15,6 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
-import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -44,7 +43,7 @@ class JGraceNotePartOfGroup extends JNotePartOfGroup {
 		// beamed notes are always 1/8th notes or less
 		// so just display a stemless note - stems and beams are drawn
 		// programmatically
-		noteChars = new char[] { getMetrics().getMusicalFont().getNoteWithoutStem() };
+		noteChars = new char[] { getMusicalFont().getNoteWithoutStem() };
 	}
 	
 	/**
@@ -77,8 +76,6 @@ class JGraceNotePartOfGroup extends JNotePartOfGroup {
 		int noteX = (int) notePosition.getX();
 		displayPosition.setLocation(noteX, noteY);
 
-		BasicStroke stemStroke = getMetrics().getNotesLinkStroke();
-
 		noteX = (int)displayPosition.getX();
 
 		int stemYBegin = (int)(displayPosition.getY() - glyphDimension.getHeight()/2);
@@ -93,7 +90,9 @@ class JGraceNotePartOfGroup extends JNotePartOfGroup {
 		Font previousFont = context.getFont();
 
 		try {
-			context.setFont(getMetrics().getGracingsFont());
+			context.setFont(
+					getMetrics().getNotationFontForContext(ScoreMetrics.NOTATION_CONTEXT_GRACENOTE)
+				);
 			super.render(context);
 		} finally {
 			context.setFont(previousFont);

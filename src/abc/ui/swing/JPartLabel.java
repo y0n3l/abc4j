@@ -21,6 +21,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import abc.notation.PartLabel;
+import abc.ui.scoretemplates.TextFields;
 
 public class JPartLabel extends JText {
 	
@@ -29,7 +30,7 @@ public class JPartLabel extends JText {
 	 */
 	protected JPartLabel(ScoreMetrics mtrx, Point2D base, PartLabel partLabel) {
 		super(mtrx, String.valueOf(partLabel.getLabel()),
-				ScoreMetrics.FONT_PART_LABEL);
+				TextFields.PART_LABEL);
 	}
 
 	/** Returns the height of this score element.
@@ -48,7 +49,7 @@ public class JPartLabel extends JText {
 	
 	/** Draw always a square frame around the label, get the largest glyph "M" */
 	private double getFrameSize() {
-		return 4 + (double)getMetrics().getTextFontWidth(ScoreMetrics.FONT_PART_LABEL, "M");
+		return 4 + (double)getMetrics().getTextFontWidth(TextFields.PART_LABEL, "M");
 	}
 	
 	public Rectangle2D getBoundingBox() {
@@ -56,7 +57,7 @@ public class JPartLabel extends JText {
 		double x = getBase().getX() - framesize/2 + framesize/6;
 		double y = getBase().getY()
 				- getMetrics().getStaffCharBounds().getHeight()
-				- getMetrics().getStaffLineHeight()
+				- getMetrics().getNoteHeight()
 				- framesize;
 		return new Rectangle2D.Double(x, y, framesize, framesize);
 	}
@@ -65,12 +66,14 @@ public class JPartLabel extends JText {
 	 * @see abc.ui.swing.JText#render(java.awt.Graphics2D)
 	 */
 	public double render(Graphics2D g2) {
-		double labelSize = (double)getMetrics().getTextFontWidth(ScoreMetrics.FONT_PART_LABEL, getText());
+		double labelSize = (double)getMetrics().getTextFontWidth(TextFields.PART_LABEL, getText());
 		Font previousFont = g2.getFont();
 		Rectangle2D bb = getBoundingBox();
-		g2.setFont(getMetrics().getTextFont(ScoreMetrics.FONT_PART_LABEL));
+		g2.setFont(getTemplate().getTextFont(TextFields.PART_LABEL));
+		float descent = g2.getFont().getLineMetrics(getText(), g2.getFontRenderContext())
+			.getDescent();
 		g2.drawString(getText(), (int)(getBase().getX()-labelSize/2+getFrameSize()/6),
-				(int)(bb.getY() + bb.getHeight() - 2));
+				(int)(bb.getY() + bb.getHeight() - descent));
 		g2.setFont(previousFont);
 		g2.draw(bb);
 		return getWidth();

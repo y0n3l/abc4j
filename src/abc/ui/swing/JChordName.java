@@ -15,16 +15,20 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
+import abc.notation.Chord;
+import abc.notation.MusicElement;
 import abc.ui.scoretemplates.TextFields;
 
-/** TODO doc */
-class JAnnotation extends JText {
+class JChordName extends JText {
 
-	/** Constructor
-	 * @param mtrx The score metrics needed
-	 */
-	protected JAnnotation(ScoreMetrics mtrx, String text) {
-		super(mtrx, text, TextFields.ANNOTATIONS);
+	private Chord m_chord = null;
+	protected JChordName(ScoreMetrics mtrx, Chord chord) {
+		super(mtrx, chord.getText(true), TextFields.CHORDS);
+		m_chord = chord;
 	}
-
+	
+	public MusicElement getMusicElement() {
+		return m_chord;
+	}
+	
 }

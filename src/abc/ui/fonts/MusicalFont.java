@@ -15,6 +15,9 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.fonts;
 
+import java.awt.Font;
+import java.io.Serializable;
+
 import abc.notation.Clef;
 import abc.notation.Decoration;
 import abc.notation.Note;
@@ -23,8 +26,11 @@ import abc.notation.TimeSignature;
 /**
  * Interface for musical fonts definitions
  */
-public interface MusicalFont {
+public interface MusicalFont extends Cloneable, Serializable {
 
+	/** Returns the Font object */
+	public Font getFont() throws Exception;
+	
 	/** Returns the glyph for an {@link abc.notation.AccidentalType} */
 	public char getAccidental(byte accidentalType);
 

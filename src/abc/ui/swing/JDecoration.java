@@ -16,9 +16,9 @@
 package abc.ui.swing;
 
 import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.font.GlyphVector;
-import java.awt.geom.AffineTransform;
+//import java.awt.Shape;
+//import java.awt.font.GlyphVector;
+//import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -130,7 +130,7 @@ class JDecoration extends JScoreElementAbstract {
 		m_decoration = decoration;
 		if (base != null) setBase(base);
 		Rectangle2D bounds = getMetrics().getBounds(
-				getMetrics().getMusicalFont().getDecoration(m_decoration)
+				getMusicalFont().getDecoration(m_decoration)
 			);
 		m_height = bounds.getHeight();
 		m_width = bounds.getWidth();
@@ -182,23 +182,23 @@ class JDecoration extends JScoreElementAbstract {
 		// does nothing
 	}
 
-	private Shape getRotatedDecoration(Graphics2D g2, char chars,
-			double radians) {
-		Shape glyphOutline = null;
-		AffineTransform transform = AffineTransform.getRotateInstance(radians);
-		GlyphVector glyphVector = getMetrics().getNotationFont()
-				.createGlyphVector(g2.getFontRenderContext(),new char[] {chars});
-		if (glyphVector.getNumGlyphs() > 0) {
-			glyphOutline = glyphVector.getGlyphOutline(0);
-			glyphOutline = transform.createTransformedShape(glyphOutline);
-		}
-		return (glyphOutline);
-	}
+//	private Shape getRotatedDecoration(Graphics2D g2, char chars,
+//			double radians) {
+//		Shape glyphOutline = null;
+//		AffineTransform transform = AffineTransform.getRotateInstance(radians);
+//		GlyphVector glyphVector = getMetrics().getNotationFontForContext(ScoreMetrics.NOTATION_CONTEXT_NOTE)
+//				.createGlyphVector(g2.getFontRenderContext(),new char[] {chars});
+//		if (glyphVector.getNumGlyphs() > 0) {
+//			glyphOutline = glyphVector.getGlyphOutline(0);
+//			glyphOutline = transform.createTransformedShape(glyphOutline);
+//		}
+//		return (glyphOutline);
+//	}
 	
 	/** Renders this Score element to the given graphic context.
 	 * @param g2 */
 	public double render(Graphics2D g2) {
-		char charDeco = getMetrics().getMusicalFont().getDecoration(
+		char charDeco = getMusicalFont().getDecoration(
 				m_decoration, m_isInverted);
 		Rectangle2D bounds = getMetrics().getBounds(charDeco);
 		double x = getBase().getX() - bounds.getWidth()/2;

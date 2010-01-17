@@ -34,8 +34,8 @@ class JTimeSignature extends JScoreElementAbstract {
 	public JTimeSignature(TimeSignature ts, Point2D base, ScoreMetrics c) {
 		super(c);
 		m_ts = ts;
-		m_numChars = getMetrics().getMusicalFont().getTimeSignatureDigits(ts.getNumerator());
-		m_denomChars = getMetrics().getMusicalFont().getTimeSignatureDigits(ts.getDenominator());
+		m_numChars = getMusicalFont().getTimeSignatureDigits(ts.getNumerator());
+		m_denomChars = getMusicalFont().getTimeSignatureDigits(ts.getDenominator());
 		setBase(base);
 	}
 	

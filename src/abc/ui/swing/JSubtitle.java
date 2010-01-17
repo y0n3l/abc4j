@@ -15,6 +15,8 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
+import abc.ui.scoretemplates.TextFields;
+
 /** TODO doc */
 class JSubtitle extends JText {
 
@@ -23,16 +25,7 @@ class JSubtitle extends JText {
 	 * @param text
 	 */
 	protected JSubtitle(ScoreMetrics mtrx, String text) {
-		this(mtrx, text, ALIGN_LEFT);
-	}
-	
-	/** Constructor
-	 * @param mtrx The score metrics needed
-	 * @param text
-	 * @param textAlign
-	 */
-	protected JSubtitle(ScoreMetrics mtrx, String text, short textAlign) {
-		super(mtrx, text, ScoreMetrics.FONT_SUBTITLE, textAlign);
+		super(mtrx, text, TextFields.SUBTITLE);
 	}
 
 }

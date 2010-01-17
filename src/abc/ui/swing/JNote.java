@@ -16,7 +16,6 @@
 package abc.ui.swing;
 
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Point2D;
@@ -25,6 +24,9 @@ import java.awt.geom.Rectangle2D;
 import abc.notation.AccidentalType;
 import abc.notation.MusicElement;
 import abc.notation.Note;
+import abc.ui.scoretemplates.HorizontalAlign;
+import abc.ui.scoretemplates.ScoreAttribute;
+import abc.ui.scoretemplates.TextFields;
 
 /**
  * This class is in charge of rendering a single note and it's associated
@@ -88,14 +90,14 @@ class JNote extends JNoteElementAbstract {
 	protected void valuateNoteChars() {
 		short noteDuration = note.getStrictDuration();
 		if (note.isRest()){
-			noteChars = new char[] { getMetrics().getMusicalFont().getRestChar(noteDuration) };
+			noteChars = new char[] { getMusicalFont().getRestChar(noteDuration) };
 			//System.out.println("duration of the rest is " + noteDuration);
 		}
 		else {
 			if (isStemUp())
-				noteChars = new char[] { getMetrics().getMusicalFont().getNoteStemUpChar(noteDuration) };
+				noteChars = new char[] { getMusicalFont().getNoteStemUpChar(noteDuration) };
 			else
-				noteChars = new char[] { getMetrics().getMusicalFont().getNoteStemDownChar(noteDuration) };
+				noteChars = new char[] { getMusicalFont().getNoteStemDownChar(noteDuration) };
 		}
 	}
 
@@ -155,10 +157,12 @@ class JNote extends JNoteElementAbstract {
 		double accidentalsWidth = 0;
 		try {
 			if (note.hasAccidental()) {
-				accidentalsChars = getMetrics().getAccidentalGlyph(note.getAccidental());
+				accidentalsChars = new char[] {getMusicalFont().getAccidental(note.getAccidental())};
 				accidentalsWidth = 
-					getMetrics().getBounds(accidentalsChars).getWidth() +
-					Math.max(3, getMetrics().getNoteWidth()*ScoreMetrics.SPACE_RATIO_FOR_ACCIDENTALS);
+					getMetrics().getBounds(accidentalsChars, getNotationContext()).getWidth() +
+					Math.max(3,
+						getTemplate().getAttributeSize(ScoreAttribute.ACCIDENTAL_SPACE)
+						);
 			}
 		} catch (IllegalArgumentException iae) {
 			throw new IllegalArgumentException("Incorrect accidental for " + note + " : " + note.getAccidental());
@@ -191,7 +195,7 @@ class JNote extends JNoteElementAbstract {
 				&& !(this instanceof JGraceNote)
 				&& !note.isRest() && isStemUp()
 				&& (note.getStrictDuration() <= Note.EIGHTH)
-				&& (noteChars[0] != getMetrics().getMusicalFont().getNoteWithoutStem())) {
+				&& (noteChars[0] != getMusicalFont().getNoteWithoutStem())) {
 			extraWidth = glyphDimension.getWidth();
 		}
 		//calc dots needed extra space
@@ -199,7 +203,7 @@ class JNote extends JNoteElementAbstract {
 		if (dotsPosition != null) {
 			double extraWidthDots = dotsPosition[dotsPosition.length - 1].getX()
 				- notePosition.getX() - glyphDimension.getWidth()
-				+ metrics.getBounds(metrics.getMusicalFont().getDot()).getWidth();
+				+ metrics.getBounds(getMusicalFont().getDot(), getNotationContext()).getWidth();
 			extraWidth = Math.max(extraWidth, extraWidthDots);
 		}
 		
@@ -299,6 +303,11 @@ class JNote extends JNoteElementAbstract {
 			noteGlyphHeight = glyphDimension.getHeight()*6;
 		else if (note.getStrictDuration() == Note.WHOLE)
 			noteGlyphHeight = glyphDimension.getHeight();
+		else if (note.isRest())
+			noteGlyphHeight = getMetrics().getBounds(
+				getMusicalFont().getRestChar(note.getStrictDuration()),
+				getNotationContext())
+				.getHeight();
 		if (isStemUp()) {
 			return new Rectangle2D.Double(
 					(int)getBase().getX(),//(int)(displayPosition.getX()),
@@ -328,7 +337,7 @@ class JNote extends JNoteElementAbstract {
 		//renderDebugBoundingBox(g);
 		//renderDebugSlurAnchors(g);
 		//renderDebugDecorationAnchors(g);
-
+		
 		return getWidth();
 	}
 
@@ -337,20 +346,28 @@ class JNote extends JNoteElementAbstract {
 	}
 
 	protected void renderChordName(Graphics2D gfx) {
-		if (note.getChordName()!=null) {
-			Font oldFont = gfx.getFont();
-			try {
-				Font chordFont = getMetrics().getTextFont(ScoreMetrics.FONT_CHORDS);
-				gfx.setFont(chordFont);
-				Rectangle2D bounds = chordFont.getStringBounds(note.getChordName(), gfx.getFontRenderContext());
-				double y = getStaffLine().getBase().getY()/* not yet defined*/
-					//- (displayPosition.getY()%m_metrics.getStaffLinesSpacing())
-					- getMetrics().getStaffCharBounds().getHeight()
-					- getMetrics().getChordLineSpacing()
-					+ bounds.getHeight();
-				gfx.drawString(note.getChordName(), (int)displayPosition.getX(), (int)y);
-			} finally {
-				gfx.setFont(oldFont);
+		if (note.getChord() != null) {
+			JChordName chordName = new JChordName(getMetrics(), note.getChord());
+			Dimension dimension = chordName.getDimension();
+			double y = getStaffLine().getBase().getY()/* not yet defined*/
+				//- (displayPosition.getY()%m_metrics.getStaffLinesSpacing())
+				- getMetrics().getStaffCharBounds().getHeight()
+				- getTemplate().getAttributeSize(ScoreAttribute.CHORD_LINE_SPACING)
+				+ dimension.getHeight();
+			double x = displayPosition.getX();
+			byte[] pos = getTemplate().getPosition(TextFields.CHORDS);
+			if (pos != null) {
+				switch (pos[1]) {
+				case HorizontalAlign.RIGHT:
+					x -= dimension.getWidth(); break;
+				case HorizontalAlign.CENTER:
+					x -= dimension.getWidth()/2; break;
+				case HorizontalAlign.LEFT:
+				default:
+					break;
+				}
+				chordName.setBase(new Point2D.Double(x, y));
+				chordName.render(gfx);	
 			}
 		}
 	}
@@ -424,7 +441,7 @@ class JNote extends JNoteElementAbstract {
 	protected void renderDots(Graphics2D context){
 		if (dotsPosition!=null) {
 			char[] glyph = new char[] {
-				getMetrics().getMusicalFont().getDot()
+				getMusicalFont().getDot()
 			};
 			for (int i = 0; i < dotsPosition.length; i++) {
 				context.drawChars(glyph, 0, 1,

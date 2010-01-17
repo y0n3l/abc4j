@@ -22,9 +22,9 @@ import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 import java.util.Vector;
 
-import abc.notation.Decoration;
 import abc.notation.MusicElement;
 import abc.notation.Tune;
+import abc.ui.fonts.MusicalFont;
 
 /** This class defines a score rendition element. Rendition scores elements
  * are graphical representations of tune score elements objects retrieved
@@ -83,6 +83,13 @@ abstract class JScoreElementAbstract implements JScoreElement {
 	
 	protected ScoreMetrics getMetrics() {
 		return m_metrics;
+	}
+	/** Returns the musical font mapping class */
+	protected MusicalFont getMusicalFont() {
+		return getTemplate().getMusicalFont();
+	}
+	protected ScoreTemplate getTemplate() {
+		return getMetrics().getTemplate();
 	}
 
 	/** Returns the staff line containing this score element.

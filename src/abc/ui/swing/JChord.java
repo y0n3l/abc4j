@@ -213,7 +213,7 @@ class JChord extends JNoteElementAbstract {
 		int stemYEnd;
 		if (m_stemYEndForChord == -1) {
 			//auto calculated, chord is not part of group
-			int stemLength = getMetrics().getStemLength(ScoreMetrics.NOTATION_CONTEXT_NOTE);
+			int stemLength = getMetrics().getStemLengthForContext(ScoreMetrics.NOTATION_CONTEXT_NOTE);
 			int halfNoteHeight = (int) (getMetrics().getNoteHeight() / 2);
 			int highestNoteY = (int) getHighestNote().getStemUpBeginPosition().getY() - stemLength - halfNoteHeight;
 			int lowestNoteY = (int) getLowestNote().getStemDownBeginPosition().getY() + stemLength + halfNoteHeight;

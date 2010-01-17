@@ -43,7 +43,7 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 		// beamed notes are always 1/8th notes or less
 		// so just display a stemless note - stems and beams
 		// are drawn programmatically
-		noteChars = new char[] { getMetrics().getMusicalFont().getNoteWithoutStem() };
+		noteChars = new char[] { getMusicalFont().getNoteWithoutStem() };
 	}
 	
 	/**
@@ -87,11 +87,11 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 		if (isStemUp()) {
 			//stemYBegin = (int)(displayPosition.getY() - glyphDimension.getHeight()/6);
 			// if stemYEnd hasn't been set give it a default
-			if (stemYEnd < 0) stemYEnd = (int)(displayPosition.getY() - metrics.getStemLength(getNotationContext()));
+			if (stemYEnd < 0) stemYEnd = (int)(displayPosition.getY() - metrics.getStemLengthForContext(getNotationContext()));
 		} else {
 			//stemYBegin = (int)(displayPosition.getY() + glyphDimension.getHeight()/6);
 			// if stemYEnd hasn't been set give it a default
-			if (stemYEnd < 0) stemYEnd = (int)(displayPosition.getY() + metrics.getStemLength(getNotationContext()));
+			if (stemYEnd < 0) stemYEnd = (int)(displayPosition.getY() + metrics.getStemLengthForContext(getNotationContext()));
 		}
 
 		setStemUpBeginPosition(new Point2D.Double(noteX + glyphDimension.getWidth(), stemYBegin));

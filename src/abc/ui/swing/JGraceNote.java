@@ -109,7 +109,9 @@ class JGraceNote extends JNote {
 	public double render(Graphics2D context){
 		Font previousFont = context.getFont();
 		try {
-			context.setFont(getMetrics().getGracingsFont());
+			context.setFont(
+					getMetrics().getNotationFontForContext(ScoreMetrics.NOTATION_CONTEXT_GRACENOTE)
+				);
 			super.render(context);
 
 // visual testing of base/offset/note positions

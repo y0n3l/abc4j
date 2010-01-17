@@ -31,6 +31,9 @@ import javax.swing.JComponent;
 
 import abc.notation.MusicElement;
 import abc.notation.Tune;
+import abc.ui.scoretemplates.DefaultScoreTemplate;
+import abc.ui.scoretemplates.ScoreAttribute;
+import abc.ui.scoretemplates.SizeUnit;
 
 /**
  * This JComponent displays tunes scores. You can get scores such as : <BR/>
@@ -43,7 +46,8 @@ import abc.notation.Tune;
  * @see Tune
  * @see JScoreElement
  */
-public class JScoreComponent extends JComponent {
+public class JScoreComponent extends JComponent
+	implements ScoreTemplateChangeListener {
 
 	private static final long serialVersionUID = 7903517456075406436L;
 	private static final Color SELECTED_ITEM_COLOR = Color.RED;
@@ -51,15 +55,10 @@ public class JScoreComponent extends JComponent {
 	 * <TT>null</TT> if no tune is set. */
 	private JTune m_jTune = null;
 
-	//private int staffLinesOffset = -1;
 	/** The dimensions of this score. */
 	private Dimension m_dimension = null;
-	/** The space of the left margin */
-	// NOTE: must set XOffset for JTune.setMarginLeft() for offset to have any effect
-	private int XOffset = 0;
 	/** The place where all spacing dimensions are expressed. */
-	private ScoreMetrics m_metrics = null;
-	private Engraver m_engraver = null;
+	private ScoreTemplate m_template = null;
 	/** The buffer where the score image is put before rendition in the swing component. */
 	private BufferedImage m_bufferedImage = null;
 	/** The graphic context of the buffered image used to generate the score. */
@@ -67,21 +66,12 @@ public class JScoreComponent extends JComponent {
 	/** Set to <TT>true</TT> if the score drawn into the buffered image is
 	 * outdated and does not represent the tune currently set. */
 	private boolean m_isBufferedImageOutdated = true;
-	/** The size used for the score scale. */
-	//protected float m_size = 45;
-	/** <TT>true</TT> if the rendition of the score should be justified,
-	 * <TT>false</TT> otherwise. */
-	private boolean m_isJustified = false;
+
 	/** The selected item in this score. <TT>null</TT> if no
 	 * item is selected. */
 	private JScoreElement m_selectedItem = null;
 
 	//protected int staffLinesSpacing = -1;
-
-	private boolean m_showTitles = true;
-	private boolean m_showFootNotes = false;
-	private byte m_stemPolicy = JTune.STEMS_AUTO;
-	private int m_transposition = 0;
 
 	/** Default constructor. */
 	public JScoreComponent() {
@@ -94,22 +84,35 @@ public class JScoreComponent extends JComponent {
 		m_bufferedImageGfx = (Graphics2D)m_bufferedImage.createGraphics();
 		//staffLinesSpacing = (int)(m_metrics.getStaffCharBounds().getHeight()*2.5);
 	}
-
+	
+	public ScoreTemplate getTemplate() {
+		if (m_template == null)
+			setTemplate(new DefaultScoreTemplate());
+		return m_template;
+	}
+	
+	public void setTemplate(ScoreTemplate template) {
+		if (m_template != null)
+			m_template.removeListener(this);
+		m_template = template;
+		m_template.setGraphics(getGraphics2D());
+		m_template.addListener(this);
+		refresh();
+	}
+	
+	private Graphics2D getGraphics2D() {
+		if ((m_bufferedImage == null)
+				|| (m_bufferedImageGfx == null))
+			initGfx();
+		return m_bufferedImageGfx;
+	}
+	
 	public ScoreMetrics getScoreMetrics() {
-		if (m_metrics == null)
-			m_metrics = new ScoreMetrics(m_bufferedImageGfx);
-		return m_metrics;
+		return getTemplate().getMetrics();
 	}
-	public void setScoreMetrics(ScoreMetrics sm) {
-		m_metrics = sm;
-	}
+
 	public Engraver getEngraver() {
-		if (m_engraver == null)
-			m_engraver = new Engraver(Engraver.DEFAULT);
-		return m_engraver;
-	}
-	public void setEngraver(Engraver e) {
-		m_engraver = e;
+		return getTemplate().getEngraver();
 	}
 
 	/** Draws the current tune score into the given graphic context.
@@ -138,46 +141,38 @@ public class JScoreComponent extends JComponent {
 	/** The size of the font used to display the music score.
 	 * @param size The size of the font used to display the music score expressed in ?
 	 * @deprecated use {@link #getScoreMetrics() getScoreMetrics()}.{@link ScoreMetrics#setNotationSize(float) setNotationSize(float)} and then {@link #refresh()}
+	 * or better, set attribute {@link ScoreAttribute#NOTATION_SIZE} in template
 	 */
 	public void setSize(float size){
 		System.err.println("Warning! deprecated method setSize");
-		getScoreMetrics().setNotationFontSize(size);
-		refresh();
+		getTemplate().setAttributeSize(ScoreAttribute.NOTATION_SIZE, size, SizeUnit.PT);
 	}
 
-    /** Toggles display of score title elements.
-     *  true=show false=hide
+    /**
+     * @deprecated this has no more effect, use template
+     * {@link ScoreTemplate#setPosition(byte, byte, byte)}.
+     * <pre>
+     * myJScoreCompo.getTemplate().setPosition(
+     * 		{@link abc.ui.scoretemplates.TextFields#TITLE},
+     * 		{@link abc.ui.scoretemplates.VerticalAlign#TOP},
+     * 		{@link abc.ui.scoretemplates.HorizontalAlign#CENTER});
+     * </pre>
+     * @see DefaultScoreTemplate
      */
-	public void showTitles(boolean show) {
-		m_showTitles = show;
-	}
-
-    /** Toggles display of foot notes texts such as transcription
-     * notes and URL.
-     * true=show false=hide
-     */
-	public void showFootNotes(boolean show) {
-		m_showFootNotes = show;
-	}
+	public void showTitles(boolean show) {}
 
     /** Sets the note stem direction on a score.
      *  0=auto 1=up 2=down
+     * @deprecated use template attribute {@link ScoreAttribute#STEM_POLICY}
      */
     public void setStemmingPolicy (byte policy) {
-     	m_stemPolicy = policy;
-     	if (m_jTune!=null)
-     		m_jTune.setStemmingPolicy(m_stemPolicy);
+    	getTemplate().setAttribute(ScoreAttribute.STEM_POLICY, new Byte(policy));
     }
+    /**
+     * @deprecated use getTemplate().getAttributeNumber {@link ScoreAttribute#STEM_POLICY}
+     */
     public byte getStemmingPolicy() {
-    	return m_stemPolicy;
-    }
-    public void setTransposition(int transpo) {
-    	m_transposition = transpo;
-    	if (m_jTune!=null)
-    		m_jTune.setTransposition(transpo);
-    }
-    public int getTransposition() {
-    	return m_transposition;
+    	return (byte) getTemplate().getAttributeNumber(ScoreAttribute.STEM_POLICY);
     }
 
 	/**
@@ -223,17 +218,9 @@ public class JScoreComponent extends JComponent {
 	/** Sets the tune to be renderered.
 	 * @param tune The tune to be displayed. */
 	public void setTune(Tune tune){
-		if (m_metrics==null)
-			initGfx();
 		m_jTune = new JTune(tune,
-							new Point(XOffset, 0),
-							getScoreMetrics(),
-							getEngraver());
-		m_jTune.setShowTitles(m_showTitles);
-		m_jTune.setShowFootNotes(m_showFootNotes);
-		m_jTune.setJustified(m_isJustified);
-		m_jTune.setStemmingPolicy(m_stemPolicy);
-		m_jTune.setTransposition(getTransposition());
+							new Point(0, 0),
+							getTemplate());
 		m_jTune.setColor(getForeground());
 
 		m_selectedItem = null;
@@ -250,17 +237,10 @@ public class JScoreComponent extends JComponent {
 	 * @param isJustified <TT>true</TT> if the score rendition should be
 	 * justified, <TT>false</TT> otherwise.
 	 * @see #isJustified()
-	 * @deprecated call {@link #setJustified(boolean)} and then
-	 * {@link #refresh()} when you have finished to change all
-	 * settings (justification, engraving, score metrics...)
+	 * @deprecated use template attribute {@link ScoreAttribute#JUSTIFY}
 	 */
 	public void setJustification(boolean isJustified) {
 		setJustified(isJustified);
-		//triggers the recalculation of the tune
-		if (m_jTune!=null)
-			setTune(m_jTune.getTune());
-		//m_jTune = new m_jTune(m_jTune.getTune(), )
-		//repaint();
 	}
 
 	/** Changes the justification of the rendition score. This will
@@ -269,20 +249,22 @@ public class JScoreComponent extends JComponent {
 	 * @param isJustified <TT>true</TT> if the score rendition should be
 	 * justified, <TT>false</TT> otherwise.
 	 * @see #isJustified()
+	 * @deprecated use template attribute {@link ScoreAttribute#JUSTIFY}
 	 */
 	public void setJustified(boolean isJustified) {
-		m_isJustified = isJustified;
-		if (m_jTune != null)
-			m_jTune.setJustified(isJustified);
+		getTemplate().setAttribute(ScoreAttribute.JUSTIFY,
+				new Boolean(isJustified));
 	}
 
 	/** Return <TT>true</TT> if the rendition staff lines alignment is
 	 * justified, <TT>false</TT> otherwise.
 	 * @return <TT>true</TT> if the rendition staff lines alignment is
 	 * justified, <TT>false</TT> otherwise.
-	 * @see #setJustification(boolean) */
+	 * @see #setJustified(boolean)
+	 * @deprecated use template attribute {@link ScoreAttribute#JUSTIFY}
+	 */
 	public boolean isJustified() {
-		return m_isJustified;
+		return getTemplate().getAttributeBoolean(ScoreAttribute.JUSTIFY);
 	}
 
 	/** Returns the graphical score element fount at the given location.
@@ -321,13 +303,15 @@ public class JScoreComponent extends JComponent {
 	 * @see #setSelectedItem(MusicElement) */
 	public void setSelectedItem(JScoreElement elmnt){
 		if (m_selectedItem!=null) {
-			m_bufferedImageGfx.setColor(Color.BLACK);
-			((JScoreElementAbstract)m_selectedItem).render(m_bufferedImageGfx);
+			getGraphics2D().setColor(Color.BLACK);
+			((JScoreElementAbstract) m_selectedItem)
+				.render(getGraphics2D());
 		}
 		if (elmnt!=null) {
 			m_selectedItem = elmnt;
-			m_bufferedImageGfx.setColor(SELECTED_ITEM_COLOR);
-			((JScoreElementAbstract)m_selectedItem).render(m_bufferedImageGfx);
+			getGraphics2D().setColor(SELECTED_ITEM_COLOR);
+			((JScoreElementAbstract) m_selectedItem)
+				.render(getGraphics2D());
 		}
 		repaint();
 	}
@@ -342,6 +326,15 @@ public class JScoreComponent extends JComponent {
 			return (JScoreElement)m_jTune.getRenditionObjectsMapping().get(elmnt);
 		else
 			return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see abc.ui.swing.ScoreTemplateChangeListener#onTemplateChange()
+	 */
+	public void onTemplateChange() {
+		if (m_jTune != null)
+			m_jTune.setOutdated();
+		getScoreMetrics().reload();
 	}
 
 }

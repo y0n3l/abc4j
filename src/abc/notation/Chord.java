@@ -34,10 +34,15 @@ import java.util.regex.Pattern;
  * Complex chords can be entered, and sometimes it's not a chord!
  * So before gettings chord properties, check {@link #isChord()}.
  */
-public class Chord implements Cloneable {
+public class Chord implements MusicPresentationElement, Cloneable {
 	
 	//TODO getFrettedFingerings(EADGBE, DADGAD...)
 	//TODO getNotes - generate a MultiNote
+	
+	/** The unicode sharp char \u266F (&#9839;) */
+	public static final char UNICODE_SHARP = '\u266F';
+	/** The unicode flat char \u266D (&#9837;) */
+	public static final char UNICODE_FLAT = '\u266D';
 	
 	//for " (EbMaj7/Bb) "	| for "(/Bb)" :
 	//groupe 0 :(EbMaj7/Bb)	| groupe 0 :(/Bb)

@@ -144,7 +144,7 @@ class JStaffLine extends JScoreElementAbstract {
 		double width = getWidth();
 		int charX = (int) getBase().getX();
 		int charY = (int) getBase().getY();
-		char[] charGlyph = new char[] { getMetrics().getMusicalFont().getStaffFiveLines() };
+		char[] charGlyph = new char[] { getMusicalFont().getStaffFiveLines() };
 		//-1 to "overwrite" 1px to avoid small gap
 		int charWidth = (int)(getMetrics().getStaffCharBounds().getWidth() - 1);
 		while (charX+charWidth < width) {
@@ -175,6 +175,9 @@ class JStaffLine extends JScoreElementAbstract {
 		//so if there's a key, time... change in the middle
 		//of the staff, it'll be scaled.
 		boolean dontMoveFirstElements = true;
+		double getWidth = getWidth();
+		if (getWidth == newWidth)
+			return; //No need to justify, this is the longest staff line
 		//System.out.println("scaleToWidth("+newWidth+")");
 		for (int i=0; i<m_staffElements.size(); i++){
 			JScoreElementAbstract elmt = (JScoreElementAbstract)m_staffElements.elementAt(i);
@@ -184,6 +187,7 @@ class JStaffLine extends JScoreElementAbstract {
 					|| (elmt instanceof JKeySignature)
 					|| (elmt instanceof JTimeSignature)
 					|| (elmt instanceof JBar)
+					|| (elmt instanceof JTempo)
 					|| (elmt instanceof JPartLabel)) {
 					continue;
 				}
@@ -191,12 +195,16 @@ class JStaffLine extends JScoreElementAbstract {
 			//we are here because we encountered another element
 			//since now, scale all
 			dontMoveFirstElements = false;
-			double newXpos =(elmt.getBase().getX()*newWidth/getWidth());
+			double newXpos =(elmt.getBase().getX()*newWidth/getWidth);
+			if ((i == (m_staffElements.size()-1))
+					&& (elmt instanceof JBar)) {
+				newXpos = newWidth - elmt.getWidth();
+			}
 			Point2D base = elmt.getBase();
 			//System.out.println(" - oldX = "+(int)base.getX()+" - newX="+(int)newXpos);
 			base.setLocation(newXpos, base.getY());
 			if (elmt instanceof JGroupOfNotes)
-				((JGroupOfNotes)elmt).setInternalSpacingRatio(newWidth/getWidth());
+				((JGroupOfNotes)elmt).setInternalSpacingRatio(newWidth/getWidth);
 			elmt.setBase(base);
 		}
 		//System.out.println("StaffLine, required Width : " + newWidth + " | result width=" + getWidth());

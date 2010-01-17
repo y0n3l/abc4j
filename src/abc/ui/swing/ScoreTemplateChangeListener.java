@@ -15,16 +15,12 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
-import abc.ui.scoretemplates.TextFields;
+public interface ScoreTemplateChangeListener {
 
-/** TODO doc */
-class JAnnotation extends JText {
-
-	/** Constructor
-	 * @param mtrx The score metrics needed
+	/**
+	 * Performs action on template change (e.g. a refresh).<br>
+	 * This method is called each time a template setting is changed.
 	 */
-	protected JAnnotation(ScoreMetrics mtrx, String text) {
-		super(mtrx, text, TextFields.ANNOTATIONS);
-	}
-
+	public void onTemplateChange();
+	
 }

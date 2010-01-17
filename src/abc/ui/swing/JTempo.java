@@ -20,8 +20,10 @@ import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import abc.notation.MusicElement;
 import abc.notation.Note;
 import abc.notation.Tempo;
+import abc.ui.scoretemplates.TextFields;
 
 public class JTempo extends JText {
 	
@@ -37,17 +39,21 @@ public class JTempo extends JText {
 	 * @param mtrx The score metrics needed
 	 */
 	protected JTempo(ScoreMetrics mtrx, Point2D base, Tempo tempo) {
-		super(mtrx, "", ScoreMetrics.FONT_ANNOTATION, JText.ALIGN_LEFT_TAB);
+		super(mtrx, "", TextFields.TEMPO);
 		m_tempo = tempo;
-		m_refNote = new char[] { mtrx.getMusicalFont().getNoteStemUpChar(m_tempo.getReference()) };
+		m_refNote = new char[] { getMusicalFont().getNoteStemUpChar(m_tempo.getReference()) };
 		m_refNoteBounds = getMetrics().getBounds(m_refNote,
 				ScoreMetrics.NOTATION_CONTEXT_TEMPO);
 		m_noteHeadBounds = getMetrics().getBounds(
-				getMetrics().getMusicalFont().getNoteWithoutStem(Note.QUARTER),
+				getMusicalFont().getNoteWithoutStem(Note.QUARTER),
 				ScoreMetrics.NOTATION_CONTEXT_TEMPO);
-		m_number = new String(getMetrics().getMusicalFont().getTimeSignatureDigits(m_tempo.getNotesNumberPerMinute()));
+		m_number = new String(getMusicalFont().getTimeSignatureDigits(m_tempo.getNotesNumberPerMinute()));
 		m_numberBounds = getMetrics().getBounds(m_number.toCharArray(),
 				ScoreMetrics.NOTATION_CONTEXT_TEMPO);
+	}
+	
+	public MusicElement getMusicElement() {
+		return m_tempo;
 	}
 
 	public Rectangle2D getBoundingBox() {
@@ -83,7 +89,7 @@ public class JTempo extends JText {
 	
 	public void onBaseChanged() {
 		if (getStaffLine() != null) {
-			m_y = getStaffLine().getTopY();
+			m_y = getStaffLine().getTopY() - m_noteHeadBounds.getHeight();
 			//TODO add more space on top of the staff line
 		} else
 			m_y = getBase().getY();

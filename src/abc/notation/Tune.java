@@ -27,7 +27,8 @@ import scanner.PositionableInCharStream;
 public class Tune implements Cloneable
 {
   //    Field name                     header this elsewhere Used by Examples and notes
-  private String m_area = null;           //yes                           A:Donegal, A:Bampton
+  private String m_lyricist = null;       //yes							  A: author of lyrics (v2)
+  private String m_area = null;           //yes                           A:Donegal, A:Bampton (v1.6)
   private String m_book = null;           //yes         yes       archive B:O'Neills
   private String m_composer = null;       //yes                           C:Trad.
   private String m_discography = null;    //yes                   archive D:Chieftans IV
@@ -201,6 +202,17 @@ public class Tune implements Cloneable
    * the tune is provided. */
   public String getInformation()
   { return m_information; }
+  
+  /** Sets lyricist (author of lyrics)
+   * Corresponds to the "A:" abc field in v2.
+   * @param lyricist */
+  public void setLyricist(String lyricist)
+  { m_lyricist = lyricist; }
+  
+  /** Returns lyricist (author of lyrics)
+   * Corresponds to the "A:" abc field in v2. */
+  public String getLyricist()
+  { return m_lyricist; }
 
   /** Sets notes concerning the transcription of this tune.
    * Corresponds to the "N:" abc field.
@@ -857,6 +869,34 @@ public class Tune implements Cloneable
 			}
 		}
 		return false;
+	}
+    
+    private boolean hasObject(Class musicElementClass) {
+    	MusicElement currentScoreEl;
+    	Iterator it = iterator();
+    	while (it.hasNext()) {
+			currentScoreEl=(MusicElement)it.next();
+			if (currentScoreEl.getClass().equals(musicElementClass)) {
+				return true;
+			}
+		}
+		return false;
+    }
+    
+	/**
+	 * Returns <TT>true</TT> if this tune music has part label(s),
+	 * <TT>false</TT> otherwise.
+	 */
+	public boolean hasPartLabel() {
+		return hasObject(PartLabel.class);
+	}
+	
+	/**
+	 * Returns <TT>true</TT> if this tune music has tempo,
+	 * <TT>false</TT> otherwise.
+	 */
+	public boolean hasTempo() {
+		return hasObject(Tempo.class);
 	}
 	//TODO hasLyrics...
   }

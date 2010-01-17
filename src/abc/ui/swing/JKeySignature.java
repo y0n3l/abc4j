@@ -105,7 +105,7 @@ class JKeySignature extends JScoreElementAbstract {
 					?AccidentalType.SHARP:AccidentalType.FLAT;
 			int[] order = (accidental == AccidentalType.FLAT)
 					?flatOrder:sharpOrder;
-			char[] glyph = getMetrics().getAccidentalGlyph(AccidentalType.NATURAL);
+			char glyph = getMusicalFont().getAccidental(AccidentalType.NATURAL);
 			double glyphWidth = getMetrics().getBounds(glyph).getWidth();
 			double[] Ys = (accidental==AccidentalType.FLAT)
 					?flatYs:sharpYs;
@@ -113,7 +113,7 @@ class JKeySignature extends JScoreElementAbstract {
 			for (int i = 0; i < order.length; i++) {
 				if ((previous_accidentals[order[i]] != AccidentalType.NATURAL)
 					&& (accidentals[order[i]] != previous_accidentals[order[i]])) {
-					chars.add(cpt, glyph);
+					chars.add(cpt, new char[]{glyph});
 					positions.add(cpt, new Point2D.Double(baseX, Ys[i]));
 					baseX += glyphWidth;
 					m_width += glyphWidth;
@@ -130,7 +130,7 @@ class JKeySignature extends JScoreElementAbstract {
 			byte accidental = twoPasses==1?firstAccidental:secondAccidental;
 			int[] order = (accidental == AccidentalType.FLAT)
 						?flatOrder:sharpOrder;
-			char[] glyph = getMetrics().getAccidentalGlyph(accidental);
+			char glyph = getMusicalFont().getAccidental(accidental);
 			double glyphWidth = getMetrics().getBounds(glyph).getWidth();
 			double[] Ys = (accidental==AccidentalType.FLAT)
 						?flatYs:sharpYs;
@@ -141,7 +141,7 @@ class JKeySignature extends JScoreElementAbstract {
 			}
 			for (int i = 0; i < order.length; i++) {
 				if (accidentals[order[i]] == accidental) {
-					chars.add(cpt, glyph);
+					chars.add(cpt, new char[]{glyph});
 					positions.add(cpt, new Point2D.Double(baseX, Ys[i]));
 					baseX += glyphWidth;
 					m_width += glyphWidth;

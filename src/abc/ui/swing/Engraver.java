@@ -3,6 +3,7 @@
  */
 package abc.ui.swing;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeSet;
@@ -17,18 +18,21 @@ import abc.notation.Tune.Music;
  * @author Sylvain Machefert
  *
  */
-public class Engraver {
+public class Engraver implements Serializable {
 	
-	private HashMap spacesAfter;
-	
-	public static final int NONE = -1;
 	public static final int DEFAULT = 0;
+
+	public static final int NONE = -1;
+	
+	private static final long serialVersionUID = 2254019163765767727L;
+	
 	public static final int VARIATION_DEFAULT = 0;
-	public static final int VARIATION_MIN = -100;
 	public static final int VARIATION_MAX = 100;
+	public static final int VARIATION_MIN = -100;
 	
 	private int m_mode = DEFAULT;
 	private int m_variation = VARIATION_DEFAULT;
+	private HashMap spacesAfter;
 	
 	protected Engraver() {
 		this(DEFAULT);
@@ -38,58 +42,12 @@ public class Engraver {
 		spacesAfter = new HashMap();
 		setMode(mode);
 	}
-	
-	/**
-	 * Sets the engraving mode
-	 * <ul><li>{@link #NONE} : equal space between each note
-	 * <li>{@link #DEFAULT} : smaller space for short note, bigger space for long notes, something that look nice ;)
-	 * </ul>
-	 * @param mode
-	 */
-	public void setMode(int mode) {
-		setMode(mode, 0);
-	}
-	
-	/**
-	 * Sets the engraving mode
-	 * <ul><li>{@link #NONE} : equal space between each note
-	 * <li>{@link #DEFAULT} : smaller space for short note, bigger space for long notes, something that look nice ;)
-	 * </ul>
-	 * @param mode {@link #DEFAULT} or {@link #NONE}
-	 * @param variation, in % negative to reduce, positive
-	 * to improve space between notes.
-	 */
-	public void setMode(int mode, int variation) {
-		spacesAfter.clear();
-		m_mode = mode;
-		//bounds variation %
-		//variation = Math.max(variation, -50);
-		m_variation = Math.max(VARIATION_MIN,
-						Math.min(VARIATION_MAX, variation));
-		if (m_mode == DEFAULT) {
-			double factor = 1 + variation/100f;
-			setSpaceAfter(Note.DOTTED_WHOLE, 30*factor);
-			setSpaceAfter(Note.WHOLE, 25*factor);
-			setSpaceAfter(Note.DOTTED_HALF, 20*factor);
-			setSpaceAfter(Note.HALF, 15*factor);
-			setSpaceAfter(Note.DOTTED_QUARTER, 12*factor);
-			setSpaceAfter(Note.QUARTER, 10*factor);
-			setSpaceAfter(Note.DOTTED_EIGHTH, 7*factor);
-			setSpaceAfter(Note.EIGHTH, 5*factor);
-			setSpaceAfter(Note.DOTTED_SIXTEENTH, 2*factor);
-			//invert factor
-			factor = 1 - variation/100;
-			setSpaceAfter(Note.SIXTEENTH, -1*factor);
-			setSpaceAfter(Note.DOTTED_THIRTY_SECOND, -2*factor);
-			setSpaceAfter(Note.THIRTY_SECOND, -3*factor);
-			setSpaceAfter(Note.DOTTED_SIXTY_FOURTH, -4*factor);
-			setSpaceAfter(Note.SIXTY_FOURTH, -5*factor);
-		}
-		else { //mode==NONE
-			//do nothing, will always return 0
-		}
-	}
 
+	protected Engraver(int mode, int variation) {
+		spacesAfter = new HashMap();
+		setMode(mode, variation);
+	}
+	
 	/**
 	 * Adapt the engraving to the tune, i.e. search for the
 	 * shortest note in the tune. If shortest note is a quarter,
@@ -150,10 +108,41 @@ public class Engraver {
 		}
 	}
 	
-	public void setSpaceAfter(int noteLength, double space) {
-		spacesAfter.put(new Integer(noteLength), new Double(space));
+	public int getMode() {
+		return m_mode;
+	}
+
+	private int[] getNearestDurations(int unknownDuration) {
+		int[] ret = {Note.DOTTED_WHOLE, Note.SIXTY_FOURTH};
+		for (Iterator it = spacesAfter.keySet().iterator(); it.hasNext();) {
+			int i = ((Integer) it.next()).intValue();
+			if (i > unknownDuration && i < ret[0])
+				ret[0] = i;
+			else if (i < unknownDuration && i > ret[1])
+				ret[1] = i;
+		}
+		return ret;
 	}
 	
+	protected double getNoteSpacing(JScoreElement e) {
+		Note n1 = null;
+		if (e instanceof JGroupOfNotes) {
+			JGroupOfNotes jgon = (JGroupOfNotes) e;
+			NoteAbstract na = jgon.m_notes[jgon.m_notes.length-1];
+			if (na instanceof MultiNote)
+				n1 = ((MultiNote) na).getShortestNote();
+			else
+				n1 = (Note) na;
+		} else if (e instanceof JChord) {
+			n1 = ((JChord) e).multiNote.getShortestNote();
+		} else if (e instanceof JNote) {
+			n1 = ((JNote) e).note;
+		}
+		return (n1==null)
+			? 0
+			: getSpaceAfter(n1.getDuration())/* * spaceFactor*/;
+	}
+
 	public double getSpaceAfter(int noteDuration) {
 		if (m_mode == NONE)
 			return 0;
@@ -188,35 +177,67 @@ public class Engraver {
 		}
 	}
 	
-	private int[] getNearestDurations(int unknownDuration) {
-		int[] ret = {Note.DOTTED_WHOLE, Note.SIXTY_FOURTH};
-		for (Iterator it = spacesAfter.keySet().iterator(); it.hasNext();) {
-			int i = ((Integer) it.next()).intValue();
-			if (i > unknownDuration && i < ret[0])
-				ret[0] = i;
-			else if (i < unknownDuration && i > ret[1])
-				ret[1] = i;
-		}
-		return ret;
+	public int getVariation() {
+		return m_variation;
 	}
 	
-	protected double getNoteSpacing(JScoreElement e) {
-		Note n1 = null;
-		if (e instanceof JGroupOfNotes) {
-			JGroupOfNotes jgon = (JGroupOfNotes) e;
-			NoteAbstract na = jgon.m_notes[jgon.m_notes.length-1];
-			if (na instanceof MultiNote)
-				n1 = ((MultiNote) na).getShortestNote();
-			else
-				n1 = (Note) na;
-		} else if (e instanceof JChord) {
-			n1 = ((JChord) e).multiNote.getShortestNote();
-		} else if (e instanceof JNote) {
-			n1 = ((JNote) e).note;
+	/**
+	 * Sets the engraving mode
+	 * <ul><li>{@link #NONE} : equal space between each note
+	 * <li>{@link #DEFAULT} : smaller space for short note, bigger space for long notes, something that look nice ;)
+	 * </ul>
+	 * @param mode
+	 */
+	public void setMode(int mode) {
+		setMode(mode, VARIATION_DEFAULT);
+	}
+	
+	/**
+	 * Sets the engraving mode
+	 * <ul><li>{@link #NONE} : equal space between each note
+	 * <li>{@link #DEFAULT} : smaller space for short note, bigger space for long notes, something that look nice ;)
+	 * </ul>
+	 * @param mode {@link #DEFAULT} or {@link #NONE}
+	 * @param variation, in % negative to reduce, positive
+	 * to improve space between notes.
+	 */
+	public void setMode(int mode, int variation) {
+		//only reset if needed
+		if (m_mode == mode && m_variation == variation)
+			return;
+		
+		spacesAfter.clear();
+		m_mode = mode;
+		//bounds variation %
+		//variation = Math.max(variation, -50);
+		m_variation = Math.max(VARIATION_MIN,
+						Math.min(VARIATION_MAX, variation));
+		if (m_mode == DEFAULT) {
+			double factor = 1 + variation/100f;
+			setSpaceAfter(Note.DOTTED_WHOLE, 30*factor);
+			setSpaceAfter(Note.WHOLE, 25*factor);
+			setSpaceAfter(Note.DOTTED_HALF, 20*factor);
+			setSpaceAfter(Note.HALF, 15*factor);
+			setSpaceAfter(Note.DOTTED_QUARTER, 12*factor);
+			setSpaceAfter(Note.QUARTER, 10*factor);
+			setSpaceAfter(Note.DOTTED_EIGHTH, 7*factor);
+			setSpaceAfter(Note.EIGHTH, 5*factor);
+			setSpaceAfter(Note.DOTTED_SIXTEENTH, 2*factor);
+			//invert factor
+			factor = 1 - variation/100;
+			setSpaceAfter(Note.SIXTEENTH, -1*factor);
+			setSpaceAfter(Note.DOTTED_THIRTY_SECOND, -2*factor);
+			setSpaceAfter(Note.THIRTY_SECOND, -3*factor);
+			setSpaceAfter(Note.DOTTED_SIXTY_FOURTH, -4*factor);
+			setSpaceAfter(Note.SIXTY_FOURTH, -5*factor);
 		}
-		return (n1==null)
-			? 0
-			: getSpaceAfter(n1.getDuration())/* * spaceFactor*/;
+		else { //mode==NONE
+			//do nothing, will always return 0
+		}
+	}
+	
+	public void setSpaceAfter(int noteLength, double space) {
+		spacesAfter.put(new Integer(noteLength), new Double(space));
 	}
 	
 }

@@ -28,6 +28,7 @@ import abc.notation.MusicElement;
 import abc.notation.Note;
 import abc.notation.NoteAbstract;
 import abc.notation.SlurDefinition;
+import abc.ui.scoretemplates.ScoreAttribute;
 import abc.ui.swing.JScoreElement.JStemmableElement;
 
 /** This class is in charge of rendering a group of notes whose stems should be linked. */
@@ -229,14 +230,14 @@ class JGroupOfNotes extends JScoreElementAbstract
 			//based on this, calculate the new stem Y end.
 			m_stemYend = (int)(highestNote.getStemBeginPosition().getY()
 					-getMetrics().getNoteHeight()/2
-					-getMetrics().getStemLength(getNotationContext()));
+					-getMetrics().getStemLengthForContext(getNotationContext()));
 		} else {
 			//update the lowest note to calculate when the stem Y end should be after the base change.
 			updatedBase = lowestNote.getBase();
 			updatedBase.setLocation(currentBase);
 			((JScoreElementAbstract)lowestNote).setBase(updatedBase);
 			//based on this, calculate the new stem Y end.
-			m_stemYend = (int)(lowestNote.getStemBeginPosition().getY()+getMetrics().getStemLength(getNotationContext()));
+			m_stemYend = (int)(lowestNote.getStemBeginPosition().getY()+getMetrics().getStemLengthForContext(getNotationContext()));
 		}
 
 		JGroupableNote firstNote = m_jNotes[0];
@@ -255,7 +256,7 @@ class JGroupOfNotes extends JScoreElementAbstract
 			if (m_engraver != null)
 				engraverSpacing = m_engraver.getNoteSpacing(m_jNotes[i]);
 			double justifySpacingCorrection = engraverSpacing
-				+ getMetrics().getNotesSpacing();
+				+ getMetrics().getNotesSpacingForContext(getNotationContext());
 			if (m_internalSpacingRatio > 0)
 				justifySpacingCorrection *= m_internalSpacingRatio;
 			currentBase.setLocation(currentBase.getX()
@@ -268,7 +269,7 @@ class JGroupOfNotes extends JScoreElementAbstract
 		}
 		if (lastNote==null)
 			lastNote=firstNote;
-		double firstNoteAccidentalWidth = (firstNote.getWidth()-getMetrics().getNoteWidth());
+		//double firstNoteAccidentalWidth = (firstNote.getWidth()-getMetrics().getNoteWidth());
 
 		/*if (isStemUp) {
 			m_width = (int)(lastNote.getStemBeginPosition().getX()-(firstNote).getBase().getX() + firstNoteAccidentalWidth);
@@ -287,7 +288,8 @@ class JGroupOfNotes extends JScoreElementAbstract
 		for (int i=0; i<m_jNotes.length; i++) {
 			JGroupableNote n = m_jNotes[i];
 			((JScoreElementAbstract)n).render(context);
-			BasicStroke notesLinkStroke = getMetrics().getNotesLinkStroke();
+			BasicStroke notesLinkStroke =
+				getMetrics().getNotesLinkStrokeForContext(getNotationContext());
 			context.setStroke(notesLinkStroke);
 			short[] longerRhythms = null;
 			short noteStrictDuration =
@@ -354,7 +356,8 @@ class JGroupOfNotes extends JScoreElementAbstract
 		}
 
 		if (nUpletSize!=-1) {
-			char[] chars = getMetrics().getMusicalFont().getTupletDigits(nUpletSize);
+			char[] chars = getMusicalFont().getTupletDigits(nUpletSize);
+			float tupletNumberYOffset = getTemplate().getAttributeSize(ScoreAttribute.TUPLET_NUMBER_Y_OFFSET);
 			Rectangle2D numberBounds = getMetrics().getBounds(chars);
 			//TODO replace with commented line but needs to be improved because of the get display position.
 			//context.drawChars(chars, 0, 1, (int)(((JNote)m_jNotes[0]).getDisplayPosition().getX()+m_width/2), (int)(m_stemYend - m_metrics.getNoteHeigth()/4));
@@ -362,7 +365,7 @@ class JGroupOfNotes extends JScoreElementAbstract
 			if (isStemUp) {
 				ctrlP = new Point2D.Double(
 						m_jNotes[0].getBase().getX()+getWidth()/2,
-						m_stemYend - getMetrics().getTupletNumberYOffset());
+						m_stemYend - getTemplate().getAttributeSize(ScoreAttribute.TUPLET_NUMBER_Y_OFFSET));
 				context.drawChars(chars, 0, 1, (int)ctrlP.getX(), (int)ctrlP.getY());
 			} else {
 				//if group is ascending or descending
@@ -383,17 +386,17 @@ class JGroupOfNotes extends JScoreElementAbstract
 				if (intersects) { //control point above bounds of the group
 					ctrlP = new Point2D.Double(
 						m_jNotes[0].getStemBeginPosition().getX()+(getWidth()-getMetrics().getNoteWidth())/2,
-						getBoundingBox().getMinY() - getMetrics().getTupletNumberYOffset());
+						getBoundingBox().getMinY() - tupletNumberYOffset);
 				} else {
 					ctrlP = new Point2D.Double(
 						m_jNotes[0].getStemBeginPosition().getX()+(getWidth()-getMetrics().getNoteWidth())/2,
-						line.getBounds2D().getCenterY() - getMetrics().getTupletNumberYOffset());
+						line.getBounds2D().getCenterY() - tupletNumberYOffset);
 				}
 				context.drawChars(chars, 0, 1, (int)ctrlP.getX(), (int)ctrlP.getY());
 			}
 			ctrlP.setLocation(
 				ctrlP.getX()+numberBounds.getWidth()/2,
-				ctrlP.getY()-numberBounds.getHeight()-getMetrics().getTupletNumberYOffset());
+				ctrlP.getY()-numberBounds.getHeight()-tupletNumberYOffset);
 			((JNoteElementAbstract) m_jNotes[0]).getJSlurDefinition()
 				.setTupletControlPoint(ctrlP);
 		}
