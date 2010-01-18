@@ -19,6 +19,8 @@ import java.awt.event.ActionEvent;
 
 public class AddTuneAction extends TuneBookActionAbstract
 {
+  private static final long serialVersionUID = 8415369447707081870L;
+
   public AddTuneAction(String name, String description, int shortcut)
   {
     putValue(NAME, name);

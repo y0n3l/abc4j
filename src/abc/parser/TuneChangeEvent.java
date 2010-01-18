@@ -22,6 +22,7 @@ import abc.notation.Tune;
 /** Event used when a state changed occured on a tune. */
 public class TuneChangeEvent extends EventObject
 {
+  private static final long serialVersionUID = 8455472810254418509L;
   /** The tune updated event type. */
   public static final int TUNE_UPDATED = 0;
   /** The tune removed event type. */

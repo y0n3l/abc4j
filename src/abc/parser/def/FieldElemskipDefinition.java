@@ -31,7 +31,7 @@ public class FieldElemskipDefinition extends AutomataDefinition
         State startingState = new State(AbcTokenType.UNKNOWN, false);
         Transition trans = new Transition(startingState,'E');
         getStartingState().addTransition(trans);
-        //startingState.addTransition(new IsColonTransition(new State(AbcTokenType.FIELD_ELEMSKIP, true)));
+        startingState.addTransition(new IsColonTransition(new State(AbcTokenType.FIELD_ELEMSKIP, true)));
     }
 
 }

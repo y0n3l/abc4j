@@ -19,7 +19,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 /** A multi note is a group of notes that should be played together. */
-public class MultiNote extends NoteAbstract
+public class MultiNote extends NoteAbstract implements Cloneable
 {
   /** Notes contained in this multinote. */
   private Vector m_notes;
@@ -58,7 +58,7 @@ public class MultiNote extends NoteAbstract
   
   /** Returns the note with the biggest duration from the given array of notes.
    * @param notes An array of notes.
-   * @return The note with the biggest duration from the given array of notes. 
+   * @return The note with the biggest duration from the given array of notes.
    * @see Note#getDuration() */
   public static Note getLongestNote(Note[] notes) {
 	  float length = 0;
@@ -72,11 +72,11 @@ public class MultiNote extends NoteAbstract
 	  return maxNote;
   }
   
-  /** Returns all notes strictly shorter than the given strict duration. 
+  /** Returns all notes strictly shorter than the given strict duration.
    * @param notes An arry of notes.
    * @param aStrictDuration A strict duration (use constants defined class Note)
    * @return All notes strictly shorter than the given strict duration. <TT>null</TT>
-   * is returned is no note if shorter than the given strict duration. 
+   * is returned is no note if shorter than the given strict duration.
    * @see Note#getStrictDuration() */
   public static Note[] getNotesShorterThan(Note[] notes, int aStrictDuration) {
 	  Vector shorterNotes = new Vector();
@@ -94,7 +94,7 @@ public class MultiNote extends NoteAbstract
   
   /** Returns the lowest note from the given array of notes.
    * @param notes An array of notes.
-   * @return The lowest note from the given array of notes. 
+   * @return The lowest note from the given array of notes.
    * @see Note#isLowerThan(Note) */
   public static Note getLowestNote(Note[] notes) {
 	  Note lowestNote = notes[0];
@@ -106,7 +106,7 @@ public class MultiNote extends NoteAbstract
   
   /** Returns the highest note from the given array of notes.
    * @param notes An array of notes.
-   * @return The highes note from the given array of notes. 
+   * @return The highes note from the given array of notes.
    * @see Note#isHigherThan(Note) */
   public static Note getHighestNote(Note[] notes) {
 	  Note highestNote = notes[0];
@@ -147,12 +147,12 @@ public class MultiNote extends NoteAbstract
   }
   
   /** Returns the notes from this multinote that begin a tie.
-   * @return Te notes from this multinote that begin a tie. <TT>null</TT> is 
+   * @return Te notes from this multinote that begin a tie. <TT>null</TT> is
    * returned if no note begins a tie.
-   * @see Note#isBeginningTie() */ 
+   * @see Note#isBeginningTie() */
   public Note[] getNotesBeginningTie() {
-	  Vector notesBT = new Vector();
-	  for (int i=0; i<m_notes.size(); i++) 
+	  Vector notesBT = new Vector(m_notes.size());
+	  for (int i=0; i<m_notes.size(); i++)
 		  if (((Note)m_notes.elementAt(i)).isBeginningTie())
 			  notesBT.addElement(m_notes.elementAt(i));
 	  if (notesBT.size()>0) {
@@ -180,7 +180,7 @@ public class MultiNote extends NoteAbstract
   
   /** Returns the lowest note among the notes composing this multi note.
    * @return The lowest note among the notes composing this multi note.
-   * @see Note#isLowerThan(Note) 
+   * @see Note#isLowerThan(Note)
    * @see #getHighestNote() */
   public Note getLowestNote() {
 	  /*Note lowestNote = (Note)m_notes.elementAt(0);
@@ -191,9 +191,9 @@ public class MultiNote extends NoteAbstract
 	  return getLowestNote(this.toArray());
   }
   
-  /** Returns <TT>true</TT> if the strict durations of all notes composing this 
+  /** Returns <TT>true</TT> if the strict durations of all notes composing this
    * multi note have the same value.
-   * @return <TT>true</TT> if the strict durations of all notes composing this 
+   * @return <TT>true</TT> if the strict durations of all notes composing this
    * multi note have the same value, <TT>false</TT> otherwise.
    * @see Note#getStrictDuration() */
   public boolean hasUniqueStrictDuration() {
@@ -226,7 +226,7 @@ public class MultiNote extends NoteAbstract
 		  Vector sortedDurations = new Vector();
 		  for (int i=0; i<durations.size(); i++) {
 			  int j=0;
-			  while (j<sortedDurations.size() 
+			  while (j<sortedDurations.size()
 					  && ((Short)sortedDurations.elementAt(j)).shortValue()<
 					  (((Short)durations.elementAt(i)).shortValue())
 					  )
@@ -240,16 +240,16 @@ public class MultiNote extends NoteAbstract
 	  }
   }
   
-  /** Normalizes this multi note by decomposing it into multinotes with 
+  /** Normalizes this multi note by decomposing it into multinotes with
    * same strict duration.
-   * @return An array of multinotes with unique strict duration. Such strict 
+   * @return An array of multinotes with unique strict duration. Such strict
    * durations are sorted by ascent order.
    * @see #hasUniqueStrictDuration() */
   public MultiNote[] normalize() {
 	  Hashtable splitter = new Hashtable();
 	  for (int i=0; i<m_notes.size(); i++) {
 		  Note note = (Note)m_notes.elementAt(i);
-		  Short key = new Short(note.getStrictDuration()); 
+		  Short key = new Short(note.getStrictDuration());
 		  if (splitter.containsKey(key))
 			  ((Vector)splitter.get(key)).addElement(note);
 		  else {
@@ -270,7 +270,7 @@ public class MultiNote extends NoteAbstract
 	  Vector orderedNotes = new Vector();
 	  for (int i=0; i<original.size(); i++) {
 		  int j=0;
-		  while (j<orderedNotes.size() 
+		  while (j<orderedNotes.size()
 				  && ((Note)orderedNotes.elementAt(j)).isLowerThan((Note)original.elementAt(i)))
 			  j++;
 		  orderedNotes.insertElementAt(original.elementAt(i),j);
@@ -290,16 +290,17 @@ public class MultiNote extends NoteAbstract
 	  return false;
   }
   
-  /** Returns a new vector containing all <TT>Note</TT> objects contained in
+  /** Returns a new vector containing <B>clones</B> of all <TT>Note</TT> objects contained in
    * this multi note.
    * @return a new vector containing all <TT>Note</TT> objects contained in
-   * this multi note. */
+   * this multi note.
+   * @see #toArray() to get an array of notes not cloned */
   public Vector getNotesAsVector()
   { return (Vector)m_notes.clone(); }
   
-  /** Returns notes composing this multinote as an array of notes, sorted 
+  /** Returns notes composing this multinote as an array of notes, sorted
    * from the lowest note to the highest one.
-   * @return Notes composing this multinote as an array of notes, sorted 
+   * @return Notes composing this multinote as an array of notes, sorted
    * from the lowest note to the highest one. */
   public Note[] toArray() {
 	  if (m_notes.size()>0) {
@@ -309,4 +310,55 @@ public class MultiNote extends NoteAbstract
 	  else
 		  return null;
   }
+  
+  protected void setNotes(Note[] notes) {
+	  Vector v = new Vector(notes.length);
+	  for (int i = 0; i < notes.length; i++) {
+		v.addElement(notes[i]);
+	  }
+	  m_notes = fromLowestToHighest(v);
+	}
+
+
+  public String toString()
+  {
+		String string2Return = super.toString();
+	  for (int i = 0; i < m_notes.size(); i++) {
+		  if (i == 0) string2Return = string2Return.concat("[");
+		  else string2Return = string2Return.concat(":");
+		Note n = (Note) m_notes.elementAt(i);
+		if (n.getStrictHeight() == Note.REST) 	string2Return = string2Return.concat("z"); else
+		if (n.getStrictHeight() == Note.C) 	string2Return = string2Return.concat("C"); else
+		if (n.getStrictHeight() == Note.D) 	string2Return = string2Return.concat("D"); else
+		if (n.getStrictHeight() == Note.E) 	string2Return = string2Return.concat("E"); else
+		if (n.getStrictHeight() == Note.F) 	string2Return = string2Return.concat("F"); else
+		if (n.getStrictHeight() == Note.G) 	string2Return = string2Return.concat("G"); else
+		if (n.getStrictHeight() == Note.A) 	string2Return = string2Return.concat("A"); else
+		if (n.getStrictHeight() == Note.B) 	string2Return = string2Return.concat("B"); /*else
+		if (n.getStrictHeight() == Note.c) 	string2Return = string2Return.concat("c"); else
+		if (n.getStrictHeight() == Note.d) 	string2Return = string2Return.concat("d"); else
+		if (n.getStrictHeight() == Note.e) 	string2Return = string2Return.concat("e"); else
+		if (n.getStrictHeight() == Note.f) 	string2Return = string2Return.concat("f"); else
+		if (n.getStrictHeight() == Note.g) 	string2Return = string2Return.concat("g"); else
+		if (n.getStrictHeight() == Note.a) 	string2Return = string2Return.concat("a"); else
+		if (n.getStrictHeight() == Note.b) 	string2Return = string2Return.concat("b");*/
+		if (n.getOctaveTransposition() == 1) 	string2Return = string2Return.concat("'"); else
+		if (n.getOctaveTransposition() == -1) 	string2Return = string2Return.concat(",");
+		if (n.getAccidental() == AccidentalType.FLAT)	string2Return = string2Return.concat("b");
+		if (n.getAccidental() == AccidentalType.SHARP)	string2Return = string2Return.concat("#");
+		//string2Return = string2Return.concat(relativeLength.toString());
+	  }
+	  string2Return = string2Return.concat("]");
+	return string2Return;
+  }
+
+	public Object clone() {
+		Object o = null;
+		try {
+			o = super.clone();
+		} catch (CloneNotSupportedException never) {
+			System.err.println(never.getMessage());
+		}
+		return o;
+	}
 }

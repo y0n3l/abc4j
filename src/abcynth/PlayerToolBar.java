@@ -35,6 +35,7 @@ import abc.notation.Tune;
  * tunes. */
 public class PlayerToolBar extends JToolBar implements TunePlayerListenerInterface
 {
+  private static final long serialVersionUID = -3637390767150235071L;
   private JLabel m_tempoField = new JLabel("180");
   private JSlider m_tempoSlider = new JSlider(0, 300, 180);
   private TunePlayer m_player = null;

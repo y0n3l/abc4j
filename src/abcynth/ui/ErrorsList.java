@@ -30,6 +30,7 @@ import abc.parser.TuneParserListenerInterface;
 /** */
 public class ErrorsList extends JList implements TuneParserListenerInterface
 {
+  private static final long serialVersionUID = -3624031033400760255L;
   //private TuneEditorPane m_tunePane = null;
   private TuneParser m_parser = null;
   //private JList m_errorsList = null;
@@ -117,7 +118,8 @@ public class ErrorsList extends JList implements TuneParserListenerInterface
 
   private static class ErrorsListModel extends AbstractListModel
   {
-    private Vector m_errors = null;
+	private static final long serialVersionUID = 8460605907411650180L;
+	private Vector m_errors = null;
 
     public ErrorsListModel()
     {

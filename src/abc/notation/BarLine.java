@@ -24,9 +24,15 @@ public class BarLine implements MusicElement
   public static final byte REPEAT_OPEN = 1;
   /** The repeat close bar line type. Ex: :| */
   public static final byte REPEAT_CLOSE = 2;
+  /** The beginning of the tune. Ex: [| */
+  public static final byte BEGIN = 3;
+  /** The end of the tune. Ex: |] */
+  public static final byte END = 4;
+  /** The double bar. Ex: || */
+  public static final byte DOUBLE = 6;
   /** The type of this bar line. */
   private byte m_type = SIMPLE;
-
+  
   /** Default constructor.
    * Constructs a simple bar line. */
   public BarLine()
@@ -70,19 +76,19 @@ public class BarLine implements MusicElement
         if (barLine.equals("||"))
         {
           barlineTypes = new byte[1];
-          barlineTypes[0] = BarLine.SIMPLE;
+          barlineTypes[0] = BarLine.DOUBLE;
         }
         else
         if (barLine.equals("[|"))
         {
           barlineTypes = new byte[1];
-          barlineTypes[0] = BarLine.SIMPLE;
+          barlineTypes[0] = BarLine.BEGIN;
         }
         else
         if (barLine.equals("|]"))
         {
           barlineTypes = new byte[1];
-          barlineTypes[0] = BarLine.SIMPLE;
+          barlineTypes[0] = BarLine.END;
         }
         else
         if (barLine.equals(":|"))
@@ -104,9 +110,14 @@ public class BarLine implements MusicElement
    * @return A string representation of this object. */
   public String toString()
   {
-    if (m_type==SIMPLE) return new String("|");
-    if (m_type==REPEAT_OPEN) return new String("|:");
-    if (m_type==REPEAT_CLOSE) return new String(":|");
-    return null;
+	  switch(m_type) {
+	  case SIMPLE: return "|";
+	  case REPEAT_OPEN: return "|:";
+	  case REPEAT_CLOSE: return ":|";
+	  case BEGIN: return "[|";
+	  case END: return "|]";
+	  case DOUBLE: return "||";
+	  default: return null;
+	  }
   }
 }

@@ -18,6 +18,7 @@ package abcynth;
 import java.util.Vector;
 public class CircularBuffer extends Vector
 {
+  private static final long serialVersionUID = -3820743244359848069L;
   private int m_sizeLimite = 0;
 
   public CircularBuffer(int sizeLimit)

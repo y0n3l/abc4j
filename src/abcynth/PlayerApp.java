@@ -26,12 +26,16 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.sound.midi.Instrument;
 import javax.sound.midi.MidiSystem;
@@ -61,8 +65,11 @@ import abc.midi.TunePlayer;
 import abc.midi.TunePlayerListenerInterface;
 import abc.notation.MusicElement;
 import abc.notation.NoteAbstract;
+import abc.notation.SlurDefinition;
 import abc.notation.Tune;
 import abc.parser.TuneBook;
+import abc.util.PropertyManager;
+import abc.ui.swing.Engraver;
 import abc.ui.swing.JScoreElement;
 import abc.xml.Abc2xml;
 import abcynth.ui.AddTuneAction;
@@ -74,6 +81,7 @@ import abcynth.ui.TuneBookActionAbstract;
  * tunes. */
 public class PlayerApp extends JFrame implements TunePlayerListenerInterface, WindowListener
 {
+  private static final long serialVersionUID = -8475230184183870538L;
   private File m_file = null;
   private File lastDirectory = null;
   private TuneBook m_tuneBook = null;
@@ -88,6 +96,13 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
   private LogFrame m_logFrame = null;
   //private int tunesNb = 0;
 
+  // properties and preference related attributes
+  private PrefsDialog m_prefsDialog = null;
+  private JPropertyChangeHandler m_propsHandler = null;
+  private float m_notationFontSize = 0;
+
+  private int DEFAULT_WIDTH, DEFAULT_HEIGHT = 600;
+
   public PlayerApp()
   {
     super("ABCynth");
@@ -99,11 +114,25 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
    } catch (Exception e) {
        e.printStackTrace();
    }*/
+
+    setDefaultCloseOperation(javax.swing.JFrame.DO_NOTHING_ON_CLOSE);
+
     m_logFrame = new LogFrame();
     //m_logFrame.setVisible(true);
     m_tuneBookEditorPanel = new TuneBookEditorPanel();
+
+    // load and apply preferences AFTER TuneBookEditorPanel has been
+    //  created because many of the preferences are applied against
+    //  the JScoreComponent instance contained within the editing panels
+    try {
+	  loadPreferences();
+      applyPreferences();
+    } catch (IOException ex) {
+      System.out.println("Could not load and apply preferences.");
+    }
+
     m_lastOpenedFiles = new CircularBuffer(5);
-    setDefaultCloseOperation(javax.swing.JFrame.DO_NOTHING_ON_CLOSE);
+
     File f = new File("config.dat");
     try
     {
@@ -152,6 +181,18 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
     m_abc2xmlExport = new Tune2XMLExport("Export to MusicXML...", "Saves the selected tune to a musicXML file", PlayerApp.this);
     m_fileMenu.add(m_abc2xmlExport);
 
+    m_fileMenu.addSeparator();
+    menuItem = new JMenuItem(new PrefsAction("Preferences", "ABCynth Preferences"));
+    menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.CTRL_MASK));
+    m_fileMenu.add(menuItem);
+
+    m_fileMenu.addSeparator();
+    menuItem = new JMenuItem(new ExitAction("Exit", "Exit ABCynth"));
+    menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
+    m_fileMenu.add(menuItem);
+
+
+
     m_tunebookMenu = new JMenu("Tunebook");
     menuItem = new JMenuItem(new NewTuneBookAction("New", "Creates a new emty tunebook"));
     menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
@@ -166,11 +207,6 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
     m_viewMenu = new JMenu("View");
     m_enableColoringAction = new EnableColoringAction("Enable tune coloring", "Differenciate tune parts with colors");
     m_viewMenu.add(new JCheckBoxMenuItem(m_enableColoringAction));
-
-    m_fileMenu.addSeparator();
-    menuItem = new JMenuItem(new ExitAction("Exit", "Exit ABCynth"));
-    menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
-    m_fileMenu.add(menuItem);
 
     JMenu helpMenu = new JMenu("Help");
     helpMenu.add(new HelpAction("About ABCynth...", "About ABCynth", KeyEvent.VK_H, PlayerApp.this));
@@ -196,7 +232,7 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
     catch(MidiUnavailableException e) {
     	e.printStackTrace();
     }
-    
+
     m_player.addListener(this);
     m_player.start();
     m_playerToolBar = new PlayerToolBar(m_player);
@@ -227,15 +263,18 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
     //getContentPane().add(tab, BorderLayout.SOUTH);
     addWindowListener(this);
     pack();
-    setSize(600,600);
+    // apply size/location preferences again as they don't "take"
+    //   until component has been packed
+    applyPreferenceSizeAndLocation();
+
     m_tuneBookEditorPanel.setDividerLocation((double)0.4);
     //m_tuneBookEditorPanel.setPreferredSize(new Dimension(100,50));
     //m_tuneBookEditorPanel.getTuneEditArea().setPreferredSize(new Dimension(100,250));
     m_tuneBookEditorPanel.getTuneEditSplitPane().setDividerLocation(200);
-    
+
     m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().addMouseListener( new MouseAdapter() {
 		public void mouseClicked(MouseEvent e) {
-			
+
 			JScoreElement sel = m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().getScoreElementAt(e.getPoint());
 			//if (sel!=null)
 			//	System.out.println("Score element at " + e.getX() + " / " + e.getY() + " : " + sel + "@" + sel.getBase());
@@ -249,7 +288,18 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
 					if (elmnt instanceof NoteAbstract) {
 						NoteAbstract note = (NoteAbstract)elmnt;
 						System.out.println("properties for " + elmnt + " : slur?="+ note.isPartOfSlur() + " isLastOfGroup?=");
-						String test = (note.getSlurDefinition()==null)?"no slur":"start:"+note.getSlurDefinition().getStart()+" end:"+note.getSlurDefinition().getEnd();
+						String test = "";
+						Vector slurs = note.getSlurDefinitions();
+						int size = slurs.size();
+						test = size==0?"no slur":(size+" slur"+(size>1?"s":""));
+						int i = 0;
+						while (i < size) {
+							SlurDefinition slur = (SlurDefinition) slurs.elementAt(i);
+							test += "start:"+slur.getStart()+" end:"+slur.getEnd();
+							if (size > 1)
+								test += " | ";
+							i++;
+						}
 						System.out.println(test);
 					}
 	    		}
@@ -267,10 +317,15 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
     		m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().setSelectedItem(elmnt);
     	}
     });
-    
+
     setTuneBook(new TuneBook());
     addMouseListenerToHeaderInTable();
     //m_tuneBookEditorPanel.getTuneBookTable().set
+
+	// add application property change listener
+	m_propsHandler = new JPropertyChangeHandler();
+	m_propsHandler.listen();
+
   }
 
   public void setFile(File file)
@@ -312,6 +367,9 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
         ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("config.dat"));
         oos.writeObject(m_lastOpenedFiles);
         oos.close();
+
+		savePreferences();
+
         System.exit(0);
       }
       catch (Exception exc)
@@ -319,6 +377,245 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
         exc.printStackTrace();
       }
   }
+
+  public void savePreferences() {
+
+	// store properties and preferences
+	//   GUI size, GUI location, preferences
+    try {
+
+  	  PropertyManager pm = PropertyManager.getInstance();
+	  String prop = null;
+	  prop = pm.getProperty(StringConstants.PROPS_KEY_UI_SAVEDIMENSIONS);
+	  if (prop != null && prop.equals(StringConstants.YES)) {
+	    pm.setProperty(StringConstants.PROPS_KEY_UI_WIDTH, "" + getWidth());
+	    pm.setProperty(StringConstants.PROPS_KEY_UI_HEIGHT, "" + getHeight());
+	  }
+	  prop = pm.getProperty(StringConstants.PROPS_KEY_UI_SAVELOCATION);
+	  if (prop != null && prop.equals(StringConstants.YES)) {
+	    pm.setProperty(StringConstants.PROPS_KEY_UI_X, "" + getX());
+	    pm.setProperty(StringConstants.PROPS_KEY_UI_Y, "" + getY());
+	  }
+
+	  pm.storeProperties();
+
+    } catch (IOException ex) {
+	  ex.printStackTrace();
+	}
+  }
+
+
+  protected void loadPreferences() throws IOException {
+    PropertyManager pm = PropertyManager.getInstance();
+  }
+
+
+  protected void applyPreferences() {
+	applyPreferenceSizeAndLocation();
+
+	applyPreferenceLanguageChoice(null);
+
+	// score preferences
+    applyPreferenceScoreSize(null);
+	applyPreferenceTitlesDisplay(null);
+	applyPreferenceStemmingPolicy(null);
+	applyPreferenceEngravingStyle(null);
+
+	// instrument specific preferences
+//	applyPreferenceInstrumentProfile();
+
+  }
+
+  protected void applyPreferenceLanguageChoice(String val) {
+    // FIXME: implement something!!
+
+  }
+
+  protected void applyPreferenceScoreSize(String val) {
+	if (val == null) {
+		try {
+			val = PropertyManager.getInstance().getProperty(StringConstants.PROPS_KEY_SCORESIZE);
+			if (val == null) {
+				throw new IOException("Property value NULL for KEY ("+StringConstants.PROPS_KEY_SCORESIZE+")");
+			}
+		} catch (IOException ex) {
+			ex.printStackTrace();
+			return;
+		}
+	}
+
+    // FIXME: only works if score is already loaded
+	try {
+	  m_notationFontSize = m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().getScoreMetrics().getNotationFontSize();
+    } catch (NullPointerException ex) {
+		// FIXME: log something?
+    }
+
+	// strip " %" from end
+	val = val.substring(0, (val.length()-2));
+	float newSize = m_notationFontSize;
+	try {
+	  newSize=Float.valueOf(val).floatValue();
+	  newSize = newSize/100;
+	  newSize = m_notationFontSize * newSize;
+	} catch (NumberFormatException nfe) {
+	  nfe.printStackTrace();
+	}
+
+    // FIXME: only works if score is already loaded
+	try {
+	  m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().setSize(newSize);
+    } catch (NullPointerException ex) {
+		// FIXME: log something?
+    }
+
+  }
+
+  protected void applyPreferenceTitlesDisplay(String val) {
+	if (val == null) {
+		try {
+			val = PropertyManager.getInstance().getProperty(StringConstants.PROPS_KEY_DISPLAYTITLES);
+			if (val == null) {
+				throw new IOException("Property value NULL for KEY ("+StringConstants.PROPS_KEY_DISPLAYTITLES+")");
+			}
+		} catch (IOException ex) {
+			ex.printStackTrace();
+			return;
+		}
+	}
+
+	boolean showTitles = (val.equals(StringConstants.YES)) ? true : false;
+    // FIXME: only works if score is already loaded
+	try {
+	  m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().showTitles(showTitles);
+	  m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().refresh();
+    } catch (NullPointerException ex) {
+		// FIXME: log something?
+    }
+
+  }
+
+  protected void applyPreferenceStemmingPolicy(String val) {
+	if (val == null) {
+		try {
+			val = PropertyManager.getInstance().getProperty(StringConstants.PROPS_KEY_STEMMINGPOLICY);
+			if (val == null) {
+				throw new IOException("Property value NULL for KEY ("+StringConstants.PROPS_KEY_STEMMINGPOLICY+")");
+			}
+		} catch (IOException ex) {
+			ex.printStackTrace();
+			return;
+		}
+	}
+	byte policy = 0;  // 0=auto 1=up 2=down
+	if (val.equals(StringConstants.UP))
+	  policy = 1;
+	else if (val.equals(StringConstants.DOWN))
+	  policy = 2;
+	else
+	  policy = 0;
+
+    // FIXME: only works if score is already loaded
+	try {
+   	  m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().setStemmingPolicy(policy);
+	  m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().refresh();
+    } catch (NullPointerException ex) {
+		// FIXME: log something?
+    }
+
+  }
+
+  protected void applyPreferenceEngravingStyle(String val) {
+	if (val == null) {
+		try {
+			val = PropertyManager.getInstance().getProperty(StringConstants.PROPS_KEY_ENGRAVINGSTYLE);
+			if (val == null) {
+				throw new IOException("Property value NULL for KEY ("+StringConstants.PROPS_KEY_ENGRAVINGSTYLE+")");
+			}
+		} catch (IOException ex) {
+			ex.printStackTrace();
+			return;
+		}
+	}
+
+    // FIXME: only works if score is already loaded
+	try {
+	  if (val.equals(StringConstants.JUSTIFIED)) {
+	    // FIXME: just what does justified do to score rendering??
+	    m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().setJustified(true);
+	  } else if (val.equals(StringConstants.FIXED)) {
+	    m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().getEngraver().setMode(Engraver.NONE);
+	  } else {
+	    m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().getEngraver().setMode(Engraver.DEFAULT);
+  	  }
+    } catch (NullPointerException ex) {
+		// FIXME: log something?
+    }
+
+  }
+
+  protected void applyPreferenceSizeAndLocation() {
+    try {
+      PropertyManager pm = PropertyManager.getInstance();
+	  String prop = null;
+	  String valStr = null;
+	  int val1 = -1;
+	  int val2 = -1;
+	  prop = pm.getProperty(StringConstants.PROPS_KEY_UI_SAVEDIMENSIONS);
+	  if (prop != null && prop.equals(StringConstants.YES)) {
+	    try {
+		  valStr = pm.getProperty(StringConstants.PROPS_KEY_UI_WIDTH);
+		  if (valStr != null) {
+			  val1 = Integer.parseInt(valStr);
+
+		      valStr = pm.getProperty(StringConstants.PROPS_KEY_UI_HEIGHT);
+		      if (valStr != null) {
+			    val2 = Integer.parseInt(valStr);
+
+			    setPreferredSize(new Dimension(val1, val2));
+			}
+		  }
+		} catch (NumberFormatException nfe) {
+		  nfe.printStackTrace();
+		  setPreferredSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+		}
+	  }
+
+	  prop = pm.getProperty(StringConstants.PROPS_KEY_UI_SAVELOCATION);
+	  if (prop != null && prop.equals(StringConstants.YES)) {
+	    try {
+		  valStr = pm.getProperty(StringConstants.PROPS_KEY_UI_X);
+		  if (valStr != null) {
+			val1 = Integer.parseInt(valStr);
+
+		    valStr = pm.getProperty(StringConstants.PROPS_KEY_UI_Y);
+		    if (valStr != null) {
+			  val2 = Integer.parseInt(valStr);
+
+			  setLocation(val1, val2);
+			}
+	      } else {
+			// default action: center on screen
+			Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+		    setLocation((int)(d.getWidth()-getWidth())/2, (int)(d.getHeight()-getHeight())/2);
+		  }
+		} catch (NumberFormatException nfe) {
+		  nfe.printStackTrace();
+		}
+	  } else {
+		// default action: center on screen
+        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+        setLocation((int)(d.getWidth()-getWidth())/2, (int)(d.getHeight()-getHeight())/2);
+	  }
+
+    } catch (IOException ex) {
+	  ex.printStackTrace();
+	}
+
+  }
+
+
+
 
   private void addMouseListenerToHeaderInTable()
   {
@@ -431,7 +728,8 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
 
   public class Tune2MidiExport extends AbstractAction
   {
-    private Component m_parent = null;
+    private static final long serialVersionUID = -7024807010515214434L;
+	private Component m_parent = null;
     public Tune2MidiExport(String name, String description, Component parent)
     {
       putValue(NAME, name);
@@ -464,10 +762,11 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
       { excpt.printStackTrace(); }
     }
   }
-  
+
   public class Tune2PNGExport extends AbstractAction
   {
-    private Component m_parent = null;
+    private static final long serialVersionUID = 7275802044821451364L;
+	private Component m_parent = null;
     public Tune2PNGExport(String name, String description, Component parent)
     {
       putValue(NAME, name);
@@ -495,10 +794,11 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
       { excpt.printStackTrace(); }
     }
   }
-  
+
   public class Tune2XMLExport extends AbstractAction
   {
-    private Component m_parent = null;
+    private static final long serialVersionUID = 9024213350494736598L;
+	private Component m_parent = null;
     public Tune2XMLExport(String name, String description, Component parent)
     {
       putValue(NAME, name);
@@ -531,7 +831,9 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
 
   public class NewTuneBookAction extends AbstractAction
   {
-    public NewTuneBookAction(String name, String description)
+    private static final long serialVersionUID = 2153921560101531857L;
+
+	public NewTuneBookAction(String name, String description)
     {
       putValue(NAME, name);
       putValue(SHORT_DESCRIPTION, description);
@@ -545,9 +847,35 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
     }
   }
 
+  public class PrefsAction extends AbstractAction
+  {
+	// FIXME: needs unique UID
+    private static final long serialVersionUID = -7329820982747359966L;
+
+	public PrefsAction(String name, String description)//, int shortcut)
+    {
+      putValue(NAME, name);
+      putValue(SHORT_DESCRIPTION, description);
+      //putValue(ACCELERATOR_KEY, new Integer(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK).getKeyCode()));
+      //putValue(ACCELERATOR_KEY, new Integer(KeyEvent.VK_A));
+    }
+
+    public void actionPerformed(ActionEvent e)
+    {
+	  if (m_prefsDialog == null) {
+		  // create a modal dialog
+		  m_prefsDialog = new PrefsDialog(PlayerApp.this, (String)getValue(SHORT_DESCRIPTION), true);
+	  }
+	  m_prefsDialog.setVisible(true);
+
+    }
+  }
+
   public class ExitAction extends AbstractAction
   {
-    public ExitAction(String name, String description)//, int shortcut)
+    private static final long serialVersionUID = -7329820982747359966L;
+
+	public ExitAction(String name, String description)//, int shortcut)
     {
       putValue(NAME, name);
       putValue(SHORT_DESCRIPTION, description);
@@ -561,7 +889,9 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
 
   public class ShowHideLogAction extends AbstractAction
   {
-    public ShowHideLogAction(String name, String description)//, int shortcut)
+    private static final long serialVersionUID = -144917309332425131L;
+
+	public ShowHideLogAction(String name, String description)//, int shortcut)
     {
       putValue(NAME, name);
       putValue(SHORT_DESCRIPTION, description);
@@ -578,7 +908,9 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
 
   public class EnableColoringAction extends AbstractAction
   {
-    public EnableColoringAction(String name, String description)//, int shortcut)
+    private static final long serialVersionUID = -3781525526370269971L;
+
+	public EnableColoringAction(String name, String description)//, int shortcut)
     {
       putValue(NAME, name);
       putValue(SHORT_DESCRIPTION, description);
@@ -600,7 +932,8 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
 
   public class OpenAbcFileAction extends AbstractAction
   {
-    private Component m_parent = null;
+    private static final long serialVersionUID = -1120909116485245557L;
+	private Component m_parent = null;
     public OpenAbcFileAction(String name, String description, int shortcurt, Component parent)
     {
       putValue(NAME, name);
@@ -643,7 +976,8 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
 
   public class SaveAction extends TuneBookActionAbstract
   {
-    private Component m_parent = null;
+    private static final long serialVersionUID = -4911261075834413942L;
+	private Component m_parent = null;
     public SaveAction(String name, String description, Component parent)
     {
       putValue(NAME, name);
@@ -672,7 +1006,8 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
 
   public class SaveToAbcFileAction extends TuneBookActionAbstract
   {
-    private Component m_parent = null;
+    private static final long serialVersionUID = 28351013505659963L;
+	private Component m_parent = null;
     public SaveToAbcFileAction(String name, String description, int shortcurt, Component parent)
     {
       putValue(NAME, name);
@@ -713,7 +1048,9 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
 
   public class OpenLastAction extends AbstractAction
   {
-    public OpenLastAction(String name, String description)
+    private static final long serialVersionUID = 2657812375962296142L;
+
+	public OpenLastAction(String name, String description)
     {
       putValue(NAME, name);
       putValue(SHORT_DESCRIPTION, description);
@@ -728,152 +1065,81 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
       m_lastOpenedFilesMenu.add((JMenuItem)e.getSource(),0);
     }
   }
-  
+
   class MyScoreSelectionListener {
 	  public MyScoreSelectionListener() {
-		  
+
 	  }
+  }
+
+
+  class JPropertyChangeHandler implements PropertyChangeListener {
+  	protected ArrayList keys = null;
+
+  	public JPropertyChangeHandler () {
+	  keys = new ArrayList();
+	  keys.add(StringConstants.PROPS_KEY_LANG);
+	  keys.add(StringConstants.PROPS_KEY_SCORESIZE);
+  	  keys.add(StringConstants.PROPS_KEY_DISPLAYTITLES);
+  	  keys.add(StringConstants.PROPS_KEY_STEMMINGPOLICY);
+  	  keys.add(StringConstants.PROPS_KEY_ENGRAVINGSTYLE);
+	}
+
+	public void listen() {
+	  try {
+	    PropertyManager pm = PropertyManager.getInstance();
+	    int len = keys.size();
+	    for (int i=0; i<len; i++) {
+		  pm.addListener((String)keys.get(i), this);
+	    }
+	  } catch (IOException th) {
+	    // TODO: logging or UI message
+	  }
+	}
+
+    public void propertyChange(PropertyChangeEvent evt) {
+
+	  String key = null;
+	  key = evt.getPropertyName();
+
+	  if (!keys.contains(key)) {
+		return;
+	  }
+
+	  String val = (String)evt.getNewValue();
+
+	  if (key.equals(StringConstants.PROPS_KEY_LANG)) {
+		applyPreferenceLanguageChoice(val);
+
+	  } else if (key.equals(StringConstants.PROPS_KEY_SCORESIZE)) {
+        applyPreferenceScoreSize(val);
+
+	  } else if (key.equals(StringConstants.PROPS_KEY_DISPLAYTITLES)) {
+		applyPreferenceTitlesDisplay(val);
+
+	  } else if (key.equals(StringConstants.PROPS_KEY_STEMMINGPOLICY)) {
+		applyPreferenceStemmingPolicy(val);
+
+	  } else if (key.equals(StringConstants.PROPS_KEY_ENGRAVINGSTYLE)) {
+		applyPreferenceEngravingStyle(val);
+	  }
+
+ 	  // FIXME: currently refreshes JScoreComponent for each property
+ 	  //        needs a different refresh strategy
+ 	  m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().refresh();
+
+    }
   }
 
   public static void main (String[] arg)
   {
-/*    TuneBook book = null;
-    try
-    {
-      book = new TuneBook(new File("D:/Perso/abc/test.abc"));
-      System.out.println(book.size());
-      Tune t = book.getTune(1);
-      System.out.println(t);
-      System.out.println(t.getTitles()[0]);
-      TunePlayer player = new TunePlayer();
-      player.addListener(new TunePlayerAdapter(){
-        public void notePlayed(NoteAbstract note)
-        {
-          System.out.println("note played : " + note + "position : " +
-          ((PositionableInCharStream)note).getBeginPosition() + " " +
-          ((PositionableInCharStream)note).getEndPosition());
-        }
-
-        public void partPlayed(int begin, int end)
-        {
-          System.out.println("part played : " + begin + " " + end);
-        }
-      });
-      player.start();
-      player.play(t);
-    }
-    catch (Exception e)
-    {e.printStackTrace(); }*/
-
-/*    Phrase phrase = new Phrase();
-    phrase.add(new jm.music.data.Note(jm.constants.Pitches.B4, jm.constants.Durations.HALF_NOTE));
-    phrase.add(new jm.music.data.Note(jm.constants.Pitches.B5, jm.constants.Durations.QUARTER_NOTE));
-    phrase.add(new jm.music.data.Note(jm.constants.Pitches.B6, jm.constants.Durations.THIRTYSECOND_NOTE));
-    jm.music.data.Part p1 = new jm.music.data.Part();
-    p1.add(phrase);
-    Score score = new Score();
-    score.setTimeSignature(4,4);
-    score.add(p1);
-    Frame fr = new Frame("essai");
-    Tune tune = book.getTune(book.getReferenceNumbers()[0]);
-    //Part part = abc.ui.jmusic.ScoreToJMusicConverter.convert(tune.getScore()).getPart(0);
-    Stave panel = new TrebleStave(abc.ui.jmusic.ScoreToJMusicConverter.convert(tune.getScore()).getPart(0).getPhrase(0));
-    fr.add(panel);
-    fr.setVisible(true);
-    //jm.util.View.notate(phrase);
-    //ShowScore showScore = new ShowScore(score);
-    //showScore.setVisible(true);
-*/
 
 //=================================================================REAL MAIN
     PlayerApp ui = new PlayerApp();
     if (arg.length!=0 && (new File(arg[0])).exists())
       ui.setFile(new File(arg[0]));
-    Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-    ui.setLocation((int)(d.getWidth()-ui.getWidth())/2, (int)(d.getHeight()-ui.getHeight())/2);
     ui.setVisible(true);
 //=================================================================REAL MAIN
-/*    AbcFileParser p = new AbcFileParser();
-    try
-    {
-      p.addListener(new AbcFileParserListenerInterface()
-        {
-          public void tuneBegin()
-          {
-            //System.out.println("parser : parsing new tune");
-            //System.out.print(".");
-          }
-
-          public void invalidToken(InvalidTokenEvent event)
-          {
-            //System.out.println("INVALID TOKEN : " + event);
-          }
-          public void validToken(TokenEvent event)
-          {
-            //System.out.println("VALID TOKEN : " + event);
-          }
-          public void invalidCharacter(InvalidCharacterEvent event)
-          {
-            //System.out.println("invalid char " + event);
-          }
-          public void lineProcessed(String line)
-          {
-            //System.out.println("invalid char " + event);
-          }
-
-          public void tuneEnd(Tune tune)
-          {
-            tunesNb++;
-
-          }
-          public void fileBegin()
-          {
-            //System.out.println("file begin");
-
-          }
-          public void fileEnd()
-          {
-            //System.out.println("file ended");
-            }
-        });
-
-      File path = new File("D:/Perso/abc/");
-      File[] list = path.listFiles();
-      for (int i=0;i<list.length; i++)
-      {
-        if (!list[i].isDirectory())
-        {
-          System.out.print("Parsing "+ list[i].toString());
-          long start = System.currentTimeMillis();
-          p.parseFileHeaders(list[i]);
-          long end = System.currentTimeMillis();
-          long totalTime = end - start;
-          System.out.println(" : " + tunesNb + " tunes parsed in " + totalTime + "ms (" + list[i].toString() + ")");
-          tunesNb=0;
-        }
-      }
-      File file = new File("D:/Perso/abc/ceili.abc");
-      TuneBook book = new TuneBook();
-      book.addListener(new TuneBookListenerInterface()
-      {
-        public void tuneChanged(TuneChangeEvent e)
-        {
-          Tune tune = e.getTune();
-          System.out.println(tune.getReferenceNumber()+"\t- "+tune.getTitles()[0] + " (" + tune.getKey().toLitteralNotation() +")");
-        }
-      });
-      book.setFile(file);
-      /*int[] nb = book.getReferenceNumbers();
-      for (int i=0; i<nb.length; i++)
-      {
-        Tune tune = book.getTune(nb[i]);
-        System.out.println(nb[i]+"\t- "+tune.getTitles()[0] + " (" + tune.getKey().toLitteralNotation() +")");
-      }
-    }
-    catch (Exception e)
-    {
-      e.printStackTrace();
-    }*/
 
   }
 

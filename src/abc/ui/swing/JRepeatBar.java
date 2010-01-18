@@ -22,7 +22,8 @@ import abc.notation.RepeatBarLine;
 
 /** This class is in charge of rendering a repeat bar. */
 class JRepeatBar extends JBar{
-	
+
+	//TODO move this to ScoreMetrics
 	public static final char[][] DIGITS = {
 			{'\uF0C1', '\uF02E'}, 
 			{'\uF0AA', '\uF02E'},
@@ -39,20 +40,31 @@ class JRepeatBar extends JBar{
 	}
 	
 	public double render(Graphics2D context){
+		ScoreMetrics metrics = getMetrics();
+		double x = super.getWidth();// metrics.getNoteWidth();
+		double staffHeight = metrics.getStaffCharBounds().getHeight();
+		double staffWidth = metrics.getStaffCharBounds().getWidth();
 		char[] ch = DIGITS[((RepeatBarLine)m_barLine).getRepeatNumber()-1];
+		double topY = getStaffLine().getTopY();
+		Point2D base = getBase();
+		//ensure that there is enough space!
+		topY = Math.min(topY, base.getY()-staffHeight*1.7);
+		double digitHeight = metrics.getBounds(ch).getHeight();
 		context.drawChars(ch, 0, ch.length, 
-				(int)(m_base.getX()+m_metrics.getNoteWidth()), 
-				(int)(m_base.getY()-m_metrics.getStaffCharBounds().getHeight()*1.3));
+				(int)(base.getX()+x+1),
+				(int)(topY+digitHeight*1.5));
+		//vertical line
 		context.drawLine(
-				(int)(m_base.getX()+m_metrics.getNoteWidth()/2), 
-				(int)(m_base.getY()-m_metrics.getStaffCharBounds().getHeight()*1.1), 
-				(int)(m_base.getX()+m_metrics.getNoteWidth()/2), 
-				(int)(m_base.getY()-m_metrics.getStaffCharBounds().getHeight()*1.7));
+				(int)(base.getX()+x-1), 
+				(int)(base.getY()-staffHeight*1.1), 
+				(int)(base.getX()+x-1),
+				(int)topY);
+		//Horizontal line
 		context.drawLine(
-				(int)(m_base.getX()+m_metrics.getNoteWidth()/2), 
-				(int)(m_base.getY()-m_metrics.getStaffCharBounds().getHeight()*1.7), 
-				(int)(m_base.getX()+m_metrics.getNoteWidth()/2+m_metrics.getStaffCharBounds().getWidth()), 
-				(int)(m_base.getY()-m_metrics.getStaffCharBounds().getHeight()*1.7));
+				(int)(base.getX()+x-1),
+				(int)topY,
+				(int)(base.getX()+x-1+staffWidth),
+				(int)topY);
 		return super.render(context);
 		
 	}

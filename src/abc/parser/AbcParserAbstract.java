@@ -29,6 +29,7 @@ import scanner.TokenEvent;
 import scanner.TokenType;
 import abc.notation.AccidentalType;
 import abc.notation.BarLine;
+import abc.notation.Decoration;
 import abc.notation.Fraction;
 import abc.notation.KeySignature;
 import abc.notation.MultiPartsDefinition;
@@ -52,7 +53,7 @@ import abc.parser.def.DefinitionFactory;
 
 /** Abstract class from which all abc notation parsers inherit.
  * Known limitations:
- * ELEMSKIP is not supported. 
+ * ELEMSKIP is not supported.
  * Missing support for tex command and file fields. */
  //
  // The context to switch from abc header parsing to abc music parsing
@@ -92,14 +93,16 @@ public class AbcParserAbstract
   protected static final Set FIRST_FIELD_INFORMATION = new Set(AbcTokenType.FIELD_INFORMATION);
   protected static final Set FIRST_FIELD_HISTORY = new Set(AbcTokenType.FIELD_HISTORY);
   protected static final Set FIRST_FIELD_GROUP = new Set(AbcTokenType.FIELD_GROUP);
-  //protected static final Set FIRST_FIELD_ELEMSKIP = new Set(AbcTokenType.FIELD_ELEMSKIP);
+  protected static final Set FIRST_FIELD_FILE = new Set(AbcTokenType.FIELD_FILEURL);
+  protected static final Set FIRST_FIELD_ELEMSKIP = new Set(AbcTokenType.FIELD_ELEMSKIP);
   protected static final Set FIRST_FIELD_DISCOGRAPHY = new Set(AbcTokenType.FIELD_DISCOGRAPHY);
   protected static final Set FIRST_FIELD_COMPOSER = new Set(AbcTokenType.FIELD_COMPOSER);
   protected static final Set FIRST_FIELD_BOOK = new Set(AbcTokenType.FIELD_BOOK);
   protected static final Set FIRST_FIELD_AREA = new Set(AbcTokenType.FIELD_AREA);
   protected static Set FIRST_COMMENT = new Set(AbcTokenType.COMMENT);
   protected static final Set FIRST_OTHER_FIELDS = new Set(FIRST_FIELD_AREA).union(FIRST_FIELD_BOOK).union(FIRST_FIELD_COMPOSER)
-                                                            .union(FIRST_FIELD_DISCOGRAPHY)/*.union(FIRST_FIELD_ELEMSKIP)*/
+                                                            .union(FIRST_FIELD_DISCOGRAPHY).union(FIRST_FIELD_ELEMSKIP)
+                                                            .union(FIRST_FIELD_FILE)
                                                             .union(FIRST_FIELD_GROUP).union(FIRST_FIELD_HISTORY)
                                                             .union(FIRST_FIELD_INFORMATION).union(FIRST_FIELD_DEFAULT_LENGTH)
                                                             .union(FIRST_FIELD_METER).union(FIRST_FIELD_NOTES).union(FIRST_FIELD_ORIGIN)
@@ -174,7 +177,7 @@ public class AbcParserAbstract
     protected Vector m_listeners;
     /** the current token used by this parser. */
     protected Token m_token = null;
-    /** The type of the current token 
+    /** The type of the current token
      * @see #m_token */
     protected TokenType m_tokenType = TokenType.UNKNOWN;
     /** The number of dots inherited from the previous note broken rythm. */
@@ -184,11 +187,11 @@ public class AbcParserAbstract
     /** Keep track of the last parsed note. Used for instance to value the
      * end slur in case of slur */
     private NoteAbstract lastParsedNote = null;
-    
+
     protected NoteAbstract lastNoteFlaggedAsEndOfGroup = null;
-    
+
     private Vector notesStartingTies = null;
-    
+
     //private Note tieStartingNote = null;
     /** The current default note length. */
     private short m_defaultNoteLength = Note.EIGHTH;
@@ -238,7 +241,7 @@ public class AbcParserAbstract
      * @param listener The listener to be removed. */
     public void removeListener (TuneParserListenerInterface listener)
     { m_listeners.removeElement(listener); }
-    
+
     /** Inits all attributes that are related to one parsing sequence ONLY. */
     protected void init() {
     	m_token = null;
@@ -276,9 +279,9 @@ public class AbcParserAbstract
         //else if (Syntax.FIRST_FILE_FIELDS.contains(token.getType())) parseAbcTune(current.createUnion(follow));
 		}
 	}
-	
+
 	/** Inits the parsing : sets the starting state of the current Set +
-	 * sets the finale state automata of the scanner + retrieves the first 
+	 * sets the finale state automata of the scanner + retrieves the first
 	 * token and its type.
 	 * @return The starting state of the current Set as it should
 	 * be at the begining of the parsing. */
@@ -293,7 +296,7 @@ public class AbcParserAbstract
 	}*/
 
     /** abc-tune ::= abc-header abc-music */
-    protected Tune parseAbcTune(Set follow) {        
+    protected Tune parseAbcTune(Set follow) {
       Set current = new Set()./*union(FIRST_ABCHEADER).*/union(FIRST_ABC_MUSIC);
       parseAbcHeader(current.createUnion(follow));
       current.remove(FIRST_ABC_MUSIC);
@@ -302,8 +305,8 @@ public class AbcParserAbstract
     }
 
     /** other-fields ::= field-area / field-book / field-composer / field-discography /
-     * field-elemskip / field-group / field-history / field-information / 
-     * field-default-length / field-meter / field-notes / field-origin / field-parts / 
+     * field-elemskip / field-group / field-history / field-information /
+     * field-default-length / field-meter / field-notes / field-origin / field-parts /
      * field-tempo / field-rhythm / field-source / field-transcrnotes / comment */
     private void parseOtherFields(Set follow) //throws TuneNotationException
     {
@@ -378,8 +381,9 @@ public class AbcParserAbstract
           if (field!=null)
             if (field.getType() == AbcTextField.AREA) m_tune.setArea(field.getText());
             else if (field.getType() == AbcTextField.BOOK) m_tune.setBook(field.getText());
-            else if (field.getType() ==  AbcTextField.COMPOSER) m_tune.setComposer(field.getText());
+            else if (field.getType() == AbcTextField.COMPOSER) m_tune.setComposer(field.getText());
             else if (field.getType() == AbcTextField.DISCOGRAPHY) m_tune.setDiscography(field.getText());
+            else if (field.getType() == AbcTextField.FILEURL) m_tune.setFileURL(field.getText());
             else if (field.getType() == AbcTextField.GROUP) m_tune.setGroup(field.getText());
             else if (field.getType() == AbcTextField.HISTORY) m_tune.addHistory(field.getText());
             else if (field.getType() == AbcTextField.INFORMATION) m_tune.setInformation(field.getText());
@@ -411,11 +415,12 @@ public class AbcParserAbstract
           else if (tokenType.equals(AbcTokenType.FIELD_COMPOSER)) return new AbcTextField(AbcTextField.COMPOSER, text);
           else if (tokenType.equals(AbcTokenType.FIELD_DISCOGRAPHY)) return new AbcTextField(AbcTextField.DISCOGRAPHY, text);
           //else if (tokenType.equals(AbcTokenType.FIELD_ELEMSKIP)) return new AbcTextField(AbcTextField.ELEMSKIP, text);
+          else if (tokenType.equals(AbcTokenType.FIELD_FILEURL)) return new AbcTextField(AbcTextField.FILEURL, text);
           else if (tokenType.equals(AbcTokenType.FIELD_GROUP)) return new AbcTextField(AbcTextField.GROUP, text);
           else if (tokenType.equals(AbcTokenType.FIELD_INFORMATION)) return new AbcTextField(AbcTextField.INFORMATION, text);
           else if (tokenType.equals(AbcTokenType.FIELD_NOTES)) return new AbcTextField(AbcTextField.NOTES, text);
           else if (tokenType.equals(AbcTokenType.FIELD_ORIGIN)) return new AbcTextField(AbcTextField.ORIGIN, text);
-          else if (tokenType.equals(AbcTokenType.FIELD_RHYTHM)) 
+          else if (tokenType.equals(AbcTokenType.FIELD_RHYTHM))
         	  return new AbcTextField(AbcTextField.RHYTHM, text);
           else if (tokenType.equals(AbcTokenType.FIELD_SOURCE)) return new AbcTextField(AbcTextField.SOURCE, text);
           else if (tokenType.equals(AbcTokenType.FIELD_TITLE)) return new AbcTextField(AbcTextField.TITLE, text);
@@ -869,7 +874,7 @@ public class AbcParserAbstract
     }
 
     /** abc-header ::= field-number *comment 1*field-title *other-fields field-key
-     * In practice, many tunes are e-mailed without field-number, 
+     * In practice, many tunes are e-mailed without field-number,
      * so those wishing to implement an abc parser should treat this ; field as optional. */
     protected Tune parseAbcHeader(Set follow)
     {
@@ -907,7 +912,7 @@ public class AbcParserAbstract
 
       while (FIRST_OTHER_FIELDS.contains(m_tokenType))
         parseOtherFields(current.createUnion(follow));
-      
+
       current.remove(FIRST_OTHER_FIELDS);
 
       current.remove(FIRST_FIELD_KEY);
@@ -942,7 +947,7 @@ public class AbcParserAbstract
       byte[] globalAccidental = new byte[2];
 
       String keyAcc = accept(AbcTokenType.ACCIDENTAL, current, follow);
-      byte accidentalType = Note.convertToAccidentalType(keyAcc);
+      byte accidentalType = AccidentalType.convertToAccidentalType(keyAcc);
 
       current.remove(AbcTokenType.BASE_NOTE);
       String noteHeigthString = accept(AbcTokenType.BASE_NOTE, current, follow);
@@ -972,7 +977,7 @@ public class AbcParserAbstract
       else if (m_tokenType.equals(AbcTokenType.NO_LINE_BREAK)) accept(AbcTokenType.NO_LINE_BREAK, current, follow);
       else accept(AbcTokenType.LINE_FEED, current, follow);
     }
-    
+
     //============================================================================================
     //================================== MUSIC PART ==============================================
     //============================================================================================
@@ -1020,7 +1025,7 @@ public class AbcParserAbstract
       //parseEndOfLine(current.createUnion(follow));
     }
 
-    /** tune-field ::= field-elemskip / field-key / field-default-length / field-meter / 
+    /** tune-field ::= field-elemskip / field-key / field-default-length / field-meter /
      * field-part / field-tempo / field-title / field-words
      * field-rhythm may not be in tune (?) field-voice not defined yet */
     private void parseTuneField(Set follow)
@@ -1134,10 +1139,19 @@ public class AbcParserAbstract
       {
         accept(AbcTokenType.END_SLUR, null, follow);
         if (!slursDefinitionStack.isEmpty()) {
-        	SlurDefinition slurDef = (SlurDefinition)slursDefinitionStack.elementAt(slursDefinitionStack.size()-1);
-        	slurDef.setEnd(lastParsedNote);
-        	slursDefinitionStack.removeElementAt(slursDefinitionStack.size()-1);
-        	lastParsedNote.setSlurDefinition(slurDef);
+        	//if last note is also a slur start, cherche for the first
+        	//slur definition where last note is not the start
+         	int i = slursDefinitionStack.size() - 1;
+        	while (i >= 0) {
+	        	SlurDefinition slurDef = (SlurDefinition)slursDefinitionStack.elementAt(i);
+	        	if (!slurDef.getStart().equals(lastParsedNote)) {
+		        	slurDef.setEnd(lastParsedNote);
+		        	slursDefinitionStack.removeElementAt(i);
+		        	lastParsedNote.addSlurDefinition(slurDef);
+		        	break;
+	        	}
+	        	i--;
+        	}
         }
         //m_isPartOfSlur = false;
       }
@@ -1178,7 +1192,7 @@ public class AbcParserAbstract
 			(7 	7 notes in the time of n
 			(8 	8 notes in the time of 3
 			(9 	9 notes in the time of n
-			n is 3 in compound time signatures (3/4, 3/8, 9/8 etc), 
+			n is 3 in compound time signatures (3/4, 3/8, 9/8 etc),
 			and 2 in simple time signatures (C, 4/4, 2/4 etc.)
     	   */
     	  if (tupletSpec[0]==2 || tupletSpec[0]==4 || tupletSpec[0]==8)
@@ -1212,12 +1226,12 @@ public class AbcParserAbstract
     }
 
     /** tuplet-spec ::= "(" DIGIT [":" [DIGIT] [":" [DIGIT]]]
-     * ([0]:[1]:[2]  == (p:q:r 
+     * ([0]:[1]:[2]  == (p:q:r
      * p = the number of notes to be put into time q
      * q = the time that p notes will be played in
      * r = the number of notes to continue to do this action for.
      * If q is not specified, it defaults to 3 in compound time
-     * signatures and 2 in simple time signatures. If r is not specified, 
+     * signatures and 2 in simple time signatures. If r is not specified,
      * it is taken to be the same as p. */
     private int[] parseTupletSpec(Set follow)
     {
@@ -1272,7 +1286,7 @@ public class AbcParserAbstract
     					  ((Note)note).setDuration(correctedDuration);
     				  }
     			  }
-    		  //Once the inherited broken rythm has been applied, no broken 
+    		  //Once the inherited broken rythm has been applied, no broken
     		  //should be applied further.
     		  brknRthmDotsCorrection = 0;
     	  }
@@ -1284,7 +1298,7 @@ public class AbcParserAbstract
     	  if (note!=null) {
     		  if (brokenRhythm>0) {
     			  note.setDotted(brokenRhythm);
-    			  brknRthmDotsCorrection = (byte)-brokenRhythm; 
+    			  brknRthmDotsCorrection = (byte)-brokenRhythm;
     		  }
     		  else
     			  if (brokenRhythm<0) {
@@ -1323,14 +1337,14 @@ public class AbcParserAbstract
           .union(FIRST_NOTE).union(FIRST_MULTI_NOTE);
       NoteAbstract note = null;
       Note[] graceNotes = null;
+      Vector decorations = new Vector();
       boolean hasGeneralOrnament = false;
-      boolean up = false;
-      boolean down = false;
-      boolean staccato = false;
+      boolean staccato = false; //FIXME ? staccato is a decoration
       //boolean wasTied = isTied;
 
       String chordName = null;
       //======================guitar chord
+      //FIXME "C"(CEGc) doesn't work, ("C"CEGc) works
       current.remove(FIRST_GUITAR_CHORD);
       if(FIRST_GUITAR_CHORD.contains(m_tokenType))
         chordName = parseGuitarChord(current.createUnion(follow));
@@ -1344,11 +1358,17 @@ public class AbcParserAbstract
       while (m_tokenType.equals(AbcTokenType.GRACING))
       {
         String acc = accept(AbcTokenType.GRACING, current, follow);
-        if (acc!=null)
-          if (acc.equals(".")) staccato = true;
-          else if (acc.equals("~")) hasGeneralOrnament = true;
-          else if (acc.equals("u")) up = true;
-          else if (acc.equals("v")) down = true;
+        if (acc!=null) {
+
+          // general decorations
+		  // NOTE this won't work for ABCv2 as '~' indicates a macro
+           if (acc.equals(".")) staccato = true;
+           else if (acc.equals("~")) hasGeneralOrnament = true;
+
+		  byte decType = Decoration.convertToType(acc);
+		  if (decType != Decoration.UNKNOWN)
+			decorations.add(new Decoration(decType));
+		}
       }
       current.remove(FIRST_GRACINGS);
       current.remove(FIRST_NOTE);
@@ -1363,30 +1383,34 @@ public class AbcParserAbstract
       else {
     	  //This a normal note, not a multinote/chord.
         note = parseNote(current.createUnion(follow));
-        if (note!=null) {
-          if (staccato) note.setStaccato(true);
-          if (hasGeneralOrnament) note.setGeneralGracing(true);
-          if (up) note.setBow(Note.UP);
-          if (down) note.setBow(Note.DOWN);
-          if (chordName!=null)
-            note.setChordName(chordName);
-          if (graceNotes!=null)
-            note.setGracingNotes(graceNotes);
-          if (!slursDefinitionStack.isEmpty()){
-          	note.setPartOfSlur(true);
-          	SlurDefinition currentSlurDef = (SlurDefinition)slursDefinitionStack.elementAt(slursDefinitionStack.size()-1);
-          	if (currentSlurDef.getStart()==null){
-          		currentSlurDef.setStart(note);
-          		note.setSlurDefinition(currentSlurDef);
-          	}
-          }
-          lastParsedNote = note;
-        }
       }
+
+      if (note!=null) {
+	    // should staccato and general gracing be "standard" decorations ?
+	    if (staccato) note.setStaccato(true);
+	    if (hasGeneralOrnament) note.setGeneralGracing(true);
+	    if (decorations.size() > 0) note.setDecorations((Decoration[])decorations.toArray(new Decoration[1]));
+	    if (graceNotes!=null) note.setGracingNotes(graceNotes);
+	    if (chordName!=null)
+		  note.setChordName(chordName);
+	    if (!slursDefinitionStack.isEmpty()){
+		  note.setPartOfSlur(true);
+		  int i = slursDefinitionStack.size() - 1;
+		  while (i >= 0) {
+			  SlurDefinition currentSlurDef = (SlurDefinition)slursDefinitionStack.elementAt(i);
+			  if (currentSlurDef.getStart()==null){
+			  	  currentSlurDef.setStart(note);
+				  note.addSlurDefinition(currentSlurDef);
+			  }
+			  i--;
+		  }
+	    }
+	    lastParsedNote = note;
+	  }
       return note;
     }
 
-    /** multi-note ::= "[" 1*note "]" 
+    /** multi-note ::= "[" 1*note "]"
      * @return a Vector containing Note objects */
     private Vector parseMultiNote(Set follow)
     {
@@ -1490,7 +1514,7 @@ public class AbcParserAbstract
         int length = endPosition.getCharactersOffset()-startPosition.getCharactersOffset();
         note.setBeginPosition(startPosition);
         note.setLength(length);
-        //TODO needs to be improved if a note starts a tie and ends a tie at the same time.
+        
         if (isTied) {
         	TieDefinition tieDef = new TieDefinition();
         	tieDef.setStart(note);
@@ -1538,7 +1562,7 @@ public class AbcParserAbstract
       byte octaveTransposition = 0;
 
       if (m_tokenType.equals(AbcTokenType.ACCIDENTAL))
-        accidental = Note.convertToAccidentalType(accept(AbcTokenType.ACCIDENTAL, current, follow));
+        accidental = AccidentalType.convertToAccidentalType(accept(AbcTokenType.ACCIDENTAL, current, follow));
       current.remove(FIRST_BASE_NOTE);
       String heigth = accept(AbcTokenType.BASE_NOTE, current, follow, true);
       if (heigth!=null) noteHeigth = Note.convertToNoteType(heigth);
@@ -1571,7 +1595,7 @@ public class AbcParserAbstract
     			else//if (m_tokenType.equals(AbcTokenType.LINE_FEED))
     				lineEnder=(accept(AbcTokenType.LINE_FEED, null, follow)==null)?null:new EndOfStaffLine();
     				//accept(AbcTokenType.LINE_FEED, null, follow);
-    	return lineEnder; 
+    	return lineEnder;
     }
 
 /*    private void parseTexCommand(Set follow)
@@ -1594,11 +1618,11 @@ public class AbcParserAbstract
     	}
     	return null;
     }
-    
+
     protected boolean removeNoteStartingTieFor(Note aNote){
     	return notesStartingTies.removeElement(aNote);
     }
-    
+
     protected void addNoteStartingTieFor(Note aNote){
     	notesStartingTies.addElement(aNote);
     }

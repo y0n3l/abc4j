@@ -29,6 +29,8 @@ public class GracingDefinition extends AutomataDefinition
     {
       State state = new State(AbcTokenType.GRACING, true);
       char[] chars = {'~', '.', 'v', 'u'};
+      //TODO v2.0 char[] chars = {'~', '.', 'v', 'u', 'T', 'H', 'L', 'M', 'P', 'S', 'O'};
+      
       getStartingState().addTransition(new Transition(state, chars));
     }
 }

@@ -19,5 +19,7 @@ package scanner;
  * character in a finale state automata. */
 public class NoTransitionFoundException extends RuntimeException
 {
+
+	private static final long serialVersionUID = 8986996599363139532L;
 }
 

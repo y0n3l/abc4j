@@ -20,6 +20,7 @@ import java.util.EventObject;
 /** */
 public class PlayerStateChangeEvent extends EventObject
 {
+  private static final long serialVersionUID = -7237422322587618056L;
   private boolean m_isPlaying = false;
   public PlayerStateChangeEvent(Object source, boolean isPlaying)
   { super(source); }

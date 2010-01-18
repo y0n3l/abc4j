@@ -21,6 +21,7 @@ import javax.swing.AbstractAction;
 
 public class RemoveTuneAction extends AbstractAction
 {
+  private static final long serialVersionUID = -6658735429197072061L;
   private TuneBookTable m_tunebookTable = null;
   public RemoveTuneAction(String name, String description, int shortcut, TuneBookTable tuneBookTable)
   {

@@ -41,7 +41,8 @@ public class DefinitionFactory
     else if (abcTokenType==(AbcTokenType.FIELD_BOOK)) automataDef = new FieldBookDefinition();
     else if (abcTokenType==(AbcTokenType.FIELD_COMPOSER)) automataDef = new FieldComposerDefinition();
     else if (abcTokenType==(AbcTokenType.FIELD_DISCOGRAPHY)) automataDef = new FieldDiscographyDefinition();
-    //else if (abcTokenType==(AbcTokenType.FIELD_ELEMSKIP)) automataDef = new FieldElemskipDefinition();
+    else if (abcTokenType==(AbcTokenType.FIELD_ELEMSKIP)) automataDef = new FieldElemskipDefinition();
+    else if (abcTokenType==(AbcTokenType.FIELD_FILEURL)) automataDef = new FieldFileDefinition();
     else if (abcTokenType==(AbcTokenType.FIELD_GROUP)) automataDef = new FieldGroupDefinition();
     else if (abcTokenType==(AbcTokenType.FIELD_HISTORY)) automataDef = new FieldHistoryDefinition();
     else if (abcTokenType==(AbcTokenType.FIELD_INFORMATION)) automataDef = new FieldInformationDefinition();

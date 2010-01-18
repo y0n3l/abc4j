@@ -19,9 +19,9 @@ package abc.notation;
 public class TwoNotesLink {
 	
 	/** The note starting the link between the two notes. */	
-	protected NoteAbstract start = null;
+	private NoteAbstract start = null;
 	/** The ending the link between the two notes. */
-	protected NoteAbstract end = null;
+	private NoteAbstract end = null;
 	
 	/** Default constructor. */
 	protected TwoNotesLink(){
@@ -57,5 +57,9 @@ public class TwoNotesLink {
 	 * @see #setEnd(NoteAbstract) */
 	public void setStart(NoteAbstract start) {
 		this.start = start;
+	}
+	
+	public String toString() {
+		return "TwoNotesLink("+start+" ; "+end+")";
 	}
 }

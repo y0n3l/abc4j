@@ -776,9 +776,7 @@ public class Abc2xml {
 				noteEl.appendChild(dot);
 			}
 		}
-
 		return noteEl;
-
 	}
 
 	protected void dumpDOM(Document doc) {

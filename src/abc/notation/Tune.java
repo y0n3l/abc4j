@@ -15,7 +15,9 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.notation;
 
+import java.util.Collection;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Vector;
 
 import scanner.PositionableInCharStream;
@@ -25,7 +27,8 @@ import scanner.PositionableInCharStream;
 public class Tune implements Cloneable
 {
   //    Field name                     header this elsewhere Used by Examples and notes
-  private String m_area = null;           //yes                           A:Donegal, A:Bampton
+  private String m_lyricist = null;       //yes							  A: author of lyrics (v2)
+  private String m_area = null;           //yes                           A:Donegal, A:Bampton (v1.6)
   private String m_book = null;           //yes         yes       archive B:O'Neills
   private String m_composer = null;       //yes                           C:Trad.
   private String m_discography = null;    //yes                   archive D:Chieftans IV
@@ -39,8 +42,9 @@ public class Tune implements Cloneable
   private String m_rhythm = null;         //yes         yes       index   R:R, R:reel
   private String m_source = null;         //yes                           S:collected in Brittany
   private int m_referenceNumber = -1;    //first                         X:1, X:2
-  private String m_transcriptionNotes = null;//yes                         Z:from photocopy
+  private String m_transcriptionNotes = null;//yes                         Z:from photocopy, Z:Transcriber <email> <website>...
   private int m_elemskip = 0;            //yes    yes                    see Line Breaking
+  private String m_fileurl = null;		//yes                           F:http://www.url.com/thisfile.abc
   private Vector m_titles;              //second yes                    T:Paddy O'Rafferty
   //private AbcMultiPartsDefinition abcMultiPartsDefinition = null;  //yes    yes                    P:ABAC, P:A, P:B
   //private AbcScore m_abcScore = null;
@@ -64,21 +68,27 @@ public class Tune implements Cloneable
 	  this.m_book = tune.m_book;
 	  this.m_composer = tune.m_composer;
 	  this.m_discography = tune.m_discography;
+	  this.m_elemskip = tune.m_elemskip;
+	  this.m_fileurl = tune.m_fileurl;
 	  this.m_group = tune.m_group;
 	  this.m_history = tune.m_history;
 	  this.m_information = tune.m_information;
-	  this.m_key = (KeySignature)tune.m_key.clone();
+	  if (tune.m_key != null)
+		  this.m_key = (KeySignature)tune.m_key.clone();
 	  this.m_notes = tune.m_notes;
 	  this.m_origin = tune.m_origin;
 	  this.m_rhythm = tune.m_rhythm;
 	  this.m_source = tune.m_source;
 	  this.m_referenceNumber = tune.m_referenceNumber;
 	  this.m_transcriptionNotes = tune.m_transcriptionNotes;
-	  this.m_elemskip = tune.m_elemskip;
-	  this.m_titles = (Vector)tune.m_titles.clone();
-	  this.m_parts = (Hashtable)tune.m_parts.clone(); 
-	  this.m_defaultPart = (Part)tune.m_defaultPart.clone();
-	  this.m_multiPartsDef = (MultiPartsDefinition)tune.m_multiPartsDef.clone();
+	  if (tune.m_titles != null)
+		  this.m_titles = (Vector)tune.m_titles.clone();
+	  if (tune.m_parts != null)
+		  this.m_parts = (Hashtable)tune.m_parts.clone();
+	  if (tune.m_defaultPart != null)
+		  this.m_defaultPart = (Part)tune.m_defaultPart.clone();
+	  if (tune.m_multiPartsDef != null)
+		  this.m_multiPartsDef = (MultiPartsDefinition)tune.m_multiPartsDef.clone();
   }
 
   /** Sets the geographic area where this tune comes from.
@@ -192,6 +202,17 @@ public class Tune implements Cloneable
    * the tune is provided. */
   public String getInformation()
   { return m_information; }
+  
+  /** Sets lyricist (author of lyrics)
+   * Corresponds to the "A:" abc field in v2.
+   * @param lyricist */
+  public void setLyricist(String lyricist)
+  { m_lyricist = lyricist; }
+  
+  /** Returns lyricist (author of lyrics)
+   * Corresponds to the "A:" abc field in v2. */
+  public String getLyricist()
+  { return m_lyricist; }
 
   /** Sets notes concerning the transcription of this tune.
    * Corresponds to the "N:" abc field.
@@ -349,14 +370,179 @@ public class Tune implements Cloneable
    * @return Transcription notes of this tune. */
   public String getTranscriptionNotes()
   { return m_transcriptionNotes; }
+  
+  /** Sets the url of the file */
+  public void setFileURL(String fileurl)
+  { m_fileurl = fileurl; }
+  /** Returns the URL of the file */
+  public String getFileURL()
+  { return m_fileurl; }
+  
+	static public Tune transpose(Tune t, int semitones) {
+		Tune ret = (Tune) t.clone();
+		if (semitones == 0)
+			return ret;
+		// collect all part's music to transpose
+		Vector musics = new Vector();
+		musics.add(ret.m_defaultPart.getMusic());
+		if (ret.m_multiPartsDef != null) {
+			Vector alreadyAddedParts = new Vector();
+			Part[] parts = ret.m_multiPartsDef.toPartsArray();
+			for (int i = 0; i < parts.length; i++) {
+				char label = parts[i].getLabel();
+				// already added, skip it!
+				if (alreadyAddedParts.contains(new Character(label)))
+					continue;
+				musics.add(parts[i].getMusic());
+				alreadyAddedParts.add(new Character(label));
+			}
+		}
 
-  /** Returns the music part of this tune.
-   * @return The music part of this tune. If this tune isn't composed of several parts
-   * this method returns the "normal" music part. If this tune is composed of several
-   * parts the returned music is generated so that the tune looks like a "single-part"
-   * one. If you want to retrieve the music related to each part separatly just
-   * do <TT>getPart(char partLabel).getScore()</TT>.
-   * @see #getPart(char) */
+		KeySignature lastKey = ret.getKey();
+		Note lastKeyNote = new Note(lastKey.getNote(), lastKey.getAccidental());
+		KeySignature noneTranspKey = lastKey;
+		Note noneTranspKeyNote = lastKeyNote;
+		ret.setKey(KeySignature.transpose(noneTranspKey, semitones));
+		Iterator itMusics = musics.iterator();
+		int musiccount = 0;
+		while (itMusics.hasNext()) {
+			musiccount++;
+			Music music = (Music) itMusics.next();
+			for (int i = 0, j = music.size(); i<j; i++) {
+				MusicElement element = (MusicElement) music.elementAt(i);
+				if (element instanceof KeySignature) {
+					noneTranspKey = (KeySignature) element;
+					noneTranspKeyNote = new Note(noneTranspKey.getNote(), noneTranspKey.getAccidental());
+					KeySignature transposed = KeySignature
+						.transpose(noneTranspKey, semitones);
+					music.setElementAt(transposed, i);
+					lastKey = transposed;
+					byte octav = 0;
+					try {
+						octav = Note.getOctaveTransposition((byte) (noneTranspKeyNote.getHeight()+semitones));
+					} catch (Exception e) { //Illegal arg if transp note is accidented
+						octav = Note.getOctaveTransposition((byte) (noneTranspKeyNote.getHeight()+semitones-1));
+					}
+					lastKeyNote = new Note(lastKey.getNote(), lastKey.getAccidental(), octav);
+				} else if ((element instanceof Note)
+						&& !((Note) element).isRest()) {
+					Note original = (Note) element;
+					Note transp = (Note) transpose_Note(original, noneTranspKeyNote,
+							noneTranspKey, lastKeyNote, lastKey);
+					music.setElementAt(transp, i);
+				} else if (element instanceof MultiNote) {
+					MultiNote multi = (MultiNote) element;
+					MultiNote transp = (MultiNote) transpose_Note(multi, noneTranspKeyNote,
+							noneTranspKey, lastKeyNote, lastKey);
+					music.setElementAt(transp, i);
+				}
+			}// end for each element in the music
+		}// end while there are more music part
+		return ret;
+	}
+	
+	/**
+	 * Subfunction of {@link #transpose(Tune, int)} which transpose
+	 * a Note, its graces notes (recursively)
+	 */
+	static private NoteAbstract transpose_Note(NoteAbstract original,
+			Note noneTranspKeyNote, KeySignature noneTranspKey,
+			Note lastKeyNote, KeySignature lastKey) {
+		NoteAbstract transp = null;
+		if (original instanceof Note) {
+			Interval interval = new Interval(noneTranspKeyNote, (Note) original,
+					noneTranspKey);
+			// Note transp = Note.transpose(original, semitones, lastKey);
+			Note transpHeight = interval.calculateSecondNote(lastKeyNote, lastKey);
+			transp = (Note) ((Note) original).clone();
+			((Note) transp).setHeight(transpHeight.getHeight());
+			((Note) transp).setOctaveTransposition(transpHeight.getOctaveTransposition());
+			((Note) transp).setAccidental(transpHeight.getAccidental());
+		} else if (original instanceof MultiNote) {
+			transp = (MultiNote) ((MultiNote) original).clone();
+			Note[] notes = ((MultiNote) transp).toArray();
+			for (int k = 0; k < notes.length; k++) {
+				notes[k] = (Note) transpose_Note(notes[k], noneTranspKeyNote,
+						noneTranspKey, lastKeyNote, lastKey);
+			}
+			((MultiNote) transp).setNotes(notes);
+		}
+		TieDefinition tie = original.getTieDefinition();
+		if (tie != null) {
+			if (tie.getStart() == original)
+				tie.setStart(transp);
+			else if (tie.getEnd() == original)
+				tie.setEnd(transp);
+		}
+		Vector slurs = original.getSlurDefinitions();
+		for (Iterator it = slurs.iterator(); it.hasNext();) {
+			SlurDefinition slur = (SlurDefinition) it.next();
+			if (slur.getStart() == original)
+				slur.setStart(transp);
+			else if (slur.getEnd() == original)
+				slur.setEnd(transp);
+		}
+		Chord chord = transp.getChord();
+		if (chord != null) {
+			if (chord.hasNote())
+				chord.setNote((Note) transpose_Note(chord.getNote(),
+						noneTranspKeyNote, null, lastKeyNote, null));
+			if (chord.hasBass())
+				chord.setBass((Note) transpose_Note(chord.getBass(),
+						noneTranspKeyNote, null, lastKeyNote, null));
+		}
+		if (transp.hasGracingNotes()) {
+			Note[] graces = transp.getGracingNotes();
+			for (int k = 0; k < graces.length; k++) {
+				graces[k] = (Note) transpose_Note(graces[k], noneTranspKeyNote,
+						noneTranspKey, lastKeyNote, lastKey);
+			}
+		}
+		return transp;
+	}
+
+	/**
+	 * Return the music for graphical rendition, i.e. if structure is ABBA, and
+	 * score contains 2 parts P:A and P:B, returns a music composed of the 2
+	 * parts. {@link #getMusic()} returns a music composed of 4 parts which is
+	 * ok for audio/midi rendition, but not good for graphical score rendition.
+	 */
+	public Music getMusicForGraphicalRendition() {
+		if (m_multiPartsDef == null)
+			return (m_defaultPart.getMusic());
+		else {
+			Vector alreadyAddedParts = new Vector();
+			Music globalScore = new Music();
+			Music defaultScore = m_defaultPart.getMusic();
+			for (int i = 0; i < defaultScore.size(); i++)
+				globalScore.addElement(defaultScore.elementAt(i));
+			Part[] parts = m_multiPartsDef.toPartsArray();
+			for (int i = 0; i < parts.length; i++) {
+				char label = parts[i].getLabel();
+				// already added, skip it!
+				if (alreadyAddedParts.contains(new Character(label)))
+					continue;
+				globalScore.addElement(new PartLabel(label));
+				Music score = parts[i].getMusic();
+				for (int j = 0; j < score.size(); j++)
+					globalScore.addElement(score.elementAt(j));
+				alreadyAddedParts.add(new Character(label));
+			}
+			return globalScore;
+		}
+	}
+
+  /**
+	 * Returns the music part of this tune.
+	 * 
+	 * @return The music part of this tune. If this tune isn't composed of
+	 *         several parts this method returns the "normal" music part. If
+	 *         this tune is composed of several parts the returned music is
+	 *         generated so that the tune looks like a "single-part" one. If you
+	 *         want to retrieve the music related to each part separatly just do
+	 *         <TT>getPart(char partLabel).getScore()</TT>.
+	 * @see #getPart(char)
+	 */
   public Music getMusic()
   {
     if (m_multiPartsDef==null)
@@ -370,12 +556,25 @@ public class Tune implements Cloneable
       Part[] parts = m_multiPartsDef.toPartsArray();
       for (int i=0; i<parts.length; i++)
       {
+    	globalScore.addElement(new PartLabel(parts[i].getLabel()));
         Music score = parts[i].getMusic();
         for (int j=0; j<score.size(); j++)
           globalScore.addElement(score.elementAt(j));
       }
       return globalScore;
     }
+  }
+  
+  public Tempo getGeneralTempo() {
+	  Music music = getMusic();
+	  for (int i = 0; i < music.size(); i++) {
+		  if (music.elementAt(i) instanceof Tempo) //got it!
+			  return (Tempo) music.elementAt(i);
+		  if (music.elementAt(i) instanceof NoteAbstract)
+			  return null; //Found some notes, meaning it's
+		  //a tempo change, but no general tempo defined
+	  }
+	  return null; //no tempo object found
   }
   
   /** Returns a string representation of this tune.
@@ -400,9 +599,13 @@ public class Tune implements Cloneable
   Music createMusic()
   { return new Music(); }
 
+  /**
+   * A Music is a collection of {@link MusicElement} (notes, bars...).
+   */
   public class Music extends Vector {
 	  
-	  protected NoteAbstract lastNote = null; 
+	private static final long serialVersionUID = 5411161761359626571L;
+	protected NoteAbstract lastNote = null; 
     public Music ()
     { super (); }
 
@@ -446,17 +649,21 @@ public class Tune implements Cloneable
     }
     
     public int indexOf(MusicElement elmnt) {
-    	Object elmntIt = null;
-    	boolean isLooking4Note = elmnt instanceof Note;
-    	for (int i=0; i<size(); i++){
-    		elmntIt = elementAt(i);
-    		if (elementAt(i) instanceof MultiNote && isLooking4Note) {
-    			if (((MultiNote)elmntIt).contains((Note)elmnt))
-    					return i;
-    		}
-    		else
-    			if (elementAt(i).equals(elmnt))
-    				return i;
+    	if (elmnt != null) {
+	    	Object elmntIt = null;
+	    	boolean isLooking4Note = elmnt instanceof Note;
+	    	for (int i=0; i<size(); i++){
+	    		elmntIt = elementAt(i);
+	    		if (elmntIt != null) {
+		    		if (elementAt(i) instanceof MultiNote && isLooking4Note) {
+		    			if (((MultiNote)elmntIt).contains((Note)elmnt))
+		    					return i;
+		    		}
+		    		else
+		    			if (elementAt(i).equals(elmnt))
+		    				return i;
+	    		}
+	    	}
     	}
     	return -1;
     }
@@ -480,20 +687,109 @@ public class Tune implements Cloneable
      * of the highest note.
      * @param elmtEnd The music element where to end (included) the search
      * of the highest note.
-     * @return The highest note between two music elements. <TT>null</TT> if
+     * @return The highest note or multinote between two music elements. <TT>null</TT> if
      * no note has been found between the two music elements.
      * @throws IllegalArgumentException Thrown if one of the music elements hasn't been found 
      * in the music or if the <TT>elmtEnd</TT> param is located before the <TT>elmntBegin</TT> 
      * param in the music. */
-    public Note getHighestNoteBewteen(MusicElement elmtBegin, MusicElement elmtEnd)
+    public NoteAbstract getHighestNoteBewteen(MusicElement elmtBegin, MusicElement elmtEnd)
     	throws IllegalArgumentException {
-    	Note highestNote = null;
-    	//init
-    	if (elmtBegin instanceof Note)
-    		highestNote=(Note)elmtBegin;
-    	else
-    		if (elmtBegin instanceof MultiNote)
-    			highestNote = ((MultiNote)elmtBegin).getHighestNote();
+    	NoteAbstract highestNote = null;
+    	int highestNoteHeight = Note.REST;
+    	if (elmtBegin instanceof NoteAbstract) {
+    		if (!((elmtBegin instanceof Note) && ((Note)elmtBegin).isRest())) {
+    			highestNote = (NoteAbstract) elmtBegin;
+        		highestNoteHeight = 
+	    			(highestNote instanceof MultiNote)
+	    				?((MultiNote)elmtBegin).getHighestNote().getMidiLikeHeight()
+	    				:((Note) highestNote).getMidiLikeHeight();
+    		}
+    	}
+    	int idxBegin = indexOf(elmtBegin);
+    	int idxEnd = indexOf(elmtEnd);
+    	if (idxBegin==-1)
+    		throw new IllegalArgumentException("Note " + elmtBegin + " hasn't been found in tune");
+    	if (idxEnd==-1)
+        	throw new IllegalArgumentException("Note " + elmtEnd + " hasn't been found in tune");
+    	if (idxBegin>idxEnd)
+    		throw new IllegalArgumentException("Note " + elmtBegin + " is located after " + elmtEnd + " in the score");
+    	MusicElement currentScoreEl;
+    	int currentNoteHeight;
+    	for (int i=idxBegin+1; i<=idxEnd; i++) {
+    		currentScoreEl=(MusicElement)elementAt(i);
+    		if (currentScoreEl instanceof NoteAbstract) {
+    	    	currentNoteHeight = 
+    	    		(currentScoreEl instanceof MultiNote)
+    	    			?((MultiNote)currentScoreEl).getHighestNote().getMidiLikeHeight()
+    	    			:((Note)currentScoreEl).getMidiLikeHeight();
+    	    	if ((currentNoteHeight != Note.REST) && 
+    	    		((highestNoteHeight == Note.REST)
+    	    			|| (currentNoteHeight > highestNoteHeight))) {
+    	    		highestNoteHeight = currentNoteHeight;
+    	    		highestNote = (NoteAbstract) currentScoreEl;
+    	    	}
+    		}
+    	}
+    	return highestNote;
+	}
+    
+    /**  
+     * @param elmtBegin (included)
+     * @param elmtEnd (included)
+     * @return The lowest note or multinote between the two given score elements if found.
+     * <TT>null</TT> if no note has been found between the two music elements.
+     * @throws IllegalArgumentException
+     */
+    public NoteAbstract getLowestNoteBewteen(MusicElement elmtBegin, MusicElement elmtEnd)
+		throws IllegalArgumentException {
+    	NoteAbstract lowestNote = null;
+    	int lowestNoteHeight = Note.REST;
+    	if (elmtBegin instanceof NoteAbstract) {
+    		if (!((elmtBegin instanceof Note) && ((Note)elmtBegin).isRest())) {
+    			lowestNote = (NoteAbstract) elmtBegin;
+        		lowestNoteHeight = 
+	    			(lowestNote instanceof MultiNote)
+	    				?((MultiNote)elmtBegin).getLowestNote().getMidiLikeHeight()
+	    				:((Note) lowestNote).getMidiLikeHeight();
+    		}
+    	}
+    	int idxBegin = indexOf(elmtBegin);
+    	int idxEnd = indexOf(elmtEnd);
+    	if (idxBegin==-1)
+    		throw new IllegalArgumentException("Note " + elmtBegin + " hasn't been found in tune");
+    	if (idxEnd==-1)
+        	throw new IllegalArgumentException("Note " + elmtEnd + " hasn't been found in tune");
+    	if (idxBegin>idxEnd)
+    		throw new IllegalArgumentException("Note " + elmtBegin + " is located after " + elmtEnd + " in the score");
+    	MusicElement currentScoreEl;
+    	int currentNoteHeight;
+    	for (int i=idxBegin+1; i<=idxEnd; i++) {
+    		currentScoreEl=(MusicElement)elementAt(i);
+    		if (currentScoreEl instanceof NoteAbstract) {
+    	    	currentNoteHeight = 
+    	    		(currentScoreEl instanceof MultiNote)
+    	    			?((MultiNote)currentScoreEl).getLowestNote().getMidiLikeHeight()
+    	    			:((Note)currentScoreEl).getMidiLikeHeight();
+    	    	if ((currentNoteHeight != Note.REST) && 
+    	    		((lowestNoteHeight == Note.REST)
+    	    			|| (currentNoteHeight < lowestNoteHeight))) {
+    	    		lowestNoteHeight = currentNoteHeight;
+    	    		lowestNote = (NoteAbstract) currentScoreEl;
+    	    	}
+    		}
+    	}
+    	return lowestNote;
+
+	}
+    
+    /** Returns a collection of Note between begin and end included
+     * @param elmtBegin
+     * @param elmtEnd
+     * @return a Collection of NoteAbstract (Note or MultiNote)
+     * @throws IllegalArgumentException
+     */
+    public Collection getNotesBetween(MusicElement elmtBegin, MusicElement elmtEnd)
+    	throws IllegalArgumentException {
     	int idxBegin = indexOf(elmtBegin);
     	int idxEnd = this.indexOf(elmtEnd);
     	if (idxBegin==-1)
@@ -502,53 +798,44 @@ public class Tune implements Cloneable
         	throw new IllegalArgumentException("Note " + elmtEnd + " hasn't been found in tune");
     	if (idxBegin>idxEnd)
     		throw new IllegalArgumentException("Note " + elmtBegin + " is located after " + elmtEnd + " in the score");
+    	Collection ret = new Vector();
     	MusicElement currentScoreEl;
-    	for (int i=idxBegin+1; i<=idxEnd; i++) {
+    	for (int i=idxBegin; i<=idxEnd; i++) {
     		currentScoreEl=(MusicElement)elementAt(i);
-    		if (currentScoreEl instanceof Note && ((Note)currentScoreEl).isHigherThan(highestNote))
-    			highestNote = (Note)currentScoreEl;
-    		/*else
-    			if (currentScoreEl instanceof MultiNote && ((MultiNote)currentScoreEl).getLowestNote().isHigherThan(highestNote))
-    					highestNote = ((MultiNote)currentScoreEl).getLowestNote();*/
+    		if (currentScoreEl instanceof NoteAbstract)
+    			ret.add((NoteAbstract)currentScoreEl);
     	}
-    	return highestNote;
+    	return ret;
     }
 
-    /** <TT>MultiNote</TT> instances are ignored.  
-     * @param noteBegin (included)
-     * @param noteEnd (included)
-     * @return The lowest note between the two given score elements if found.
-     * @throws IllegalArgumentException
+    /**
+     * @return The shortest note in the tune.
      */
-    public Note getLowestNoteBewteen(MusicElement noteBegin, MusicElement noteEnd)
-		throws IllegalArgumentException {
-    	Note lowestNote = null;
+    public Note getShortestNote() throws IllegalArgumentException {
+    	Note shortestNote = null;
     	//init
-    	if (noteBegin instanceof Note)
-    		lowestNote=(Note)noteBegin;
-    	else
-    		if (noteBegin instanceof MultiNote)
-    			lowestNote = ((MultiNote)noteBegin).getLowestNote();
-    	int idxBegin = indexOf(noteBegin);
-    	int idxEnd = this.indexOf(noteEnd);
-    	if (idxBegin==-1)
-    		throw new IllegalArgumentException("Note " + noteBegin + " hasn't been found in tune");
-    	if (idxEnd==-1)
-        	throw new IllegalArgumentException("Note " + noteEnd + " hasn't been found in tune");
-    	if (idxBegin>idxEnd)
-    		throw new IllegalArgumentException("Note " + noteBegin + " is located after " + noteEnd + " in the score");
     	MusicElement currentScoreEl;
-    	for (int i=idxBegin+1; i<=idxEnd; i++) {
-    		currentScoreEl=(MusicElement)elementAt(i);
-    		if (currentScoreEl instanceof Note && ((Note)currentScoreEl).isLowerThan(lowestNote))
-    			lowestNote = (Note)currentScoreEl;
-    		/* else
-    			if (currentScoreEl instanceof MultiNote && ((MultiNote)currentScoreEl).getLowestNote().isLowerThan(lowestNote))
-    					lowestNote = ((MultiNote)currentScoreEl).getLowestNote();*/
+    	Iterator it = iterator();
+    	while (it.hasNext()) {
+    		currentScoreEl=(MusicElement)it.next();
+    		if (currentScoreEl instanceof Note) {
+    			if (shortestNote == null)
+    				shortestNote = (Note)currentScoreEl;
+    			else if (((Note)currentScoreEl)
+    						.isShorterThan(shortestNote))
+    				shortestNote = (Note)currentScoreEl;
+    		} else if (currentScoreEl instanceof MultiNote) {
+    			Note shortestInChrod = ((MultiNote) currentScoreEl).getShortestNote();
+    			if (shortestNote == null)
+    				shortestNote = shortestInChrod;
+    			else if (shortestInChrod.isShorterThan(shortestNote))
+    				shortestNote = shortestInChrod;
+    		}
     	}
-    	return lowestNote;
+    	return shortestNote;
 
 	}
+    
     
     /*public Note getLowestNoteBewteen(int scoreElmntIndexBegin, int ScoreElmtIndexEnd) throws IllegalArgumentException {
     	if (scoreElmntIndexBegin>ScoreElmtIndexEnd)
@@ -566,5 +853,51 @@ public class Tune implements Cloneable
     	}
     	return lowestNote;
     }*/
+
+	/**
+	 * Returns <TT>true</TT> if this tune music has chord names,
+	 * <TT>false</TT> otherwise.
+	 */
+    public boolean hasChordNames() {
+    	MusicElement currentScoreEl;
+       	Iterator it = iterator();
+    	while (it.hasNext()) {
+			currentScoreEl=(MusicElement)it.next();
+			if (currentScoreEl instanceof NoteAbstract) {
+				if (((NoteAbstract)currentScoreEl).getChordName() != null)
+					return true;
+			}
+		}
+		return false;
+	}
+    
+    private boolean hasObject(Class musicElementClass) {
+    	MusicElement currentScoreEl;
+    	Iterator it = iterator();
+    	while (it.hasNext()) {
+			currentScoreEl=(MusicElement)it.next();
+			if (currentScoreEl.getClass().equals(musicElementClass)) {
+				return true;
+			}
+		}
+		return false;
+    }
+    
+	/**
+	 * Returns <TT>true</TT> if this tune music has part label(s),
+	 * <TT>false</TT> otherwise.
+	 */
+	public boolean hasPartLabel() {
+		return hasObject(PartLabel.class);
+	}
+	
+	/**
+	 * Returns <TT>true</TT> if this tune music has tempo,
+	 * <TT>false</TT> otherwise.
+	 */
+	public boolean hasTempo() {
+		return hasObject(Tempo.class);
+	}
+	//TODO hasLyrics...
   }
 }

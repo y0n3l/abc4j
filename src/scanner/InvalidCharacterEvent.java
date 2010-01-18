@@ -21,6 +21,7 @@ import scanner.CharStreamPosition;
 /** This event is thrown when an unexpected character is encountered. */
 public class InvalidCharacterEvent extends EventObject implements PositionableInCharStream
 {
+  private static final long serialVersionUID = -7063895754307596335L;
   /** The invalid character. */
   private char m_character;
   /** The position of the invalid character. */

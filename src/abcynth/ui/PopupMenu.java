@@ -29,6 +29,7 @@ import javax.swing.table.TableColumn;
 
 public class PopupMenu extends JPopupMenu implements ActionListener
 {
+  private static final long serialVersionUID = 7057939431750016753L;
   private JTable m_table = null;
   private Vector m_columns = null;
   private Vector m_buttons =null;

@@ -23,6 +23,7 @@ import scanner.Token;
 /** This event is thrown when a new token has been detected. */
 public class TokenEvent extends EventObject implements PositionableInCharStream
 {
+  private static final long serialVersionUID = 1789076874936938551L;
   /** The token found. */
   protected Token m_token = null;
 

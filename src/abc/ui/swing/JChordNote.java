@@ -21,38 +21,69 @@ import java.awt.geom.Point2D;
 import abc.notation.Note;
 
 class JChordNote extends JNotePartOfGroup {
+	
+	private boolean m_isLowest = false;
+	private boolean m_isHighest = false;
 
 	public JChordNote(Note noteValue, Point2D base, ScoreMetrics c) {
 		super(noteValue, base, c);
 		//onBaseChanged();
+		//System.err.println(toString() + ": note="+noteValue.toString());
 	}
-	
+
 	protected void valuateNoteChars() {
-		if (note.getStrictDuration()==Note.HALF || note.getStrictDuration()==Note.WHOLE) {
-			noteChars = ScoreMetrics.NOTE_LONGER;
+		if (!isAnchor()) {
+			noteChars = new char[] { getMusicalFont().getNoteWithoutStem(note.getStrictDuration()) };
+		} else {//isAnchor
+			//from JNote.valuateNoteChars()
+			if (isStemUp())
+				noteChars = new char[] { getMusicalFont().getNoteStemUpChar(((Note) getMusicElement()).getStrictDuration()) };
+			else
+				noteChars = new char[] { getMusicalFont().getNoteStemDownChar(((Note) getMusicElement()).getStrictDuration()) };
 		}
-		else
-			noteChars = ScoreMetrics.NOTE;
 	}
-	
+
 	public double render(Graphics2D context){
-		//super.render(context);
-		context.drawChars(noteChars, 0, 1, (int)displayPosition.getX(), (int)displayPosition.getY());
-		renderExtendedStaffLines(context, m_metrics, m_base);
-		renderAccidentals(context);
-		renderDots(context);
-		/*
-		Color previousColor = context.getColor();
-		context.setColor(Color.RED);
-		context.drawLine((int)getStemX(), (int)getStemYBegin(), 
-				(int)getStemX(), (int)getStemYBegin());
+		super.render(context);
+
+		// visual debug
+/*
+		java.awt.Color previousColor = context.getColor();
+		context.setColor(java.awt.Color.GREEN);
+		context.drawLine((int)getStemBeginPosition().getX(), (int)getStemBeginPosition().getY(),
+				(int)getStemEndPosition().getX(), (int)getStemEndPosition().getY());
 		context.setColor(previousColor);
-		/*Color previousColor = context.getColor();
-		context.setColor(Color.RED);
-		context.drawLine((int)getStemBegin().getX(), (int)getStemBegin().getY(), 
-				(int)getStemBegin().getX()+10, (int)getStemBegin().getY());
-		context.setColor(previousColor);*/
-		
-		return m_width;
+*/
+		return getWidth();
+	}
+
+	/**
+	 * return <TT>true</TT> if this note is the highest in the chord
+	 */
+	protected boolean isHighest() {
+		return m_isHighest;
+	}
+
+	/**
+	 * Sets to <TT>true</TT> to tells that this is note is the
+	 * highest in the chord
+	 */
+	protected void setIsHighest(boolean highest) {
+		m_isHighest = highest;
+	}
+
+	/**
+	 * return <TT>true</TT> if this note is the lowest in the chord
+	 */
+	protected boolean isLowest() {
+		return m_isLowest;
+	}
+
+	/**
+	 * Sets to <TT>true</TT> to tells that this is note is the
+	 * lowest in the chord
+	 */
+	protected void setIsLowest(boolean lowest) {
+		m_isLowest = lowest;
 	}
 }

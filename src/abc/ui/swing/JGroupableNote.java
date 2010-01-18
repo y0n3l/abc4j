@@ -27,6 +27,6 @@ interface JGroupableNote extends JScoreElement {
 	
 	public int getStemYEnd();
 	
-	public Point2D getStemBegin();
+	public Point2D getStemBeginPosition();
 	
 }

@@ -20,6 +20,7 @@ import java.util.EventObject;
 /** */
 public class TempoChangeEvent extends EventObject
 {
+  private static final long serialVersionUID = 6714931982439393008L;
   private int m_newTempoValue = 0;
   public TempoChangeEvent(Object source, int newTempoValue)
   {

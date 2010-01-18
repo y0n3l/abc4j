@@ -34,6 +34,7 @@ import abc.ui.awt.TuneEditorArea;
 /** */
 public class AbcCheck extends Applet implements TuneParserListenerInterface
 {
+  private static final long serialVersionUID = -1212835148227194802L;
   private TuneEditorArea m_textArea = null;
   //private Button m_checkButton = null;
   private java.awt.List m_errorList = null;

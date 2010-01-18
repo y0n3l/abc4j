@@ -22,6 +22,7 @@ import java.awt.geom.Rectangle2D;
 import abc.notation.MusicElement;
 
 public interface JScoreElement {
+	
 	/** Returns the width of this score element.
 	 * @return The width of this score element. */
 	public double getWidth();
@@ -53,4 +54,34 @@ public interface JScoreElement {
 	 * as a reference to draw the element at this location. */
 	public Point2D getBase();
 	
+	/**
+	 * Stemmable element interface contains two methods :
+	 * {@link #setAutoStem(boolean)} and
+	 * {@link #setStemUp(boolean)}.
+	 * 
+	 * Known implementations are {@link JNoteElementAbstract}
+	 * and {@link JGroupOfNotes}.
+	 */
+	public interface JStemmableElement {
+		
+		/**
+		 * Sets if the stem orientation is automatic or not
+		 * @param b
+		 */
+		public void setAutoStem(boolean b);
+		
+		/**
+		 * Sets the stem orientation to up or down
+		 * @param b
+		 */
+		public void setStemUp(boolean b);
+		
+		/**
+		 * Returns <TT>true</TT> if stem is up, <TT>false</TT>
+		 * if down.
+		 */
+		public boolean isStemUp();
+		
+	}
+
 }
