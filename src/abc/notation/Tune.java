@@ -876,7 +876,8 @@ public class Tune implements Cloneable
     	Iterator it = iterator();
     	while (it.hasNext()) {
 			currentScoreEl=(MusicElement)it.next();
-			if (currentScoreEl.getClass().equals(musicElementClass)) {
+			if ((currentScoreEl!=null)
+					&& currentScoreEl.getClass().equals(musicElementClass)) {
 				return true;
 			}
 		}
