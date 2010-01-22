@@ -336,6 +336,8 @@ public class JTune extends JScoreElementAbstract {
 				text = m_tune.getLyricist(); break;
 			case TextFields.ORIGIN://=AREA
 				text = m_tune.getOrigin();
+				if (text == null)
+					text = "";
 				if ((m_tune.getArea() != null) && (m_tune.getArea().length() > 0))
 					text += (text.length()>0?", ":"")
 						+ m_tune.getArea();
