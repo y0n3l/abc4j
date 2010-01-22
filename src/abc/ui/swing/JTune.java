@@ -611,15 +611,18 @@ public class JTune extends JScoreElementAbstract {
 			cursor.setLocation(cursor.getX(), cursor.getY()+1);
 		}
 
-		double maxWidth = ((JStaffLine)m_staffLines.elementAt(0)).getWidth();
-		for (int i=1; i<m_staffLines.size();i++){
-			JStaffLine currentStaffLine = (JStaffLine)m_staffLines.elementAt(i);
-			maxWidth = Math.max(maxWidth, currentStaffLine.getWidth());
+		if (m_staffLines != null) {
+			double maxWidth = 0;
+			for (int i=0; i<m_staffLines.size();i++) {
+				JStaffLine currentStaffLine = (JStaffLine)m_staffLines.elementAt(i);
+				maxWidth = Math.max(maxWidth, currentStaffLine.getWidth());
+			}
+			componentWidth = maxWidth;
+		} else {
+			if (cursor.getX()>componentWidth)
+				componentWidth = (int)cursor.getX();
 		}
 		
-		//if (cursor.getX()>componentWidth)
-		//	componentWidth = (int)cursor.getX();
-		componentWidth = maxWidth;
 		//if header/footer texts are too long, extend component width
 		Iterator it = m_headerAndFooterTexts.iterator();
 		while (it.hasNext()) {
