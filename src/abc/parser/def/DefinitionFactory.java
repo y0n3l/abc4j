@@ -20,13 +20,14 @@ import java.util.Vector;
 import scanner.AutomataDefinition;
 import scanner.TokenType;
 import abc.parser.AbcTokenType;
+import abc.parser.AbcVersion;
 
 public class DefinitionFactory
 {
 
   public static Vector m_allPreviouslyCreatedDefinitions = new Vector();
 
-  public static AutomataDefinition getDefinition(TokenType abcTokenType)
+  public static AutomataDefinition getDefinition(TokenType abcTokenType, AbcVersion abcVersion)
   {
     TokenType[] tokenTypes = {abcTokenType};
     //System.out.println("getAutomataFor(" + toString(tokenTypes));
@@ -80,9 +81,9 @@ public class DefinitionFactory
     else if (abcTokenType==(AbcTokenType.GUITAR_CHORD)) automataDef = new GuitarChordDefinition();
     else if (abcTokenType==(AbcTokenType.GRACING_BEGIN)) automataDef = new GracingBeginDefinition();
     else if (abcTokenType==(AbcTokenType.GRACING_END)) automataDef = new GracingEndDefinition();
-    else if (abcTokenType==(AbcTokenType.GRACING)) automataDef = new GracingDefinition();
+    else if (abcTokenType==(AbcTokenType.GRACING)) automataDef = new GracingDefinition(abcVersion);
     else if (abcTokenType==(AbcTokenType.REST)) automataDef = new RestDefinition();
-    else if (abcTokenType==(AbcTokenType.BARLINE)) automataDef = new BarlineDefinition();
+    else if (abcTokenType==(AbcTokenType.BARLINE)) automataDef = new BarlineDefinition(abcVersion);
     else if (abcTokenType==(AbcTokenType.NTH_REPEAT)) automataDef = new NthRepeatDefinition();
     else if (abcTokenType==(AbcTokenType.BEGIN_SLUR)) automataDef = new SlurBeginDefinition();
     else if (abcTokenType==(AbcTokenType.END_SLUR)) automataDef = new SlurEndDefinition();
@@ -109,32 +110,33 @@ public class DefinitionFactory
     return automataDef;
   }
 
-  /*public static AutomataDefinition getDefinition(Set aSet)
-  {
-    aSet.
-    return null;
-  }*/
+  /*
+	 * public static AutomataDefinition getDefinition(Set aSet) { aSet. return
+	 * null; }
+	 */
 
-
-  public static AutomataDefinition getDefinition(TokenType[] tokenTypes)
-  {
-//    System.out.println("getAutomataFor(" + toString(tokenTypes));
-    AutomataDefinition alreadyCreated = getAlreadyCreatedDefinition(tokenTypes);
-    if (alreadyCreated!=null)
-    {
-//      System.out.println("Cache used for " + toString(tokenTypes));
-      return alreadyCreated;
-    }
-    else
-    {
-      AutomataDefinition definition = getDefinition(tokenTypes[0]);
-      for (int i=1;i<tokenTypes.length; i++)
-        definition = definition.union(getDefinition(tokenTypes[i]));
-      //System.out.println("Adding automataDef in cache for : " + toString(tokenTypes));
-      m_allPreviouslyCreatedDefinitions.addElement(new DefinitionCache(tokenTypes, definition));
-      return definition;
-    }
-  }
+	public static AutomataDefinition getDefinition(TokenType[] tokenTypes,
+			AbcVersion abcVersion) {
+		// System.out.println("getAutomataFor(" + toString(tokenTypes));
+		AutomataDefinition alreadyCreated = getAlreadyCreatedDefinition(tokenTypes);
+		if (alreadyCreated != null) {
+			// System.out.println("Cache used for " + toString(tokenTypes));
+			return alreadyCreated;
+		} else {
+			AutomataDefinition definition = getDefinition(tokenTypes[0],
+					abcVersion);
+			if (tokenTypes.length >= 1) {
+				for (int i = 1; i < tokenTypes.length; i++)
+					definition = definition.union(getDefinition(tokenTypes[i],
+							abcVersion));
+			}
+			// System.out.println("Adding automataDef in cache for : " +
+			// toString(tokenTypes));
+			m_allPreviouslyCreatedDefinitions.addElement(new DefinitionCache(
+					tokenTypes, definition));
+			return definition;
+		}
+	}
 
   private static AutomataDefinition getAlreadyCreatedDefinition(TokenType[] tokenTypes)
   {

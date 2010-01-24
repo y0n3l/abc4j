@@ -202,9 +202,12 @@ public class AbcParserAbstract
     /** The tune resulting of the last parsing. */
     protected Tune m_tune = null;
 
-    /** Constructs a new tune parser. */
-    public AbcParserAbstract()
+	protected AbcVersion m_abcVersion = null;
+	
+   /** Constructs a new tune parser. */
+    public AbcParserAbstract(AbcVersion abcVersion)
     {
+		m_abcVersion = abcVersion;
       m_scanner = new Scanner();
       m_automata = new FinaleStateAutomata();
       //m_scanner.setFinaleStateAutomata(m_automata);
@@ -262,7 +265,7 @@ public class AbcParserAbstract
 		Set current = FIRST_ABCTUNE.createUnion(FIRST_COMMENT).createUnion(FIRST_LINE_FEED);
 		// are missing TEX COMMAND and FILE FIELDS
 		//.createUnion(FIRST_TEX_COMMAND);//.createUnion(FIRST_FILE_FIELDS);
-		m_scanner.setFinaleStateAutomata(AutomataFactory.getAutomata(current.getTypes()));
+		m_scanner.setFinaleStateAutomata(AutomataFactory.getAutomata(current.getTypes(), m_abcVersion));
 		m_token = m_scanner.nextToken();
 		m_tokenType = m_token.getType();
 		while (m_token!=null) {
@@ -1388,7 +1391,8 @@ public class AbcParserAbstract
       if (note!=null) {
 	    // should staccato and general gracing be "standard" decorations ?
 	    if (staccato) note.setStaccato(true);
-	    if (hasGeneralOrnament) note.setGeneralGracing(true);
+	    if (hasGeneralOrnament && m_abcVersion.equals(AbcVersion.v1_6))
+	    	note.setGeneralGracing(true);
 	    if (decorations.size() > 0) note.setDecorations((Decoration[])decorations.toArray(new Decoration[1]));
 	    if (graceNotes!=null) note.setGracingNotes(graceNotes);
 	    if (chordName!=null)
@@ -1656,7 +1660,7 @@ public class AbcParserAbstract
           }
           else
             m_setsForAccept.addElement(union);*/
-          m_automata.setDefinition(DefinitionFactory.getDefinition(union.getTypes()));
+          m_automata.setDefinition(DefinitionFactory.getDefinition(union.getTypes(), m_abcVersion));
           m_scanner.setFinaleStateAutomata(m_automata);
           //TokenType[] unionArray = union.getTypes();
           //m_automata.setDefinition(DefinitionFactory.getDefinition(unionArray));
@@ -1669,14 +1673,14 @@ public class AbcParserAbstract
         else
         if (current!=null && current.size()!=0)
         {
-          m_automata.setDefinition(DefinitionFactory.getDefinition(current.getTypes()));
+          m_automata.setDefinition(DefinitionFactory.getDefinition(current.getTypes(), m_abcVersion));
           m_scanner.setFinaleStateAutomata(m_automata);
           //TokenType[] array = current.getTypes();
           //m_scanner.setFinaleStateAutomata(getAutomataFor(array));
         }
         else
         {
-          m_automata.setDefinition(DefinitionFactory.getDefinition(follow.getTypes()));
+          m_automata.setDefinition(DefinitionFactory.getDefinition(follow.getTypes(), m_abcVersion));
           m_scanner.setFinaleStateAutomata(m_automata);
           //TokenType[] array = follow.getTypes();
           //m_scanner.setFinaleStateAutomata(getAutomataFor(array));
@@ -1741,7 +1745,7 @@ public class AbcParserAbstract
         else
           targetSet = getSetResultingUnionFrom(current, follow);
         //System.out.println("Parser - skipTo("+ targetSet + ") from " + token.getValue() );
-        m_automata.setDefinition(DefinitionFactory.getDefinition(targetSet.getTypes()));
+        m_automata.setDefinition(DefinitionFactory.getDefinition(targetSet.getTypes(), m_abcVersion));
         m_scanner.setFinaleStateAutomata(m_automata);
         //m_scanner.setFinaleStateAutomata(getAutomataFor(targetSet.getTypes()));
         //===old

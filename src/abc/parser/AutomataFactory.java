@@ -20,20 +20,20 @@ import scanner.TokenType;
 import scanner.FinaleStateAutomata;
 import abc.parser.def.DefinitionFactory;
 
-class AutomataFactory
-{
+class AutomataFactory {
 
-  public static Vector m_allPreviouslyCreatedAutomatas = new Vector();
+	public static Vector m_allPreviouslyCreatedAutomatas = new Vector();
 
-  public static FinaleStateAutomata getAutomata(TokenType abcTokenType)
-  {
-    return new FinaleStateAutomata(DefinitionFactory.getDefinition(abcTokenType));
-  }
+	public static FinaleStateAutomata getAutomata(TokenType abcTokenType,
+			AbcVersion abcVersion) {
+		return new FinaleStateAutomata(DefinitionFactory.getDefinition(
+				abcTokenType, abcVersion));
+	}
 
-  public static FinaleStateAutomata getAutomata(TokenType[] tokenTypes)
-  {
-    return new FinaleStateAutomata(DefinitionFactory.getDefinition(tokenTypes));
-  }
-
+	public static FinaleStateAutomata getAutomata(TokenType[] tokenTypes,
+			AbcVersion abcVersion) {
+		return new FinaleStateAutomata(DefinitionFactory.getDefinition(
+				tokenTypes, abcVersion));
+	}
 
 }

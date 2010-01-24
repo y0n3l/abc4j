@@ -21,6 +21,7 @@ import java.awt.Graphics2D;
 //import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Iterator;
 
 import abc.notation.Decoration;
 import abc.notation.MusicElement;
@@ -37,7 +38,7 @@ import abc.notation.Tune;
  */
 class JDecoration extends JScoreElementAbstract {
 
-	protected static final int POSITIONS_COUNT = 12;
+	protected static final int POSITIONS_COUNT = 14;
 	
 	/** Above the staff, above the note if note is higher than staff */
 	protected static final byte ABOVE_STAFF = 0;
@@ -63,10 +64,15 @@ class JDecoration extends JScoreElementAbstract {
 	protected static final byte STEM_MIDDLE = 10;
 	/** above the staff, after the note (e.g. pause) */
 	protected static final byte ABOVE_STAFF_AFTER_NOTE = 11;
-	
+	/** above note head if stem up, under note head else */
+	protected static final byte VERTICAL_NEAR_STEM_OUT_STAFF = 12;
+	/** under note head if stem up, above note head else */
+	protected static final byte VERTICAL_AWAY_STEM_OUT_STAFF = 13;
+
 	protected static byte getPosition(Decoration deco) {
 		switch (deco.getType()) {
 		case Decoration.STACCATO:
+			return VERTICAL_AWAY_STEM;
 		case Decoration.TENUTO:
 		case Decoration.ACCENT://marcato
 		case Decoration.STACCATISSIMO:
@@ -74,7 +80,7 @@ class JDecoration extends JScoreElementAbstract {
 		case Decoration.MARCATO_STACCATO:
 		case Decoration.MARTELATO_STACCATO:
 		case Decoration.MEZZO_STACCATO:
-			return VERTICAL_AWAY_STEM;
+			return VERTICAL_AWAY_STEM_OUT_STAFF;
 		case Decoration.ROLL:
 		case Decoration.FERMATA:
 		case Decoration.UPBOW:
@@ -105,6 +111,8 @@ class JDecoration extends JScoreElementAbstract {
 	private Decoration m_decoration = null;
 	
 	private boolean m_isInverted = false;
+	
+	private JScoreElementAbstract m_scoreElement = null;
 
 	/** The width of this rendition element */
 	protected double m_width = -1;
@@ -170,11 +178,30 @@ class JDecoration extends JScoreElementAbstract {
 		return getPosition(m_decoration);
 	}
 	
+	private boolean isInvertable() {
+		byte pos = getPosition();
+		if ((pos != ABOVE_STAFF) && (pos != UNDER_STAFF)
+				&& (pos != ABOVE_NOTE) && (pos != UNDER_NOTE)) {
+			char charDeco = getMusicalFont().getDecoration(
+					m_decoration, false);
+			char charDeco2 = getMusicalFont().getDecoration(
+					m_decoration, true);
+			return charDeco == charDeco2;
+		} else {
+			return false;
+		}
+	}
+	
 	protected boolean isInverted() {
 		return m_isInverted;
 	}
+	
 	protected void setInverted(boolean b) {
-		m_isInverted = b;
+		m_isInverted = isInvertable()?b:false;
+	}
+	
+	protected void setAttachedTo(JScoreElementAbstract scoreEl) {
+		m_scoreElement = scoreEl;
 	}
 
 	/** Callback invoked when the base has changed for this object. */
@@ -203,6 +230,25 @@ class JDecoration extends JScoreElementAbstract {
 		Rectangle2D bounds = getMetrics().getBounds(charDeco);
 		double x = getBase().getX() - bounds.getWidth()/2;
 		double y = getBase().getY();
+		if (m_scoreElement != null) {
+			boolean isUnderNote = y > m_scoreElement.getBase().getY();
+			if (isUnderNote)
+				y += bounds.getHeight();
+			//avoid collisions
+			double offset = getMetrics().getNoteHeight() / 2;
+			Iterator it = m_scoreElement.m_jDecorations.iterator();
+			while (it.hasNext()) {
+				JDecoration jdec = (JDecoration) it.next();
+				if (jdec == this)
+					break;
+				if (jdec.getBase().equals(getBase())) {
+					if (isUnderNote)
+						y = y + offset + jdec.getHeight();
+					else
+						y = y - offset - jdec.getHeight();
+				}
+			}
+		}
 		//if (m_isInverted) y += bounds.getHeight();
 		g2.drawChars(new char[] { charDeco }, 0, 1,
 				(int)x, (int)y);

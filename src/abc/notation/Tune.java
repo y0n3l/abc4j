@@ -535,6 +535,7 @@ public class Tune implements Cloneable
   /**
 	 * Returns the music part of this tune.
 	 * 
+	 * @see #getMusicForGraphicalRendition()
 	 * @return The music part of this tune. If this tune isn't composed of
 	 *         several parts this method returns the "normal" music part. If
 	 *         this tune is composed of several parts the returned music is

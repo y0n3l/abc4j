@@ -29,8 +29,27 @@ import abc.parser.def.DefinitionFactory;
  * synchronously. You don't have to attach yourself as a listener or 
  * whatever to get the parsing result. */
 public class TuneParser extends AbcParserAbstract {
-	/** Constructs a new tune parser. */
+	
+	/** Constructs a new tune parser.
+	 *  
+	 * Use {@link #TuneParser(AbcVersion)} to specify which version
+	 * to use
+	 */
 	public TuneParser() {
+		this(AbcVersion.v1_6);
+	}
+	
+	/**
+	 * Constructs a new tune parser.
+	 * 
+	 * @param abcVersion
+	 *            Specify which ABC version to use for parsing
+	 *            {@link AbcVersion#v1_6} or {@link AbcVersion#v2_0}
+	 * 
+	 * @param abcVersion
+	 */
+	public TuneParser(AbcVersion abcVersion) {
+		super(abcVersion);
 	}
   
 	/** Parse the given string and creates a <TT>Tune</TT> object as parsing result.
@@ -52,7 +71,7 @@ public class TuneParser extends AbcParserAbstract {
 			current = new Set().union(FIRST_ABCHEADER).union(FIRST_FIELD_KEY);
 			//m_scanner.setFinaleStateAutomata(getAutomataFor(current.getTypes()));
 			m_automata.setDefinition(DefinitionFactory.getDefinition(current
-					.getTypes()));
+					.getTypes(), m_abcVersion));
 			m_scanner.setFinaleStateAutomata(m_automata);
 			notifyListenersForTuneBegin();
 			try {
@@ -93,7 +112,7 @@ public class TuneParser extends AbcParserAbstract {
 			Set current = new Set().union(FIRST_ABCHEADER).union(
 					FIRST_FIELD_KEY);
 			m_automata.setDefinition(DefinitionFactory.getDefinition(current
-					.getTypes()));
+					.getTypes(), m_abcVersion));
 			m_scanner.setFinaleStateAutomata(m_automata);
 			//m_scanner.setFinaleStateAutomata(getAutomataFor(current.getTypes()));
 			try {

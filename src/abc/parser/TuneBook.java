@@ -54,73 +54,170 @@ public class TuneBook {
   private Vector m_originalTunesOrder = null;
   private File m_file = null;
 
-  /** Creates a new tune book from the specified file.
-   * @param abcFile The file that contains tunes in abc notation.
-   * @exception FileNotFoundException Thrown if the specified file doesn't exist. */
-  public TuneBook(File abcFile) throws FileNotFoundException {
-	  this();
-	  m_file = abcFile;
-	  buildTunesTreeMap(new BufferedReader(new InputStreamReader(new FileInputStream (abcFile))), null);
-  }
+	/**
+	 * Creates a new tune book from the specified file.
+	 * 
+	 * @param abcFile
+	 *            The file that contains tunes in abc notation.
+	 * @exception FileNotFoundException
+	 *                Thrown if the specified file doesn't exist.
+	 * @see #TuneBook(File, AbcVersion)
+	 */
+	public TuneBook(File abcFile) throws FileNotFoundException {
+		this(abcFile, AbcVersion.v1_6);
+	}
 
-  /** Creates a new tune book from the specified file and gets feedback 
-   * from the parsing phasis via the specified listener.
-   * @param abcFile The file that contains tunes in abc notation.
-   * @param listener Listener to be informed of the parsing phasis.
-   * @throws FileNotFoundException Thrown if the specified file doesn't exist. */
-  public TuneBook(File abcFile, AbcFileParserListenerInterface listener) throws FileNotFoundException {
-	  this();
-	  m_file = abcFile;
-	  buildTunesTreeMap(new BufferedReader(new InputStreamReader(new FileInputStream (abcFile))), listener);
-  }
+	/**
+	 * Creates a new tune book from the specified file.
+	 * 
+	 * @param abcFile
+	 *            The file that contains tunes in abc notation.
+	 * @param abcVersion
+	 *            Specify which ABC version to use for parsing
+	 *            {@link AbcVersion#v1_6} or {@link AbcVersion#v2_0}
+	 * @exception FileNotFoundException
+	 *                Thrown if the specified file doesn't exist.
+	 */
+	public TuneBook(File abcFile, AbcVersion abcVersion)
+			throws FileNotFoundException {
+		this(abcVersion);
+		m_file = abcFile;
+		buildTunesTreeMap(new BufferedReader(new InputStreamReader(
+				new FileInputStream(abcFile))), null);
+	}
 
-  /** Creates a new tune book from the specified stream.
-   * @param stream The stream in abc notation.
-   * @exception IOException If the stream does not support {@link Reader#mark(int)}, 
-   * or if some other I/O error occurs*/
-  public TuneBook(Reader stream) throws IOException {
-    this();
-    buildTunesTreeMap(stream, null);
-  }
+	/**
+	 * Creates a new tune book from the specified file and gets feedback from
+	 * the parsing phasis via the specified listener.
+	 * 
+	 * @param abcFile
+	 *            The file that contains tunes in abc notation.
+	 * @param listener
+	 *            Listener to be informed of the parsing phasis.
+	 * @throws FileNotFoundException
+	 *             Thrown if the specified file doesn't exist.
+	 * @see #TuneBook(File, AbcFileParserListenerInterface, AbcVersion)
+	 */
+	public TuneBook(File abcFile, AbcFileParserListenerInterface listener)
+			throws FileNotFoundException {
+		this(abcFile, listener, AbcVersion.v1_6);
+	}
 
-  /** Creates a new tune book from the specified stream and gets feedback 
-   * from the parsing phasis via the specified listener.
-   * @param stream The stream in abc notation.
-   * @param listener Listener to be informed of the parsing phasis.
-   * @exception IOException If the stream does not support {@link Reader#mark(int)}, 
-   * or if some other I/O error occurs*/
-  public TuneBook(Reader stream, AbcFileParserListenerInterface listener) throws IOException {
-    this();
-    buildTunesTreeMap(stream, listener);
-  }
+	/**
+	 * Creates a new tune book from the specified file and gets feedback from
+	 * the parsing phasis via the specified listener.
+	 * 
+	 * @param abcFile
+	 *            The file that contains tunes in abc notation.
+	 * @param listener
+	 *            Listener to be informed of the parsing phasis.
+	 * @param abcVersion
+	 *            Specify which ABC version to use for parsing
+	 *            {@link AbcVersion#v1_6} or {@link AbcVersion#v2_0}
+	 * @throws FileNotFoundException
+	 *             Thrown if the specified file doesn't exist.
+	 */
+	public TuneBook(File abcFile, AbcFileParserListenerInterface listener,
+			AbcVersion abcVersion) throws FileNotFoundException {
+		this(abcVersion);
+		m_file = abcFile;
+		buildTunesTreeMap(new BufferedReader(new InputStreamReader(
+				new FileInputStream(abcFile))), listener);
+	}
 
-  /** Creates an empty tunebook. */
-  public TuneBook()
-  {
-    m_fileParser = new AbcHeadersParser();
-    m_parser = new TuneParser();
-    m_tunes = new TreeMap();
-    m_originalTunesOrder = new Vector();
-    m_listeners = new Vector();
-  }
+	/**
+	 * Creates a new tune book from the specified stream.
+	 * 
+	 * @param stream
+	 *            The stream in abc notation.
+	 * @exception IOException
+	 *                If the stream does not support {@link Reader#mark(int)},
+	 *                or if some other I/O error occurs
+	 * @see #TuneBook(Reader, AbcVersion)
+	 */
+	public TuneBook(Reader stream) throws IOException {
+		this(stream, AbcVersion.v1_6);
+	}
+
+	/**
+	 * Creates a new tune book from the specified stream.
+	 * 
+	 * @param stream
+	 *            The stream in abc notation.
+	 * @exception IOException
+	 *                If the stream does not support {@link Reader#mark(int)},
+	 *                or if some other I/O error occurs
+	 * @param abcVersion
+	 *            Specify which ABC version to use for parsing
+	 *            {@link AbcVersion#v1_6} or {@link AbcVersion#v2_0}
+	 */
+	public TuneBook(Reader stream, AbcVersion abcVersion) throws IOException {
+		this(abcVersion);
+		buildTunesTreeMap(stream, null);
+	}
+
+  /**
+	 * Creates a new tune book from the specified stream and gets feedback from
+	 * the parsing phasis via the specified listener.
+	 * 
+	 * @param stream
+	 *            The stream in abc notation.
+	 * @param listener
+	 *            Listener to be informed of the parsing phasis.
+	 * @exception IOException
+	 *                If the stream does not support {@link Reader#mark(int)},
+	 *                or if some other I/O error occurs *
+	 * @see #TuneBook(Reader, AbcFileParserListenerInterface, AbcVersion)
+	 */
+	public TuneBook(Reader stream, AbcFileParserListenerInterface listener)
+			throws IOException {
+		this(stream, listener, AbcVersion.v1_6);
+	}
+
+	/**
+	 * Creates a new tune book from the specified stream and gets feedback from
+	 * the parsing phasis via the specified listener.
+	 * 
+	 * @param stream
+	 *            The stream in abc notation.
+	 * @param listener
+	 *            Listener to be informed of the parsing phasis.
+	 * @exception IOException
+	 *                If the stream does not support {@link Reader#mark(int)},
+	 *                or if some other I/O error occurs *
+	 * @param abcVersion
+	 *            Specify which ABC version to use for parsing
+	 *            {@link AbcVersion#v1_6} or {@link AbcVersion#v2_0}
+	 */
+	public TuneBook(Reader stream, AbcFileParserListenerInterface listener,
+			AbcVersion abcVersion) throws IOException {
+		this(abcVersion);
+		buildTunesTreeMap(stream, listener);
+	}
+
+	/**
+	 * Creates an empty tunebook, using v1.6 parser.
+	 *
+	 * @see #TuneBook(AbcVersion)
+	 */
+	public TuneBook() {
+		this(AbcVersion.v1_6);
+	}
   
-  /** Creates a new tune book from the specified stream.
-   * @deprecated use TuneBook(Reader) instead.
-   * @param stream The stream in abc notation. */
-  public TuneBook(BufferedReader stream) {
-    this();
-    buildTunesTreeMap(stream, null);
-  }
-
-  /** Creates a new tune book from the specified stream and gets feedback 
-   * from the parsing phasis via the specified listener.
-   * @param stream The stream in abc notation.
-   * @param listener Listener to be informed of the parsing phasis. 
-   * @deprecated use TuneBook(Reader, AbcFileParserListenerInterface) instead. */
-  public TuneBook(BufferedReader stream, AbcFileParserListenerInterface listener) {
-    this();
-    buildTunesTreeMap(stream, listener);
-  }
+	/**
+	 * Creates an empty tunebook, using specified abc version
+	 * 
+	 * @param abcVersion
+	 *            Specify which ABC version to use for parsing
+	 *            {@link AbcVersion#v1_6} or {@link AbcVersion#v2_0}
+	 */
+	public TuneBook(AbcVersion abcVersion) {
+		m_fileParser = new AbcHeadersParser(abcVersion);
+		m_parser = new TuneParser(abcVersion);
+		m_tunes = new TreeMap();
+		m_originalTunesOrder = new Vector();
+		m_listeners = new Vector();
+	}
 
   /** Saves this tunebook to the specified file.
    * @param file The file where all tunes notation should be stored.

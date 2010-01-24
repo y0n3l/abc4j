@@ -19,11 +19,12 @@ import scanner.AutomataDefinition;
 import scanner.State;
 import scanner.Transition;
 import abc.parser.AbcTokenType;
+import abc.parser.AbcVersion;
 
 /** **/
 public class BarlineDefinition extends AutomataDefinition
 {
-    public BarlineDefinition()
+    public BarlineDefinition(AbcVersion abcVersion)
     {
         State state = new State(AbcTokenType.BARLINE, true);
         getStartingState().addTransition(new Transition(state,'|'));
@@ -45,6 +46,15 @@ public class BarlineDefinition extends AutomataDefinition
         State state5 = new State(AbcTokenType.BARLINE, true);
         trans = new Transition(state5, '|');
         state4.addTransition(trans);
+
+        //ABC v2 dotted bar .|
+        if (abcVersion.equals(AbcVersion.v2_0)) {
+	        State state6 = new State(AbcTokenType.UNKNOWN, false);
+	        getStartingState().addTransition(new Transition(state6,'.'));
+	        State state7 = new State(AbcTokenType.BARLINE, true);
+	        trans = new Transition(state7, '|');
+	        state6.addTransition(trans);
+        }
     }
 }
 

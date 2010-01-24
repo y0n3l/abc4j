@@ -30,6 +30,14 @@ public class BarLine implements MusicElement
   public static final byte END = 4;
   /** The double bar. Ex: || */
   public static final byte DOUBLE = 6;
+  /** Invisible bar. Ex: [|] (in ABC v2 format) */
+  public static final byte INVISIBLE = 7;
+  /** Simple thin dotted bar line. Ex .| (in ABC v2 format) */
+  public static final byte DOTTED = 8;
+  /** end and begin repeat. Ex ::, :|: */
+  public static final byte BEGIN_AND_END_REPEAT = 9;
+  
+  
   /** The type of this bar line. */
   private byte m_type = SIMPLE;
   
@@ -49,65 +57,48 @@ public class BarLine implements MusicElement
   public byte getType()
   { return m_type; }
 
-  /** Converts the specified string to a bar line type.
-   * @param barLine The string to be converted as a bar line.
-   * Possible values are <TT>|</TT>, <TT>||</TT>, <TT>[|</TT>,
-   * <TT>|]</TT>, <TT>:|</TT>, <TT>|:</TT>, <TT>::</TT>.
-   * @return The bar line type corresponding to the given string.
-   * <TT>null</TT> is returned if no type matches the string. */
-  public static byte[] convertToBarLine(String barLine)
-    {
-      byte[] barlineTypes = null;
-      if (barLine.equals("::"))
-      {
-        barlineTypes = new byte[2];
-        barlineTypes[0] = BarLine.REPEAT_CLOSE;
-        barlineTypes[1] = BarLine.REPEAT_OPEN;
-        return barlineTypes;
-      }
-      else
-      {
-        if (barLine.equals("|"))
-        {
-          barlineTypes = new byte[1];
-          barlineTypes[0] = BarLine.SIMPLE;
-        }
-        else
-        if (barLine.equals("||"))
-        {
-          barlineTypes = new byte[1];
-          barlineTypes[0] = BarLine.DOUBLE;
-        }
-        else
-        if (barLine.equals("[|"))
-        {
-          barlineTypes = new byte[1];
-          barlineTypes[0] = BarLine.BEGIN;
-        }
-        else
-        if (barLine.equals("|]"))
-        {
-          barlineTypes = new byte[1];
-          barlineTypes[0] = BarLine.END;
-        }
-        else
-        if (barLine.equals(":|"))
-        {
-          barlineTypes = new byte[1];
-          barlineTypes[0] = BarLine.REPEAT_CLOSE;
-        }
-        else
-        if (barLine.equals("|:"))
-        {
-          barlineTypes = new byte[1];
-          barlineTypes[0] = BarLine.REPEAT_OPEN;
-        }
-        return barlineTypes;
-      }
-    }
+	/**
+	 * Converts the specified string to a bar line type.
+	 * 
+	 * @param barLine
+	 *            The string to be converted as a bar line. Possible values are
+	 *            <TT>|</TT>, <TT>||</TT>, <TT>[|</TT>, <TT>|]</TT>,
+	 *            <TT>:|</TT>, <TT>|:</TT>, <TT>::</TT>...
+	 * @return The bar line type corresponding to the given string. <TT>null</TT>
+	 *         is returned if no type matches the string.
+	 */
+	public static byte[] convertToBarLine(String barLine) {
+		byte[] barlineTypes = null;
+		if (barLine.equals("::")) {
+			barlineTypes = new byte[2];
+			barlineTypes[0] = BarLine.REPEAT_CLOSE;
+			barlineTypes[1] = BarLine.REPEAT_OPEN;
+			//barlineTypes[0] = BarLine.BEGIN_AND_END_REPEAT;
+		} else if (barLine.equals("|")) {
+			barlineTypes = new byte[] { BarLine.SIMPLE };
+		} else if (barLine.equals("||")) {
+			barlineTypes = new byte[] { BarLine.DOUBLE };
+		} else if (barLine.equals("[|")) {
+			barlineTypes = new byte[] { BarLine.BEGIN };
+		} else if (barLine.equals("|]")) {
+			barlineTypes = new byte[] { BarLine.END };
+		} else if (barLine.equals(":|")) {
+			barlineTypes = new byte[] { BarLine.REPEAT_CLOSE };
+		} else if (barLine.equals("|:")) {
+			barlineTypes = new byte[] { BarLine.REPEAT_OPEN };
+		} else if (barLine.equals(".|")) {
+			barlineTypes = new byte[] { BarLine.DOTTED };
+		} else if (barLine.equals("[|]")) {
+			barlineTypes = new byte[] { BarLine.INVISIBLE };
+		}
+		return barlineTypes;
+	}
 
-  /** Returns a string representation of this object.
-   * @return A string representation of this object. */
+  /**
+	 * Returns a string representation of this object.
+	 * 
+	 * @return A string representation of this object.
+	 */
   public String toString()
   {
 	  switch(m_type) {
@@ -117,6 +108,9 @@ public class BarLine implements MusicElement
 	  case BEGIN: return "[|";
 	  case END: return "|]";
 	  case DOUBLE: return "||";
+	  case INVISIBLE: return "[|]";
+	  case DOTTED: return ".|";
+	  case BEGIN_AND_END_REPEAT: return "::";
 	  default: return null;
 	  }
   }

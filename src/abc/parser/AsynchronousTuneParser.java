@@ -31,16 +31,23 @@ public class AsynchronousTuneParser extends TuneParser
 
   /** Constructs a new tune parser. */
   public AsynchronousTuneParser()
+  { this(AbcVersion.v1_6); }
+  
+  /** Constructs a new tune parser. */
+  public AsynchronousTuneParser(AbcVersion abcVersion)
   {
-    super();
+    super(abcVersion);
     m_queue = new Vector();
     m_parsingThread = new Thread(new ParsingRunnable());
     m_parsingThread.start();
   }
 
   public AsynchronousTuneParser(boolean isQueueManagementEnabled)
+  { this(isQueueManagementEnabled, AbcVersion.v1_6); }
+  
+  public AsynchronousTuneParser(boolean isQueueManagementEnabled, AbcVersion abcVersion)
   {
-    super();
+    super(abcVersion);
     m_isQueueManagementEnabled = isQueueManagementEnabled;
     m_queue = new Vector();
     m_parsingThread = new Thread(new ParsingRunnable());

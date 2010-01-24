@@ -26,9 +26,15 @@ import scanner.Set;
  * {@link #parseFile(java.io.Reader)} and you'll get in return instances of 
  * Tune without any music part. */
 public class AbcHeadersParser extends AbcFileParser {
-
+	
 	/** Default constructor. */
 	public AbcHeadersParser() {
+		this(AbcVersion.v1_6);
+	}
+
+	/** Default constructor. */
+	public AbcHeadersParser(AbcVersion abcVersion) {
+		super(abcVersion);
 		// Override the definition of an abc line 
 		FIRST_ABC_LINE = new Set(AbcTokenType.TEXT);
 	}

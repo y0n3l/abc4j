@@ -180,11 +180,11 @@ abstract class JScoreElementAbstract implements JScoreElement {
 			JDecoration jDeco = null;
 			while (iter.hasNext()) {
 				jDeco = (JDecoration)iter.next();
-				byte position = jDeco.getPosition();
 				boolean inverted = (this instanceof JStemmableElement)
 					&& !((JStemmableElement) this).isStemUp();
 				jDeco.setInverted(inverted);
-				jDeco.setBase(m_decorationAnchors[position]);
+				jDeco.setAttachedTo(this);
+				jDeco.setBase(m_decorationAnchors[jDeco.getPosition()]);
 				jDeco.render(context);
  			}
  		}

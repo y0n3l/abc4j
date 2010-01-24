@@ -19,17 +19,32 @@ import scanner.AutomataDefinition;
 import scanner.State;
 import scanner.Transition;
 import abc.parser.AbcTokenType;
+import abc.parser.AbcVersion;
 
 /** This scanner extends the capabilities of the default scanner to implement
  *  abc tokens scannig. **/
 public class GracingDefinition extends AutomataDefinition
 {
 
-    public GracingDefinition()
+    public GracingDefinition(AbcVersion abcVersion)
     {
       State state = new State(AbcTokenType.GRACING, true);
       char[] chars = {'~', '.', 'v', 'u'};
-      //TODO v2.0 char[] chars = {'~', '.', 'v', 'u', 'T', 'H', 'L', 'M', 'P', 'S', 'O'};
+      
+      if (abcVersion.equals(AbcVersion.v2_0)) {
+    	  chars = new char[] {'~', //irish roll
+    			  '.',
+    			  'v',//down-bow
+    			  'u',//up-bow
+    			  'T',//trill
+    			  'H',//fermata
+    			  'L',//accent or emphasis
+    			  'M',//lowermordent
+    			  'P',//uppermordent
+    			  'S',//segno
+    			  'O'//coda
+    			};
+      }
       
       getStartingState().addTransition(new Transition(state, chars));
     }

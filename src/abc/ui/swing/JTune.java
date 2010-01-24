@@ -619,10 +619,10 @@ public class JTune extends JScoreElementAbstract {
 				JStaffLine currentStaffLine = (JStaffLine)m_staffLines.elementAt(i);
 				maxWidth = Math.max(maxWidth, currentStaffLine.getWidth());
 			}
-			componentWidth = maxWidth;
+			componentWidth = maxWidth + 1;
 		} else {
 			if (cursor.getX()>componentWidth)
-				componentWidth = (int)cursor.getX();
+				componentWidth = (int)cursor.getX() + 1;
 		}
 		
 		//if header/footer texts are too long, extend component width

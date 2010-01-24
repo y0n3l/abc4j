@@ -43,8 +43,15 @@ import abc.notation.Tune;
  * @see AbcHeadersParser 
  * */
 public class AbcFileParser extends AbcParserAbstract {
+
 	/** Creates a new abc file parser. */
 	public AbcFileParser() {
+		this(AbcVersion.v1_6);
+	}
+
+	/** Creates a new abc file parser. */
+	public AbcFileParser(AbcVersion abcVersion) {
+		super(abcVersion);
 		m_scanner.removeListener(m_scannerListener);
 		m_scannerListener = new ScannerListenerInterface() {
 			//=======================================SCANNER LISTENER BEGIN
@@ -137,7 +144,7 @@ public class AbcFileParser extends AbcParserAbstract {
 			Set current = FIRST_ABCTUNE.createUnion(FIRST_COMMENT).createUnion(FIRST_LINE_FEED);
 			// are missing TEX COMMAND and FILE FIELDS
 			//.createUnion(FIRST_TEX_COMMAND);//.createUnion(FIRST_FILE_FIELDS);
-			m_scanner.setFinaleStateAutomata(AutomataFactory.getAutomata(current.getTypes()));
+			m_scanner.setFinaleStateAutomata(AutomataFactory.getAutomata(current.getTypes(), m_abcVersion));
 			m_token = m_scanner.nextToken();
 			m_tokenType = m_token.getType();
 			while (m_token!=null) {
@@ -163,7 +170,7 @@ public class AbcFileParser extends AbcParserAbstract {
 							m_scanner.init(charStream);
 							// Init the current to whatever we can find in an Abc File. ("abc-file" in BNF definition)
 							Set newCurrent = FIRST_ABCTUNE.createUnion(FIRST_COMMENT).createUnion(FIRST_LINE_FEED)./*union(FIRST_TEX_COMMAND).*/createUnion(FIRST_ABC_MUSIC);
-							m_scanner.setFinaleStateAutomata(AutomataFactory.getAutomata(newCurrent.getTypes()));
+							m_scanner.setFinaleStateAutomata(AutomataFactory.getAutomata(newCurrent.getTypes(), m_abcVersion));
 							// this next token is the first of the new line.
 							m_token = m_scanner.nextToken();
 							m_tokenType = m_token.getType();

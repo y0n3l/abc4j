@@ -47,15 +47,7 @@ class JBar extends JScoreElementAbstract {
 
 	public JBar(BarLine barLine, Point2D base, ScoreMetrics mtrx) {
 		super(mtrx);
-		double noteWidth = mtrx.getNoteWidth();
 		m_barLine = barLine;
-		m_dotsRadius = (int) (noteWidth * 0.3);
-		m_thickBarWidth = Math.max(2, (int) (noteWidth * 0.5));
-		m_thinBarWidth = Math.max(1, (int) mtrx.getBounds(
-						getMusicalFont().getBarLine(BarLine.SIMPLE)
-					).getWidth());
-		m_barDotsSpacing = Math.max(1, noteWidth * 0.2);
-		m_doubleBarSpacing = Math.max(2, noteWidth * 0.3);
 		setBase(base);
 	}
 
@@ -78,10 +70,14 @@ class JBar extends JScoreElementAbstract {
 	public MusicElement getMusicElement() {
 		return m_barLine;
 	}
-
+	
 	public double getWidth() {
 		double width = 0;
 		switch (m_barLine.getType()) {
+		case BarLine.BEGIN_AND_END_REPEAT:
+			width = m_thickBarWidth + 2 * (m_doubleBarSpacing + m_thinBarWidth - 1
+					+ m_barDotsSpacing + Math.ceil(m_dotsRadius) - 1);
+			break;
 		case BarLine.REPEAT_OPEN:
 		case BarLine.REPEAT_CLOSE:
 			width = m_thickBarWidth + m_doubleBarSpacing + m_thinBarWidth - 1
@@ -95,6 +91,8 @@ class JBar extends JScoreElementAbstract {
 			width = m_doubleBarSpacing + 2 * m_thinBarWidth - 2;
 			break;
 		case BarLine.SIMPLE:
+		case BarLine.INVISIBLE:
+		case BarLine.DOTTED:
 		default:
 			width = m_thinBarWidth - 1;
 			break;
@@ -106,12 +104,32 @@ class JBar extends JScoreElementAbstract {
 		int height = getHeight();
 		m_topDotY = (int) (getBase().getY() - height * 0.61);
 		m_bottomDotY = (int) (getBase().getY() - height * 0.4);
+		
+		double noteWidth = getMetrics().getNoteWidth();
+		m_dotsRadius = (int) (noteWidth * 0.3);
+		m_thickBarWidth = Math.max(2, (int) (noteWidth * 0.5));
+		m_thinBarWidth = Math.max(1, (int) getMetrics().getBounds(
+						getMusicalFont().getBarLine(BarLine.SIMPLE)
+					).getWidth());
+		m_barDotsSpacing = Math.max(1, noteWidth * 0.2);
+		m_doubleBarSpacing = Math.max(2, noteWidth * 0.3);
 	}
 
 	public double render(Graphics2D context) {
 		super.render(context);
 		double x = getBase().getX();
 		switch (m_barLine.getType()) {
+		case BarLine.BEGIN_AND_END_REPEAT:
+			renderDots(context, x);
+			x += m_dotsRadius + m_barDotsSpacing;
+			renderThinLine(context, x);
+			x += m_thinBarWidth + m_doubleBarSpacing;
+			renderThickLine(context, x);
+			x += m_thickBarWidth + m_doubleBarSpacing;
+			renderThinLine(context, x);
+			x += m_thinBarWidth + m_barDotsSpacing;
+			renderDots(context, x);
+			break;
 		case BarLine.REPEAT_OPEN:
 			renderThickLine(context, x);
 			renderThinLine(context, x + m_thickBarWidth + m_doubleBarSpacing);
@@ -136,6 +154,10 @@ class JBar extends JScoreElementAbstract {
 			renderThinLine(context, x);
 			renderThinLine(context, x + m_doubleBarSpacing);
 			break;
+		case BarLine.INVISIBLE: break;
+		case BarLine.DOTTED:
+			renderDottedLine(context, x);
+			break;
 		case BarLine.SIMPLE:
 		default:
 			renderThinLine(context, x);
@@ -156,6 +178,20 @@ class JBar extends JScoreElementAbstract {
 				m_thickBarWidth, height);
 	}
 
+	private void renderDottedLine(Graphics2D context, double x) {
+		int height = getHeight();
+		int yStart = (int) (getBase().getY() - height);
+		int yEnd = (int) getBase().getY();
+		double yUnit = height / 23;
+		if (yUnit < 1) yUnit = 1;
+		int y = yStart;
+		while (y <= yEnd - (yUnit * 3)) {
+			context.fillRect((int) x, y,
+					m_thinBarWidth, (int) (yUnit * 3));
+			y += (int) (yUnit * 5);
+		}
+	}
+	
 	private void renderThinLine(Graphics2D context, double x) {
 //		context.drawChars(new char[] {
 //				getMusicalFont().getBarLine(BarLine.SIMPLE)

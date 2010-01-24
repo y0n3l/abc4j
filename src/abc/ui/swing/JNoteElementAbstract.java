@@ -196,6 +196,8 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 							Math.min(aboveNoteHeadY, endStemY));
 			underStaffY = Math.max(underStaffY,
 					Math.max(underNoteHeadY, endStemY));
+			double aboveNoteOutOfStaffY = Math.min(aboveNoteHeadY, aboveStaffY);
+			double underNoteOutOfStaffY = Math.max(underNoteHeadY, underStaffY);
 			double endStemOutOfStaffY = isStemUp()
 							?Math.min(endStemY, aboveStaffY)
 							:Math.max(endStemY, underStaffY);
@@ -210,8 +212,12 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 				= new Point2D.Double(noteHeadX, underNoteHeadY);
 			m_decorationAnchors[JDecoration.VERTICAL_NEAR_STEM]
 				= new Point2D.Double(noteHeadX, isStemUp()?aboveNoteHeadY:underNoteHeadY);
+			m_decorationAnchors[JDecoration.VERTICAL_NEAR_STEM_OUT_STAFF]
+			    				= new Point2D.Double(noteHeadX, isStemUp()?aboveNoteOutOfStaffY:underNoteOutOfStaffY);
 			m_decorationAnchors[JDecoration.VERTICAL_AWAY_STEM]
 				= new Point2D.Double(noteHeadX, isStemUp()?underNoteHeadY:aboveNoteHeadY);
+			m_decorationAnchors[JDecoration.VERTICAL_AWAY_STEM_OUT_STAFF]
+			    				= new Point2D.Double(noteHeadX, isStemUp()?underNoteOutOfStaffY:aboveNoteOutOfStaffY);
 			m_decorationAnchors[JDecoration.HORIZONTAL_NEAR_STEM]
 				= new Point2D.Double(isStemUp()?rightNoteHeadX:leftNoteHeadX, noteHeadY);
 			m_decorationAnchors[JDecoration.HORIZONTAL_AWAY_STEM]

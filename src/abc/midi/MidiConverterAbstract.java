@@ -147,6 +147,7 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   									repeatNumber=1; lastRepeatOpen=-1;
   								}
   								break;
+  						//TODO case BarLine.BEGIN_AND_END_REPEAT
 					}
 				}
   				//Whatever kind of bar line it is

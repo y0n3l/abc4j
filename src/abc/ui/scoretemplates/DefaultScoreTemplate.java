@@ -39,9 +39,9 @@ import abc.ui.swing.ScoreTemplate;
 public class DefaultScoreTemplate extends ScoreTemplate implements Cloneable {
 
 	private static final byte[] FOOTNOTES = new byte[] {
+		TextFields.NOTES, //=ANNOTATIONS
 		TextFields.SOURCE,
 		TextFields.TRANSCRNOTES,
-		TextFields.NOTES, //=ANNOTATIONS
 		TextFields.FILEURL
 	};
 
