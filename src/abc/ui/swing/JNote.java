@@ -191,7 +191,8 @@ class JNote extends JNoteElementAbstract {
 		stemDownBeginPosition = new Point2D.Double(notePosition.getX(),
 				notePosition.getY()-glyphDimension.getHeight()/2);
 		if (note.hasAccidental())
-			accidentalsPosition = new Point2D.Double(base.getX()+graceNotesWidth,notePosition.getY()-glyphDimension.getHeight()/2);
+			accidentalsPosition = new Point2D.Double(base.getX()+(graceNotesAfter?0:graceNotesWidth),
+					notePosition.getY()-glyphDimension.getHeight()/2);
 		if (note.getHeight()>=Note.c && note.getStrictDuration() < Note.EIGHTH) {
 			stemUpBeginPosition.setLocation(stemUpBeginPosition.getX(), stemUpBeginPosition.getY()-glyphDimension.getHeight()/2);
 			stemDownBeginPosition.setLocation(stemDownBeginPosition.getX(), stemDownBeginPosition.getY()-glyphDimension.getHeight()/2);
