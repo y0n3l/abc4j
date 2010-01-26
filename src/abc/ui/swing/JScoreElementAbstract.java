@@ -19,9 +19,10 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Iterator;
 import java.util.Vector;
 
+import abc.notation.DecorableElement;
+import abc.notation.Decoration;
 import abc.notation.MusicElement;
 import abc.notation.Tune;
 import abc.ui.fonts.MusicalFont;
@@ -149,6 +150,19 @@ abstract class JScoreElementAbstract implements JScoreElement {
 		onBaseChanged();
 	}
 	
+	protected void addDecorations(DecorableElement decorable) {
+		if (decorable.hasDecorations()) {
+			Decoration[] decorations = decorable.getDecorations();
+			for (int i = 0; i < decorations.length; i++) {
+				if (decorations[i] != null) {
+					addDecoration(
+						new JDecoration(
+							decorations[i], getMetrics()));
+				}
+			}
+		}
+	}
+	
 	/** Add decoration if it hasn't been added previously */
 	protected void addDecoration (JDecoration decoration) {
 		if (m_jDecorations == null) {
@@ -156,6 +170,33 @@ abstract class JScoreElementAbstract implements JScoreElement {
 		}
 		if (!m_jDecorations.contains(decoration)) {
 			m_jDecorations.add(decoration);
+		}
+	}
+	
+	protected void calcDecorationPosition() {
+		if (m_jDecorations != null && m_jDecorations.size() > 0){
+			double noteHeight = getMetrics().getNoteHeight();
+			double x = getBase().getX() + getWidth() / 2;
+			double bottom = getStaffLine().get1stLineY() + noteHeight;
+			double top = getStaffLine().get5thLineY() - noteHeight;
+			double middle = bottom + (top-bottom)/2;
+			m_decorationAnchors[JDecoration.ABOVE_NOTE]
+				= m_decorationAnchors[JDecoration.ABOVE_STAFF]
+				= m_decorationAnchors[JDecoration.ABOVE_STAFF_AFTER_NOTE]
+				= m_decorationAnchors[JDecoration.STEM_END]
+				= m_decorationAnchors[JDecoration.STEM_END_OUT_OF_STAFF]
+				= m_decorationAnchors[JDecoration.VERTICAL_NEAR_STEM]
+				= m_decorationAnchors[JDecoration.VERTICAL_NEAR_STEM_OUT_STAFF]
+				= new Point2D.Double(x, top);
+			m_decorationAnchors[JDecoration.UNDER_NOTE]
+				= m_decorationAnchors[JDecoration.UNDER_STAFF]
+				= m_decorationAnchors[JDecoration.VERTICAL_AWAY_STEM]
+				= m_decorationAnchors[JDecoration.VERTICAL_AWAY_STEM_OUT_STAFF]
+				= new Point2D.Double(x, bottom);
+			m_decorationAnchors[JDecoration.HORIZONTAL_AWAY_STEM]
+				= m_decorationAnchors[JDecoration.HORIZONTAL_NEAR_STEM]
+				= m_decorationAnchors[JDecoration.STEM_MIDDLE]
+				= new Point2D.Double(x, middle);
 		}
 	}
 
@@ -176,10 +217,12 @@ abstract class JScoreElementAbstract implements JScoreElement {
 
 	protected void renderDecorations(Graphics2D context){
 		if (m_jDecorations != null && m_jDecorations.size() > 0) {
-			Iterator iter = m_jDecorations.iterator();
+			if (m_decorationAnchors[JDecoration.ABOVE_STAFF] == null)
+				calcDecorationPosition();
+			//first decoration is on top
 			JDecoration jDeco = null;
-			while (iter.hasNext()) {
-				jDeco = (JDecoration)iter.next();
+			for (int i = m_jDecorations.size()-1; i >= 0; i--) {
+				jDeco = (JDecoration)m_jDecorations.elementAt(i);
 				boolean inverted = (this instanceof JStemmableElement)
 					&& !((JStemmableElement) this).isStemUp();
 				jDeco.setInverted(inverted);

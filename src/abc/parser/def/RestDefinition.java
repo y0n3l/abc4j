@@ -19,16 +19,20 @@ import scanner.AutomataDefinition;
 import scanner.State;
 import scanner.Transition;
 import abc.parser.AbcTokenType;
+import abc.parser.AbcVersion;
 
 /** This scanner extends the capabilities of the default scanner to implement
  *  abc tokens scannig. **/
 public class RestDefinition extends AutomataDefinition
 {
 
-    public RestDefinition()
+    public RestDefinition(AbcVersion abcVersion)
     {
+    	char[] chars = {'z'};
+    	if (abcVersion.isGreaterOrEqual(AbcVersion.v2_0))
+    		chars = new char[] {'z','x'};
       State state = new State(AbcTokenType.REST, true);
-      getStartingState().addTransition(new Transition(state, 'z'));
+      getStartingState().addTransition(new Transition(state, chars));
     }
 }
 

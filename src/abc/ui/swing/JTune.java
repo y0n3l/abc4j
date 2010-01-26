@@ -45,6 +45,7 @@ import abc.notation.RepeatBarLine;
 import abc.notation.MusicElement;
 import abc.notation.EndOfStaffLine;
 import abc.notation.SlurDefinition;
+import abc.notation.Spacer;
 import abc.notation.Tempo;
 import abc.notation.TieDefinition;
 import abc.notation.TimeSignature;
@@ -134,13 +135,6 @@ public class JTune extends JScoreElementAbstract {
 		return getTemplate().isJustified();
 	}
 	
-	private byte getStemmingPolicy() {
-    	byte b = (byte) getTemplate().getAttributeNumber(ScoreAttribute.STEM_POLICY);
-		if ((b != STEMS_AUTO) && (b != STEMS_UP)
-				&& (b != STEMS_DOWN))
-			b = STEMS_AUTO;
-		return b;
-	}
 	public void setColor(Color c) {
 		m_color = c;
 	}
@@ -566,6 +560,13 @@ public class JTune extends JScoreElementAbstract {
 				lessThanQuarter.clear();
 			}
 			else
+			// ==== Spacer ====
+			if (s instanceof Spacer) {
+				appendToScore(lessThanQuarter);
+				lessThanQuarter.clear();
+				appendToScore(new JSpacer(getMetrics(), cursor, (Spacer)s));
+			}
+			else
 			// ==== Words ====
 			if (s instanceof Words) {
 				appendLyrics(new JWords(getMetrics(), (Words)s));
@@ -656,7 +657,9 @@ public class JTune extends JScoreElementAbstract {
 		JScoreElement lastElement = currentStaffLine.getLastElement();
 		if (lastElement != null) {
 			if ((lastElement instanceof JPartLabel)
-				&& !(element instanceof JBar)) {
+					&& !(element instanceof JBar)
+					&& !(element instanceof JKeySignature)
+					&& !(element instanceof JTimeSignature)) {
 				cursor.setLocation(cursor.getX()+getMetrics().getNotesSpacing(), cursor.getY());
 				//element.setBase(cursor);
 			}
@@ -774,13 +777,45 @@ public class JTune extends JScoreElementAbstract {
 	private void applyStemmingPolicy(JScoreElementAbstract element) {
 		if (element != null && element instanceof JStemmableElement) {
 			JStemmableElement stemmable = (JStemmableElement) element;
-			byte stemPolicy = getStemmingPolicy();
-			if (stemPolicy == STEMS_AUTO) {
+			byte noteStemPolicy = (byte) getTemplate().getAttributeNumber(ScoreAttribute.NOTE_STEM_POLICY);
+			if (noteStemPolicy == STEMS_AUTO) {
 				stemmable.setAutoStem(true);
 			} else {
-				boolean isup = (stemPolicy == STEMS_UP) ? true : false;
+				boolean isup = (noteStemPolicy == STEMS_UP) ? true : false;
 				stemmable.setAutoStem(false);
 				stemmable.setStemUp(isup);
+			}
+			//grace notes
+			byte gracenoteStemPolicy = (byte) getTemplate().getAttributeNumber(ScoreAttribute.GRACENOTE_STEM_POLICY);
+			if (element instanceof JNoteElementAbstract) {
+				JNoteElementAbstract jnea = (JNoteElementAbstract) element;
+				if ((jnea.m_jGracenotes != null)
+					&& (jnea.m_jGracenotes instanceof JStemmableElement)) {
+					JStemmableElement stemmableGN = (JStemmableElement) jnea.m_jGracenotes;
+					if (gracenoteStemPolicy == STEMS_AUTO) {
+						stemmableGN.setAutoStem(true);
+					} else {
+						boolean isup = (gracenoteStemPolicy == STEMS_UP) ? true : false;
+						stemmableGN.setAutoStem(false);
+						stemmableGN.setStemUp(isup);
+					}
+				}
+			} else if (element instanceof JGroupOfNotes) {
+				JGroupOfNotes jgon = (JGroupOfNotes) element;
+				for (int i = 0; i < jgon.m_jNotes.length; i++) {
+					JNoteElementAbstract jnea = (JNoteElementAbstract) jgon.m_jNotes[i];
+					if (jnea.m_jGracenotes != null) {
+						JStemmableElement stemmableGN =
+							(JStemmableElement) jnea.m_jGracenotes;
+						if (gracenoteStemPolicy == STEMS_AUTO) {
+							stemmableGN.setAutoStem(true);
+						} else {
+							boolean isup = (gracenoteStemPolicy == STEMS_UP) ? true : false;
+							stemmableGN.setAutoStem(false);
+							stemmableGN.setStemUp(isup);
+						}
+					}
+				}
 			}
 		}
 	}
@@ -1430,7 +1465,7 @@ public class JTune extends JScoreElementAbstract {
 		sl.setTopY(cursor.getY());
 		
 		//add space if tune has chord, part label or tempo
-		Music music = m_tune.getMusic();
+		Music music = m_tune.getMusicForGraphicalRendition();
 		if (music.hasChordNames() || music.hasPartLabel()
 				|| music.hasTempo()) {
 			cursor.setLocation(

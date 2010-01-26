@@ -19,15 +19,15 @@ package abc.notation;
 import java.util.Vector;
 
 /** This is the abstract class to define notes or multi notes. */
-public class NoteAbstract implements MusicElement
+public class NoteAbstract extends DecorableElement implements MusicElement
 {
 
   /** The chord name. */
   private Chord m_chord = null;
-  private Decoration[] m_decorations = null;
   private Note[] m_gracingNotes = null;
   private boolean generalGracing		= false;
   private boolean staccato			= false;
+  private byte m_gracingType = GracingType.APPOGGIATURA;
 
   /** The number of dots for this note. */
   private byte m_dotted = 0;
@@ -69,46 +69,28 @@ public class NoteAbstract implements MusicElement
   public Chord getChord()
   { return m_chord; }
 
-  /** Returns the decorations for this note.
-   * @return The decorations for this note. <TT>null</TT> if
-   * this note has no decoration.
-   * @see #hasDecorations() */
-  public Decoration[] getDecorations()
-  { return m_decorations; }
-
-  /**
-   * Test if the note has the specified type of decoration
-   * @param decorationType {@link Decoration#DOWNBOW}, {@link Decoration#STACCATO}...
-   * @return
-   */
-  public boolean hasDecoration(byte decorationType) {
-	if (hasDecorations()) {
-	  for (int i = 0; i < m_decorations.length; i++) {
-		if (m_decorations[i].isType(decorationType))
-		  return true;
-	  }
-	}
-	return false;
-  }
-
-  public void setDecorations(Decoration[] dec)
-  { m_decorations=dec;}
-
-  /** Returns <TT>true</TT> if this note has decorations, <TT>false</TT> otherwise.
-   * @return <TT>true</TT> if this note has decorations, <TT>false</TT> otherwise. */
-  public boolean hasDecorations() {
-	  return (m_decorations!=null && m_decorations.length > 0);
-  }
-
   /** Returns the gracing notes to be played with this note.
    * @return The gracing notes to be played with this note. <TT>null</TT> if
    * this note has no gracing notes.
    * @see #hasGracingNotes() */
   public Note[] getGracingNotes()
   { return m_gracingNotes; }
+  
+  /**
+   * Returns the gracing type
+   * @return {@link GracingType#APPOGGIATURA} or
+   * {@link GracingType#ACCIACCATURA}
+   */
+  public byte getGracingType() {
+	  return m_gracingType;
+  }
 
   public void setGracingNotes(Note[] notes)
   { m_gracingNotes=notes;}
+  
+  public void setGracingType(byte b) {
+	m_gracingType = b;  
+  }
 
   /** Returns <TT>true</TT> if this note has gracings, <TT>false</TT> otherwise.
    * @return <TT>true</TT> if this note has gracings, <TT>false</TT> otherwise. */

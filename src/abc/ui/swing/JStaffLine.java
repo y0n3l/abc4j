@@ -177,7 +177,7 @@ class JStaffLine extends JScoreElementAbstract {
 		boolean dontMoveFirstElements = true;
 		double getWidth = getWidth();
 		if (getWidth == newWidth)
-			return; //No need to justify, this is the longest staff line
+			return;
 		//System.out.println("scaleToWidth("+newWidth+")");
 		for (int i=0; i<m_staffElements.size(); i++){
 			JScoreElementAbstract elmt = (JScoreElementAbstract)m_staffElements.elementAt(i);

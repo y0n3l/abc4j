@@ -17,12 +17,16 @@ package abc.ui.swing;
 
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
+import java.awt.geom.QuadCurve2D;
 import java.awt.geom.Rectangle2D;
 
 import abc.notation.Decoration;
+import abc.notation.GracingType;
 import abc.notation.Note;
 import abc.notation.NoteAbstract;
+import abc.ui.scoretemplates.ScoreAttribute;
 import abc.ui.swing.JScoreElement.JStemmableElement;
 
 /** This class defines a note rendition element.
@@ -69,15 +73,26 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 
 		// add JGraceNotes
 		if (noteValue.hasGracingNotes()) {
-			Note [] graceNotes = noteValue.getGracingNotes();
+			Note[] graceNotes = noteValue.getGracingNotes();
 			if (graceNotes.length == 1) {
 				m_jGracenotes = new JGraceNote(graceNotes[0], base, getMetrics());
 				base.setLocation(base.getX()+m_jGracenotes.getWidth(),base.getY());
 			} else if (graceNotes.length>1) {
-				// FIXME gracenote groups should use a proper engraver!!
 				m_jGracenotes = new JGroupOfGraceNotes(getMetrics(), base, graceNotes, null);
 				//base.setLocation(base.getX()+m_jGracenotes.getWidth(),base.getY());
 			}
+			byte appogOrAcciac = noteValue.getGracingType();
+			boolean renderSlash = true;
+			switch (appogOrAcciac) {
+			case GracingType.ACCIACCATURA:
+				renderSlash = getTemplate().getAttributeBoolean(ScoreAttribute.ACCIACCATURA_SLASH);
+				break;
+			case GracingType.APPOGGIATURA:
+			default:
+				renderSlash = getTemplate().getAttributeBoolean(ScoreAttribute.APPOGGIATURA_SLASH);
+				break;
+			}
+			((JGraceElement) m_jGracenotes).setRenderSlash(renderSlash);
 		}
 
 		// add JDecorations
@@ -281,11 +296,94 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 		return slurUnderAnchorOutOfStem;
 	}
 
-
 	/* Render each indiviual gracenote associated with this note. */
 	protected void renderGraceNotes(Graphics2D context) {
-		if (m_jGracenotes != null)
+		if (m_jGracenotes != null) {
 			m_jGracenotes.render(context);
+			
+			boolean addSlur = false;
+			if (getMusicElement() instanceof NoteAbstract) {
+				byte graceType = ((NoteAbstract) getMusicElement())
+					.getGracingType();
+				addSlur = getTemplate().getAttributeBoolean(
+					graceType == GracingType.ACCIACCATURA
+						?ScoreAttribute.ACCIACCATURA_SLUR
+						:ScoreAttribute.APPOGGIATURA_SLUR
+				);
+			}
+			
+			if (addSlur) {
+				boolean graceAfterNote = false;
+				if (m_jGracenotes.getBase().getX() > getBase().getX())
+					graceAfterNote = true;
+				boolean gracesUp = ((JStemmableElement) m_jGracenotes).isStemUp();
+				Point2D p2dStart, p2dControl, p2dEnd;
+				JNoteElementAbstract start, end;
+				if (graceAfterNote) {
+					if (this instanceof JChord) {
+						start = gracesUp
+							?((JChord) this).getLowestNote()
+							:((JChord) this).getHighestNote();
+					} else
+						start = this;
+					if (m_jGracenotes instanceof JGraceNote)
+						end = (JGraceNote) m_jGracenotes;
+					else //JGroupOfGrace
+						end = (JGraceNotePartOfGroup)
+							((JGroupOfGraceNotes) m_jGracenotes)
+								.m_jNotes[((JGroupOfGraceNotes) m_jGracenotes).m_jNotes.length-1];
+				} else {
+					if (m_jGracenotes instanceof JGraceNote)
+						start = (JGraceNote) m_jGracenotes;
+					else //JGroupOfGrace
+						start = (JGraceNotePartOfGroup)
+							((JGroupOfGraceNotes) m_jGracenotes)
+								.m_jNotes[0];
+					if (this instanceof JChord) {
+						end = gracesUp
+							?((JChord) this).getLowestNote()
+							:((JChord) this).getHighestNote();
+					} else
+						end = this;
+				}
+				p2dStart = gracesUp
+						?start.getTieStartUnderAnchor()
+						:start.getTieStartAboveAnchor();
+				p2dEnd = gracesUp
+						?end.getTieEndUnderAnchor()
+						:end.getTieEndAboveAnchor();
+				double yControl = gracesUp
+						?Math.max(p2dStart.getY(), p2dEnd.getY())
+						:Math.min(p2dStart.getY(), p2dEnd.getY());
+				if (m_jGracenotes instanceof JGroupOfGraceNotes) {
+					Rectangle2D bounds = m_jGracenotes.getBoundingBox();
+					if (gracesUp)
+						yControl = Math.max(yControl, bounds.getMaxY());
+					else
+						yControl = Math.min(yControl, bounds.getMinY());
+				}
+				p2dControl = new Point2D.Double(
+					p2dStart.getX() + (p2dEnd.getX()-p2dStart.getX())/2,
+					yControl + ((gracesUp?.5:-.5)*getMetrics().getSlurAnchorYOffset())
+				);
+				
+				GeneralPath path = new GeneralPath();
+				path.moveTo((float)p2dStart.getX(), (float)p2dStart.getY());
+				QuadCurve2D q = new QuadCurve2D.Float();
+				q.setCurve(p2dStart,
+						JTune.newControl(p2dStart, p2dControl, p2dEnd),
+						p2dEnd);
+				path.append(q, true);
+				p2dControl.setLocation(p2dControl.getX(),
+					p2dControl.getY() + (gracesUp?1:-1));
+				q.setCurve(p2dEnd,
+						JTune.newControl(p2dStart, p2dControl, p2dEnd),
+						p2dStart);
+				path.append(q, true);
+				context.fill(path);
+				context.draw(path);
+			}
+		}
 	}
 	
 	protected void renderDebugSlurAnchors(Graphics2D context) {

@@ -59,7 +59,8 @@ public class TuneEditorPane extends JTextPane// implements ActionListener
   private static Color BACKGROUND_COLOR = new Color(249,234,202);
   private static Color FIELDS_COLOR = new Color (0,128,0);
   private static Color GRACING_FOREGROUND_COLOR = Color.green;
-  private static Color GRACING_BACKGROUND_COLOR = FIELDS_COLOR;
+  private static Color GRACING_BACKGROUND_COLOR = new Color(220,255,220);
+  private static Color SYMBOL_FOREGROUND_COLOR = new Color(128, 128, 0);
   private static Color TUPLET_FOREGROUND_COLOR = new Color(128,0,255);
   private static Color SELECTION_FOREGROUND_COLOR = Color.white;//new Color(10,36,106);
   private static Color SELECTION_BACKGROUND_COLOR = new Color(10,36,106);
@@ -72,6 +73,7 @@ public class TuneEditorPane extends JTextPane// implements ActionListener
   private static final String COMMENT_STYLE = "comment";
   private static final String NOTE_STYLE = "note";
   private static final String GRACING_STYLE = "note";
+  private static final String SYMBOL_STYLE = "symbol";
   private static final String FIELD_STYLE = "field";
   private static final String RHYTHM_STYLE = "rhythm";
   private static final String DEFAULT_STYLE = "rhythm";
@@ -83,7 +85,7 @@ public class TuneEditorPane extends JTextPane// implements ActionListener
   private boolean m_forceRefresh = false;
   /** */
   private Style m_barStyle, m_textStyle, m_errorStyle,m_fieldStyle, m_rhythmStyle,
-  	m_defaultStyle, m_baseNoteStyle, m_commentStyle, m_gracingStyle = null;
+  	m_defaultStyle, m_baseNoteStyle, m_commentStyle, m_gracingStyle, m_symbolStyle = null;
   private static final int IDLE_TIME_BEFORE_REFRESH = 200;
   /** The thread in charge of refreshing the tune representation of this editor pane. */
   private ParsingRefresh m_refresher = null;
@@ -260,6 +262,8 @@ public class TuneEditorPane extends JTextPane// implements ActionListener
     m_gracingStyle = addStyle(GRACING_STYLE, m_defaultStyle);
     StyleConstants.setBackground(m_gracingStyle, GRACING_BACKGROUND_COLOR);
     StyleConstants.setForeground(m_gracingStyle, GRACING_FOREGROUND_COLOR);
+    m_symbolStyle = addStyle(SYMBOL_STYLE, m_defaultStyle);
+    StyleConstants.setForeground(m_symbolStyle, SYMBOL_FOREGROUND_COLOR);
     m_textStyle = addStyle(TEXT_STYLE, m_defaultStyle);
     StyleConstants.setForeground(m_textStyle, Color.blue);
     m_commentStyle = addStyle(COMMENT_STYLE, m_defaultStyle);
@@ -285,7 +289,7 @@ public class TuneEditorPane extends JTextPane// implements ActionListener
   {
     if (e.getActionCommand().compareTo(COPY_ACTION)==0)
     {
-      StringBuffer sbf=new StringBuffer();
+      //StringBuffer sbf=new StringBuffer();
       //System.out.println("COPY ! : " + getSelectedText());
       StringSelection stsel  = new StringSelection(getSelectedText());
       Clipboard system = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -457,83 +461,77 @@ public class TuneEditorPane extends JTextPane// implements ActionListener
       m_parsingEvents.addElement(evt);
     }
 
-    private void redrawTune()
-    {
-      EventObject event = null;
-      for (int i=0; i<m_parsingEvents.size(); i++)
-      {
-        event = (EventObject)m_parsingEvents.elementAt(i);
-        if (event instanceof TokenEvent)
-        {
-          Token token = ((TokenEvent)event).getToken();
-          if (token!=null)
-          try
-          {
-            Style att = m_defaultStyle;
-            AbcTokenType tokenType = (AbcTokenType)token.getType();
-            if (tokenType.isField())
-              att = m_fieldStyle;
-            else
-            if (tokenType.equals(AbcTokenType.TUPLET_SPEC) || tokenType.equals(AbcTokenType.BROKEN_RHYTHM))
-              att = m_rhythmStyle;
-            else if (tokenType.equals(AbcTokenType.BARLINE) || tokenType.equals(AbcTokenType.REPEAT_OPEN) ||
-                     tokenType.equals(AbcTokenType.REPEAT_CLOSE) || tokenType.equals(AbcTokenType.NTH_REPEAT))
-              att = m_barStyle;
-            else
-            if (token.getType().equals(AbcTokenType.COMMENT))
-              att = m_commentStyle;
-            else
-              if (token.getType().equals(AbcTokenType.TEXT))
-              {
-                if(m_contextForText.equals(AbcTokenType.COMMENT))
-                  att = m_commentStyle;
-                else
-                  att = m_textStyle;
-              }
-                else
-                if (token.getType().equals(AbcTokenType.BASE_NOTE))
-                  if (AbcTokenType.GRACING_BEGIN.equals(m_contextForNote))
-                    att = m_gracingStyle;
-                  else
-                    att = m_baseNoteStyle;
-                else
-                  if (token.getType().equals(AbcTokenType.GRACING_BEGIN))
-                  {
-                    m_contextForNote = AbcTokenType.GRACING_BEGIN;
-                    att = m_gracingStyle;
-                  }
-                  else
-                    if (token.getType().equals(AbcTokenType.GRACING_END))
-                    {
-                      m_contextForNote = null;
-                      att = m_gracingStyle;
-                    }
-            m_document.setCharacterAttributes(token.getPosition().getCharactersOffset(),
-                                              token.getValue().length(), att, true);
-            m_contextForText = token.getType();
-          }
-          catch (Exception e)
-          { e.printStackTrace(); }
-          else
-          {
-              //This is an invalid token event.
-            //System.out.println("null token in " + event);
-          }
-        }
-        else
-          if (event instanceof InvalidCharacterEvent)
-          {
-            InvalidCharacterEvent evt = (InvalidCharacterEvent)event;
-            m_document.setCharacterAttributes(evt.getPosition().getCharactersOffset(), 1, m_errorStyle, true);
-          }
-          else
-          if (event instanceof InvalidTokenEvent)
-          {
-            InvalidTokenEvent evt = (InvalidTokenEvent)event;
-            m_document.setCharacterAttributes(evt.getPosition().getCharactersOffset(), 1, m_errorStyle, true);
-          }
-      }
-    }
+    private void redrawTune() {
+		EventObject event = null;
+		for (int i = 0; i < m_parsingEvents.size(); i++) {
+			event = (EventObject) m_parsingEvents.elementAt(i);
+			if (event instanceof TokenEvent) {
+				Token token = ((TokenEvent) event).getToken();
+				if (token != null) {
+					try {
+						Style att = m_defaultStyle;
+						AbcTokenType tokenType = (AbcTokenType) token.getType();
+						if (tokenType.isField())
+							att = m_fieldStyle;
+						else if (tokenType.equals(AbcTokenType.TUPLET_SPEC)
+								|| tokenType.equals(AbcTokenType.BROKEN_RHYTHM))
+							att = m_rhythmStyle;
+						else if (tokenType.equals(AbcTokenType.BARLINE)
+								|| tokenType.equals(AbcTokenType.REPEAT_OPEN)
+								|| tokenType.equals(AbcTokenType.REPEAT_CLOSE)
+								|| tokenType.equals(AbcTokenType.NTH_REPEAT))
+							att = m_barStyle;
+						else if (token.getType().equals(AbcTokenType.SYMBOL))
+							att = m_symbolStyle;
+						else if (token.getType().equals(AbcTokenType.COMMENT))
+							att = m_commentStyle;
+						else if (token.getType().equals(AbcTokenType.TEXT)) {
+							if (m_contextForText.equals(AbcTokenType.COMMENT))
+								att = m_commentStyle;
+							else
+								att = m_textStyle;
+						} else if (token.getType().equals(AbcTokenType.BASE_NOTE)) {
+							if (AbcTokenType.GRACING_BEGIN.equals(m_contextForNote))
+								att = m_gracingStyle;
+							else
+								att = m_baseNoteStyle;
+						} else if (token.getType().equals(AbcTokenType.GRACING_BEGIN)
+								|| token.getType().equals(AbcTokenType.ACCIACCATURA)) {
+							m_contextForNote = AbcTokenType.GRACING_BEGIN;
+							att = m_gracingStyle;
+						} else if (token.getType().equals(AbcTokenType.GRACING_END)) {
+							m_contextForNote = null;
+							att = m_gracingStyle;
+						} else if (token.getType().equals(AbcTokenType.SYMBOL_BEGIN)) {
+							m_contextForText = AbcTokenType.SYMBOL;
+							att = m_symbolStyle;
+						} else if (token.getType().equals(AbcTokenType.SYMBOL_END)) {
+							m_contextForText = null;
+							att = m_symbolStyle;
+						}
+						m_document.setCharacterAttributes(token
+								.getPosition().getCharactersOffset(), token
+								.getValue().length(), att, true);
+						m_contextForText = token.getType();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				} else {
+					//This is an invalid token event.
+					//System.out.println("null token in " + event);
+				}
+			} else if (event instanceof InvalidCharacterEvent) {
+				InvalidCharacterEvent evt = (InvalidCharacterEvent) event;
+				m_document.setCharacterAttributes(evt.getPosition()
+						.getCharactersOffset(), 1, m_errorStyle, true);
+			} else if (event instanceof InvalidTokenEvent) {
+				InvalidTokenEvent evt = (InvalidTokenEvent) event;
+				m_document.setCharacterAttributes(evt.getPosition()
+						.getCharactersOffset(), 1, m_errorStyle, true);
+			}
+		}
+		m_contextForText = null;
+	}
 
     public void invalidToken(InvalidTokenEvent evt)
     { m_parsingEvents.addElement(evt); }

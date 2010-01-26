@@ -389,6 +389,8 @@ public class Note extends NoteAbstract implements Cloneable
   /** The full whole duration that takes into account the dots. (why not
    * the tuplet stuff ? :/ ) */
   private short m_duration = -1;
+  /** Is the rest invisible (not printed on score) */
+  private boolean m_invisibleRest = false;
   /** The strict duration (that does not take into account the dots,
    * the tuplet or whatever : this is the pure note type definition. */
   private short m_strictDuration = EIGHTH;
@@ -562,6 +564,12 @@ public class Note extends NoteAbstract implements Cloneable
 	public boolean isLowerThan(Note aNote, KeySignature key) {
 		return getMidiLikeHeight(key) < aNote.getMidiLikeHeight(key);
 	}
+	
+	/** Returns true if this note is not printed on score
+	 * if it's a rest. */
+	public boolean isRestInvisible() {
+		return m_invisibleRest;
+	}
 
 	public boolean isShorterThan(Note aNote) {
 		return getDuration() < aNote.getDuration();
@@ -680,6 +688,11 @@ public class Note extends NoteAbstract implements Cloneable
   public byte toRootOctaveHeigth()
   { return getStrictHeight(); }
 
+  /** Sets if the rest should be invisible */
+  public void setInvisibleRest(boolean b) {
+	  m_invisibleRest = b;
+  }
+  
   /** Sets the octave transposition for this note.
    * @param octaveTranspositionValue The octave transposition for this note :
    * 1, 2 or 3 means "1, 2 or 3 octave(s) higher than the reference octave" and
@@ -858,6 +871,8 @@ public class Note extends NoteAbstract implements Cloneable
     else if (note.equals("f")) return Note.f;
     else if (note.equals("g")) return Note.g;
     else if (note.equals("z")) return Note.REST;
+    //abc v2.0 invisible rest
+    else if (note.equals("x")) return Note.REST;
     else return -1;
   }
 

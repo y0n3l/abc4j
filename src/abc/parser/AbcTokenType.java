@@ -114,10 +114,15 @@ public class AbcTokenType implements TokenType
     public static AbcTokenType REPEAT_OPEN = new AbcTokenType("REPEAT OPEN");
     public static AbcTokenType REPEAT_CLOSE = new AbcTokenType("REPEAT CLOSE");
     public static AbcTokenType SPACE = new AbcTokenType("SPACE");
+    public static AbcTokenType SPACER = new AbcTokenType("SPACER");
+    public static AbcTokenType SYMBOL = new AbcTokenType("SYMBOL");
+    public static AbcTokenType SYMBOL_BEGIN = new AbcTokenType("SYMBOL BEGIN");
+    public static AbcTokenType SYMBOL_END = new AbcTokenType("SYMBOL END");
     public static AbcTokenType GUITAR_CHORD = new AbcTokenType("GUITAR CHORD");
     public static AbcTokenType BEGIN_SLUR = new AbcTokenType("BEGIN SLUR");
     public static AbcTokenType END_SLUR = new AbcTokenType("END SLUR");
     public static AbcTokenType GRACING_BEGIN = new AbcTokenType("GRACE BEGIN");
+    public static AbcTokenType ACCIACCATURA = new AbcTokenType("ACCIACCATURA");
     public static AbcTokenType GRACING_END = new AbcTokenType("GRACE END");
     public static AbcTokenType GRACING = new AbcTokenType("GRACING");
     public static AbcTokenType OCTAVE = new AbcTokenType("OCTAVE");
@@ -143,14 +148,28 @@ public class AbcTokenType implements TokenType
     public boolean isField()
     {
       return (
-        equals(AbcTokenType.FIELD_NUMBER) || equals(AbcTokenType.FIELD_BOOK) ||
-        equals(AbcTokenType.FIELD_COMPOSER) || equals(AbcTokenType.FIELD_DISCOGRAPHY) ||
-        equals(AbcTokenType.FIELD_GROUP) || equals(AbcTokenType.FIELD_METER) ||
-        equals(AbcTokenType.FIELD_ORIGIN) || equals(AbcTokenType.FIELD_RHYTHM) ||
-        equals(AbcTokenType.FIELD_DEFAULT_LENGTH) || equals(AbcTokenType.FIELD_SOURCE) ||
-        equals(AbcTokenType.FIELD_TITLE) || equals(AbcTokenType.FIELD_NOTES) ||
-        equals(AbcTokenType.FIELD_TEMPO) || equals(AbcTokenType.FIELD_TRANSCRNOTES) ||
-        equals(AbcTokenType.FIELD_KEY));
+        equals(AbcTokenType.FIELD_AREA) ||
+        equals(AbcTokenType.FIELD_BOOK) ||
+        equals(AbcTokenType.FIELD_COMPOSER) ||
+        equals(AbcTokenType.FIELD_DEFAULT_LENGTH) ||
+        equals(AbcTokenType.FIELD_DISCOGRAPHY) ||
+        equals(AbcTokenType.FIELD_FILEURL) ||
+        equals(AbcTokenType.FIELD_GROUP) ||
+        equals(AbcTokenType.FIELD_HISTORY) ||
+        equals(AbcTokenType.FIELD_INFORMATION) ||
+        equals(AbcTokenType.FIELD_KEY) ||
+        equals(AbcTokenType.FIELD_METER) ||
+        equals(AbcTokenType.FIELD_NOTES) ||
+        equals(AbcTokenType.FIELD_NUMBER) ||
+        equals(AbcTokenType.FIELD_ORIGIN) ||
+        equals(AbcTokenType.FIELD_PARTS) ||
+        equals(AbcTokenType.FIELD_RHYTHM) ||
+        equals(AbcTokenType.FIELD_SOURCE) ||
+        equals(AbcTokenType.FIELD_TEMPO) ||
+        equals(AbcTokenType.FIELD_TITLE) ||
+        equals(AbcTokenType.FIELD_TRANSCRNOTES) ||
+        equals(AbcTokenType.FIELD_WORDS)
+        );
     }
 
     public String toString()

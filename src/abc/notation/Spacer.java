@@ -13,28 +13,8 @@
 //
 // You should have received a copy of the GNU Lesser General Public License
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
-package abc.parser;
+package abc.notation;
 
-public class AbcVersion {
-	
-	public static final AbcVersion v1_6 = new AbcVersion(1.6f);
-	public static final AbcVersion v2_0 = new AbcVersion(2f);
-	
-	private float m_version = 0f;
-	
-	private AbcVersion(float version) {
-		m_version = version;
-	}
-	
-	public boolean isGreaterOrEqual(AbcVersion av) {
-		return m_version >= av.m_version;
-	}
-	
-	public boolean equals(Object o) {
-		if (o instanceof AbcVersion) {
-			return ((AbcVersion) o).m_version == m_version;
-		} else
-			return super.equals(o);
-	}
-
+/** A tagging class used to represent a spacer */ 
+public class Spacer extends DecorableElement implements MusicPresentationElement {
 }

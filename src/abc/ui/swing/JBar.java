@@ -48,6 +48,7 @@ class JBar extends JScoreElementAbstract {
 	public JBar(BarLine barLine, Point2D base, ScoreMetrics mtrx) {
 		super(mtrx);
 		m_barLine = barLine;
+		addDecorations(barLine);
 		setBase(base);
 	}
 
@@ -163,6 +164,8 @@ class JBar extends JScoreElementAbstract {
 			renderThinLine(context, x);
 			break;
 		}
+		
+		renderDecorations(context);
 		//renderDebugBoundingBoxOuter(context);
 		return getWidth();
 	}

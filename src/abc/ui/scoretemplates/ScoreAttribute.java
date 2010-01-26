@@ -48,12 +48,48 @@ public class ScoreAttribute implements Cloneable, Serializable {
 		}
 	}
 	
+	/** Draws acciaccaturas after the associated note.<br>
+	 * This can be useful in folkloric music
+	 * Default value: false<br>
+	 * Type: boolean */
+	public static final ScoreAttribute ACCIACCATURA_AFTER_NOTE
+		= new ScoreAttribute("AcciaccaturaAfterNote",
+				new Boolean(false));
+	
+	/** Add a slash to acciaccaturas.<br>
+	 * Default value: true<br>
+	 * Type: boolean */
+	public static final ScoreAttribute ACCIACCATURA_SLASH
+		= new ScoreAttribute("AcciaccaturaSlash",
+				new Boolean(true));
+
+	/** Add a slur between note and acciaccaturas.<br>
+	 * Default value: false<br>
+	 * Type: boolean */
+	public static final ScoreAttribute ACCIACCATURA_SLUR
+		= new ScoreAttribute("AcciaccaturaSlur",
+				new Boolean(false));
+
 	/** Space after an accidental, in px or note width.<br>
 	 * Default value: 0.3 * note width<br>
 	 * Type: size */
 	public static final ScoreAttribute ACCIDENTAL_SPACE
 		= new ScoreAttribute("AccidentalSpace",
 				new Size(.3f, SizeUnit.NOTE_WIDTH));
+	
+	/** Add a slash to appoggiaturas.<br>
+	 * Default value: true (in theory, should be false)<br>
+	 * Type: boolean */
+	public static final ScoreAttribute APPOGGIATURA_SLASH
+		= new ScoreAttribute("AppoggiaturaSlash",
+				new Boolean(true));
+
+	/** Add a slur between note and appoggiaturas.<br>
+	 * Default value: false<br>
+	 * Type: boolean */
+	public static final ScoreAttribute APPOGGIATURA_SLUR
+		= new ScoreAttribute("AppoggiaturaSlur",
+				new Boolean(false));
 
 	/** Space between the staff top and chord line,
 	 * expressed in px or {@link SizeUnit#STAFF_HEIGHT}.<br>
@@ -117,7 +153,15 @@ public class ScoreAttribute implements Cloneable, Serializable {
 		= new ScoreAttribute("GracenoteStemLength",
 				new Size(3f, SizeUnit.GRACENOTE_HEIGHT));
 	
-	/** Justify staff lines, boolean<br>
+	/** Gracenotes stem policy, possible value : {@link JTune#STEMS_AUTO},
+	 * {@link JTune#STEMS_UP} and {@link JTune#STEMS_DOWN}.<br>
+	 * Default value: STEM UP<br>
+	 * Type: number (byte) */
+	public static final ScoreAttribute GRACENOTE_STEM_POLICY
+		= new ScoreAttribute("GracenoteStemPolicy",
+				new Byte(JTune.STEMS_UP));
+	
+	/** Justify staff lines<br>
 	 * Default value: true<br>
 	 * Type: boolean */
 	public static final ScoreAttribute JUSTIFY
@@ -130,14 +174,14 @@ public class ScoreAttribute implements Cloneable, Serializable {
 	public static final ScoreAttribute MARGIN_BOTTOM
 		= new ScoreAttribute("MarginBottom",
 				new Size(0f, SizeUnit.PX));
-
+	
 	/** Left margin.<br>
 	 * Default value: 0px<br>
 	 * Type: size */
 	public static final ScoreAttribute MARGIN_LEFT
 		= new ScoreAttribute("MarginLeft",
 				new Size(0f, SizeUnit.PX));
-
+	
 	/** Right margin.<br>
 	 * Default value: 0px<br>
 	 * Type: size */
@@ -157,7 +201,7 @@ public class ScoreAttribute implements Cloneable, Serializable {
 	 * Type: object (MusicalFont) */
 	public static final ScoreAttribute NOTATION_FONT
 		= new ScoreAttribute("MusicalFont", new SonoraFont());
-	
+
 	/** Gracenotes font size, expressed in pt or percent
 	 * of notation size.<br>
 	 * Default value: 60% (of notation font size)<br>
@@ -187,7 +231,7 @@ public class ScoreAttribute implements Cloneable, Serializable {
 	public static final ScoreAttribute NOTE_LINK_STROKE
 		= new ScoreAttribute("NoteLinkStroke",
 				new Size(1f/2f, SizeUnit.NOTE_HEIGHT));
-	
+
 	/** Default note spacing, in note width, or px.<br>
 	 * Default value: 1.5 * note width<br>
 	 * Type: size */
@@ -202,13 +246,23 @@ public class ScoreAttribute implements Cloneable, Serializable {
 		= new ScoreAttribute("NoteStemLength",
 				new Size(3f, SizeUnit.NOTE_HEIGHT));
 
+	/** Notes stem policy, possible value : {@link JTune#STEMS_AUTO},
+	 * {@link JTune#STEMS_UP} and {@link JTune#STEMS_DOWN}.<br>
+	 * Default value: STEM AUTO<br>
+	 * Type: number (byte) */
+	public static final ScoreAttribute NOTE_STEM_POLICY
+		= new ScoreAttribute("NoteStemPolicy",
+				new Byte(JTune.STEMS_AUTO));
+
+	private static final long serialVersionUID = 4720580138163902559L;
+
 	/** Slur anchor vertical offset, in note height or px.<br>
 	 * Default value: 1/3 * note height<br>
 	 * Type: size */
 	public static final ScoreAttribute SLUR_ANCHOR_Y_OFFSET
 		= new ScoreAttribute("SlurAnchorYOffset",
 				new Size(1f/3f, SizeUnit.NOTE_HEIGHT));
-
+	
 	/** Slur thickness, in note height or px.<br>
 	 * Default value: 1/7 * note height<br>
 	 * Type: size */
@@ -223,14 +277,6 @@ public class ScoreAttribute implements Cloneable, Serializable {
 	public static final ScoreAttribute STAFF_LINES_SPACING
 		= new ScoreAttribute("StaffLinesSpacing",
 				new Size(1.5f, SizeUnit.STAFF_HEIGHT));
-	
-	/** Stem policy, possible value : {@link JTune#STEMS_AUTO},
-	 * {@link JTune#STEMS_UP} and {@link JTune#STEMS_DOWN}.<br>
-	 * Default value: STEM AUTO<br>
-	 * Type: number (byte) */
-	public static final ScoreAttribute STEM_POLICY
-		= new ScoreAttribute("StemPolicy",
-				new Byte(JTune.STEMS_AUTO));
 	
 	/** Stem thickness.
 	 * Default value: 1/12 * note width<br>
@@ -253,15 +299,13 @@ public class ScoreAttribute implements Cloneable, Serializable {
 	public static final ScoreAttribute TRANSPOSITION
 		= new ScoreAttribute("Transposition", new Integer(0));
 	
+	
 	/** Tuplet number vertical offset, in note height or px.<br>
 	 * Default value: 1/4 * note height<br>
 	 * Type: size */
 	public static final ScoreAttribute TUPLET_NUMBER_Y_OFFSET
 		= new ScoreAttribute("TupletNumberYOffset",
 				new Size(1f/4f, SizeUnit.NOTE_HEIGHT));
-	
-	
-	private static final long serialVersionUID = 4720580138163902559L;
 	
 	private Object m_defaultValue;
 	private String m_name;

@@ -21,7 +21,6 @@ import java.awt.Graphics2D;
 //import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Iterator;
 
 import abc.notation.Decoration;
 import abc.notation.MusicElement;
@@ -93,8 +92,8 @@ class JDecoration extends JScoreElementAbstract {
 		case Decoration.SEGNO:
 		case Decoration.CODA:
 			return ABOVE_STAFF;
-		case Decoration.PAUSE:
-		case Decoration.GRAND_PAUSE:
+		case Decoration.BREATH:
+		case Decoration.BREATH_LONGER:
 			return ABOVE_STAFF_AFTER_NOTE;
 		case Decoration.PEDAL_DOWN:
 		case Decoration.PEDAL_UP:
@@ -236,9 +235,11 @@ class JDecoration extends JScoreElementAbstract {
 				y += bounds.getHeight();
 			//avoid collisions
 			double offset = getMetrics().getNoteHeight() / 2;
-			Iterator it = m_scoreElement.m_jDecorations.iterator();
-			while (it.hasNext()) {
-				JDecoration jdec = (JDecoration) it.next();
+			
+			//first decoration is on top
+			for (int i = m_scoreElement.m_jDecorations.size()-1; i >= 0; i--) {
+				//JDecoration jdec = (JDecoration) it.next();
+				JDecoration jdec = (JDecoration) m_scoreElement.m_jDecorations.elementAt(i);
 				if (jdec == this)
 					break;
 				if (jdec.getBase().equals(getBase())) {

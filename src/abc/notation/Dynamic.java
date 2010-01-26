@@ -18,7 +18,7 @@ package abc.notation;
 /**
  * Constants for dynamics (crescendo, decrescendo, mp, fff...)
  */
-public interface Dynamic {
+public class Dynamic implements SymbolElement {
 	
 	/** <I>pppp</I> dynamic, should be played at volume 15 in midi */
 	public static final byte PPPP = 0;
@@ -50,4 +50,57 @@ public interface Dynamic {
 	public static final byte FZ = 15;
 	public static final byte SFFZ = 16;
 	
+	public static byte convertToType(String str)
+	{
+		byte type = UNKNOWN;
+		if (str.equals("pppp")) type = PPPP;
+		else if (str.equals("ppp")) type = PPP;
+		else if (str.equals("pp")) type = PP;
+		else if (str.equals("p")) type = P;
+		else if (str.equals("mp")) type = MP;
+		else if (str.equals("mf")) type = MF;
+		else if (str.equals("f")) type = F;
+		else if (str.equals("ff")) type = FFF;
+		else if (str.equals("fff")) type = FFF;
+		else if (str.equals("ffff")) type = FFFF;
+		else if (str.equals("fp")) type = FP;
+		else if (str.equals("sf")) type = SF;
+		else if (str.equals("sfp")) type = SFP;
+		else if (str.equals("sfpp")) type = SFPP;
+		else if (str.equals("sfz")) type = SFZ;
+		else if (str.equals("fz")) type = FZ;
+		else if (str.equals("sffz")) type = SFFZ;
+		return type;
+	}
+	
+	public static final byte UNKNOWN = -128;
+	
+	/** The type of this dynamic */
+	private byte m_type = UNKNOWN;
+
+	/** Creates a new dynamic with the corresponding type.
+	 * @param type The type of dynamic to be created :
+	 * {@link #PP}, {@link #MF}, {@link #FFF}...
+	 **/
+	public Dynamic(byte type) {
+		m_type = type;
+	}
+
+	/** Returns the type of this dynamic. */
+	public byte getType() {
+		return m_type;
+	}
+
+	/** Checks if the dynamic's type is the same as the give type. */
+	public boolean isType(byte type) {
+		return (m_type == type);
+	}
+
+	public boolean equals(Object o) {
+		if (o instanceof Dynamic) {
+			return isType(((Dynamic) o).getType());
+		} else
+			return super.equals(o);
+	}
+
 }

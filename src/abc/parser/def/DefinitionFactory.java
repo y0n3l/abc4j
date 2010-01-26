@@ -80,9 +80,14 @@ public class DefinitionFactory
     else if (abcTokenType==(AbcTokenType.COMMENT)) automataDef = new CommentDefinition();
     else if (abcTokenType==(AbcTokenType.GUITAR_CHORD)) automataDef = new GuitarChordDefinition();
     else if (abcTokenType==(AbcTokenType.GRACING_BEGIN)) automataDef = new GracingBeginDefinition();
+    else if (abcTokenType==(AbcTokenType.ACCIACCATURA)) automataDef = new AcciaccaturaDefinition(abcVersion);
     else if (abcTokenType==(AbcTokenType.GRACING_END)) automataDef = new GracingEndDefinition();
     else if (abcTokenType==(AbcTokenType.GRACING)) automataDef = new GracingDefinition(abcVersion);
-    else if (abcTokenType==(AbcTokenType.REST)) automataDef = new RestDefinition();
+    else if (abcTokenType==(AbcTokenType.SYMBOL_BEGIN)) automataDef = new SymbolBeginDefinition(abcVersion);
+    else if (abcTokenType==(AbcTokenType.SYMBOL)) automataDef = new SymbolDefinition(abcVersion);
+    else if (abcTokenType==(AbcTokenType.SYMBOL_END)) automataDef = new SymbolEndDefinition(abcVersion);
+    else if (abcTokenType==(AbcTokenType.SPACER)) automataDef = new SpacerDefinition(abcVersion);
+    else if (abcTokenType==(AbcTokenType.REST)) automataDef = new RestDefinition(abcVersion);
     else if (abcTokenType==(AbcTokenType.BARLINE)) automataDef = new BarlineDefinition(abcVersion);
     else if (abcTokenType==(AbcTokenType.NTH_REPEAT)) automataDef = new NthRepeatDefinition();
     else if (abcTokenType==(AbcTokenType.BEGIN_SLUR)) automataDef = new SlurBeginDefinition();

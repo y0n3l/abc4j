@@ -148,8 +148,8 @@ public class SonoraFont implements MusicalFont, Serializable {
 		case Decoration.UPPERMORDENT: return '\uF06D';
 		case Decoration.SEGNO: return '\uF025';
 		case Decoration.CODA: return '\uF0DE';
-		case Decoration.PAUSE: return '\uF02C'; // ","
-		case Decoration.GRAND_PAUSE: return '\uF022'; // "//"
+		case Decoration.BREATH: return '\uF02C'; // ","
+		case Decoration.BREATH_LONGER: return '\uF022'; // "//"
 		case Decoration.TENUTO: return '\uF05F';
 		case Decoration.SFORZANDO:
 			return !inverted?'\uF05E':'\uF076';

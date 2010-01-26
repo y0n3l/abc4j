@@ -22,6 +22,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import abc.notation.AccidentalType;
+import abc.notation.GracingType;
 import abc.notation.MusicElement;
 import abc.notation.Note;
 import abc.ui.scoretemplates.HorizontalAlign;
@@ -45,6 +46,9 @@ class JNote extends JNoteElementAbstract {
 	protected Point2D displayPosition = null;
 	/** Position to draw accidentals. <TT>null</TT> if no accidental for this note. */
 	protected Point2D accidentalsPosition = null;
+	/** Position to draw the graces notes, if graces are
+	 * before the note, this position will be getBase */
+	protected Point2D gracesPosition = null;
 
 	protected Point2D articulationPosition = null;
 
@@ -150,10 +154,16 @@ class JNote extends JNoteElementAbstract {
 			noteY = (int)(base.getY()-getOffset(note)*noteGlyphDimension.getHeight()
 				- noteGlyphDimension.getHeight()/2 + glyphDimension.getHeight()/2);
 		double graceNotesWidth = 0;
-		if (m_jGracenotes != null)
+		boolean graceNotesAfter = false;
+		if (m_jGracenotes != null) {
+			if (note.getGracingType() == GracingType.ACCIACCATURA)
+				graceNotesAfter = getTemplate().getAttributeBoolean(ScoreAttribute.ACCIACCATURA_AFTER_NOTE);
 			graceNotesWidth = m_jGracenotes.getWidth()
 				+ getMetrics().getGraceNotesSpacing();
+			if (graceNotesAfter)
+				graceNotesWidth += getMetrics().getGraceNotesSpacing();
 			// + (getWidth()*SPACE_RATIO_FOR_GRACENOTES);
+		}
 		double accidentalsWidth = 0;
 		try {
 			if (note.hasAccidental()) {
@@ -171,7 +181,9 @@ class JNote extends JNoteElementAbstract {
 		//System.out.println("note chars " + noteChars[0]);
 		//double noteY =(int)(base.getY()-getOffset(note)*c.getNoteHeigth());
 		//double noteY =(int)(base.getY()-getOffset(note)*glyphDimension.getHeigth());
-		double noteX = base.getX()+graceNotesWidth+accidentalsWidth;
+		double noteX = base.getX()
+			+ (graceNotesAfter?0:graceNotesWidth)
+			+ accidentalsWidth;
 		displayPosition = new Point2D.Double(noteX, noteY);
 		notePosition = (Point2D)displayPosition.clone();
 		stemUpBeginPosition = new Point2D.Double(notePosition.getX()+ glyphDimension.getWidth()*0.93,
@@ -207,6 +219,18 @@ class JNote extends JNoteElementAbstract {
 			extraWidth = Math.max(extraWidth, extraWidthDots);
 		}
 		
+		if (m_jGracenotes != null) {
+			if (!graceNotesAfter)
+				gracesPosition = (Point2D) getBase().clone();
+			else {
+				gracesPosition = new Point2D.Double(
+					noteX+glyphDimension.getWidth()+extraWidth
+						+getMetrics().getGraceNotesSpacing()*2,
+					getBase().getY()
+				);
+			}
+		}
+		
 		m_width = (int)(graceNotesWidth+accidentalsWidth+glyphDimension.getWidth()+extraWidth);
 		boundingBox_width = (int)(glyphDimension.getWidth()+extraWidth);
 
@@ -214,8 +238,8 @@ class JNote extends JNoteElementAbstract {
 	}
 
 	protected void onNotePositionChanged() {
-
-		if (m_jGracenotes != null) m_jGracenotes.setBase(getBase());
+		if (m_jGracenotes != null)
+			m_jGracenotes.setBase(gracesPosition);
 		calcDotsPosition();
 		calcDecorationPosition();
 		calcSlursAndTiesPosition();
@@ -342,7 +366,8 @@ class JNote extends JNoteElementAbstract {
 	}
 
 	protected void renderNoteChars(Graphics2D gfx) {
-		gfx.drawChars(noteChars, 0, 1, (int)displayPosition.getX(), (int)displayPosition.getY());
+		if (!(note.isRest() && note.isRestInvisible()))
+			gfx.drawChars(noteChars, 0, 1, (int)displayPosition.getX(), (int)displayPosition.getY());
 	}
 
 	protected void renderChordName(Graphics2D gfx) {

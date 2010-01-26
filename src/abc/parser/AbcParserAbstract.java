@@ -15,6 +15,7 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.parser;
 
+import java.util.Iterator;
 import java.util.Vector;
 
 import scanner.CharStreamPosition;
@@ -30,7 +31,9 @@ import scanner.TokenType;
 import abc.notation.AccidentalType;
 import abc.notation.BarLine;
 import abc.notation.Decoration;
+import abc.notation.Dynamic;
 import abc.notation.Fraction;
+import abc.notation.GracingType;
 import abc.notation.KeySignature;
 import abc.notation.MultiPartsDefinition;
 import abc.notation.Note;
@@ -42,6 +45,8 @@ import abc.notation.RepeatedPart;
 import abc.notation.RepeatedPartAbstract;
 import abc.notation.MusicPresentationElement;
 import abc.notation.EndOfStaffLine;
+import abc.notation.Spacer;
+import abc.notation.SymbolElement;
 import abc.notation.Tempo;
 import abc.notation.TieDefinition;
 import abc.notation.TimeSignature;
@@ -120,6 +125,7 @@ public class AbcParserAbstract
     protected static Set FIRST_LINE_BREAK = new Set(AbcTokenType.LINE_BREAK);
 
     protected static Set FIRST_SPACE = new Set(AbcTokenType.SPACE);
+    protected static Set FIRST_SPACER = new Set(AbcTokenType.SPACER);
     //protected static Set FIRST_TEX_COMMAND = new Set(AbcTokenType.TEX_COMMAND);
 
     protected static Set FIRST_USER_DEFINED = new Set(AbcTokenType.USER_DEFINED);
@@ -138,8 +144,11 @@ public class AbcParserAbstract
     protected Set FIRST_FORMAL_CHORD = new Set(FIRST_BASE_NOTE);
     protected static Set FIRST_GUITAR_CHORD = new Set(AbcTokenType.GUITAR_CHORD);
 
+    protected static Set FIRST_ACCIACCATURA = new Set(AbcTokenType.ACCIACCATURA);
     protected static Set FIRST_GRACE_NOTES = new Set(AbcTokenType.GRACING_BEGIN);
     protected static Set FIRST_GRACINGS = new Set(AbcTokenType.GRACING);
+    protected static Set FIRST_SYMBOL_BEGIN = new Set(AbcTokenType.SYMBOL_BEGIN);
+    protected static Set FIRST_SYMBOL = new Set(AbcTokenType.SYMBOL);
     protected static Set FIRST_TIE = new Set(AbcTokenType.TIE);
     protected static Set FIRST_BROKEN_RHYTHM = new Set(AbcTokenType.BROKEN_RHYTHM);
     protected static Set FIRST_REST = new Set(AbcTokenType.REST);
@@ -151,7 +160,12 @@ public class AbcParserAbstract
     protected static Set FIRST_NOTE_OR_REST = new Set(FIRST_PITCH).union(FIRST_REST);
     protected static Set FIRST_NOTE = new Set(FIRST_NOTE_OR_REST);
     protected static Set FIRST_MULTI_NOTE = new Set(AbcTokenType.MULTI_NOTE_BEGIN);
-    protected static Set FIRST_NOTE_STEM = new Set(FIRST_GUITAR_CHORD).union(FIRST_GRACE_NOTES).union(FIRST_GRACINGS).union(FIRST_NOTE).union(FIRST_MULTI_NOTE);
+    protected static Set FIRST_NOTE_STEM =
+    	new Set()
+    	//.union(FIRST_SYMBOL_BEGIN)
+    	.union(FIRST_GUITAR_CHORD)
+    	.union(FIRST_GRACE_NOTES).union(FIRST_GRACINGS)
+    	.union(FIRST_NOTE).union(FIRST_MULTI_NOTE);
     protected static Set FIRST_NOTE_ELEMENT = new Set(FIRST_NOTE_STEM);
 
     protected static Set FIRST_TUPLET_SPEC = new Set(AbcTokenType.TUPLET_SPEC);
@@ -159,8 +173,16 @@ public class AbcParserAbstract
 
     protected static Set FIRST_LINE_ENDER = new Set(AbcTokenType.COMMENT).union(AbcTokenType.LINE_FEED).union(AbcTokenType.LINE_BREAK)
         .union(AbcTokenType.NO_LINE_BREAK);
-    protected static Set FIRST_ELEMENT = new Set(FIRST_NOTE_ELEMENT).union(FIRST_TUPLET_ELEMENT).union(AbcTokenType.BARLINE)
-        .union(AbcTokenType.NTH_REPEAT).union(AbcTokenType.BEGIN_SLUR).union(AbcTokenType.END_SLUR).union(AbcTokenType.SPACE)
+    protected static Set FIRST_ELEMENT =
+    	new Set(FIRST_SYMBOL_BEGIN)
+    	.union(FIRST_SPACER)
+    	.union(FIRST_NOTE_ELEMENT)
+    	.union(FIRST_TUPLET_ELEMENT)
+    	.union(AbcTokenType.BARLINE)
+        .union(AbcTokenType.NTH_REPEAT)
+        .union(AbcTokenType.BEGIN_SLUR)
+        .union(AbcTokenType.END_SLUR)
+        .union(AbcTokenType.SPACE)
         /*.union(AbcTokenType.USER_DEFINED)*/;
     protected Set FIRST_ABC_LINE = new Set(FIRST_ELEMENT).union(FIRST_MID_TUNE_FIELD)/*.union(FIRST_COMMENT).union(FIRST_TEX_COMMAND)*/;
     protected Set FIRST_ABC_MUSIC = new Set(FIRST_ABC_LINE);
@@ -1091,6 +1113,32 @@ public class AbcParserAbstract
      * begin-slur / end-slur / space / user-defined */
     private void parseElement(Set follow)
     {
+    	// symbols
+    	Vector decorations = new Vector();
+    	Dynamic dynamic = null;
+        if (FIRST_SYMBOL_BEGIN.contains(m_tokenType)) {
+      	  Vector symbols = parseSymbols(follow);
+      	  Iterator it = symbols.iterator();
+      	  while (it.hasNext()) {
+      		  SymbolElement symb = (SymbolElement) it.next();
+      		  if (symb instanceof Dynamic) {
+      			  if (dynamic == null)
+      				  dynamic = (Dynamic) symb;
+      			  it.remove();
+      		  }
+      	  }
+      	  decorations.addAll(symbols);
+        }
+        
+      if (FIRST_SPACER.contains(m_tokenType))
+      {
+      	  accept(AbcTokenType.SPACER, null, follow);
+      	  Spacer spacer = new Spacer();
+      	  spacer.setDynamic(dynamic);
+      	  spacer.setDecorations((Decoration[])decorations.toArray(new Decoration[1]));
+      	  m_music.addElement(spacer);
+      }
+      else
       //Set current = new Set();
       if (FIRST_NOTE_ELEMENT.contains(m_tokenType))
       {
@@ -1103,6 +1151,16 @@ public class AbcParserAbstract
         	if (currentSlurDef.getStart()==null)
         		currentSlurDef.setStart(note);
         }*/
+        if (note != null) {
+	        note.setDynamic(dynamic);
+	        if (note.getDecorations() != null) {
+		        for (int i = 0; i < note.getDecorations().length; i++) {
+					decorations.add(note.getDecorations()[i]);
+				}
+	        }
+	        if (decorations.size() > 0)
+	        	note.setDecorations((Decoration[])decorations.toArray(new Decoration[1]));
+        }
         m_music.addElement(note);
       }
       else
@@ -1113,15 +1171,34 @@ public class AbcParserAbstract
         Tuplet tuplet = parseTupletElement(follow);
         // tuplet is not put in the score itself, but notes composing the tuplet
         Vector notes = tuplet.getNotesAsVector();
-        for (int i=0; i<notes.size(); i++)
-          m_music.addElement(notes.elementAt(i));
+        for (int i=0; i<notes.size(); i++) {
+        	NoteAbstract note = (NoteAbstract) notes.elementAt(i);
+        	if (i == 0) {
+                note.setDynamic(dynamic);
+                if (note.getDecorations() != null) {
+	                for (int j = 0; j < note.getDecorations().length; j++) {
+	        			decorations.add(note.getDecorations()[j]);
+	        		}
+                }
+                if (decorations.size() > 0)
+                	note.setDecorations((Decoration[])decorations.toArray(new Decoration[1]));
+        	}
+        	m_music.addElement(note);
+        }
       }
       else
       if (FIRST_BARLINE.contains(m_tokenType))
       {
         byte[] barLineTypes = BarLine.convertToBarLine(accept(AbcTokenType.BARLINE, null, follow));
-        for (int i=0; i<barLineTypes.length; i++)
-          m_music.addElement(new BarLine(barLineTypes[i]));
+        for (int i=0; i<barLineTypes.length; i++) {
+        	BarLine barline = new BarLine(barLineTypes[i]);
+        	if (i == 0) {
+        		barline.setDynamic(dynamic);
+                if (decorations.size() > 0)
+                	barline.setDecorations((Decoration[])decorations.toArray(new Decoration[1]));
+        	}
+          m_music.addElement(barline);
+        }
       }
       else
       if (FIRST_NTH_REPEAT.contains(m_tokenType))
@@ -1332,22 +1409,98 @@ public class AbcParserAbstract
       }*/
       return note;
     }
+    
+    /** Parse symbols between +...+ signs, like +mp+, +trill+
+     * 
+     * @param follow
+     * @return a vector of {@link abc.notation.SymbolElement}
+     * (Decoration or Dynamic)
+     */
+    private Vector parseSymbols(Set follow) {
+    	Vector symbols = new Vector(3, 3);
+    	
+        while (FIRST_SYMBOL_BEGIN.contains(m_tokenType)) {
+			Set current = new Set().union(AbcTokenType.SYMBOL_BEGIN)
+				.union(AbcTokenType.SYMBOL);//.union(AbcTokenType.SPACE);
+			accept(AbcTokenType.SYMBOL_BEGIN, current, follow);
+			current.remove(AbcTokenType.SYMBOL);
+			String acc = accept(AbcTokenType.SYMBOL, current, follow);
+			if (acc != null) {
+				byte decType = Decoration.convertToType(acc);
+				if (decType != Decoration.UNKNOWN)
+					symbols.add(new Decoration(decType));
+				else {
+					// TODO look at dynamics
+				}
+			}
+			current.remove(AbcTokenType.SYMBOL_BEGIN);
+			accept(AbcTokenType.SYMBOL_BEGIN, current, follow);
+			//optional space after closing +
+			current.remove(AbcTokenType.SPACE);
+			String s = "";
+			while (s != null) {
+				s = accept(AbcTokenType.SPACE, current, follow, true);
+			}
+		}
+        
+    	return symbols;
+    }
 
     /** note-stem ::= [guitar-chord] [grace-notes] *gracings (note / multi-note) */
     private NoteAbstract parseNoteStem(Set follow)
     {
-      Set current = new Set().union(FIRST_GUITAR_CHORD).union(FIRST_GRACE_NOTES).union(FIRST_GRACINGS)
-          .union(FIRST_NOTE).union(FIRST_MULTI_NOTE);
+      Set current = new Set()
+      		//.union(FIRST_SYMBOL_BEGIN)
+      		.union(FIRST_GUITAR_CHORD).union(FIRST_GRACE_NOTES)
+      		.union(FIRST_ACCIACCATURA).union(FIRST_GRACINGS)
+      		.union(FIRST_NOTE).union(FIRST_MULTI_NOTE);
       NoteAbstract note = null;
       Note[] graceNotes = null;
       Vector decorations = new Vector();
+      //Dynamic dynamic = null;
       boolean hasGeneralOrnament = false;
       boolean staccato = false; //FIXME ? staccato is a decoration
+      byte gracingType = GracingType.APPOGGIATURA;
       //boolean wasTied = isTied;
 
-      String chordName = null;
+      //======================v2.0 +symbol+
+      //current.remove(FIRST_SYMBOL_BEGIN);
+//      if (FIRST_SYMBOL_BEGIN.contains(m_tokenType)) {
+//    	  Vector symbols = parseSymbols(current.createUnion(follow));
+//    	  Iterator it = symbols.iterator();
+//    	  while (it.hasNext()) {
+//    		  SymbolElement symb = (SymbolElement) it.next();
+//    		  if (symb instanceof Dynamic) {
+//    			  if (dynamic == null)
+//    				  dynamic = (Dynamic) symb;
+//    			  it.remove();
+//    		  }
+//    	  }
+//    	  decorations.addAll(symbols);
+//      }
+//      while (FIRST_SYMBOL_BEGIN.contains(m_tokenType)) {
+//			Set follow2 = current.createUnion(follow);
+//			Set current2 = new Set().union(AbcTokenType.SYMBOL_BEGIN).union(
+//					AbcTokenType.SYMBOL);//.union(AbcTokenType.SPACE);
+//			accept(AbcTokenType.SYMBOL_BEGIN, current2, follow2);
+//			current2.remove(AbcTokenType.SYMBOL);
+//			String acc = accept(AbcTokenType.SYMBOL, current2, follow2);
+//			if (acc != null) {
+//				byte decType = Decoration.convertToType(acc);
+//				if (decType != Decoration.UNKNOWN)
+//					decorations.add(new Decoration(decType));
+//				else {
+//					// TODO look at dynamics
+//				}
+//			}
+//			current2.remove(AbcTokenType.SYMBOL_BEGIN);
+//			accept(AbcTokenType.SYMBOL_BEGIN, current2, follow2);
+//			current2.remove(AbcTokenType.SPACE);
+//			accept(AbcTokenType.SPACE, current2, follow2, true);
+//		}
+      
       //======================guitar chord
-      //FIXME "C"(CEGc) doesn't work, ("C"CEGc) works
+      String chordName = null;
       current.remove(FIRST_GUITAR_CHORD);
       if(FIRST_GUITAR_CHORD.contains(m_tokenType))
         chordName = parseGuitarChord(current.createUnion(follow));
@@ -1355,9 +1508,15 @@ public class AbcParserAbstract
       current.remove(FIRST_GRACE_NOTES);
       if(FIRST_GRACE_NOTES.contains(m_tokenType))
       {
+          accept(AbcTokenType.GRACING_BEGIN, current, follow);
+          if (FIRST_ACCIACCATURA.contains(m_tokenType)) {
+        	  gracingType = GracingType.ACCIACCATURA;
+          }
+          accept(AbcTokenType.ACCIACCATURA, current, follow, true);
+    	  current.remove(FIRST_ACCIACCATURA);
         graceNotes = parseGraceNotes(current.createUnion(follow));
       }
-      //======================gracings
+      // ======================gracings (decorations)
       while (m_tokenType.equals(AbcTokenType.GRACING))
       {
         String acc = accept(AbcTokenType.GRACING, current, follow);
@@ -1394,7 +1553,11 @@ public class AbcParserAbstract
 	    if (hasGeneralOrnament && m_abcVersion.equals(AbcVersion.v1_6))
 	    	note.setGeneralGracing(true);
 	    if (decorations.size() > 0) note.setDecorations((Decoration[])decorations.toArray(new Decoration[1]));
-	    if (graceNotes!=null) note.setGracingNotes(graceNotes);
+	    //if (dynamic != null) note.setDynamic(dynamic);
+	    if (graceNotes!=null) { 
+	    	note.setGracingNotes(graceNotes);
+	    	note.setGracingType(gracingType);
+	    }
 	    if (chordName!=null)
 		  note.setChordName(chordName);
 	    if (!slursDefinitionStack.isEmpty()){
@@ -1436,9 +1599,8 @@ public class AbcParserAbstract
     /** grace-notes ::= "{" 1*pitch "}" */
     private Note[] parseGraceNotes(Set follow)
     {
-      Set current = new Set().union(FIRST_PITCH).union(AbcTokenType.GRACING_END);
-      accept(AbcTokenType.GRACING_BEGIN, current, follow);
-      Vector gracingNotes = new Vector();
+  	  Set current = new Set().union(FIRST_PITCH).union(AbcTokenType.GRACING_END);
+	  Vector gracingNotes = new Vector();
       while(FIRST_PITCH.contains(m_tokenType))
       {
         Note note = parsePitch(current.createUnion(follow));
@@ -1453,8 +1615,9 @@ public class AbcParserAbstract
       else
       {
         Note[] gracings = new Note[gracingNotes.size()];
-        for (int i=0; i<gracingNotes.size();i++)
+        for (int i=0; i<gracingNotes.size();i++) {
           gracings[i] = (Note)gracingNotes.elementAt(i);
+        }
         //System.arraycopy(gracingNotes.toArray(), 0, gracings,0, gracingNotes.size());
         return gracings;
       }
@@ -1546,7 +1709,10 @@ public class AbcParserAbstract
       //Set current = new Set();
       if (m_tokenType.equals(AbcTokenType.REST))
       {
-        PositionableNote note = new PositionableNote(Note.convertToNoteType(accept(AbcTokenType.REST, null, follow)), AccidentalType.NONE);
+    	  String sNote=accept(AbcTokenType.REST, null, follow);
+        PositionableNote note = new PositionableNote(Note.convertToNoteType(sNote), AccidentalType.NONE);
+        if (sNote.equals("x"))
+        	note.setInvisibleRest(true);
         //note.setPartOfSlur(!slursDefinitionStack.isEmpty());
         return note;
       }

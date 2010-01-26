@@ -26,18 +26,18 @@ class JGraceNotePartOfGroup extends JNotePartOfGroup {
 
 	public JGraceNotePartOfGroup(Note noteValue, Point2D base, ScoreMetrics c) {
 		super(noteValue, base, c);
-		super.setAutoStem(false);
-		super.setStemUp(true);
+//		super.setAutoStem(false);
+//		super.setStemUp(true);
 	}
 
 
-	// no-op: gracenotes should always be stemmed up
-	public void autoStem(boolean auto) {
-	}
-
-	// no-op: gracenotes should always be stemmed up
-	public void setStemUp(boolean isUp) {
-	}
+//	// no-op: gracenotes should always be stemmed up
+//	public void autoStem(boolean auto) {
+//	}
+//
+//	// no-op: gracenotes should always be stemmed up
+//	public void setStemUp(boolean isUp) {
+//	}
 
 	protected void valuateNoteChars() {
 		// beamed notes are always 1/8th notes or less

@@ -83,5 +83,14 @@ public interface JScoreElement {
 		public boolean isStemUp();
 		
 	}
+	
+	/**
+	 * Interface for {@link JGraceNote} and {@link JGroupOfGrace}
+	 */
+	public interface JGraceElement {
+		
+		public void setRenderSlash(boolean b);
+		
+	}
 
 }

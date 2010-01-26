@@ -21,9 +21,11 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Vector;
 
+import abc.notation.GracingType;
 import abc.notation.MultiNote;
 import abc.notation.MusicElement;
 import abc.notation.Note;
+import abc.ui.scoretemplates.ScoreAttribute;
 
 /** This class is in charge of rendering a chord {@link abc.notation.MultiNote}. */
 class JChord extends JNoteElementAbstract {
@@ -48,7 +50,7 @@ class JChord extends JNoteElementAbstract {
 	private double m_width = -1;
 
 	protected int m_stemYEndForChord = -1;
-
+	
 	public JChord(MultiNote multiNote, ScoreMetrics metrics, Point2D base){
 		super(multiNote, base, metrics);
 		this.multiNote = multiNote;
@@ -140,9 +142,15 @@ class JChord extends JNoteElementAbstract {
 
 	/** Sets the base of this chord. */
 	public void setBase(Point2D base) {
-		if (m_normalizedChords!=null)
+		m_stemYEndForChord = -1;
+		if (m_normalizedChords!=null) {
 			for (int i=0; i<m_normalizedChords.length; i++)
 				m_normalizedChords[i].setBase(base);
+		} else {
+			for (int i = 0; i < m_sNoteInstances.length; i++) {
+				m_sNoteInstances[i].setBase(base);
+			}
+		}
 		if (m_jGracenotes != null) {
 			m_jGracenotes.setBase(base);
 		}
@@ -227,11 +235,17 @@ class JChord extends JNoteElementAbstract {
 		}
 		
 		double graceNotesWidth = 0;
-		// setBase for grace notes
+		boolean graceNotesAfter = false;
 		if (m_jGracenotes != null) {
-			m_jGracenotes.onBaseChanged();
+			if (multiNote.getGracingType() == GracingType.ACCIACCATURA)
+				graceNotesAfter = getTemplate().getAttributeBoolean(ScoreAttribute.ACCIACCATURA_AFTER_NOTE);
 			graceNotesWidth = m_jGracenotes.getWidth()
 				+ getMetrics().getGraceNotesSpacing();
+			if (graceNotesAfter)
+				graceNotesWidth += getMetrics().getGraceNotesSpacing();
+//			m_jGracenotes.onBaseChanged();
+//			graceNotesWidth = m_jGracenotes.getWidth()
+//				+ getMetrics().getGraceNotesSpacing();
 		}
 		
 		double accidentalsWidth = 0;
@@ -253,7 +267,9 @@ class JChord extends JNoteElementAbstract {
 //			throw new IllegalArgumentException("Incorrect accidental for " + note + " : " + note.getAccidental());
 //		}
 		
-		double chordX = getBase().getX()+graceNotesWidth+accidentalsWidth;
+		double chordX = getBase().getX()
+			+ (graceNotesAfter?0:graceNotesWidth)
+			+ accidentalsWidth;
 		Point2D chordBase = new Point2D.Double(chordX, getBase().getY());
 		
 		double chordWidth = 0;
@@ -310,9 +326,24 @@ class JChord extends JNoteElementAbstract {
 				
 			calcDecorationPosition();
 		}
+		
+		if (m_jGracenotes != null) {
+			Point2D gracesPosition;
+			if (!graceNotesAfter)
+				gracesPosition = (Point2D) getBase().clone();
+			else {
+				gracesPosition = new Point2D.Double(
+					chordX+chordWidth
+						+getMetrics().getGraceNotesSpacing()*2,
+					getBase().getY()
+				);
+			}
+			m_jGracenotes.setBase(gracesPosition);
+		}
 
+		m_width = (int)(graceNotesWidth+accidentalsWidth+chordWidth);
 		//m_width = /*c_width + */graceNotesWidth + accidentalsWidth + chordWidth;
-		m_width = getBoundingBox().getWidth();
+		//m_width = getBoundingBox().getWidth();
 	}
 	
 	private Note[] getAllNotes() {
@@ -341,6 +372,11 @@ class JChord extends JNoteElementAbstract {
 				bb.add(m_normalizedChords[i].getBoundingBox());
 			}
 		}
+		//take into account the graces notes when after, or
+		//other...
+		bb.setRect(bb.getX(), bb.getY(),
+			Math.max(bb.getWidth(), getWidth()),
+			bb.getHeight());
 		return bb;
 	}
 	
@@ -353,13 +389,13 @@ class JChord extends JNoteElementAbstract {
 			for (int i=0; i<m_sNoteInstances.length; i++) {
 				JNote n = m_sNoteInstances[i];
 				n.render(context);
-System.out.println(n.getMusicElement().toString() +
-					":\tX=" + n.getStemBeginPosition().getX() +
-					",Y=" + n.getStemBeginPosition().getY() +
-					"\n\tisStemUp()=" + n.isStemUp() );
-				if (n instanceof JNotePartOfGroup) {
-System.out.println("\tstemYEnd="+((JNotePartOfGroup) n).getStemYEnd());
-				}
+//System.out.println(n.getMusicElement().toString() +
+//					":\tX=" + n.getStemBeginPosition().getX() +
+//					",Y=" + n.getStemBeginPosition().getY() +
+//					"\n\tisStemUp()=" + n.isStemUp() );
+//				if (n instanceof JNotePartOfGroup) {
+////System.out.println("\tstemYEnd="+((JNotePartOfGroup) n).getStemYEnd());
+//				}
 
 			}
 		}

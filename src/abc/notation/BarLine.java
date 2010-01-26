@@ -16,7 +16,7 @@
 package abc.notation;
 
 /** This class defines bar lines. */
-public class BarLine implements MusicElement
+public class BarLine extends DecorableElement implements MusicElement
 {
   /** The simple bar line type. Ex: | */
   public static final byte SIMPLE = 0;

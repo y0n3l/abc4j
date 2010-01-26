@@ -163,16 +163,16 @@ public class JScoreComponent extends JComponent
 
     /** Sets the note stem direction on a score.
      *  0=auto 1=up 2=down
-     * @deprecated use template attribute {@link ScoreAttribute#STEM_POLICY}
+     * @deprecated use template attribute {@link ScoreAttribute#NOTE_STEM_POLICY}
      */
     public void setStemmingPolicy (byte policy) {
-    	getTemplate().setAttribute(ScoreAttribute.STEM_POLICY, new Byte(policy));
+    	getTemplate().setAttribute(ScoreAttribute.NOTE_STEM_POLICY, new Byte(policy));
     }
     /**
-     * @deprecated use getTemplate().getAttributeNumber {@link ScoreAttribute#STEM_POLICY}
+     * @deprecated use getTemplate().getAttributeNumber {@link ScoreAttribute#NOTE_STEM_POLICY}
      */
     public byte getStemmingPolicy() {
-    	return (byte) getTemplate().getAttributeNumber(ScoreAttribute.STEM_POLICY);
+    	return (byte) getTemplate().getAttributeNumber(ScoreAttribute.NOTE_STEM_POLICY);
     }
 
 	/**

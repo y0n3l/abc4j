@@ -33,7 +33,7 @@ public class State implements Cloneable
     /** Constructs a new state.
      * @param type The type of the state.
      * @param isTokenStateValue <TT>true</TT> if the state is a token state,
-     * <TT>falsew</TT> otherwise. */
+     * <TT>false</TT> otherwise. */
     public State(TokenType type, boolean isTokenStateValue)
     {
         m_type = type;

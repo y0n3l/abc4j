@@ -22,8 +22,9 @@ import java.awt.Stroke;
 import java.awt.geom.Point2D;
 
 import abc.notation.Note;
+import abc.ui.swing.JScoreElement.JGraceElement;
 
-class JGraceNote extends JNote {
+class JGraceNote extends JNote implements JGraceElement {
 
 	protected boolean renderSlash = true;
 	private Point2D slashStart = null;
@@ -34,21 +35,21 @@ class JGraceNote extends JNote {
 	public JGraceNote(Note noteValue, Point2D base, ScoreMetrics c) {
 		super(noteValue, base, c);
 
-		super.setAutoStem(false);
-		super.setStemUp(true);
+//		super.setAutoStem(false);
+//		super.setStemUp(true);
 
 		slashStart = new Point2D.Double(0,0);
 		slashEnd = new Point2D.Double(0,0);
 	}
 
 
-	// no-op: gracenotes should always be stemmed up
-	public void autoStem(boolean auto) {
-	}
-
-	// no-op: gracenotes should always be stemmed up
-	public void setStemUp(boolean isUp) {
-	}
+//	// no-op: gracenotes should always be stemmed up
+//	public void autoStem(boolean auto) {
+//	}
+//
+//	// no-op: gracenotes should always be stemmed up
+//	public void setStemUp(boolean isUp) {
+//	}
 
 	public void setRenderSlash(boolean render) {
 		renderSlash = render;
@@ -97,9 +98,9 @@ class JGraceNote extends JNote {
 			endY = (int) (displayPosition.getY() - width*3.5);
 		} else {
 			startX = (int) (displayPosition.getX() - width*0.5);
-			endX = (int) (displayPosition.getX() - width*2.5);
-			startY = (int) (displayPosition.getY() + width*2.5);
-			endY = (int) (displayPosition.getY() + width*3.5);
+			endX = (int) (displayPosition.getX() + width*1.5);
+			startY = (int) (displayPosition.getY() + width*1.5);
+			endY = (int) (displayPosition.getY() + width*2.5);
 		}
 		slashStart = new Point2D.Double(startX, startY);
 		slashEnd = new Point2D.Double(endX, endY);

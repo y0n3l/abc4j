@@ -22,9 +22,10 @@ import java.awt.geom.Point2D;
 
 import abc.notation.Note;
 import abc.notation.NoteAbstract;
+import abc.ui.swing.JScoreElement.JGraceElement;
 
 /** This class is in charge of rendering a group of grace notes whose stems should be linked. */
-class JGroupOfGraceNotes extends JGroupOfNotes {
+class JGroupOfGraceNotes extends JGroupOfNotes implements JGraceElement {
 
 	protected boolean renderSlash = true;
 	private Point2D slashStart = null;
@@ -36,17 +37,15 @@ class JGroupOfGraceNotes extends JGroupOfNotes {
 		JGraceNotePartOfGroup graceNote = null;
 		for (int i=0; i<notes.length; i++) {
 			graceNote = new JGraceNotePartOfGroup((Note)m_notes[i], base /*new Point2D.Double()*/, metrics);
-			graceNote.setAutoStem(false);
-			graceNote.setStemUp(true);
 			m_jNotes[i] = graceNote;
 		}
 
 		slashStart = new Point2D.Double(0,0);
 		slashEnd = new Point2D.Double(0,0);
 
-		// force stem direction - gracenotes are always stemmed UP
-		setAutoStem(false);
-		setStemUp(true);
+//		// force stem direction - gracenotes are always stemmed UP
+//		setAutoStem(false);
+//		setStemUp(true);
 	}
 
 	/**
@@ -64,7 +63,7 @@ class JGroupOfGraceNotes extends JGroupOfNotes {
 		renderSlash = render;
 	}
 
-	public void onBaseChanged() {
+	protected void onBaseChanged() {
 		super.onBaseChanged();
 
 		// calculate slash position
@@ -84,8 +83,8 @@ class JGroupOfGraceNotes extends JGroupOfNotes {
 			startY = (int) (firstNote.getStemYEnd() + d.getWidth()*2.5);
 			endY = (int) (firstNote.getStemYEnd() - d.getWidth()*1.5);
 		} else {
-			startX = (int) (displayPosition.getX() + d.getWidth()*0.5);
-			endX = (int) (displayPosition.getX() + d.getWidth()*5.5);
+			startX = (int) (displayPosition.getX() - d.getWidth()*0.5);
+			endX = (int) (displayPosition.getX() + d.getWidth()*4.5);
 			startY = (int) (firstNote.getStemYEnd() - d.getWidth()*2.5);
 			endY = (int) (firstNote.getStemYEnd() + d.getWidth()*1.5);
 		}
