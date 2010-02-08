@@ -22,11 +22,15 @@ import java.awt.geom.Point2D;
 import java.awt.geom.QuadCurve2D;
 import java.awt.geom.Rectangle2D;
 
+import abc.notation.Chord;
 import abc.notation.Decoration;
 import abc.notation.GracingType;
+import abc.notation.MusicElement;
 import abc.notation.Note;
 import abc.notation.NoteAbstract;
+import abc.ui.scoretemplates.HorizontalAlign;
 import abc.ui.scoretemplates.ScoreAttribute;
+import abc.ui.scoretemplates.TextFields;
 import abc.ui.swing.JScoreElement.JStemmableElement;
 
 /** This class defines a note rendition element.
@@ -294,6 +298,42 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 
 	public Point2D getSlurUnderAnchorOutOfStem() {
 		return slurUnderAnchorOutOfStem;
+	}
+
+	protected void renderChordName(Graphics2D gfx) {
+		MusicElement me = getMusicElement();
+		Chord chord = null;
+		if (me instanceof NoteAbstract)
+			chord = ((NoteAbstract) me).getChord();
+		Point2D displayPos = null;
+		if (this instanceof JNote)
+			displayPos = ((JNote) this).getDisplayPosition();
+		else if (this instanceof JChord)
+			displayPos = ((JChord) this).getHighestNote().getDisplayPosition();
+		if (chord != null) {
+			JChordName chordName = new JChordName(getMetrics(), chord);
+			Dimension dimension = chordName.getDimension();
+			double y = getStaffLine().getBase().getY()/* not yet defined*/
+				//- (displayPosition.getY()%m_metrics.getStaffLinesSpacing())
+				- getMetrics().getStaffCharBounds().getHeight()
+				- getTemplate().getAttributeSize(ScoreAttribute.CHORD_LINE_SPACING)
+				+ dimension.getHeight();
+			double x = displayPos.getX();
+			byte[] pos = getTemplate().getPosition(TextFields.CHORDS);
+			if (pos != null) {
+				switch (pos[1]) {
+				case HorizontalAlign.RIGHT:
+					x -= dimension.getWidth(); break;
+				case HorizontalAlign.CENTER:
+					x -= dimension.getWidth()/2; break;
+				case HorizontalAlign.LEFT:
+				default:
+					break;
+				}
+				chordName.setBase(new Point2D.Double(x, y));
+				chordName.render(gfx);	
+			}
+		}
 	}
 
 	/* Render each indiviual gracenote associated with this note. */

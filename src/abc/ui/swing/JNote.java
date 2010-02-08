@@ -371,33 +371,6 @@ class JNote extends JNoteElementAbstract {
 			gfx.drawChars(noteChars, 0, 1, (int)displayPosition.getX(), (int)displayPosition.getY());
 	}
 
-	protected void renderChordName(Graphics2D gfx) {
-		if (note.getChord() != null) {
-			JChordName chordName = new JChordName(getMetrics(), note.getChord());
-			Dimension dimension = chordName.getDimension();
-			double y = getStaffLine().getBase().getY()/* not yet defined*/
-				//- (displayPosition.getY()%m_metrics.getStaffLinesSpacing())
-				- getMetrics().getStaffCharBounds().getHeight()
-				- getTemplate().getAttributeSize(ScoreAttribute.CHORD_LINE_SPACING)
-				+ dimension.getHeight();
-			double x = displayPosition.getX();
-			byte[] pos = getTemplate().getPosition(TextFields.CHORDS);
-			if (pos != null) {
-				switch (pos[1]) {
-				case HorizontalAlign.RIGHT:
-					x -= dimension.getWidth(); break;
-				case HorizontalAlign.CENTER:
-					x -= dimension.getWidth()/2; break;
-				case HorizontalAlign.LEFT:
-				default:
-					break;
-				}
-				chordName.setBase(new Point2D.Double(x, y));
-				chordName.render(gfx);	
-			}
-		}
-	}
-
 	protected void renderAccidentals(Graphics2D gfx) {
 		if (accidentalsPosition!=null)
 			gfx.drawChars(accidentalsChars, 0, 1, (int)accidentalsPosition.getX(), (int)accidentalsPosition.getY());

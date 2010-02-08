@@ -570,6 +570,10 @@ public class Note extends NoteAbstract implements Cloneable
 	public boolean isRestInvisible() {
 		return m_invisibleRest;
 	}
+	
+	public boolean isLongerThan(Note aNote) {
+		return getDuration() > aNote.getDuration();
+	}
 
 	public boolean isShorterThan(Note aNote) {
 		return getDuration() < aNote.getDuration();

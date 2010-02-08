@@ -404,6 +404,7 @@ class JChord extends JNoteElementAbstract {
 				m_normalizedChords[i].render(context);
 
 		renderGraceNotes(context);
+		renderChordName(context);
 //		renderDecorations(context);
 
 		//renderDebugBoundingBox(context);
