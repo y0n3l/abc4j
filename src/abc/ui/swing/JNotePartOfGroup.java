@@ -34,9 +34,7 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 
 	public JNotePartOfGroup(Note noteValue, Point2D base, ScoreMetrics c) {
 		super(noteValue, base, c);
-		//onBaseChanged();
-		// autoStem always false - stemming managed by aggregating JGroupOfNotes
-		super.setAutoStem(false);
+		super.setAutoStem(true);
 	}
 
 	protected void valuateNoteChars() {
@@ -64,12 +62,6 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 		//note glyph is used for vertical position of normal and graces notes
 		Dimension noteGlyphDimension = metrics.getGlyphDimension(ScoreMetrics.NOTATION_CONTEXT_NOTE);
 
-		// FIXME: ... 1st time called this is always null. why ?
-		if (glyphDimension == null) {
-			System.err.println("JNotePartOfGroup : glyphDimension is null!");
-			return;
-		}
-
 		//correct what differs from SNote...
 		//The displayed character is not the same.
 		//noteChars = ScoreMetrics.NOTE;
@@ -84,20 +76,31 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 
 		int stemYBegin = (int)(noteY - glyphDimension.getHeight()/2);
 
-		if (isStemUp()) {
-			//stemYBegin = (int)(displayPosition.getY() - glyphDimension.getHeight()/6);
-			// if stemYEnd hasn't been set give it a default
-			if (stemYEnd < 0) stemYEnd = (int)(displayPosition.getY() - metrics.getStemLengthForContext(getNotationContext()));
-		} else {
-			//stemYBegin = (int)(displayPosition.getY() + glyphDimension.getHeight()/6);
-			// if stemYEnd hasn't been set give it a default
-			if (stemYEnd < 0) stemYEnd = (int)(displayPosition.getY() + metrics.getStemLengthForContext(getNotationContext()));
+		if (stemYEnd < 0) {
+			if (isStemUp()) {
+				//stemYBegin = (int)(displayPosition.getY() - glyphDimension.getHeight()/6);
+				// if stemYEnd hasn't been set give it a default
+				/*if (stemYEnd < 0)*/ stemYEnd = (int)(displayPosition.getY() - metrics.getStemLengthForContext(getNotationContext()));
+			} else {
+				//stemYBegin = (int)(displayPosition.getY() + glyphDimension.getHeight()/6);
+				// if stemYEnd hasn't been set give it a default
+				/*if (stemYEnd < 0)*/ stemYEnd = (int)(displayPosition.getY() + metrics.getStemLengthForContext(getNotationContext()));
+			}
 		}
 
 		setStemUpBeginPosition(new Point2D.Double(noteX + glyphDimension.getWidth(), stemYBegin));
 		setStemDownBeginPosition(new Point2D.Double(noteX, stemYBegin));
 
 		notePosition = new Point2D.Double(displayPosition.getX(), displayPosition.getY());
+		if (isHeadInverted()) {
+			if (isStemUp()) {
+				notePosition.setLocation(notePosition.getX() + glyphDimension.getWidth(),
+					notePosition.getY());
+			} else {
+				notePosition.setLocation(notePosition.getX() - glyphDimension.getWidth(),
+					notePosition.getY());
+			}
+		}
 		onNotePositionChanged();
 
 	}

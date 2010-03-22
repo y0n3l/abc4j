@@ -104,6 +104,34 @@ class JNote extends JNoteElementAbstract {
 				noteChars = new char[] { getMusicalFont().getNoteStemDownChar(noteDuration) };
 		}
 	}
+	
+	/** Sets the Unicode values of the stem [0] and the
+	 * note head [1] for head inverted note
+	 * @return char[2][]
+ 	 */
+	protected char[][] valuateInvertedNoteChars() {
+		short noteDuration = note.getStrictDuration();
+		char[] c1 = null, c2 = null;
+		if (note.isRest()){
+			c1 = new char[] { getMusicalFont().getRestChar(noteDuration) };
+		}
+		else {
+			if (noteDuration <= Note.HALF) {
+				if (isStemUp())
+					c1 = new char[] { getMusicalFont().getStemWithoutNoteUpChar(noteDuration) };
+				else
+					c1 = new char[] { getMusicalFont().getStemWithoutNoteDownChar(noteDuration) };
+			}
+			c2 = new char[] { getMusicalFont().getNoteWithoutStem(noteDuration) };
+			//if the note in valuateNoteChar is without stem
+			//remove the stem char (c1)
+			//e.g.: JChordNote, JNotePartOfGroup
+			if (c2[0] == noteChars[0]) {
+				c1 = null;
+			}
+		}
+		return new char[][] { c1, c2 };
+	}
 
 	/** Sets note stem direction.
 	 * @param isUp true or false
@@ -184,12 +212,32 @@ class JNote extends JNoteElementAbstract {
 		double noteX = base.getX()
 			+ (graceNotesAfter?0:graceNotesWidth)
 			+ accidentalsWidth;
+		if (isHeadInverted() && !isStemUp())
+			noteX += glyphDimension.getWidth();
 		displayPosition = new Point2D.Double(noteX, noteY);
 		notePosition = (Point2D)displayPosition.clone();
-		stemUpBeginPosition = new Point2D.Double(notePosition.getX()+ glyphDimension.getWidth()*0.93,
+		if (isHeadInverted()) {
+			if (isStemUp()) {
+				notePosition.setLocation(notePosition.getX() + glyphDimension.getWidth(),
+					notePosition.getY());
+			} else {
+				notePosition.setLocation(notePosition.getX() - glyphDimension.getWidth(),
+					notePosition.getY());
+			}
+		}
+		if (!isHeadInverted()) {
+			stemUpBeginPosition = new Point2D.Double(notePosition.getX()
+				+ glyphDimension.getWidth()*0.93,
 				notePosition.getY()-glyphDimension.getHeight()/2);
-		stemDownBeginPosition = new Point2D.Double(notePosition.getX(),
+			stemDownBeginPosition = new Point2D.Double(notePosition.getX(),
 				notePosition.getY()-glyphDimension.getHeight()/2);
+		} else {
+			stemUpBeginPosition = new Point2D.Double(notePosition.getX(),
+				notePosition.getY()-glyphDimension.getHeight()/2);
+			stemDownBeginPosition = new Point2D.Double(notePosition.getX()
+				+ glyphDimension.getWidth()*0.93,
+				notePosition.getY()-glyphDimension.getHeight()/2);
+		}
 		if (note.hasAccidental())
 			accidentalsPosition = new Point2D.Double(base.getX()+(graceNotesAfter?0:graceNotesWidth),
 					notePosition.getY()-glyphDimension.getHeight()/2);
@@ -206,9 +254,14 @@ class JNote extends JNoteElementAbstract {
 		//if (!(this instanceof JNotePartOfGroup)
 		if (((this instanceof JNote) || (this instanceof JChordNote))
 				&& !(this instanceof JGraceNote)
-				&& !note.isRest() && isStemUp()
-				&& (note.getStrictDuration() <= Note.EIGHTH)
-				&& (noteChars[0] != getMusicalFont().getNoteWithoutStem())) {
+				&& !note.isRest()
+				&& ((isStemUp()
+						&& ((note.getStrictDuration() <= Note.EIGHTH)
+						|| isHeadInverted()))
+					|| (!isStemUp() && isHeadInverted()))
+				&& ((noteChars[0] != getMusicalFont().getNoteWithoutStem())
+					|| isHeadInverted())
+				) {
 			extraWidth = glyphDimension.getWidth();
 		}
 		//calc dots needed extra space
@@ -284,8 +337,8 @@ class JNote extends JNoteElementAbstract {
 								getBoundingBox().getMinY()-metrics.getSlurAnchorYOffset())
 			:slurAboveAnchor;
 		Rectangle2D tieAnchors = new Rectangle2D.Double(
-				displayPosition.getX(),
-				displayPosition.getY()-glyphDimension.getHeight(),
+				notePosition.getX(),
+				notePosition.getY()-glyphDimension.getHeight(),
 				glyphDimension.getWidth(),
 				glyphDimension.getHeight());
 		//ties start and end in a corner of the glyph rectangle
@@ -367,8 +420,17 @@ class JNote extends JNoteElementAbstract {
 	}
 
 	protected void renderNoteChars(Graphics2D gfx) {
-		if (!(note.isRest() && note.isRestInvisible()))
-			gfx.drawChars(noteChars, 0, 1, (int)displayPosition.getX(), (int)displayPosition.getY());
+		if (!(note.isRest() && note.isRestInvisible())) {
+			if (note.isRest() || !isHeadInverted()) {
+				gfx.drawChars(noteChars, 0, 1, (int)displayPosition.getX(), (int)displayPosition.getY());
+			} else {
+				char[][] chars = valuateInvertedNoteChars();
+				if (chars[0] != null) // stem
+					gfx.drawChars(chars[0], 0, 1, (int)displayPosition.getX(), (int)displayPosition.getY());
+				if (chars[1] != null) // head
+					gfx.drawChars(chars[1], 0, 1, (int)notePosition.getX(), (int)notePosition.getY());
+			}
+		}
 	}
 
 	protected void renderAccidentals(Graphics2D gfx) {

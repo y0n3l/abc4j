@@ -30,6 +30,10 @@ class JChordNote extends JNotePartOfGroup {
 		//onBaseChanged();
 		//System.err.println(toString() + ": note="+noteValue.toString());
 	}
+	
+	public void setAutoStem(boolean auto) {
+		autoStem = auto;
+	}
 
 	protected void valuateNoteChars() {
 		if (!isAnchor()) {

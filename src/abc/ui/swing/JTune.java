@@ -777,13 +777,15 @@ public class JTune extends JScoreElementAbstract {
 	private void applyStemmingPolicy(JScoreElementAbstract element) {
 		if (element != null && element instanceof JStemmableElement) {
 			JStemmableElement stemmable = (JStemmableElement) element;
-			byte noteStemPolicy = (byte) getTemplate().getAttributeNumber(ScoreAttribute.NOTE_STEM_POLICY);
-			if (noteStemPolicy == STEMS_AUTO) {
-				stemmable.setAutoStem(true);
-			} else {
-				boolean isup = (noteStemPolicy == STEMS_UP) ? true : false;
-				stemmable.setAutoStem(false);
-				stemmable.setStemUp(isup);
+			if (stemmable.isFollowingStemmingPolicy()) {
+				byte noteStemPolicy = (byte) getTemplate().getAttributeNumber(ScoreAttribute.NOTE_STEM_POLICY);
+				if (noteStemPolicy == STEMS_AUTO) {
+					stemmable.setAutoStem(true);
+				} else {
+					boolean isup = (noteStemPolicy == STEMS_UP) ? true : false;
+					stemmable.setAutoStem(false);
+					stemmable.setStemUp(isup);
+				}
 			}
 			//grace notes
 			byte gracenoteStemPolicy = (byte) getTemplate().getAttributeNumber(ScoreAttribute.GRACENOTE_STEM_POLICY);
@@ -1148,7 +1150,7 @@ public class JTune extends JScoreElementAbstract {
 		peakNote[ABOVE_IN] = m_tune.getMusic().getHighestNoteBewteen(slurDef.getStart(), slurDef.getEnd());
 		peakNoteGlyph[ABOVE_IN] = (JNoteElementAbstract)m_scoreElements.get(peakNote[ABOVE_IN]);
 
-		//above out of stems (e.g. truplet)
+		//above out of stems (e.g. tuplet)
 		peakNoteGlyph[ABOVE_OUT] = getHighestNoteGlyphBetween(slurDef.getStart(), slurDef.getEnd(), true);
 		//enhance: if lowest glyph strictly between start/end is at same Y than start or end
 		if (peakNoteGlyph[ABOVE_OUT] == null) { //no notes between start and end
@@ -1192,7 +1194,6 @@ public class JTune extends JScoreElementAbstract {
 			}
 
 			//we don't like straight slurs, if Ystart=Ycontrol=Yend, Ycontrol+=slurOffset
-			//FIXME if tie (not slur), we can keep it straight
 			double Ycontrol = p[i][CONTROL].getY(),
 					Ystart = p[i][START].getY(),
 					Yend = p[i][END].getY();
@@ -1278,15 +1279,36 @@ public class JTune extends JScoreElementAbstract {
 				if (slurInfos.intersect > 0) {
 					Point2D newPtControl;
 					double yOffset = getMetrics().getNoteHeight();
-					int factor = slurInfos.isAbove?-1:1;
-					//move Y=1 note height
-					//newPtControl = new Point2D.Double(p2d[CONTROL].getX(),
-					//		p2d[CONTROL].getY()+factor*yOffset);
-					//additionnalCombos.add(new Point2D[] {p2d[START],newPtControl,p2d[END]});
-					//move Y=2 note height
-					newPtControl = new Point2D.Double(p2d[CONTROL].getX(),
-							p2d[CONTROL].getY()+2*factor*yOffset);
-					additionnalCurves.add(new Point2D[] {p2d[START],newPtControl,p2d[END]});
+					double xOffset = getMetrics().getNoteWidth();
+					int yFactor = slurInfos.isAbove?-1:1;
+					double distanceControlEnd = p2d[END].getX()-p2d[CONTROL].getX();
+					double distanceControlStart = p2d[CONTROL].getX()-p2d[START].getX();
+					int xFactor = 0;
+					if (distanceControlEnd < distanceControlStart)
+						xFactor = -1;
+					else if (distanceControlEnd > distanceControlStart)
+						xFactor = 1;
+					for (float xO = 0f; xO <= 1; xO += .25f) {
+						for (float yO = .5f; yO <= 2f; yO += .25f) {
+							//move X note width, Y*factor note height
+							newPtControl = new Point2D.Double(
+									p2d[CONTROL].getX()+xO*xFactor*xOffset,
+									p2d[CONTROL].getY()+yO*yFactor*yOffset);
+							additionnalCurves.add(new Point2D[] {p2d[START],newPtControl,p2d[END]});
+						}
+					}
+//					//move Y=1 note height
+//					newPtControl = new Point2D.Double(p2d[CONTROL].getX(),
+//							p2d[CONTROL].getY()+factor*yOffset);
+//					additionnalCurves.add(new Point2D[] {p2d[START],newPtControl,p2d[END]});
+//					//move Y=1.5 note height
+//					newPtControl = new Point2D.Double(p2d[CONTROL].getX(),
+//							p2d[CONTROL].getY()+1.5*factor*yOffset);
+//					additionnalCurves.add(new Point2D[] {p2d[START],newPtControl,p2d[END]});
+//					//move Y=2 note height
+//					newPtControl = new Point2D.Double(p2d[CONTROL].getX(),
+//							p2d[CONTROL].getY()+2*factor*yOffset);
+//					additionnalCurves.add(new Point2D[] {p2d[START],newPtControl,p2d[END]});
 				}
 
 				//TODO if flatness is high, away start/end position from original
@@ -1308,7 +1330,7 @@ public class JTune extends JScoreElementAbstract {
 			}
 		}
 
-		//Checks additional combos
+		//Checks additional curves
 		for (Iterator itAddCurves = additionnalCurves.iterator(); itAddCurves.hasNext();) {
 			Point2D[] p2d = (Point2D[]) itAddCurves.next();
 			//System.out.print((cpt++) + " : ");

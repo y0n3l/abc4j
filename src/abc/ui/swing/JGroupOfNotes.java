@@ -128,25 +128,112 @@ class JGroupOfNotes extends JScoreElementAbstract
 		return array;
 	}
 
+	/**
+	 * A JChordPartOfGroup in this group of note can have multi-length
+	 * chords, then only one is part of group (the shortest duration' one)
+	 * 
+	 * So, for auto stemming, stem direction... functions, if the
+	 * JNoteElementAbstract is a JChord(PartOfGroup), returns the
+	 * really needed chord, itself if one-length, the shortest if
+	 * multi-length
+	 * @param chord
+	 */
+	private JChordPartOfGroup getChordReallyPartOfGroup(JChordPartOfGroup chord) {
+		if (chord.m_normalizedChords != null) {
+			//should be m_normalizedChords[0]
+			for (int j=0; j<chord.m_normalizedChords.length; j++) {
+				if (chord.m_normalizedChords[j] instanceof JChordPartOfGroup) {
+					return (JChordPartOfGroup) chord.m_normalizedChords[j];
+				}
+			}
+		}
+		return chord;
+	}
+	
+	public boolean isAutoStem() {
+		if (autoStemming) {
+			for (int i=0; i<m_jNotes.length; i++) {
+				boolean autoS = true;
+				JNoteElementAbstract jnea = (JNoteElementAbstract)m_jNotes[i];
+				//If the chord is multi length, looks at the chord which
+				//is *really* part of the group. In both chords in a
+				//multi-length chord, there is only one part of a group (the shortest)
+				if (jnea instanceof JChordPartOfGroup) {
+					autoS = getChordReallyPartOfGroup((JChordPartOfGroup) jnea).autoStem;
+				}
+				else {
+					autoS = jnea.isAutoStem();
+				}
+				if (autoS == false)
+					return false;
+			}
+			return true;
+		}
+		return autoStemming;
+	}
 
 	public void setAutoStem(boolean auto) {
 		autoStemming = auto;
 		for (int i=0; i<m_jNotes.length; i++) {
-			((JNoteElementAbstract)m_jNotes[i]).setAutoStem(false);
+			JNoteElementAbstract jnea = (JNoteElementAbstract)m_jNotes[i];
+			if (jnea instanceof JChordPartOfGroup) {
+				getChordReallyPartOfGroup((JChordPartOfGroup) jnea);
+			} else {
+				jnea.setAutoStem(false);
+			}
 		}
 		setStemUp(isStemUp);
 	}
 	
 	public boolean isStemUp() {
-		return isStemUp;
+		if (isAutoStem())
+			return isStemUp;
+		else {
+			for (int i=0; i<m_jNotes.length; i++) {
+				JNoteElementAbstract jnea = (JNoteElementAbstract)m_jNotes[i];
+				if (jnea instanceof JChordPartOfGroup) {
+					JChordPartOfGroup jcpog = getChordReallyPartOfGroup((JChordPartOfGroup) jnea);
+					if (jcpog.isAutoStem() == false)
+						return jcpog.isStemUp();
+				} else {
+					if (jnea.isAutoStem() == false)
+						return jnea.isStemUp();
+				}
+			}
+			//should never happen
+			return isStemUp;
+		}
+	}
+	
+	private void setStemYEnd(int stemY) {
+		m_stemYend = stemY;
+		for (int i=0; i<m_jNotes.length; i++) {
+			JNoteElementAbstract jnea = (JNoteElementAbstract)m_jNotes[i];
+			if (jnea instanceof JChordPartOfGroup) {
+				JChordPartOfGroup jcpog = getChordReallyPartOfGroup((JChordPartOfGroup) jnea);
+				jcpog.setStemYEnd(stemY);
+				jcpog.onBaseChanged();
+			} else { //JNotePartOfGroup
+				((JNotePartOfGroup) jnea).setStemYEnd(stemY);
+				jnea.onBaseChanged();
+			}
+		}
 	}
 
 	public void setStemUp(boolean isUp) {
 		isStemUp = isUp;
 		for (int i=0; i<m_jNotes.length; i++) {
-			((JNoteElementAbstract)m_jNotes[i]).setAutoStem(false);
-			((JNoteElementAbstract)m_jNotes[i]).setStemUp(isStemUp);
-			((JNoteElementAbstract)m_jNotes[i]).onBaseChanged();
+			JNoteElementAbstract jnea = (JNoteElementAbstract)m_jNotes[i];
+			if (jnea instanceof JChordPartOfGroup) {
+				JChordPartOfGroup jcpog = getChordReallyPartOfGroup((JChordPartOfGroup) jnea);
+				jcpog.setAutoStem(false);
+				jcpog.setStemUp(isStemUp);
+				jcpog.onBaseChanged();
+			} else {
+				jnea.setAutoStem(false);
+				jnea.setStemUp(isStemUp);
+				jnea.onBaseChanged();
+			}
 		}
 	}
 	
@@ -175,7 +262,7 @@ class JGroupOfNotes extends JScoreElementAbstract
 		// assume every note in group has same auto stemming policy
 		// can be indivudual beamed note or chord multinote
 
-		if (autoStemming) {
+		if (isAutoStem()) {
 
 			byte h, l;
 			if (m_notes[highIndex] instanceof MultiNote)
@@ -201,8 +288,7 @@ class JGroupOfNotes extends JScoreElementAbstract
 			}
 
 		} else {
-			setStemUp(isStemUp);
-
+			setStemUp(isStemUp());
 		}
 
 
@@ -222,6 +308,7 @@ class JGroupOfNotes extends JScoreElementAbstract
 //		}
 
 		Point2D updatedBase = null;
+		setStemYEnd(-1); //reinit the stemYend stored in notes of the group
 		if (isStemUp) {
 			//update the highest note to calculate when the stem Y end should be after the base change.
 			updatedBase = highestNote.getBase();
@@ -237,8 +324,11 @@ class JGroupOfNotes extends JScoreElementAbstract
 			updatedBase.setLocation(currentBase);
 			((JScoreElementAbstract)lowestNote).setBase(updatedBase);
 			//based on this, calculate the new stem Y end.
-			m_stemYend = (int)(lowestNote.getStemBeginPosition().getY()+getMetrics().getStemLengthForContext(getNotationContext()));
+//			m_stemYend = (int)(lowestNote.getStemBeginPosition().getY()
+//				+getMetrics().getStemLengthForContext(getNotationContext()));
+			m_stemYend = lowestNote.getStemYEnd();
 		}
+		setStemYEnd(m_stemYend); //apply the same stemYEnd to all notes in group
 
 		JGroupableNote firstNote = m_jNotes[0];
 		JGroupableNote lastNote = m_jNotes[m_jNotes.length-1];
@@ -423,4 +513,9 @@ class JGroupOfNotes extends JScoreElementAbstract
 		}
 		return scoreEl;
 	}
+
+	public boolean isFollowingStemmingPolicy() {
+		return true;
+	}
+	
 }

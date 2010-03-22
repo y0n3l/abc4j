@@ -38,21 +38,22 @@ public class Decoration implements SymbolElement, MusicElement
 
   public static final byte UNKNOWN = 0;
 
-  /** The  type. Ex:  */
+  /** Staccato. Ex: <TT>.</TT> */
   public static final byte STACCATO = 1;
 
-  /** The  type. Ex:  */
+  /** Roll. Ex: <TT>~</TT> or <TT>+roll+</TT> */
   public static final byte ROLL = 2;
 
-  /** The  type. Ex:  */
+  /** Upbow. Ex: <TT>u</TT> or <TT>+upbow+</TT> */
   public static final byte UPBOW = 3;
 
-  /** The  type. Ex:  */
+  /** Downbow. Ex: <TT>v</TT> or <TT>+downbow+</TT> */
   public static final byte DOWNBOW = 4;
-  /** The  type. Ex:  */
+  
+  /** Trill. Ex: <TT>T</TT> or <TT>+trill+</TT> */
   public static final byte TRILL = 5;
 
-  /** The  type. Ex:  */
+  /** Fermata. Ex: <TT>H</TT> or <TT>+fermata+</TT> */
   public static final byte FERMATA = 6;
 
   /** The <TT>></TT> accent type, also named "marcato" */
@@ -60,10 +61,10 @@ public class Decoration implements SymbolElement, MusicElement
   /** The <TT>></TT> marcato (accent) type */
   public static final byte MARCATO = 7;
 
-  /** The  type. Ex:  */
+  /** Lower mordent. Ex: <TT>M</TT> */
   public static final byte LOWERMORDENT = 8;
 
-  /** The  type. Ex:  */
+  /** Upper mordent. Ex: <TT>P</TT> */
   public static final byte UPPERMORDENT = 9;
 
   //TODO move SEGNO and CODA to RepeatBarLine
@@ -256,7 +257,7 @@ public class Decoration implements SymbolElement, MusicElement
 		else if (str.equals("3")) type = FINGERING_3;
 		else if (str.equals("4")) type = FINGERING_4;
 		else if (str.equals("5")) type = FINGERING_5;
-		else if (str.equals("+")) type = PLUS;
+		else if (str.equals("plus")) type = PLUS;
 		else if (str.equals("wedge")) type = WEDGE;
 		else if (str.equals("open")) type = OPEN;
 		else if (str.equals("thumb")

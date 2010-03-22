@@ -399,6 +399,8 @@ public class Tune implements Cloneable
 		}
 
 		KeySignature lastKey = ret.getKey();
+		if (lastKey == null)
+			lastKey = new KeySignature(Note.C, KeySignature.MAJOR);
 		Note lastKeyNote = new Note(lastKey.getNote(), lastKey.getAccidental());
 		KeySignature noneTranspKey = lastKey;
 		Note noneTranspKeyNote = lastKeyNote;

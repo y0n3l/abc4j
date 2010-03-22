@@ -65,6 +65,19 @@ public interface JScoreElement {
 	public interface JStemmableElement {
 		
 		/**
+		 * Returns if the stemmable element should follow
+		 * stemming policy.
+		 * 
+		 * e.g. chord with multi-length should not follow policy
+		 */
+		public boolean isFollowingStemmingPolicy();
+		
+		/**
+		 * Returns if the stem orientation is automatic or not
+		 */
+		public boolean isAutoStem();
+		
+		/**
 		 * Sets if the stem orientation is automatic or not
 		 * @param b
 		 */

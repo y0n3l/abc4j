@@ -272,4 +272,11 @@ abstract class JScoreElementAbstract implements JScoreElement {
 		context.setColor(previousColor);
 	}
 
+	public String toString() {
+		String ret = super.toString();
+		if (getMusicElement() != null)
+			ret += " <" + getMusicElement().toString() + ">";
+		return ret;
+	}
+	
 }

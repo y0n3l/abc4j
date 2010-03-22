@@ -42,6 +42,7 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 
 	protected Note note = null;
 
+	private boolean m_headInverted = false;
 
 	// instance of JGraceNotes or JGroupOfGraceNotes
 	protected JScoreElementAbstract m_jGracenotes = null;
@@ -118,6 +119,10 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 			}
 		}
 	}
+	
+	public boolean isFollowingStemmingPolicy() {
+		return true;
+	}
 
 	public boolean isAutoStem() {
 		return autoStem;
@@ -146,6 +151,22 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 	  return isup;
 	}
 	
+	/**
+	 * Sets if the note head is inverted (i.e. right to stem
+	 * if stem is up, left to stem if stem is down)
+	 * @param b
+	 */
+	protected void setHeadInverted(boolean b) {
+		m_headInverted = b;
+	}
+
+	/**
+	 * Returns if the note head is inverted (i.e. right to stem
+	 * if stem is up, left to stem if stem is down)
+	 */
+	protected boolean isHeadInverted() {
+		return m_headInverted;
+	}
 
 	protected void calcDecorationPosition() {
 		/* ********************************************* */

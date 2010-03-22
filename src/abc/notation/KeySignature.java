@@ -551,10 +551,13 @@ public class KeySignature implements MusicElement, Cloneable
 			);
 		for (int i = Degree.I; i <= Degree.VII; i++) {
 			if (addedAcc[i-1] != 0) {
-				ret.setAccidental(ret.getDegree(i),
-					(byte) (ret.getAccidentalFor(ret.getDegree(i))
-						+ addedAcc[i-1])
-					);
+				byte acc = (byte) (ret.getAccidentalFor(ret.getDegree(i))
+						+ addedAcc[i-1]);
+				if ((acc == AccidentalType.DOUBLE_SHARP)
+						|| (acc == AccidentalType.DOUBLE_FLAT))
+					acc = AccidentalType.NATURAL;
+				
+				ret.setAccidental(ret.getDegree(i), acc);
 			}
 		}
 		return ret;

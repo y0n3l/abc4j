@@ -46,6 +46,19 @@ public class SonoraFont implements MusicalFont, Serializable {
 		'\uF038', //8
 		'\uF039'}; //9
 	
+	/** Digits for fingerings */
+	private static final char[] FINGERINGS_DIGITS = {
+		'\uF102', //0
+		'\uF103', //1
+		'\uF104', //2
+		'\uF105', //3
+		'\uF106', //4
+		'\uF107', //5
+		'\uF108', //6
+		'\uF109', //7
+		'\uF10A', //8
+		'\uF10B'}; //9
+	
 	private static transient Font font = null;
 	
 	/** Tuplet digits, in italics */
@@ -141,9 +154,8 @@ public class SonoraFont implements MusicalFont, Serializable {
 		case Decoration.UPBOW: return '\uF076';
 		case Decoration.DOWNBOW: return '\uF0B3';
 		case Decoration.TRILL: return '\uF0D9'; // "tr"
-		case Decoration.FERMATA:
-			return !inverted?'\uF055' //above staff
-							:'\uF075';//under staff
+		case Decoration.FERMATA: return '\uF055';
+		case Decoration.FERMATA_INVERTED: return '\uF075';
 		case Decoration.LOWERMORDENT: return '\uF101';
 		case Decoration.UPPERMORDENT: return '\uF06D';
 		case Decoration.SEGNO: return '\uF025';
@@ -166,6 +178,22 @@ public class SonoraFont implements MusicalFont, Serializable {
 		case Decoration.STEM_COMBINE_UP_SINGLE: return '\uF021';
 		case Decoration.STEM_COMBINE_UP_DOUBLE: return '\uF040';
 		case Decoration.STEM_COMBINE_UP_TRIPLE: return '\uF0BE';
+		case Decoration.FINGERING_0: return getFingeringsDigits(0)[0];
+		case Decoration.FINGERING_1: return getFingeringsDigits(1)[0];
+		case Decoration.FINGERING_2: return getFingeringsDigits(2)[0];
+		case Decoration.FINGERING_3: return getFingeringsDigits(3)[0];
+		case Decoration.FINGERING_4: return getFingeringsDigits(4)[0];
+		case Decoration.FINGERING_5: return getFingeringsDigits(5)[0];
+		case Decoration.PLUS: return '\uF08E';
+		case Decoration.OPEN: return '\uF08F';
+		case Decoration.THUMB: return '\uF098';//thumb, snap
+		case Decoration.WEDGE: return '\uF0AE';
+		case Decoration.TURN:
+		case Decoration.TURNX:
+			return '\uF10C';
+		case Decoration.TURN_INVERTED:
+		case Decoration.TURNX_INVERTED:
+			return '\uF10D';
 		case Decoration.GENERAL_GRACING:
 			return '\uF015';
 		default:
@@ -211,6 +239,14 @@ public class SonoraFont implements MusicalFont, Serializable {
 		default:
 			throw new MissingGlyphException("Dynamic "+dynamic, this);
 		}
+	}
+
+	public char[] getFingeringsDigits(int number) {
+		char[] iChars = String.valueOf(number).toCharArray();
+		for (int i = 0; i < iChars.length; i++) {
+			iChars[i] = FINGERINGS_DIGITS[Integer.parseInt(""+iChars[i])];
+		}
+		return iChars;
 	}
 	
 	public char[] getItalicDigits(int number) {

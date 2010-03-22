@@ -97,6 +97,7 @@ class JDecoration extends JScoreElementAbstract {
 			return ABOVE_STAFF_AFTER_NOTE;
 		case Decoration.PEDAL_DOWN:
 		case Decoration.PEDAL_UP:
+		case Decoration.FERMATA_INVERTED:
 			return UNDER_STAFF;
 		case Decoration.STEM_COMBINE_UP_SINGLE:
 		case Decoration.STEM_COMBINE_UP_DOUBLE:
