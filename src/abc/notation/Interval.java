@@ -411,6 +411,15 @@ public class Interval {
 
 	/**
 	 * Returns the label (unison, second, third...)
+	 * 
+	 * You can test the label as following :
+	 * <pre><code>if (myInterval.getLabel() <= Interval.FIFTH) {
+	 * ...here is an unisson, second, third, fourth or fifth
+	 * } else {
+	 * ...here is a greater interval
+	 * }</code></pre>
+	 * This doesn't take account quality
+	 * 
 	 * @return one of {@link #UNISON}, {@link #SECOND}, {@link #THIRD},
 	 *         {@link #FOURTH}, {@link #FIFTH}, {@link #SIXTH},
 	 *         {@link #SEVENTH} + <I>n</i>*{@link #OCTAVE}

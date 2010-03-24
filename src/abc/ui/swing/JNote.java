@@ -25,9 +25,7 @@ import abc.notation.AccidentalType;
 import abc.notation.GracingType;
 import abc.notation.MusicElement;
 import abc.notation.Note;
-import abc.ui.scoretemplates.HorizontalAlign;
 import abc.ui.scoretemplates.ScoreAttribute;
-import abc.ui.scoretemplates.TextFields;
 
 /**
  * This class is in charge of rendering a single note and it's associated
@@ -58,6 +56,10 @@ class JNote extends JNoteElementAbstract {
 	/** The chars from the font that represent the accidentals to be displayed.
 	 * <TT>null</TT> if the note has no accidental. */
 	protected char[] accidentalsChars = null;
+	/** For notes in a chord, if two (or more) notes too close have accidentals
+	 * they are moved to the left.
+	 */
+	private float accidentalPositionOffset = 1;
 
 	protected Point2D stemUpBeginPosition = null;
 	protected Point2D stemDownBeginPosition = null;
@@ -201,6 +203,11 @@ class JNote extends JNoteElementAbstract {
 					Math.max(3,
 						getTemplate().getAttributeSize(ScoreAttribute.ACCIDENTAL_SPACE)
 						);
+				accidentalsWidth *= Math.floor(getAccidentalPositionOffset());
+				if (getAccidentalPositionOffset()
+						!= Math.floor(getAccidentalPositionOffset())) {
+					accidentalsWidth += glyphDimension.getWidth();
+				}
 			}
 		} catch (IllegalArgumentException iae) {
 			throw new IllegalArgumentException("Incorrect accidental for " + note + " : " + note.getAccidental());
@@ -212,6 +219,10 @@ class JNote extends JNoteElementAbstract {
 		double noteX = base.getX()
 			+ (graceNotesAfter?0:graceNotesWidth)
 			+ accidentalsWidth;
+		if (note.hasAccidental())
+			accidentalsPosition = new Point2D.Double(
+					base.getX()+(graceNotesAfter?0:graceNotesWidth),
+					noteY-(glyphDimension.getHeight()/2));
 		if (isHeadInverted() && !isStemUp())
 			noteX += glyphDimension.getWidth();
 		displayPosition = new Point2D.Double(noteX, noteY);
@@ -238,9 +249,6 @@ class JNote extends JNoteElementAbstract {
 				+ glyphDimension.getWidth()*0.93,
 				notePosition.getY()-glyphDimension.getHeight()/2);
 		}
-		if (note.hasAccidental())
-			accidentalsPosition = new Point2D.Double(base.getX()+(graceNotesAfter?0:graceNotesWidth),
-					notePosition.getY()-glyphDimension.getHeight()/2);
 		if (note.getHeight()>=Note.c && note.getStrictDuration() < Note.EIGHTH) {
 			stemUpBeginPosition.setLocation(stemUpBeginPosition.getX(), stemUpBeginPosition.getY()-glyphDimension.getHeight()/2);
 			stemDownBeginPosition.setLocation(stemDownBeginPosition.getX(), stemDownBeginPosition.getY()-glyphDimension.getHeight()/2);
@@ -434,8 +442,11 @@ class JNote extends JNoteElementAbstract {
 	}
 
 	protected void renderAccidentals(Graphics2D gfx) {
-		if (accidentalsPosition!=null)
-			gfx.drawChars(accidentalsChars, 0, 1, (int)accidentalsPosition.getX(), (int)accidentalsPosition.getY());
+		if (accidentalsPosition!=null) {
+			gfx.drawChars(accidentalsChars, 0, 1,
+					(int)accidentalsPosition.getX(),
+					(int)accidentalsPosition.getY());
+		}
 	}
 	
 	/**
@@ -551,6 +562,27 @@ class JNote extends JNoteElementAbstract {
 	 */
 	protected void setStemUpBeginPosition(Point2D stemUpBeginPosition) {
 		this.stemUpBeginPosition = stemUpBeginPosition;
+	}
+	
+	/**
+	 * For notes in a chord, if two (or more) notes too close have accidentals
+	 * they are moved to the left. 
+	 * 
+	 * @return the offset expressed in accidental width (default 1)
+	 */
+	protected float getAccidentalPositionOffset() {
+		return accidentalPositionOffset;
+	}
+	
+	/**
+	 * For notes in a chord, if two (or more) notes too close have accidentals
+	 * they are moved to the left. 
+	 * 
+	 * @param i the offset expressed in accidental width (default 1)
+	 */
+	protected void setAccidentalPositionOffset(float i) {
+		this.accidentalPositionOffset = i;
+		onBaseChanged();
 	}
 
 }

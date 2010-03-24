@@ -19,7 +19,6 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Vector;
 
 import abc.notation.GracingType;
 import abc.notation.Interval;
@@ -38,7 +37,14 @@ class JChord extends JNoteElementAbstract {
 	protected JNote[] m_sNoteInstances = null;
 
 	protected JNote anchor = null;
-
+	
+	/**
+	 * A flag that tells that the chord is part of a normalized chord
+	 * then accidental and other positions computed for normalized chord
+	 * are applied to "childs".
+	 */
+	private boolean isPartOfANormalizedChord = false;
+	
 	/** When multi notes are made of notes with different durations, such chord
 	 * is decomposed into chords with same strict duration for normalization,
 	 * and to ease the rendition : the rendition is made on set of notes with the same
@@ -87,6 +93,7 @@ class JChord extends JNoteElementAbstract {
 					c_width = m_sNoteInstances[i].getWidth();
 			}
 			setAutoStem(true);
+			isPartOfANormalizedChord = false;
 		}
 		else {
 			m_sNoteInstances = new JNote[1];
@@ -117,6 +124,8 @@ class JChord extends JNoteElementAbstract {
 			}
 			setAutoStem(false);
 			followStemmingPolicy = false;
+			m_normalizedChords[0].isPartOfANormalizedChord = true;
+			m_normalizedChords[1].isPartOfANormalizedChord = true;
 		}
 
 		if (m_jGracenotes != null)
@@ -186,7 +195,7 @@ class JChord extends JNoteElementAbstract {
 			m_jGracenotes.setBase(base);
 		}
 		super.setBase(base);
-		if (m_normalizedChords!=null) {
+		/*if (m_normalizedChords!=null) {
 			//note heads should be aligned, e.g. [A^d2],
 			//the A is at same x than the sharp.
 			//Determinate the max note head X
@@ -205,7 +214,7 @@ class JChord extends JNoteElementAbstract {
 					m_normalizedChords[i].setBase(p);
 				}
 			}
-		}		
+		}*/
 	}
 	
 	protected JNote getHighestNote() {
@@ -314,33 +323,58 @@ class JChord extends JNoteElementAbstract {
 		}
 		
 		double accidentalsWidth = 0;
-		if (m_normalizedChords == null) {
-			for (int i = 0; i < m_sNoteInstances.length; i++) {
-				double accWidth = m_sNoteInstances[i].getNotePosition().getX() - m_sNoteInstances[i].getBase().getX();
-				accidentalsWidth = Math.max(accidentalsWidth, accWidth);
+		if (!isPartOfANormalizedChord) { //not already calculated
+			//calculate accidantal position for all notes
+			Note[] notes = multiNote.toArray();
+			boolean chordHasStemDownInverted = false;
+			for (int i = notes.length - 1; i >= 0; i--) {
+				JNote jnote = getJNote(notes[i]);
+				if (!jnote.isStemUp() && jnote.isHeadInverted()) {
+					chordHasStemDownInverted = true;
+					break;
+				}
+			}
+			int accOffset = 1;
+			int refAccidentedNote = -1;
+			for (int i = notes.length - 1; i >= 0; i--) {
+				//from highest to lowest
+				if (notes[i].hasAccidental()) {
+					JNote jnote = getJNote(notes[i]);
+					if (refAccidentedNote == -1) {
+						refAccidentedNote = i;
+					} else {
+						//if interval between reference and this note is smaller than
+						//a sixth, accidentals are moved on the left
+						//else accidental is at normal position, set note as referenec
+						Interval interv = new Interval(notes[refAccidentedNote], notes[i], null);
+						if (interv.getLabel() < Interval.SIXTH) {
+							accOffset++;
+						} else {
+							accOffset = 1;
+							refAccidentedNote = i;
+						}
+					}
+					
+					//For stem down chord with inverted heads, add a .5 (a note head)
+					//offset to the accidental position
+					float w_accOffset = accOffset;
+					if (!jnote.isStemUp()
+							&& !jnote.isHeadInverted()
+							&& chordHasStemDownInverted)
+						w_accOffset += .5f;
+					if (w_accOffset != 1)
+						jnote.setAccidentalPositionOffset(w_accOffset);
+					
+					double accWidth = jnote.getNotePosition().getX() - jnote.getBase().getX();
+					accidentalsWidth = Math.max(accidentalsWidth, accWidth);
+				}
 			}
 		}
-//		try {
-//			//TODO manage collision of accidentals
-//			//in case of collision, the highest accidental is on right
-//			//(near the note), lower go left
-//			//if only one column of accidental, let width=0
-//			Note[] all = getAllNotes();
-//			for (int i = 0; i < all.length; i++) {
-//				if (all[i].hasAccidental()) {
-//					char[] accidentalsChars = getMetrics().getAccidentalGlyph(all[i].getAccidental());
-//					accidentalsWidth = getMetrics()
-//						.getBounds(accidentalsChars).getWidth()
-//						*ScoreMetrics.SPACE_RATIO_FOR_ACCIDENTALS;
-//				}
-//			}
-//		} catch (IllegalArgumentException iae) {
-//			throw new IllegalArgumentException("Incorrect accidental for " + note + " : " + note.getAccidental());
-//		}
 		
 		m_noteHeadX = getBase().getX()
 			+ (graceNotesAfter?0:graceNotesWidth)
-			+ accidentalsWidth;
+			;//+ accidentalsWidth;
+		
 		Point2D chordBase = new Point2D.Double(m_noteHeadX, getBase().getY());
 		
 		double chordWidth = 0;
@@ -374,7 +408,21 @@ class JChord extends JNoteElementAbstract {
 		else
 		{
 			for (int i=0; i<m_normalizedChords.length; i++) {
-				m_normalizedChords[i].setBase(chordBase);
+				Point2D newBase = (Point2D) chordBase.clone();
+				if (accidentalsWidth > 0) {
+					double tmpAccWidth = 0;
+					//determinate accidental width of the chord
+					for (int j = 0; j < m_normalizedChords[i].m_sNoteInstances.length; j++) {
+						JNote jnote = m_normalizedChords[i].m_sNoteInstances[j];
+						double accWidth = jnote.getNotePosition().getX() - jnote.getBase().getX();
+						tmpAccWidth = Math.max(tmpAccWidth, accWidth);
+					}
+					newBase.setLocation(newBase.getX() + accidentalsWidth - tmpAccWidth,
+										newBase.getY());
+					if (newBase.getX() == chordBase.getX())
+						newBase = chordBase;
+				}
+				m_normalizedChords[i].setBase(newBase);
 				if (m_normalizedChords[i].getWidth() > chordWidth)
 					chordWidth = m_normalizedChords[i].getWidth();
 				//m_normalizedChords[i].onBaseChanged();
@@ -412,24 +460,28 @@ class JChord extends JNoteElementAbstract {
 			m_jGracenotes.setBase(gracesPosition);
 		}
 
-		m_width = (int)(graceNotesWidth+accidentalsWidth+chordWidth);
+		m_width = (int)(graceNotesWidth/*+accidentalsWidth*/+chordWidth);
 		//m_width = /*c_width + */graceNotesWidth + accidentalsWidth + chordWidth;
 		//m_width = getBoundingBox().getWidth();
 	}
 	
-	private Note[] getAllNotes() {
+	private JNote getJNote(Note n) {
 		if (m_normalizedChords == null) {
-			return multiNote.toArray();
-		} else {
-			Vector v = new Vector();
-			for (int i=0; i<m_normalizedChords.length; i++) {
-				Note[] notes = m_normalizedChords[i].multiNote.toArray();
-				for (int j = 0; j < notes.length; j++) {
-					v.addElement(notes[j]);
+			for (int i = 0; i < m_sNoteInstances.length; i++) {
+				if (m_sNoteInstances[i].getMusicElement() == n)
+					return m_sNoteInstances[i];
+			}
+		}
+		else {
+			for (int i = 0; i < m_normalizedChords.length; i++) {
+				for (int j = 0; j < m_normalizedChords[i].m_sNoteInstances.length; j++) {
+					if (m_normalizedChords[i].m_sNoteInstances[j]
+							.getMusicElement() == n)
+						return m_normalizedChords[i].m_sNoteInstances[j];
 				}
 			}
-			return (Note[]) v.toArray();
 		}
+		return null;
 	}
 
 	public Rectangle2D getBoundingBox() {
