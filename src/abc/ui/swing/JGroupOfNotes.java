@@ -177,9 +177,9 @@ class JGroupOfNotes extends JScoreElementAbstract
 		for (int i=0; i<m_jNotes.length; i++) {
 			JNoteElementAbstract jnea = (JNoteElementAbstract)m_jNotes[i];
 			if (jnea instanceof JChordPartOfGroup) {
-				getChordReallyPartOfGroup((JChordPartOfGroup) jnea);
+				getChordReallyPartOfGroup((JChordPartOfGroup) jnea).setAutoStem(auto);
 			} else {
-				jnea.setAutoStem(false);
+				jnea.setAutoStem(auto);
 			}
 		}
 		setStemUp(isStemUp);
