@@ -15,6 +15,7 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import abc.notation.Clef;
 import abc.notation.KeySignature;
 import abc.notation.Note;
 import abc.notation.MusicElement;
+import abc.ui.scoretemplates.ScoreElements;
 
 /** This class is in charge of rendering a key signature. */
 class JKeySignature extends JScoreElementAbstract {
@@ -163,6 +165,8 @@ class JKeySignature extends JScoreElementAbstract {
 
 	public double render(Graphics2D context){
 		super.render(context);
+		Color previousColor = context.getColor();
+		setColor(context, ScoreElements.KEY_SIGNATURE);
 		for (int i = 0, j = chars.size(); i < j; i++) {
 			if (chars.get(i)!=null) {
 				Point2D p = (Point2D) positions.get(i);
@@ -170,6 +174,7 @@ class JKeySignature extends JScoreElementAbstract {
 						(int)p.getX(), (int)p.getY());
 			}
 		}
+		context.setColor(previousColor);
 		return getWidth();
 	}
 

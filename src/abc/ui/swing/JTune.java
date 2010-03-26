@@ -57,7 +57,7 @@ import abc.notation.Tune.Music;
 import abc.notation.Words;
 import abc.ui.scoretemplates.HorizontalAlign;
 import abc.ui.scoretemplates.ScoreAttribute;
-import abc.ui.scoretemplates.TextFields;
+import abc.ui.scoretemplates.ScoreElements;
 import abc.ui.scoretemplates.VerticalAlign;
 
 /**
@@ -269,24 +269,24 @@ public class JTune extends JScoreElementAbstract {
 	}
 	
 	private void computeTextFieldToJText(byte textField) {
-		if ((textField == TextFields.TITLE)
-				|| (textField == TextFields.SUBTITLE)) {
+		if ((textField == ScoreElements.TEXT_TITLE)
+				|| (textField == ScoreElements.TEXT_SUBTITLE)) {
 			String[] titles = m_tune.getTitles();
 			if (titles != null) {
 				for (int i=0; i < titles.length; i++) {
 					if (titles[i].length() == 0)
 						continue;
-					if ((i == 0) && (textField == TextFields.TITLE)) {
+					if ((i == 0) && (textField == ScoreElements.TEXT_TITLE)) {
 						//title
-						m_headerAndFooterTexts.add(new JText(getMetrics(), titles[i], TextFields.TITLE));
-					} else if ((i > 0) && (textField == TextFields.SUBTITLE)) {
+						m_headerAndFooterTexts.add(new JText(getMetrics(), titles[i], ScoreElements.TEXT_TITLE));
+					} else if ((i > 0) && (textField == ScoreElements.TEXT_SUBTITLE)) {
 						// subtitles
-						m_headerAndFooterTexts.add(new JText(getMetrics(), titles[i], TextFields.SUBTITLE));
+						m_headerAndFooterTexts.add(new JText(getMetrics(), titles[i], ScoreElements.TEXT_SUBTITLE));
 					}
 				}
 			}
 		}
-		else if (textField == TextFields.PARTS_ORDER) {
+		else if (textField == ScoreElements.TEXT_PARTS_ORDER) {
 			if (m_tune.getMultiPartsDefinition() != null) {
 				Part[] parts = m_tune.getMultiPartsDefinition().toPartsArray();
 				String txt = "";
@@ -305,32 +305,32 @@ public class JTune extends JScoreElementAbstract {
 				}
 				if (hasDouble) {
 					m_headerAndFooterTexts.add(
-							new JText(getMetrics(), txt, TextFields.PARTS_ORDER));
+							new JText(getMetrics(), txt, ScoreElements.TEXT_PARTS_ORDER));
 				}
 			}
 		}
 		else {
 			String text = null;
 			switch (textField) {
-			case TextFields.ANNOTATIONS://=NOTES
+			case ScoreElements.TEXT_ANNOTATIONS://=NOTES
 				text = m_tune.getNotes(); break;
-			case TextFields.BOOK:
+			case ScoreElements.TEXT_BOOK:
 				text = m_tune.getBook(); break;
-			case TextFields.COMPOSER:
+			case ScoreElements.TEXT_COMPOSER:
 				text = m_tune.getComposer(); break;
-			case TextFields.DISCOGRAPHY:
+			case ScoreElements.TEXT_DISCOGRAPHY:
 				text = m_tune.getDiscography(); break;
-			case TextFields.FILEURL:
+			case ScoreElements.TEXT_FILEURL:
 				text = m_tune.getFileURL(); break;
-			case TextFields.GROUP:
+			case ScoreElements.TEXT_GROUP:
 				text = m_tune.getGroup(); break;
-			case TextFields.HISTORY:
+			case ScoreElements.TEXT_HISTORY:
 				text = m_tune.getHistory(); break;
-			case TextFields.INFORMATIONS:
+			case ScoreElements.TEXT_INFORMATIONS:
 				text = m_tune.getInformation(); break;
-			case TextFields.LYRICIST:
+			case ScoreElements.TEXT_LYRICIST:
 				text = m_tune.getLyricist(); break;
-			case TextFields.ORIGIN://=AREA
+			case ScoreElements.TEXT_ORIGIN://=AREA
 				text = m_tune.getOrigin();
 				if (text == null)
 					text = "";
@@ -338,13 +338,13 @@ public class JTune extends JScoreElementAbstract {
 					text += (text.length()>0?", ":"")
 						+ m_tune.getArea();
 				break;
-			case TextFields.RHYTHM:
+			case ScoreElements.TEXT_RHYTHM:
 				text = m_tune.getRhythm(); break;
-			case TextFields.SOURCE:
+			case ScoreElements.TEXT_SOURCE:
 				text = m_tune.getSource(); break;
-			case TextFields.TRANSCRNOTES:
+			case ScoreElements.TEXT_TRANSCRNOTES:
 				text = m_tune.getTranscriptionNotes(); break;
-			case TextFields.WORDS:
+			case ScoreElements.TEXT_WORDS:
 				text = m_tune.getLyricist(); break;
 			}
 			if ((text != null) && (text.length() > 0)) {
@@ -833,6 +833,7 @@ public class JTune extends JScoreElementAbstract {
 		g2.setFont(getMetrics().getNotationFontForContext(
 				ScoreMetrics.NOTATION_CONTEXT_NOTE));
 		g2.setColor(m_color);
+		super.setColor(g2, ScoreElements._DEFAULT);
 		g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -901,13 +902,16 @@ public class JTune extends JScoreElementAbstract {
 	}
 
 	private void renderSlursAndTies(Graphics2D g2) {
+		Color previousColor = g2.getColor();
 		//System.err.println("renderSlursAndTies");
 		for (int j=0; j<m_beginningNotesLinkElements.size(); j++) {
 			NoteAbstract n = (NoteAbstract)m_beginningNotesLinkElements.elementAt(j);
 			TwoNotesLink link = n.getTieDefinition();
 			if (link != null && link.getEnd() != null) {
+				setColor(g2, ScoreElements.TIE);
 				drawLink(g2, link);
 			}
+			setColor(g2, ScoreElements.SLUR);
 			Vector slurs = n.getSlurDefinitions();
 			int i = 0;
 			while (i < slurs.size()) {
@@ -918,6 +922,7 @@ public class JTune extends JScoreElementAbstract {
 				i++;
 			}
 		}
+		g2.setColor(previousColor);
 	}
 
 	/**

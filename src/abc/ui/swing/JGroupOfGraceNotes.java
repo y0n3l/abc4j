@@ -15,6 +15,7 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
@@ -23,6 +24,7 @@ import java.awt.geom.Point2D;
 import abc.notation.Clef;
 import abc.notation.Note;
 import abc.notation.NoteAbstract;
+import abc.ui.scoretemplates.ScoreElements;
 import abc.ui.swing.JScoreElement.JGraceElement;
 
 /** This class is in charge of rendering a group of grace notes whose stems should be linked. */
@@ -94,6 +96,8 @@ class JGroupOfGraceNotes extends JGroupOfNotes implements JGraceElement {
 	}
 
 	public double render(Graphics2D context) {
+		Color previousColor = context.getColor();
+		setColor(context, ScoreElements.GRACENOTE);
 		super.render(context);
 
 		if (renderSlash) {
@@ -103,6 +107,7 @@ class JGroupOfGraceNotes extends JGroupOfNotes implements JGraceElement {
 			context.setStroke(dfs);
 		}
 		
+		context.setColor(previousColor);
 		//renderDebugBoundingBox(context);
 		return getWidth();
 	}

@@ -297,7 +297,7 @@ public class ScoreMetrics {
 	 * Returns a text font (for lyrics, chord names, title...)
 	 * 
 	 * @param textType
-	 *            one of {@link abc.ui.scoretemplates.TextFields} constants
+	 *            one of {@link abc.ui.scoretemplates.ScoreElements} constants
 	 * @return a Font object
 	 */
 	protected Font getTextFont(byte textType) {
@@ -312,7 +312,7 @@ public class ScoreMetrics {
 	 * Returns height of one line rendered in the textType font.
 	 * 
 	 * @param textType
-	 *            one of {@link abc.ui.scoretemplates.TextFields} constants
+	 *            one of {@link abc.ui.scoretemplates.ScoreElements} constants
 	 * @return the height of a string in this font used for this score metrics
 	 */
 	protected int getTextFontHeight(byte textType) {
@@ -332,7 +332,7 @@ public class ScoreMetrics {
 	 * Returns width of string rendered in the textType font.
 	 * 
 	 * @param textType
-	 *            one of {@link abc.ui.scoretemplates.TextFields} constants
+	 *            one of {@link abc.ui.scoretemplates.ScoreElements} constants
 	 * @param text
 	 *            The text we want to know its width
 	 * @return the width of a string in this font used for this score metrics

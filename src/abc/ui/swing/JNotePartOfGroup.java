@@ -16,6 +16,7 @@
 
 package abc.ui.swing;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
@@ -24,6 +25,7 @@ import java.awt.geom.Rectangle2D;
 
 import abc.notation.Clef;
 import abc.notation.Note;
+import abc.ui.scoretemplates.ScoreElements;
 
 class JNotePartOfGroup extends JNote implements JGroupableNote {
 
@@ -149,11 +151,17 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 
 		//draw stem, except for whole+ (in chord)
 		if (!note.isRest() && (note.getStrictDuration() < Note.WHOLE)) {
+			Color previousColor = context.getColor();
+			if (this instanceof JGraceElement)
+				setColor(context, ScoreElements.GRACENOTE);
+			else
+				setColor(context, ScoreElements.NOTE);
 			Stroke defaultS = context.getStroke();
 			context.setStroke(getMetrics().getStemStroke());
 			context.drawLine((int)getStemBeginPosition().getX(), (int)getStemBeginPosition().getY(),
 					(int)getStemBeginPosition().getX(), stemYEnd);
 			context.setStroke(defaultS);
+			context.setColor(previousColor);
 		}
 		
 		/* * /java.awt.Color previousColor = context.getColor();

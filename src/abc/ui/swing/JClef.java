@@ -15,12 +15,14 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
 import abc.notation.Clef;
 import abc.notation.MusicElement;
 import abc.notation.Note;
+import abc.ui.scoretemplates.ScoreElements;
 
 /** This class is in charge of rendering a staff clef. */
 class JClef extends JScoreElementAbstract {
@@ -103,12 +105,15 @@ class JClef extends JScoreElementAbstract {
 		context.drawChars(chars2, 0, chars2.length, 
 				(int)m_base.getX(), (int)(m_base.getY()));*/
 		if (!m_clef.equals(Clef.NONE)) {
+			Color previousColor = context.getColor();
+			setColor(context, ScoreElements.CLEF);
 			char[] chars = {getMusicalFont().getClef(m_clef)};
 			context.drawChars(chars, 0, chars.length, 
 					(int)(getBase().getX()+getMetrics().getNoteWidth()/4),
 					(int)(getBase().getY()
 						- getMetrics().getNoteHeight()
 							*(m_clef.getLineNumber()-1)));
+			context.setColor(previousColor);
 		}
 		return getWidth();
 	}

@@ -15,6 +15,7 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.geom.GeneralPath;
@@ -31,7 +32,7 @@ import abc.notation.Note;
 import abc.notation.NoteAbstract;
 import abc.ui.scoretemplates.HorizontalAlign;
 import abc.ui.scoretemplates.ScoreAttribute;
-import abc.ui.scoretemplates.TextFields;
+import abc.ui.scoretemplates.ScoreElements;
 import abc.ui.swing.JScoreElement.JStemmableElement;
 
 /** This class defines a note rendition element.
@@ -349,7 +350,7 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 				- getTemplate().getAttributeSize(ScoreAttribute.CHORD_LINE_SPACING)
 				+ dimension.getHeight();
 			double x = displayPos.getX();
-			byte[] pos = getTemplate().getPosition(TextFields.CHORDS);
+			byte[] pos = getTemplate().getPosition(ScoreElements.TEXT_CHORDS);
 			if (pos != null) {
 				switch (pos[1]) {
 				case HorizontalAlign.RIGHT:
@@ -437,6 +438,8 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 					yControl + ((gracesUp?.5:-.5)*getMetrics().getSlurAnchorYOffset())
 				);
 				
+				Color previousColor = context.getColor();
+				setColor(context, ScoreElements.GRACENOTE);
 				GeneralPath path = new GeneralPath();
 				path.moveTo((float)p2dStart.getX(), (float)p2dStart.getY());
 				QuadCurve2D q = new QuadCurve2D.Float();
@@ -452,6 +455,7 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 				path.append(q, true);
 				context.fill(path);
 				context.draw(path);
+				context.setColor(previousColor);
 			}
 		}
 	}

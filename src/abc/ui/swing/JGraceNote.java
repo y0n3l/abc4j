@@ -15,6 +15,7 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -23,6 +24,7 @@ import java.awt.geom.Point2D;
 
 import abc.notation.Clef;
 import abc.notation.Note;
+import abc.ui.scoretemplates.ScoreElements;
 import abc.ui.swing.JScoreElement.JGraceElement;
 
 class JGraceNote extends JNote implements JGraceElement {
@@ -126,10 +128,13 @@ context.setColor(previousColor);
 		}
 
 		if (renderSlash) {
+			Color previousColor = context.getColor();
+			setColor(context, ScoreElements.GRACENOTE);
 			Stroke dfs = context.getStroke();
 			context.setStroke(getMetrics().getStemStroke());
 			context.drawLine((int)slashStart.getX(), (int)slashStart.getY(), (int)slashEnd.getX(), (int)slashEnd.getY());
 			context.setStroke(dfs);
+			context.setColor(previousColor);
 		}
 		
 		//renderDebugBoundingBox(context);

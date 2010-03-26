@@ -17,7 +17,7 @@ package abc.ui.swing;
 
 import abc.notation.MusicElement;
 import abc.notation.Words;
-import abc.ui.scoretemplates.TextFields;
+import abc.ui.scoretemplates.ScoreElements;
 
 class JWords extends JText {
 
@@ -27,7 +27,7 @@ class JWords extends JText {
 	 * @param mtrx The score metrics needed
 	 */
 	protected JWords(ScoreMetrics mtrx, Words words) {
-		super(mtrx, words.getContent(), TextFields.LYRICS);
+		super(mtrx, words.getContent(), ScoreElements.TEXT_LYRICS);
 		m_words = words;
 	}
 

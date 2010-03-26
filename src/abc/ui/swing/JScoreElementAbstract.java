@@ -15,6 +15,7 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -26,6 +27,7 @@ import abc.notation.Decoration;
 import abc.notation.MusicElement;
 import abc.notation.Tune;
 import abc.ui.fonts.MusicalFont;
+import abc.ui.scoretemplates.ScoreElements;
 
 /** This class defines a score rendition element. Rendition scores elements
  * are graphical representations of tune score elements objects retrieved
@@ -209,6 +211,19 @@ abstract class JScoreElementAbstract implements JScoreElement {
 	/** Callback invoked when the base has changed for this object. */
 	protected abstract void onBaseChanged();
 
+	/**
+	 * Set the color for renderer, get color value in the score
+	 * template.
+	 * @param g2
+	 * @param scoreElement
+	 */
+	protected void setColor(Graphics2D g2, byte scoreElement) {
+		Color c = getTemplate().getElementColor(scoreElement);
+		Color d = getTemplate().getElementColor(ScoreElements._DEFAULT);
+		if ((c != null) && !c.equals(d))
+			g2.setColor(c);
+	}
+	
 	/** Renders this Score element to the given graphic context.
 	 * @param g2 */
 	public double render(Graphics2D g2) {
@@ -217,6 +232,8 @@ abstract class JScoreElementAbstract implements JScoreElement {
 
 	protected void renderDecorations(Graphics2D context){
 		if (m_jDecorations != null && m_jDecorations.size() > 0) {
+			Color previousColor = context.getColor();
+			setColor(context, ScoreElements.DECORATION);
 			if (m_decorationAnchors[JDecoration.ABOVE_STAFF] == null)
 				calcDecorationPosition();
 			//first decoration is on top
@@ -230,6 +247,7 @@ abstract class JScoreElementAbstract implements JScoreElement {
 				jDeco.setBase(m_decorationAnchors[jDeco.getPosition()]);
 				jDeco.render(context);
  			}
+			context.setColor(previousColor);
  		}
 	}
 	

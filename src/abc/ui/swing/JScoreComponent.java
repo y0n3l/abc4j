@@ -153,7 +153,7 @@ public class JScoreComponent extends JComponent
      * {@link ScoreTemplate#setPosition(byte, byte, byte)}.
      * <pre>
      * myJScoreCompo.getTemplate().setPosition(
-     * 		{@link abc.ui.scoretemplates.TextFields#TITLE},
+     * 		{@link abc.ui.scoretemplates.ScoreElements#TEXT_TITLE},
      * 		{@link abc.ui.scoretemplates.VerticalAlign#TOP},
      * 		{@link abc.ui.scoretemplates.HorizontalAlign#CENTER});
      * </pre>

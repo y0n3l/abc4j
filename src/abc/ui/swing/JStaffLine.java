@@ -15,6 +15,7 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -22,6 +23,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import abc.notation.MusicElement;
+import abc.ui.scoretemplates.ScoreElements;
 
 class JStaffLine extends JScoreElementAbstract {
 
@@ -131,16 +133,9 @@ class JStaffLine extends JScoreElementAbstract {
 
 	public double render(Graphics2D g) {
 		//super.render(g);
-		/*Color previousColor = g.getColor();
-		g.setColor(Color.LIGHT_GRAY);
-		g.fillRect((int)(getBase().getX()), (int)(getBase().getY()-m_metrics.getStaffCharBounds().getHeight()),
-				(int)getWidth(), (int)(m_metrics.getStaffCharBounds().getHeight()));
-		g.setColor(previousColor);*/
-		JScoreElementAbstract[] elmts = toArray();
-		for (int j=0; j<elmts.length; j++) {
-			elmts[j].render(g);
-		}
-		
+
+		Color previousColor = g.getColor();
+		setColor(g, ScoreElements.STAFF_LINES);
 		double width = getWidth();
 		int charX = (int) getBase().getX();
 		int charY = (int) getBase().getY();
@@ -154,8 +149,17 @@ class JStaffLine extends JScoreElementAbstract {
 		//write the last
 		charX = (int) (width - charWidth - 1);
 		g.drawChars(charGlyph, 0, 1, charX, charY);
+		g.setColor(previousColor);
+		/*Color previousColor = g.getColor();
+		g.setColor(Color.LIGHT_GRAY);
+		g.fillRect((int)(getBase().getX()), (int)(getBase().getY()-m_metrics.getStaffCharBounds().getHeight()),
+				(int)getWidth(), (int)(m_metrics.getStaffCharBounds().getHeight()));
+		g.setColor(previousColor);*/
+		JScoreElementAbstract[] elmts = toArray();
+		for (int j=0; j<elmts.length; j++) {
+			elmts[j].render(g);
+		}
 		
-
 		// render lyrics, annotations, etc.
 		Iterator iter = m_lyrics.iterator();
 		JWords lyrics = null;

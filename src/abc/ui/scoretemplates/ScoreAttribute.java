@@ -15,6 +15,7 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.scoretemplates;
 
+import java.awt.Color;
 import java.io.Serializable;
 
 import abc.ui.fonts.MusicalFont;
@@ -310,6 +311,10 @@ public class ScoreAttribute implements Cloneable, Serializable {
 	private Object m_defaultValue;
 	private String m_name;
 	private ScoreAttribute(String s, Boolean defaultValue) {
+		m_name = s;
+		m_defaultValue = defaultValue;
+	}
+	protected ScoreAttribute(String s, Color defaultValue) {
 		m_name = s;
 		m_defaultValue = defaultValue;
 	}

@@ -15,6 +15,7 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
@@ -34,7 +35,7 @@ import abc.ui.scoretemplates.AttributeNotDefinedException;
 import abc.ui.scoretemplates.HorizontalAlign;
 import abc.ui.scoretemplates.ScoreAttribute;
 import abc.ui.scoretemplates.SizeUnit;
-import abc.ui.scoretemplates.TextFields;
+import abc.ui.scoretemplates.ScoreElements;
 import abc.ui.scoretemplates.VerticalAlign;
 
 /**
@@ -42,8 +43,8 @@ import abc.ui.scoretemplates.VerticalAlign;
  * annotations...) positions, visibility, font size and style...
  * 
  * <ul>
- * <li>Fields are denoted by {@link TextFields} constants such as
- * {@link TextFields#TITLE}, {@link TextFields#COMPOSER}.
+ * <li>Fields are denoted by {@link ScoreElements} constants such as
+ * {@link ScoreElements#TEXT_TITLE}, {@link ScoreElements#TEXT_COMPOSER}.
  * <li>positions are denoted by a couple of byte from {@link VerticalAlign} and
  * {@link HorizontalAlign} constants.
  * <li>font size can be expressed in percent of the default text size or in
@@ -59,6 +60,8 @@ import abc.ui.scoretemplates.VerticalAlign;
  */
 //TODO tutorial "how to create a score template?"
 public abstract class ScoreTemplate implements Cloneable, Serializable {
+	
+	private static final long serialVersionUID = 7515101953534976829L;
 	
 	private class FieldInfos implements Cloneable, Serializable {
 		private static final long serialVersionUID = 6515009020904541858L;
@@ -104,7 +107,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 		}
 		public String toString() {
 			StringBuffer ret = new StringBuffer();
-			ret.append(TextFields.toString(m_textField)+" ("+m_textField+") {\n");
+			ret.append(ScoreElements.toString(m_textField)+" ("+m_textField+") {\n");
 			ret.append("\tfont face: "+Arrays.toString(m_fontFamilyNames)+";\n");
 			ret.append("\tfont size: "+m_fontSize+m_fontSizeUnit+";\n");
 			ret.append("\tfont style: "+styleToString()+";\n");
@@ -378,6 +381,22 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 		}
 	}
 	
+	/**
+	 * Returns the color of the given element
+	 * @param scoreElement One of the {@link ScoreElements} constant
+	 * @return a Color object, or <TT>null</TT> if no default color
+	 * has been set.
+	 */
+	public Color getElementColor(byte scoreElement) {
+		Object ret = m_attributes.get("COLOR_"+Byte.toString(scoreElement));
+		if (ret == null) {
+			ret = m_attributes.get("COLOR_"+Byte.toString(ScoreElements._DEFAULT));
+			if (ret == null)
+				return null; //No default color set
+		}
+		return (Color) ret;
+	}
+	
 	public Engraver getEngraver() {
 		if (m_engraver == null) {
 			m_engraver = new Engraver(
@@ -403,7 +422,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 *            one of {@link VerticalAlign} constants
 	 * @param horiz
 	 *            one of {@link HorizontalAlign} constants
-	 * @return array of {@link TextFields} constants
+	 * @return array of {@link ScoreElements} constants
 	 */
 	public byte[] getFieldsAtPosition(byte vert, byte horiz) {
 		Position p = new Position(vert, horiz);
@@ -433,7 +452,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * <li>left+tab
 	 * </ul>
 	 * 
-	 * @return array of {@link TextFields} constants
+	 * @return array of {@link ScoreElements} constants
 	 */
 	public byte[] getFooterFields() {
 		return getSectionFields(VerticalAlign.BOTTOM);
@@ -455,7 +474,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * <li>left+tab
 	 * </ul>
 	 * 
-	 * @return array of {@link TextFields} constants
+	 * @return array of {@link ScoreElements} constants
 	 */
 	public byte[] getHeaderFields() {
 		return getSectionFields(VerticalAlign.TOP);
@@ -483,7 +502,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * Returns position of a field
 	 * 
 	 * @param field
-	 *            one of {@link TextFields} constants
+	 *            one of {@link ScoreElements} constants
 	 * @return an array of 2 bytes : [VerticalAlign.xxx, HorizontalAlign.xxx]
 	 *         <TT>null</TT> if position has not been defined
 	 */
@@ -510,7 +529,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * 
 	 * @param verticalSection
 	 *            {@link VerticalAlign#TOP}, {@link VerticalAlign#BOTTOM}
-	 * @return array of {@link TextFields} constants
+	 * @return array of {@link ScoreElements} constants
 	 */
 	private byte[] getSectionFields(byte verticalSection) {
 		byte[] center = getFieldsAtPosition(verticalSection,
@@ -537,7 +556,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * Sets the text attributes of a field
 	 * 
 	 * @param field
-	 *            one of {@link TextFields} constants
+	 *            one of {@link ScoreElements} constants
 	 * @return
 	 *            Map of attributes, <TT>null</TT> possible
 	 * @see java.awt.font.TextAttribute
@@ -549,7 +568,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	/**
 	 * Returns the styled and sized font for a field.
 	 * 
-	 * @param field one of {@link TextFields} constants
+	 * @param field one of {@link ScoreElements} constants
 	 */
 	public Font getTextFont(byte field) {
 		FieldInfos fi = getFieldInfos(field);
@@ -589,7 +608,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * Returns the font size of a field, in pt
 	 * 
 	 * @param field
-	 *            one of {@link TextFields} constants
+	 *            one of {@link ScoreElements} constants
 	 */
 	public float getTextSize(byte field) {
 		FieldInfos fi = getFieldInfos(field);
@@ -603,7 +622,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * Returns the font style of a text field
 	 * 
 	 * @param field
-	 *            one of {@link TextFields} constants
+	 *            one of {@link ScoreElements} constants
 	 * @return
 	 *            style from Font class : {@link Font#PLAIN},
 	 *            {@link Font#BOLD}, {@link Font#ITALIC} or
@@ -644,7 +663,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * Return <TT>true</TT> if the field is visible and should be
 	 * displayed in score.
 	 * @param field
-	 *            one of {@link TextFields} constants
+	 *            one of {@link ScoreElements} constants
 	 */
 	public boolean isVisible(byte field) {
 		return getFieldInfos(field).m_visible;
@@ -743,6 +762,21 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	}
 
 	/**
+	 * Sets the color of the given element type
+	 * 
+	 * @param scoreElement One of the {@link ScoreElements} constant
+	 * @param color <TT>null</TT> to remove this attribute
+	 */
+	public void setElementColor(byte scoreElement, Color color) {
+		String name = "COLOR_"+Byte.toString(scoreElement);
+		if (color == null)
+			m_attributes.remove(name);
+		else
+			m_attributes.put(name, color);
+		notifyListeners();
+	}
+
+	/**
 	 * @param m_graphics
 	 *            The m_graphics to set.
 	 */
@@ -767,7 +801,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * Sets the position of a field, and sets the field visible
 	 * 
 	 * @param field
-	 *            one of {@link TextFields} constants
+	 *            one of {@link ScoreElements} constants
 	 * @param vert
 	 *            one of {@link VerticalAlign} constants
 	 * @param horiz
@@ -781,7 +815,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * Sets the position of several fields
 	 * 
 	 * @param fields
-	 *            array of {@link TextFields} constants
+	 *            array of {@link ScoreElements} constants
 	 * @param vert
 	 *            one of {@link VerticalAlign} constants
 	 * @param horiz
@@ -813,7 +847,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * Sets the text attributes of a field
 	 * 
 	 * @param field
-	 *            one of {@link TextFields} constants
+	 *            one of {@link ScoreElements} constants
 	 * @param attrib
 	 *            Map of attributes
 	 * @see java.awt.font.TextAttribute
@@ -827,7 +861,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * Sets the text attributes of several fields
 	 * 
 	 * @param field
-	 *            one of {@link TextFields} constants
+	 *            one of {@link ScoreElements} constants
 	 * @param attrib
 	 *            Map of attributes
 	 * @see java.awt.font.TextAttribute
@@ -843,7 +877,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * Sets the font family of a field
 	 * 
 	 * @param field
-	 *            one of {@link TextFields} constants
+	 *            one of {@link ScoreElements} constants
 	 * @param fontFamilies
 	 *            array of font names, e.g. {"Georgia", "Verdana"}
 	 */
@@ -858,7 +892,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * Sets the font family of several fields
 	 * 
 	 * @param fields
-	 *            one of {@link TextFields} constants
+	 *            one of {@link ScoreElements} constants
 	 * @param fontFamilies
 	 *            array of font names, e.g. {"Georgia", "Verdana"}
 	 */
@@ -875,7 +909,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * Sets the font size of a field
 	 * 
 	 * @param field
-	 *            one of {@link TextFields} constants
+	 *            one of {@link ScoreElements} constants
 	 * @param size
 	 *            text size in percent of {@link #getDefaultTextSize()} if
 	 *            {@link #getTextSizeExpressedIn()} is
@@ -894,7 +928,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * Sets the font size of several fields
 	 * 
 	 * @param fields
-	 *            array of {@link TextFields} constants
+	 *            array of {@link ScoreElements} constants
 	 * @param size
 	 *            text size in percent of {@link #getDefaultTextSize()} if
 	 *            {@link #getTextSizeExpressedIn()} is
@@ -915,7 +949,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * Sets the font style of a field
 	 * 
 	 * @param field
-	 *            one of {@link TextFields} constants
+	 *            one of {@link ScoreElements} constants
 	 * @param style
 	 *            style from Font class : {@link Font#PLAIN},
 	 *            {@link Font#BOLD}, {@link Font#ITALIC} or
@@ -930,7 +964,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * Sets the font style of several fields
 	 * 
 	 * @param fields
-	 *            array of {@link TextFields} constants
+	 *            array of {@link ScoreElements} constants
 	 * @param style
 	 *            style from Font class : {@link Font#PLAIN},
 	 *            {@link Font#BOLD}, {@link Font#ITALIC} or
@@ -947,7 +981,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * Sets the visibility of a field
 	 * 
 	 * @param field
-	 *            one of {@link TextFields} constants
+	 *            one of {@link ScoreElements} constants
 	 * @param visible
 	 */
 	public void setVisible(byte field, boolean visible) {
@@ -959,7 +993,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * Sets the visibility of several fields
 	 * 
 	 * @param fields
-	 *            array of {@link TextFields} constants
+	 *            array of {@link ScoreElements} constants
 	 * @param visible
 	 */
 	public void setVisible(byte[] fields, boolean visible) {

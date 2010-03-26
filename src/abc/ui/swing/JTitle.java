@@ -15,7 +15,7 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
-import abc.ui.scoretemplates.TextFields;
+import abc.ui.scoretemplates.ScoreElements;
 
 /** This class defines a score rendition element. Rendition scores elements
  * are graphical representations of tune score elements objects retrieved
@@ -31,7 +31,7 @@ class JTitle extends JText {
 	 * @param mtrx The score metrics needed
 	 */
 	protected JTitle(ScoreMetrics mtrx, String text) {
-		super(mtrx, text, TextFields.TITLE);
+		super(mtrx, text, ScoreElements.TEXT_TITLE);
 	}
 
 }

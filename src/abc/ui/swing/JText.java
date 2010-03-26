@@ -15,6 +15,7 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -30,7 +31,7 @@ import java.util.Map;
 import abc.notation.AccidentalType;
 import abc.notation.Chord;
 import abc.notation.MusicElement;
-import abc.ui.scoretemplates.TextFields;
+import abc.ui.scoretemplates.ScoreElements;
 
 /**
  * TODO doc
@@ -49,7 +50,7 @@ public class JText extends JScoreElementAbstract {
 	 * @param text
 	 *            The text
 	 * @param textField
-	 *            One of {@link TextFields} constants
+	 *            One of {@link ScoreElements} constants
 	 */
 	protected JText(ScoreMetrics mtrx, String text, byte textField) {
 		super(mtrx);
@@ -137,9 +138,11 @@ public class JText extends JScoreElementAbstract {
 	 */
 	public double render(Graphics2D g2) {
 		Font previousFont = g2.getFont();
+		Color previousColor = g2.getColor();
 
 		Font font = getTemplate().getTextFont(m_textField);
 		g2.setFont(font);
+		setColor(g2, m_textField);
 		LineMetrics lineMetrics = font.getLineMetrics(getText(), g2.getFontRenderContext());
 		float leading = (float) Math.ceil(Math.max(lineMetrics.getLeading(), lineMetrics.getDescent()));
 		//System.out.println("leading "+getText()+" = "+leading);
@@ -194,7 +197,9 @@ public class JText extends JScoreElementAbstract {
 		g2.drawString(as.getIterator(),//getText(),
 				(float) getBase().getX(),
 				(float) getBase().getY()-leading);
+		
 		g2.setFont(previousFont);
+		g2.setColor(previousColor);
 		
 		//renderDebugBoundingBox(g2);
 		return getWidth();

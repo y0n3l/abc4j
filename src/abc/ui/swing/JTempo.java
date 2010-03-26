@@ -15,6 +15,7 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
@@ -23,7 +24,7 @@ import java.awt.geom.Rectangle2D;
 import abc.notation.MusicElement;
 import abc.notation.Note;
 import abc.notation.Tempo;
-import abc.ui.scoretemplates.TextFields;
+import abc.ui.scoretemplates.ScoreElements;
 
 public class JTempo extends JText {
 	
@@ -39,7 +40,7 @@ public class JTempo extends JText {
 	 * @param mtrx The score metrics needed
 	 */
 	protected JTempo(ScoreMetrics mtrx, Point2D base, Tempo tempo) {
-		super(mtrx, "", TextFields.TEMPO);
+		super(mtrx, "", ScoreElements.TEMPO);
 		m_tempo = tempo;
 		m_refNote = new char[] { getMusicalFont().getNoteStemUpChar(m_tempo.getReference()) };
 		m_refNoteBounds = getMetrics().getBounds(m_refNote,
@@ -102,8 +103,10 @@ public class JTempo extends JText {
 		double noteHeadWidth = m_noteHeadBounds.getWidth();
 		double noteHeadHeight = m_noteHeadBounds.getHeight();
 		Font previousFont = g2.getFont();
+		Color previousColor = g2.getColor();
 		g2.setFont(getMetrics()
 				.getNotationFontForContext(ScoreMetrics.NOTATION_CONTEXT_TEMPO));
+		setColor(g2, ScoreElements.TEMPO);
 		g2.drawString(m_refNote[0] + "",
 				(int)(getBase().getX()),
 				(int)(m_y+noteHeadHeight));
@@ -121,6 +124,7 @@ public class JTempo extends JText {
 		g2.drawLine(xEquals, yEquals,
 				(int)(xEquals+noteHeadWidth), yEquals);
 		g2.setFont(previousFont);
+		g2.setColor(previousColor);
 		return getWidth();
 	}
 

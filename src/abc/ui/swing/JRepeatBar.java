@@ -15,10 +15,12 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
 import abc.notation.RepeatBarLine;
+import abc.ui.scoretemplates.ScoreElements;
 
 /** This class is in charge of rendering a repeat bar. */
 class JRepeatBar extends JBar{
@@ -40,6 +42,8 @@ class JRepeatBar extends JBar{
 	}
 	
 	public double render(Graphics2D context){
+		Color previousColor = context.getColor();
+		setColor(context, ScoreElements.BAR_LINES);
 		ScoreMetrics metrics = getMetrics();
 		double x = super.getWidth();// metrics.getNoteWidth();
 		double staffHeight = metrics.getStaffCharBounds().getHeight();
@@ -65,7 +69,7 @@ class JRepeatBar extends JBar{
 				(int)topY,
 				(int)(base.getX()+x-1+staffWidth),
 				(int)topY);
+		context.setColor(previousColor);
 		return super.render(context);
-		
 	}
 }

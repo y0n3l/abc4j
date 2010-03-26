@@ -22,8 +22,9 @@ import java.awt.geom.Point2D;
 
 import abc.notation.Clef;
 import abc.notation.Note;
+import abc.ui.swing.JScoreElement.JGraceElement;
 
-class JGraceNotePartOfGroup extends JNotePartOfGroup {
+class JGraceNotePartOfGroup extends JNotePartOfGroup implements JGraceElement {
 
 	public JGraceNotePartOfGroup(Note noteValue, Clef clef, Point2D base, ScoreMetrics c) {
 		super(noteValue, clef, base, c);
@@ -31,6 +32,9 @@ class JGraceNotePartOfGroup extends JNotePartOfGroup {
 //		super.setStemUp(true);
 	}
 
+	public void setRenderSlash(boolean b) {
+		//no effect
+	}
 
 //	// no-op: gracenotes should always be stemmed up
 //	public void autoStem(boolean auto) {

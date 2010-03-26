@@ -15,6 +15,7 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
@@ -27,6 +28,7 @@ import abc.notation.GracingType;
 import abc.notation.MusicElement;
 import abc.notation.Note;
 import abc.ui.scoretemplates.ScoreAttribute;
+import abc.ui.scoretemplates.ScoreElements;
 
 /**
  * This class is in charge of rendering a single note and it's associated
@@ -405,11 +407,17 @@ class JNote extends JNoteElementAbstract {
 	public double render(Graphics2D g){
 		super.render(g);
 		renderExtendedStaffLines(g, getMetrics(), getBase());
+		Color previousColor = g.getColor();
+		if (this instanceof JGraceElement)
+			setColor(g, ScoreElements.GRACENOTE);
+		else
+			setColor(g, ScoreElements.NOTE);
 		renderAccidentals(g);
 		renderGraceNotes(g);
 		renderDots(g);
-		renderDecorations(g);
 		renderNoteChars(g);
+		g.setColor(previousColor);
+		renderDecorations(g);
 		renderChordName(g);
 		
 		//renderDebugBoundingBox(g);
@@ -435,9 +443,12 @@ class JNote extends JNoteElementAbstract {
 
 	protected void renderAccidentals(Graphics2D gfx) {
 		if (accidentalsPosition!=null) {
+			Color previousColor = gfx.getColor();
+			setColor(gfx, ScoreElements.ACCIDENTAL);
 			gfx.drawChars(accidentalsChars, 0, 1,
 					(int)accidentalsPosition.getX(),
 					(int)accidentalsPosition.getY());
+			gfx.setColor(previousColor);
 		}
 	}
 	
@@ -463,6 +474,9 @@ class JNote extends JNoteElementAbstract {
 	}
 
 	protected void renderExtendedStaffLines(Graphics2D context, ScoreMetrics metrics, Point2D base){
+		Color previousColor = context.getColor();
+		setColor(context, ScoreElements.STAFF_LINES);
+		
 		//FIXME: "Gracing" branch changes not integrated here
 		//used for width which vary from normal to grace note
 		Dimension glyphDimension = metrics.getGlyphDimension(getNotationContext());
@@ -503,6 +517,8 @@ class JNote extends JNoteElementAbstract {
 			}
 			context.setStroke(dfs);
 		}
+		
+		context.setColor(previousColor);
 	}
 
 	protected void renderDots(Graphics2D context){

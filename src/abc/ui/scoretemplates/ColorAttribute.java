@@ -13,22 +13,21 @@
 //
 // You should have received a copy of the GNU Lesser General Public License
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
-package abc.ui.swing;
+package abc.ui.scoretemplates;
 
-import abc.notation.Chord;
-import abc.notation.MusicElement;
-import abc.ui.scoretemplates.ScoreElements;
+import java.awt.Color;
 
-class JChordName extends JText {
+public class ColorAttribute extends ScoreAttribute {
 
-	private Chord m_chord = null;
-	protected JChordName(ScoreMetrics mtrx, Chord chord) {
-		super(mtrx, chord.getText(true), ScoreElements.TEXT_CHORDS);
-		m_chord = chord;
+	private static final long serialVersionUID = -6538452244741699810L;
+
+	/**
+	 * @param scoreElement one of the {@link ScoreElements} constant
+	 * @param defaultColor
+	 */
+	public ColorAttribute(byte scoreElement, Color defaultColor) {
+		super("COLOR_"+Byte.toString(scoreElement),
+				defaultColor);
 	}
-	
-	public MusicElement getMusicElement() {
-		return m_chord;
-	}
-	
+
 }

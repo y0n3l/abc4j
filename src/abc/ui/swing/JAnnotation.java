@@ -15,7 +15,7 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
-import abc.ui.scoretemplates.TextFields;
+import abc.ui.scoretemplates.ScoreElements;
 
 /** TODO doc */
 class JAnnotation extends JText {
@@ -24,7 +24,7 @@ class JAnnotation extends JText {
 	 * @param mtrx The score metrics needed
 	 */
 	protected JAnnotation(ScoreMetrics mtrx, String text) {
-		super(mtrx, text, TextFields.ANNOTATIONS);
+		super(mtrx, text, ScoreElements.TEXT_ANNOTATIONS);
 	}
 
 }

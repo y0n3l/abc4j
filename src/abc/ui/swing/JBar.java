@@ -16,12 +16,14 @@
 package abc.ui.swing;
 
 //import java.awt.Graphics;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import abc.notation.BarLine;
 import abc.notation.MusicElement;
+import abc.ui.scoretemplates.ScoreElements;
 
 /** This class renders a simple bar line. */
 class JBar extends JScoreElementAbstract {
@@ -118,6 +120,8 @@ class JBar extends JScoreElementAbstract {
 
 	public double render(Graphics2D context) {
 		super.render(context);
+		Color previousColor = context.getColor();
+		setColor(context, ScoreElements.BAR_LINES);
 		double x = getBase().getX();
 		switch (m_barLine.getType()) {
 		case BarLine.BEGIN_AND_END_REPEAT:
@@ -164,7 +168,7 @@ class JBar extends JScoreElementAbstract {
 			renderThinLine(context, x);
 			break;
 		}
-		
+		context.setColor(previousColor);
 		renderDecorations(context);
 		//renderDebugBoundingBoxOuter(context);
 		return getWidth();

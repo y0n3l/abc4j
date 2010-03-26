@@ -15,11 +15,13 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
 import abc.notation.MusicElement;
 import abc.notation.TimeSignature;
+import abc.ui.scoretemplates.ScoreElements;
 
 /** This class is in charge of rendering a time signature. */
 class JTimeSignature extends JScoreElementAbstract {
@@ -58,6 +60,9 @@ class JTimeSignature extends JScoreElementAbstract {
 	
 	public double render(Graphics2D context){
 		super.render(context);
+		Color previousColor = context.getColor();
+		setColor(context, ScoreElements.TIME_SIGNATURE);
+		
 		double width = getWidth();
 		context.drawChars(m_numChars, 0, m_numChars.length,
 				(int)(getBase().getX() + width/2
@@ -67,6 +72,7 @@ class JTimeSignature extends JScoreElementAbstract {
 				(int)(getBase().getX() + width/2
 						- (getMetrics().getBounds(m_denomChars).getWidth())/2),
 				m_bottomNumY);
+		context.setColor(previousColor);
 		return width;
 	}
 }

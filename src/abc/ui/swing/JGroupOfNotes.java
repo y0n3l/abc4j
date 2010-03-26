@@ -16,6 +16,7 @@
 package abc.ui.swing;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Stroke;
@@ -30,6 +31,7 @@ import abc.notation.Note;
 import abc.notation.NoteAbstract;
 import abc.notation.SlurDefinition;
 import abc.ui.scoretemplates.ScoreAttribute;
+import abc.ui.scoretemplates.ScoreElements;
 import abc.ui.swing.JScoreElement.JStemmableElement;
 
 /** This class is in charge of rendering a group of notes whose stems should be linked. */
@@ -382,6 +384,11 @@ class JGroupOfNotes extends JScoreElementAbstract
 
 	public double render(Graphics2D context){
 		//super.render(context);
+		Color previousColor = context.getColor();
+		if (this instanceof JGraceElement)
+			setColor(context, ScoreElements.GRACENOTE);
+		else
+			setColor(context, ScoreElements.NOTE);
 		Stroke defaultStroke = context.getStroke();
 		int factor = isStemUp?1:-1; //invert direction for noteLinkY
 		for (int i=0; i<m_jNotes.length; i++) {
@@ -499,6 +506,7 @@ class JGroupOfNotes extends JScoreElementAbstract
 			((JNoteElementAbstract) m_jNotes[0]).getJSlurDefinition()
 				.setTupletControlPoint(ctrlP);
 		}
+		context.setColor(previousColor);
 
 		//renderDebugBoundingBox(context);
 		

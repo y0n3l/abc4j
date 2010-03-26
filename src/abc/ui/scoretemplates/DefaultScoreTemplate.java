@@ -39,18 +39,24 @@ import abc.ui.swing.ScoreTemplate;
 public class DefaultScoreTemplate extends ScoreTemplate implements Cloneable {
 
 	private static final byte[] FOOTNOTES = new byte[] {
-		TextFields.NOTES, //=ANNOTATIONS
-		TextFields.SOURCE,
-		TextFields.TRANSCRNOTES,
-		TextFields.FILEURL
+		ScoreElements.TEXT_NOTES, //=ANNOTATIONS
+		ScoreElements.TEXT_SOURCE,
+		ScoreElements.TEXT_TRANSCRNOTES,
+		ScoreElements.TEXT_FILEURL
 	};
 
 	private static final long serialVersionUID = -556559340776215872L;
 
 	public DefaultScoreTemplate() {
 		super();
+		color();
 		positions();
 		fonts();
+	}
+	
+	private void color() {
+		setElementColor(ScoreElements._DEFAULT, Color.black);
+		setElementColor(ScoreElements.STAFF_LINES, Color.darkGray);
 	}
 	
 	private void fonts() {
@@ -60,7 +66,7 @@ public class DefaultScoreTemplate extends ScoreTemplate implements Cloneable {
 			new String[] {"Palatino Linotype", "Arial", "Dialog"}
 		);
 		//Part Labels
-		setTextFontFamilyName(TextFields.PART_LABEL,
+		setTextFontFamilyName(ScoreElements.PART_LABEL,
 			new String[] {"Georgia", "Verdana", "Dialog"});
 		//foot notes
 		setTextFontFamilyName(FOOTNOTES,
@@ -68,56 +74,56 @@ public class DefaultScoreTemplate extends ScoreTemplate implements Cloneable {
 		);
 		
 		setTextStyle(
-			new byte[] {TextFields.TITLE,
-						TextFields.SUBTITLE,
-						TextFields.COMPOSER,
-						TextFields.LYRICIST,
-						TextFields.RHYTHM,
-						TextFields.ORIGIN},
+			new byte[] {ScoreElements.TEXT_TITLE,
+						ScoreElements.TEXT_SUBTITLE,
+						ScoreElements.TEXT_COMPOSER,
+						ScoreElements.TEXT_LYRICIST,
+						ScoreElements.TEXT_RHYTHM,
+						ScoreElements.TEXT_ORIGIN},
 			Font.BOLD
 		);
-		setTextStyle(TextFields.PARTS_ORDER, Font.ITALIC);
-		setTextStyle(TextFields.PART_LABEL, Font.BOLD);
+		setTextStyle(ScoreElements.TEXT_PARTS_ORDER, Font.ITALIC);
+		setTextStyle(ScoreElements.PART_LABEL, Font.BOLD);
 		
-		setTextSize(TextFields.TITLE, 200, SizeUnit.PERCENT);
-		setTextSize(TextFields.SUBTITLE, 150, SizeUnit.PERCENT);
-		setTextSize(TextFields.COMPOSER, 125, SizeUnit.PERCENT);
-		setTextSize(TextFields.PART_LABEL, 150, SizeUnit.PERCENT);
+		setTextSize(ScoreElements.TEXT_TITLE, 200, SizeUnit.PERCENT);
+		setTextSize(ScoreElements.TEXT_SUBTITLE, 150, SizeUnit.PERCENT);
+		setTextSize(ScoreElements.TEXT_COMPOSER, 125, SizeUnit.PERCENT);
+		setTextSize(ScoreElements.PART_LABEL, 150, SizeUnit.PERCENT);
 		setTextSize(FOOTNOTES, 10, SizeUnit.PT);
 		
 		Hashtable urlLink = new Hashtable();
 		//urlLink.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_LOW_ONE_PIXEL);
 		urlLink.put(TextAttribute.FOREGROUND, Color.BLUE);
-		setTextAttributes(TextFields.FILEURL, urlLink);
-		setTextStyle(TextFields.FILEURL, Font.ITALIC);
+		setTextAttributes(ScoreElements.TEXT_FILEURL, urlLink);
+		setTextStyle(ScoreElements.TEXT_FILEURL, Font.ITALIC);
 	}
 	
 	private void positions() {
 		setPosition(
-			new byte[] { TextFields.TITLE,
-						 TextFields.SUBTITLE },
+			new byte[] { ScoreElements.TEXT_TITLE,
+						 ScoreElements.TEXT_SUBTITLE },
 			VerticalAlign.TOP,
 			HorizontalAlign.CENTER
 		);
 		setPosition(
-			new byte[] { TextFields.COMPOSER,
-						 TextFields.ORIGIN },
+			new byte[] { ScoreElements.TEXT_COMPOSER,
+						 ScoreElements.TEXT_ORIGIN },
 			VerticalAlign.TOP,
 			HorizontalAlign.RIGHT
 		);
 		setPosition(
-			new byte[] { TextFields.LYRICIST,
-						 TextFields.RHYTHM,
-						 TextFields.GROUP,
-						 TextFields.PARTS_ORDER },
+			new byte[] { ScoreElements.TEXT_LYRICIST,
+						 ScoreElements.TEXT_RHYTHM,
+						 ScoreElements.TEXT_GROUP,
+						 ScoreElements.TEXT_PARTS_ORDER },
 			VerticalAlign.TOP,
 			HorizontalAlign.LEFT
 		);
 		
 		setPosition(
-			new byte[] { TextFields.CHORDS,
-						 TextFields.TEMPO,
-						 TextFields.PART_LABEL },
+			new byte[] { ScoreElements.TEXT_CHORDS,
+						 ScoreElements.TEMPO,
+						 ScoreElements.PART_LABEL },
 			VerticalAlign.ABOVE_STAFF,
 			HorizontalAlign.LEFT
 		);
