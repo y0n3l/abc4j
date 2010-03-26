@@ -20,12 +20,13 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
+import abc.notation.Clef;
 import abc.notation.Note;
 
 class JGraceNotePartOfGroup extends JNotePartOfGroup {
 
-	public JGraceNotePartOfGroup(Note noteValue, Point2D base, ScoreMetrics c) {
-		super(noteValue, base, c);
+	public JGraceNotePartOfGroup(Note noteValue, Clef clef, Point2D base, ScoreMetrics c) {
+		super(noteValue, clef, base, c);
 //		super.setAutoStem(false);
 //		super.setStemUp(true);
 	}
@@ -56,14 +57,6 @@ class JGraceNotePartOfGroup extends JNotePartOfGroup {
 	protected int getNotationContext() {
 		return ScoreMetrics.NOTATION_CONTEXT_GRACENOTE;
 	}
-
-	// correct for font glyph positioning
-	public double getCorrectedGlyphOffest(Note note) {
-		double positionOffset = getOffset(note);
-		return positionOffset -= 1; // move up 1px
-	}
-
-
 
 	protected void onBaseChanged() {
 		super.onBaseChanged();

@@ -190,6 +190,16 @@ public class Tune implements Cloneable
    * @return The key signature of this tune. */
   public KeySignature getKey()
   { return m_key; }
+  
+  /** Returns the clef of the tune.
+   * This is a shortcut to <TT>{@link #getKey()}.{@link KeySignature#getClef() getClef()}</TT>
+   */
+  public Clef getClef() {
+	  if (getKey() != null)
+		  return getKey().getClef();
+	  else
+		  return Clef.G;
+  }
 
   /** Sets additional information about the tune.
    * @param information Additional information about the tune. */

@@ -808,18 +808,22 @@ public class AbcParserAbstract
     /** key-spec ::= keynote [mode-spec] *(" " global-accidental) */
     private KeySignature parseKeySpec(Set follow)
     {
-        Set current = new Set().union(FIRST_MODE_SPEC).union(AbcTokenType.SPACE).union(FIRST_GLOBAL_ACCIDENTAL);
+        Set current = new Set().union(AbcTokenType.SPACE)
+        	.union(FIRST_MODE_SPEC)
+        	.union(AbcTokenType.SPACE)
+        	.union(FIRST_GLOBAL_ACCIDENTAL);
         KeySignature key = null;
         Note note = null;
         byte modeSpec = KeySignature.MAJOR;
 
         note = parseKeyNote(current.createUnion(follow));
+        accept(AbcTokenType.SPACE, current, follow, true);
         if (FIRST_MODE_SPEC.contains(m_tokenType))
         {
           current = new Set(AbcTokenType.SPACE).union(FIRST_GLOBAL_ACCIDENTAL);
           modeSpec = parseModeSpec(current.createUnion(follow));
         }
-        if (note!=null && modeSpec!=-1)
+        if (note!=null/* && modeSpec!=KeySignature.OTHER*/)
           key = new KeySignature(note.getHeight(), note.getAccidental(), modeSpec);
 
         while(m_tokenType.equals(AbcTokenType.SPACE))
@@ -861,8 +865,6 @@ public class AbcParserAbstract
     {
         Set current = new Set().union(FIRST_MODE).union(AbcTokenType.TEXT);
         byte modeType = KeySignature.MAJOR;
-/*        if (m_tokenType.equals(AbcTokenType.SPACE))
-           accept(AbcTokenType.SPACE, current, follow);*/
         current.remove(FIRST_MODE);
         String stringMode = accept(AbcTokenType.MODE, current, follow, true);
         modeType = KeySignature.convertToModeType(stringMode);

@@ -22,6 +22,7 @@ import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import abc.notation.Clef;
 import abc.notation.Note;
 
 class JNotePartOfGroup extends JNote implements JGroupableNote {
@@ -32,8 +33,8 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 	
 	private boolean anchor = false;
 
-	public JNotePartOfGroup(Note noteValue, Point2D base, ScoreMetrics c) {
-		super(noteValue, base, c);
+	public JNotePartOfGroup(Note noteValue, Clef clef, Point2D base, ScoreMetrics c) {
+		super(noteValue, clef, base, c);
 		super.setAutoStem(true);
 	}
 

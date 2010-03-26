@@ -20,6 +20,7 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import abc.notation.Clef;
 import abc.notation.GracingType;
 import abc.notation.Interval;
 import abc.notation.MultiNote;
@@ -63,10 +64,10 @@ class JChord extends JNoteElementAbstract {
 	/** Horizontal positifion of note head, after graces and accidentals */
 	private double m_noteHeadX = -1;
 	
-	public JChord(MultiNote multiNote, ScoreMetrics metrics, Point2D base){
-		super(multiNote, base, metrics);
+	public JChord(MultiNote multiNote, Clef clef, ScoreMetrics metrics, Point2D base){
+		super(multiNote, clef, base, metrics);
 		this.multiNote = multiNote;
-
+		
 		m_notes = multiNote.toArray();
 		//create JNotePartOfGroup instances. Those instances stay the same when the base is changed.
 		//The width of the chord is the width of the largest note.
@@ -74,7 +75,7 @@ class JChord extends JNoteElementAbstract {
 			m_sNoteInstances = new JNote[m_notes.length];
 			boolean inverted = false;
 			for (int i=0; i<m_notes.length; i++) {
-				m_sNoteInstances[i] = new JChordNote(m_notes[i], base, getMetrics());
+				m_sNoteInstances[i] = new JChordNote(m_notes[i], getClef(), base, getMetrics());
 				((JChordNote) m_sNoteInstances[i]).setIsLowest(i == 0);
 				((JChordNote) m_sNoteInstances[i]).setIsHighest(i == m_notes.length - 1);
 				if (i > 0) {
@@ -98,7 +99,7 @@ class JChord extends JNoteElementAbstract {
 		else {
 			m_sNoteInstances = new JNote[1];
 //			m_sNoteInstances[0] = new JNote(multiNote.getHighestNote(), base, m_metrics);
-			m_sNoteInstances[0] = new JChordNote(multiNote.getHighestNote(), base, getMetrics());
+			m_sNoteInstances[0] = new JChordNote(multiNote.getHighestNote(), getClef(), base, getMetrics());
 
 			c_width = m_sNoteInstances[0].getWidth();
 			MultiNote[] h = multiNote.normalize();
@@ -145,7 +146,7 @@ class JChord extends JNoteElementAbstract {
 	 */
 	protected JNote createAnchorNote(Note note, Point2D base, ScoreMetrics metrics) {
 //		JNote jNote = new JNote(note, base, metrics);
-		JNote jNote = new JChordNote(note, base, metrics);
+		JNote jNote = new JChordNote(note, getClef(), base, metrics);
 		//note.set
 		return jNote;
 	}
@@ -153,7 +154,7 @@ class JChord extends JNoteElementAbstract {
 	/** Invoked when a multi note is decomposed into multi notes with same strict
 	 * duration. */
 	protected JChord createNormalizedChord(MultiNote mNote, ScoreMetrics mtrx, Point2D base) {
-		return new JChord(mNote, mtrx, base);
+		return new JChord(mNote, getClef(), mtrx, base);
 	}
 
 	public MusicElement getMusicElement() {
@@ -195,26 +196,6 @@ class JChord extends JNoteElementAbstract {
 			m_jGracenotes.setBase(base);
 		}
 		super.setBase(base);
-		/*if (m_normalizedChords!=null) {
-			//note heads should be aligned, e.g. [A^d2],
-			//the A is at same x than the sharp.
-			//Determinate the max note head X
-			double maxHeadX = -1;
-			for (int i = 0; i < m_normalizedChords.length; i++) {
-				maxHeadX = Math.max(maxHeadX, m_normalizedChords[i].m_noteHeadX);
-			}
-			//deltaX = maxHeadX - m_noteHeadX
-			//move right from delta, to align note heads
-			for (int i = 0; i < m_normalizedChords.length; i++) {
-				double deltaX = maxHeadX - m_normalizedChords[i].m_noteHeadX;
-				//==0 > do nothing
-				if (deltaX > 0) {
-					Point2D p = m_normalizedChords[i].getBase();
-					p.setLocation(p.getX() + deltaX, p.getY());
-					m_normalizedChords[i].setBase(p);
-				}
-			}
-		}*/
 	}
 	
 	protected JNote getHighestNote() {
@@ -269,14 +250,15 @@ class JChord extends JNoteElementAbstract {
 
 		//if normalizedChords!=null [0] stems down, [1] stems up
 		//autoStemming is disabled
+		byte midHeight = getClef().getMiddleNote().getHeight();
 		if ((m_normalizedChords == null) && isAutoStem()) {
 			boolean stemUp = false;
-			if (h <= Note.B) {
+			if (h <= midHeight) {
 				stemUp = true;
-			} else if (l > Note.B) {
+			} else if (l > midHeight) {
 				stemUp = false;
 			} else {
-				if ( (h - Note.B) < (Note.B - l) ) {
+				if ( (h - midHeight) < (midHeight - l) ) {
 					// lowest note is further away from center line than highest note
 					stemUp = true;
 				} else {
@@ -603,7 +585,5 @@ class JChord extends JNoteElementAbstract {
 		}
 		return scoreEl;
 	}
-
-
 
 }

@@ -23,6 +23,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import abc.notation.Clef;
 import abc.notation.MultiNote;
 import abc.notation.MusicElement;
 import abc.notation.Note;
@@ -54,9 +55,12 @@ class JGroupOfNotes extends JScoreElementAbstract
 	private double m_width = -1;
 
 	private Engraver m_engraver = null;
+	
+	private Clef m_clef;
 
-	public JGroupOfNotes(ScoreMetrics metrics, Point2D base, NoteAbstract[] notes, Engraver engrav){
+	public JGroupOfNotes(ScoreMetrics metrics, Point2D base, NoteAbstract[] notes, Clef clef, Engraver engrav){
 		super(metrics);
+		m_clef = clef;
 		if (notes.length<=1)
 			throw new IllegalArgumentException(notes + " is not a group of notes, length = " + notes.length);
 		m_engraver = engrav;
@@ -67,12 +71,12 @@ class JGroupOfNotes extends JScoreElementAbstract
 		for (int i=0; i<notes.length; i++)
 			if (notes[i] instanceof Note) {
 				m_notes[i] = (Note)notes[i];
-				m_jNotes[i] = new JNotePartOfGroup((Note)m_notes[i], base, getMetrics());
+				m_jNotes[i] = new JNotePartOfGroup((Note)m_notes[i], clef, base, getMetrics());
 				//anchorNotes[i] = (Note)notes[i];
 			}
 			else {
 				//This is a multiNote
-				m_jNotes[i] = new JChordPartOfGroup((MultiNote)notes[i], getMetrics(), new Point2D.Double());
+				m_jNotes[i] = new JChordPartOfGroup((MultiNote)notes[i], clef, getMetrics(), new Point2D.Double());
 				m_notes[i] = (MultiNote) notes[i];
 					//(Note)((JChordPartOfGroup)m_jNotes[i]).getReferenceNoteForGroup().getMusicElement();
 			}
@@ -90,6 +94,10 @@ class JGroupOfNotes extends JScoreElementAbstract
 			((JNoteElementAbstract) m_jNotes[0]).setJSlurDefinition(jSlurDef);
 		}
 		setBase(base);
+	}
+	
+	protected Clef getClef() {
+		return m_clef;
 	}
 
 	public MusicElement getMusicElement() {
@@ -274,12 +282,13 @@ class JGroupOfNotes extends JScoreElementAbstract
 			else
 				l = ((Note) m_notes[lowIndex]).getHeight();
 
-			if (h <= Note.B) {
+			byte midHeight = getClef().getMiddleNote().getHeight();
+			if (h <= midHeight) {
 				setStemUp(true);
-			} else if (l > Note.B) {
+			} else if (l > midHeight) {
 				setStemUp(false);
 			} else {
-				if ( (h - Note.B) < (Note.B - l) ) {
+				if ( (h - midHeight) < (midHeight - l) ) {
 					// lowest note is further away from center line than highest note
 					setStemUp(true);
 				} else {

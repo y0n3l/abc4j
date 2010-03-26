@@ -21,6 +21,7 @@ import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Point2D;
 
+import abc.notation.Clef;
 import abc.notation.Note;
 import abc.ui.swing.JScoreElement.JGraceElement;
 
@@ -32,8 +33,8 @@ class JGraceNote extends JNote implements JGraceElement {
 	
 	private double m_width = -1;
 
-	public JGraceNote(Note noteValue, Point2D base, ScoreMetrics c) {
-		super(noteValue, base, c);
+	public JGraceNote(Note noteValue, Clef clef, Point2D base, ScoreMetrics c) {
+		super(noteValue, clef, base, c);
 
 //		super.setAutoStem(false);
 //		super.setStemUp(true);
@@ -64,13 +65,6 @@ class JGraceNote extends JNote implements JGraceElement {
 	 */
 	protected int getNotationContext() {
 		return ScoreMetrics.NOTATION_CONTEXT_GRACENOTE;
-	}
-
-	// correct for font glyph positioning
-	public double getCorrectedGlyphOffest(Note note) {
-		double positionOffset = //
-			super.getOffset(note);
-		return positionOffset -= 1; // move up 1px
 	}
 	
 	public double getWidth() {

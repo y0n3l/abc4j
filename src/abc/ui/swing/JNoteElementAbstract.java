@@ -23,6 +23,7 @@ import java.awt.geom.QuadCurve2D;
 import java.awt.geom.Rectangle2D;
 
 import abc.notation.Chord;
+import abc.notation.Clef;
 import abc.notation.Decoration;
 import abc.notation.GracingType;
 import abc.notation.MusicElement;
@@ -69,21 +70,24 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 	// private attribute so all classes are forced to accessor methods
 	//  this ensures autoStemming is done correctly
 	protected boolean autoStem = true;
+	
+	private Clef m_clef;
 
 	/** Callback invoked when the base has changed for this object. */
 	protected abstract void onBaseChanged();
 
-	public JNoteElementAbstract(NoteAbstract noteValue, Point2D base, ScoreMetrics metrics) {
+	public JNoteElementAbstract(NoteAbstract noteValue, Clef clef, Point2D base, ScoreMetrics metrics) {
 		super(base, metrics);
+		m_clef = clef;
 
 		// add JGraceNotes
 		if (noteValue.hasGracingNotes()) {
 			Note[] graceNotes = noteValue.getGracingNotes();
 			if (graceNotes.length == 1) {
-				m_jGracenotes = new JGraceNote(graceNotes[0], base, getMetrics());
+				m_jGracenotes = new JGraceNote(graceNotes[0], clef, base, getMetrics());
 				base.setLocation(base.getX()+m_jGracenotes.getWidth(),base.getY());
 			} else if (graceNotes.length>1) {
-				m_jGracenotes = new JGroupOfGraceNotes(getMetrics(), base, graceNotes, null);
+				m_jGracenotes = new JGroupOfGraceNotes(getMetrics(), base, graceNotes, clef, null);
 				//base.setLocation(base.getX()+m_jGracenotes.getWidth(),base.getY());
 			}
 			byte appogOrAcciac = noteValue.getGracingType();
@@ -120,6 +124,10 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 		}
 	}
 	
+	protected Clef getClef() {
+		return m_clef;
+	}
+	
 	public boolean isFollowingStemmingPolicy() {
 		return true;
 	}
@@ -142,7 +150,8 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 	public boolean isStemUp() {
 	  boolean isup = stemUp;
 	  if (autoStem && (note != null)) {
-		if (note.getHeight()<Note.B) {
+		//if (note.getHeight()<Note.B) {
+		if (note.isLowerThan(getClef().getMiddleNote())) {
 		  isup = true;
 		} else {
 		  isup = false;

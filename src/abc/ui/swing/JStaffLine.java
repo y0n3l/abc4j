@@ -118,7 +118,7 @@ class JStaffLine extends JScoreElementAbstract {
 		else
 			return null;
 	}
-
+	
 	public JScoreElement getScoreElementAt(Point point) {
 		JScoreElement scoreEl = null;
 		for (int i=0; i<m_staffElements.size(); i++) {

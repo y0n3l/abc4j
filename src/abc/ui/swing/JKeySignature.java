@@ -20,6 +20,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 import abc.notation.AccidentalType;
+import abc.notation.Clef;
 import abc.notation.KeySignature;
 import abc.notation.Note;
 import abc.notation.MusicElement;
@@ -27,8 +28,8 @@ import abc.notation.MusicElement;
 /** This class is in charge of rendering a key signature. */
 class JKeySignature extends JScoreElementAbstract {
 /* TODO: test every keys, TJM "Gracings" branch changes not included */
-	KeySignature key = null;
-	KeySignature previous_key = null;
+	private KeySignature key = null;
+	private KeySignature previous_key = null;
 
 	private double m_width = -1;
 	private ArrayList chars = new ArrayList(); //ArrayList of char[]
@@ -62,22 +63,31 @@ class JKeySignature extends JScoreElementAbstract {
 		double baseX = m_base.getX();
 		double baseY = m_base.getY() - noteHeight/2;
 		
+		Clef clef = key.getClef();
+		
+		//TODO key accidentals depending on the clef
+		//octave offset = 3.5
+		double octaveOffset = 0;
+		if (clef.isC())
+			octaveOffset = 3.5;
+		else if (clef.isF())
+			octaveOffset = 3.5*2;
 		//Calculate vertical position for # and b
-		double FsharpY = baseY - JNote.getOffset(new Note(Note.f)) * noteHeight;
-		double CsharpY = baseY - JNote.getOffset(new Note(Note.c)) * noteHeight;
-		double GsharpY = baseY - JNote.getOffset(new Note(Note.g)) * noteHeight;
-		double DsharpY = baseY - JNote.getOffset(new Note(Note.d)) * noteHeight;
-		double AsharpY = baseY - JNote.getOffset(new Note(Note.A)) * noteHeight;
-		double EsharpY = baseY - JNote.getOffset(new Note(Note.e)) * noteHeight;
-		double BsharpY = baseY - JNote.getOffset(new Note(Note.B)) * noteHeight;
+		double FsharpY = baseY - (JClef.getOffset(new Note(Note.f), clef)-octaveOffset) * noteHeight;
+		double CsharpY = baseY - (JClef.getOffset(new Note(Note.c), clef)-octaveOffset) * noteHeight;
+		double GsharpY = baseY - (JClef.getOffset(new Note(Note.g), clef)-octaveOffset) * noteHeight;
+		double DsharpY = baseY - (JClef.getOffset(new Note(Note.d), clef)-octaveOffset) * noteHeight;
+		double AsharpY = baseY - (JClef.getOffset(new Note(Note.A), clef)-octaveOffset) * noteHeight;
+		double EsharpY = baseY - (JClef.getOffset(new Note(Note.e), clef)-octaveOffset) * noteHeight;
+		double BsharpY = baseY - (JClef.getOffset(new Note(Note.B), clef)-octaveOffset) * noteHeight;
 		
 		double BflatY = BsharpY;//baseY - JNote.getOffset(new Note(Note.B)) * noteHeight;
 		double EflatY = EsharpY;//baseY - JNote.getOffset(new Note(Note.e)) * noteHeight;
 		double AflatY = AsharpY;//baseY - JNote.getOffset(new Note(Note.A)) * noteHeight;
 		double DflatY = DsharpY;//baseY - JNote.getOffset(new Note(Note.d)) * noteHeight;
-		double GflatY = baseY - JNote.getOffset(new Note(Note.G)) * noteHeight;
+		double GflatY = baseY - (JClef.getOffset(new Note(Note.G), clef)-octaveOffset) * noteHeight;
 		double CflatY = CsharpY;//baseY - JNote.getOffset(new Note(Note.c)) * noteHeight;
-		double FflatY = baseY - JNote.getOffset(new Note(Note.F)) * noteHeight;
+		double FflatY = baseY - (JClef.getOffset(new Note(Note.F), clef)-octaveOffset) * noteHeight;
 		
 		//0=C, 1=D..., 6=B
 		int[] sharpOrder = new int[] {3,0,4,1,5,2,6};

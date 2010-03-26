@@ -20,6 +20,7 @@ import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Point2D;
 
+import abc.notation.Clef;
 import abc.notation.Note;
 import abc.notation.NoteAbstract;
 import abc.ui.swing.JScoreElement.JGraceElement;
@@ -31,12 +32,12 @@ class JGroupOfGraceNotes extends JGroupOfNotes implements JGraceElement {
 	private Point2D slashStart = null;
 	private Point2D slashEnd = null;
 
-	public JGroupOfGraceNotes (ScoreMetrics metrics, Point2D base, NoteAbstract[] notes, Engraver engraver){
-		super(metrics, base, notes, engraver);
+	public JGroupOfGraceNotes (ScoreMetrics metrics, Point2D base, NoteAbstract[] notes, Clef clef, Engraver engraver){
+		super(metrics, base, notes, clef, engraver);
 
 		JGraceNotePartOfGroup graceNote = null;
 		for (int i=0; i<notes.length; i++) {
-			graceNote = new JGraceNotePartOfGroup((Note)m_notes[i], base /*new Point2D.Double()*/, metrics);
+			graceNote = new JGraceNotePartOfGroup((Note)m_notes[i], clef, base, metrics);
 			m_jNotes[i] = graceNote;
 		}
 

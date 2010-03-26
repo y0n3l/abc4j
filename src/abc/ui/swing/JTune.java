@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import abc.notation.BarLine;
+import abc.notation.Clef;
 import abc.notation.KeySignature;
 import abc.notation.MultiNote;
 import abc.notation.Note;
@@ -115,6 +116,7 @@ public class JTune extends JScoreElementAbstract {
 	private JStaffLine currentStaffLine = null;
 	private KeySignature previousKey = null;
 	private KeySignature currentKey = null;
+	private Clef currentClef = null;
 	private TimeSignature previousTime = null;
 	private TimeSignature currentTime = null;
 	private Point2D cursor = null;
@@ -378,6 +380,7 @@ public class JTune extends JScoreElementAbstract {
 		
 		currentKey = null;
 		previousKey = null;
+		currentClef = null;
 
 		// clear headings, eg. titles, subtitles, composer, etc.
 		m_headerAndFooterTexts.clear();
@@ -470,7 +473,8 @@ public class JTune extends JScoreElementAbstract {
 			// ==== Key signature ====
 			if (s instanceof KeySignature) {
 				currentKey = (KeySignature)s;
-				//TODO if end of staffline, add the key at right
+				currentClef = currentKey.getClef();
+				//TODO if end of staffline, add the key signture at right
 				//here or in initStaffLine?
 				if (currentStaffLineInitialized && !currentKey.equals(previousKey)) {
 					appendToScore(new JKeySignature(currentKey, previousKey, cursor, getMetrics()));
@@ -502,7 +506,7 @@ public class JTune extends JScoreElementAbstract {
 				if (((MultiNote)s).getStrictDurations()[0]<Note.QUARTER)
 					lessThanQuarter.add(s);
 				else {
-					appendToScore(new JChord((MultiNote)s, getMetrics(), cursor));
+					appendToScore(new JChord((MultiNote)s, currentClef, getMetrics(), cursor));
 				}
 
 				//durationInCurrentMeasure+=((MultiNote)s).getLongestNote().getDuration();
@@ -528,7 +532,7 @@ public class JTune extends JScoreElementAbstract {
 					}*/
 				}
 				else {
-					JNote noteR = new JNote(note, cursor, getMetrics());
+					JNote noteR = new JNote(note, currentClef, cursor, getMetrics());
 					//if (note.getHeight()>=Note.c)
 					//	noteR.setStemUp(false);
 					appendToScore(noteR);
@@ -735,18 +739,18 @@ public class JTune extends JScoreElementAbstract {
 			NoteAbstract[] notes = (NoteAbstract[])lessThanQuarterGroup.toArray(new NoteAbstract[lessThanQuarterGroup.size()]);
 			if (notes.length==1) {
 				if (notes[0] instanceof Note) {
-					renditionResult = new JNote((Note)notes[0], cursor, getMetrics());
+					renditionResult = new JNote((Note)notes[0], currentClef, cursor, getMetrics());
 					renditionResultRootsElmts[0] = renditionResult;
 				}
 				else {
 					//This is a multi note
-					renditionResult = new JChord((MultiNote)notes[0], getMetrics(), cursor);
+					renditionResult = new JChord((MultiNote)notes[0], currentClef, getMetrics(), cursor);
 					renditionResultRootsElmts[0] = renditionResult;
 				}
 			}
 			else {
 				renditionResult = new JGroupOfNotes(
-						getMetrics(), cursor, notes, getEngraver());
+						getMetrics(), cursor, notes, currentClef, getEngraver());
 				//if tuplet, add to m_beginningNotesLinkElements
 				if (notes[0].getTuplet()!=null)
 					m_beginningNotesLinkElements.add(notes[0]);
@@ -1499,10 +1503,11 @@ public class JTune extends JScoreElementAbstract {
 		
 		cursor.setLocation(cursor.getX(), cursor.getY()+getMetrics().getStaffCharBounds().getHeight());
 		//Vector initElements = new Vector();
-		JClef clef = new JClef(cursor, getMetrics());
-		sl.addElement(clef);
+		currentClef = currentKey!=null ? currentKey.getClef() : Clef.G;
+		JClef jclef = new JClef(cursor, currentClef, getMetrics());
+		sl.addElement(jclef);
 		//initElements.addElement(clef);
-		double width = clef.getWidth();
+		double width = jclef.getWidth();
 		cursor.setLocation(cursor.getX()+width, cursor.getY());
 		if (currentKey!=null) {
 			JKeySignature sk = new JKeySignature(currentKey, previousKey, cursor, getMetrics());

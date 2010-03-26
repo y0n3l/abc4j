@@ -20,27 +20,81 @@ import java.awt.geom.Point2D;
 
 import abc.notation.Clef;
 import abc.notation.MusicElement;
+import abc.notation.Note;
 
 /** This class is in charge of rendering a staff clef. */
 class JClef extends JScoreElementAbstract {
 	
-	//protected BarLine m_barLine = null;
+	protected static double getOffset(Note note, Clef clef) {
+		double positionOffset = 0;
+		//TODO if (clef.isPerc())
+		byte noteHeight = note.getStrictHeight();
+		//position for G clef, line 2
+		switch (noteHeight) {
+			case Note.C : positionOffset = -1.5; break;
+			case Note.D : positionOffset = -1;break;
+			case Note.E : positionOffset = -0.5;break;
+			case Note.F : positionOffset = 0;break;
+			case Note.G : positionOffset = 0.5;break;
+			case Note.A : positionOffset = 1;break;
+			case Note.B : positionOffset = 1.5;break;
+		}
+		if (clef.isG()) {
+			positionOffset += 2 - clef.getLineNumber();
+		}
+		else if (clef.isC()) { //C clef, line 3
+			positionOffset += 3;
+			positionOffset += 3 - clef.getLineNumber();
+		}
+		else { //F clef, line 4
+			positionOffset += 2.5 + 3.5;
+			positionOffset += 4 - clef.getLineNumber();
+		}
+		//clef octave +8 | -8
+		positionOffset -= clef.getOctaveTransposition()*3.5;
+		//note octave
+		positionOffset += note.getOctaveTransposition()*3.5;
+		return positionOffset;
+	}
 	
-	public JClef(Point2D base, ScoreMetrics c) {
+	protected static boolean isOnStaffLine(Note note, Clef clef) {
+		double offset = getOffset(note, clef);
+		return offset != Math.round(offset);
+		/*switch(note.getStrictHeight()) {
+		case Note.C:
+		case Note.E:
+		case Note.G:
+		case Note.B:
+			return (note.getOctaveTransposition() % 2) == 0;
+		default: //D F A
+			return (note.getOctaveTransposition() % 2) == 1;
+		}
+		//}*/
+	}
+	
+	protected Clef m_clef = Clef.G;
+	
+	public JClef(Point2D base, Clef clef, ScoreMetrics c) {
 		super(c);
+		m_clef = clef;
 		setBase(base);
 	}
 	
 	public double getWidth() {
-		//TODO m_metrics.getClefWidth+noteWidth/4
-		return 3*getMetrics().getNoteWidth();
+		if (m_clef.equals(Clef.NONE))
+			return 0;
+		return getMetrics().getBounds(
+				getMusicalFont().getClef(m_clef)
+			).getWidth()
+			+getMetrics().getNoteWidth()/2;
+		//return 3*getMetrics().getNoteWidth();
 	}
 	
 	protected void onBaseChanged() {
 	}
 	
 	public MusicElement getMusicElement() {
-		return Clef.G;
+		return m_clef;
 	}
 	
 	public double render(Graphics2D context){
@@ -48,10 +102,14 @@ class JClef extends JScoreElementAbstract {
 		/*char[] chars2 = {ScoreMetrics.STAFF_SIX_LINES};
 		context.drawChars(chars2, 0, chars2.length, 
 				(int)m_base.getX(), (int)(m_base.getY()));*/
-		char[] chars = {getMusicalFont().getClef(Clef.G)};
-		context.drawChars(chars, 0, chars.length, 
-				(int)(getBase().getX()+getMetrics().getNoteWidth()/4),
-				(int)(getBase().getY()-getMetrics().getNoteHeight()));
+		if (!m_clef.equals(Clef.NONE)) {
+			char[] chars = {getMusicalFont().getClef(m_clef)};
+			context.drawChars(chars, 0, chars.length, 
+					(int)(getBase().getX()+getMetrics().getNoteWidth()/4),
+					(int)(getBase().getY()
+						- getMetrics().getNoteHeight()
+							*(m_clef.getLineNumber()-1)));
+		}
 		return getWidth();
 	}
 }

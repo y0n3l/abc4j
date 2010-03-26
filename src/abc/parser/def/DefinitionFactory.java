@@ -76,7 +76,7 @@ public class DefinitionFactory
       automataDef = new BaseNoteDefinition();
     else if (abcTokenType==(AbcTokenType.KEY_ACCIDENTAL)) automataDef = new KeyAccidentalDefinition();
     else if (abcTokenType==(AbcTokenType.ACCIDENTAL)) automataDef = new AccidentalDefinition();
-    else if (abcTokenType==(AbcTokenType.MODE))automataDef = new ModeDefinition();
+    else if (abcTokenType==(AbcTokenType.MODE))automataDef = new ModeDefinition(abcVersion);
     else if (abcTokenType==(AbcTokenType.COMMENT)) automataDef = new CommentDefinition();
     else if (abcTokenType==(AbcTokenType.GUITAR_CHORD)) automataDef = new GuitarChordDefinition();
     else if (abcTokenType==(AbcTokenType.GRACING_BEGIN)) automataDef = new GracingBeginDefinition();

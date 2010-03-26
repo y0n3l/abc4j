@@ -19,18 +19,28 @@ import scanner.AutomataDefinition;
 import scanner.State;
 import scanner.Transition;
 import abc.parser.AbcTokenType;
+import abc.parser.AbcVersion;
 
 /** **/
 public class ModeDefinition extends AutomataDefinition
 {
-  public ModeDefinition()
+  public ModeDefinition(AbcVersion abcVersion)
   {
     super();
-    copyFrom(
-        (new ModeMinorDefinition()).union(new ModeMajorDefinition()).union(new ModeLydianDefinition())
-    .union(new ModeIonianDefinition()).union(new ModeMixolydianDefinition()).union(new ModeDorianDefinition())
-    .union(new ModeAeolianDefinition()).union(new ModePhrygianDefinition()).union(new ModeLocrianDefinition())
-    );
+    AutomataDefinition ad = 
+        (new ModeMinorDefinition())
+        .union(new ModeMajorDefinition())
+        .union(new ModeLydianDefinition())
+        .union(new ModeIonianDefinition())
+        .union(new ModeMixolydianDefinition())
+        .union(new ModeDorianDefinition())
+        .union(new ModeAeolianDefinition())
+        .union(new ModePhrygianDefinition())
+        .union(new ModeLocrianDefinition())
+        ;
+    if (abcVersion.isGreaterOrEqual(AbcVersion.v2_0))
+    	ad = ad.union(new ModeExplicitDefinition());
+    copyFrom(ad);
   }
 
   private class ModeAeolianDefinition extends AutomataDefinition
@@ -209,6 +219,26 @@ private class ModePhrygianDefinition extends AutomataDefinition
 
         State state2 = new State(AbcTokenType.MODE , true);
         char[] chars2 = {'r', 'R'};
+        state1.addTransition(new Transition(state2, chars2));
+    }
+
+}
+private class ModeExplicitDefinition extends AutomataDefinition
+{
+
+    public ModeExplicitDefinition()
+    {
+        char[] chars = {'e','E' };
+        State state = new State(AbcTokenType.UNKNOWN, false);
+        Transition trans = new Transition(state, chars);
+        getStartingState().addTransition(trans);
+
+        State state1 = new State(AbcTokenType.UNKNOWN, false);
+        char[] chars1 = {'x', 'X'};
+        state.addTransition(new Transition(state1, chars1));
+
+        State state2 = new State(AbcTokenType.MODE , true);
+        char[] chars2 = {'p', 'P'};
         state1.addTransition(new Transition(state2, chars2));
     }
 

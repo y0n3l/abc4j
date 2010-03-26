@@ -18,6 +18,7 @@ package abc.ui.swing;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
+import abc.notation.Clef;
 import abc.notation.Note;
 
 class JChordNote extends JNotePartOfGroup {
@@ -25,8 +26,8 @@ class JChordNote extends JNotePartOfGroup {
 	private boolean m_isLowest = false;
 	private boolean m_isHighest = false;
 
-	public JChordNote(Note noteValue, Point2D base, ScoreMetrics c) {
-		super(noteValue, base, c);
+	public JChordNote(Note noteValue, Clef clef, Point2D base, ScoreMetrics c) {
+		super(noteValue, clef, base, c);
 		//onBaseChanged();
 		//System.err.println(toString() + ": note="+noteValue.toString());
 	}

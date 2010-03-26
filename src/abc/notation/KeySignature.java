@@ -104,7 +104,8 @@ public class KeySignature implements MusicElement, Cloneable
     private byte m_keyAccidental = AccidentalType.NATURAL;
     private byte mode = OTHER;
     private byte[] accidentals = accidentalsRules[0];
-    private int keyIndex=0;
+    private int keyIndex = 0;
+    private Clef m_clef = Clef.TREBLE;
 
     /** Creates a new signature with the specified parameters.
      * @param keyNoteType The note of the mode. Possible values are
@@ -170,6 +171,8 @@ public class KeySignature implements MusicElement, Cloneable
 		else if (modeType == AEOLIAN) keyIndex = keyIndex + 3;
 		else if (modeType == PHRYGIAN) keyIndex = keyIndex + 8;
 		else if (modeType == LOCRIAN) keyIndex = keyIndex + 1;
+		//mode = other (or EXP = Explicit), all natural
+		else if (modeType == OTHER) keyIndex = 0;//all natural
 		// this + 12 % 12 is a workaound to express key signature
 		// that are expressed with notes such as Cb (=B) or E# (=F)
 		// Before this fix, keys such as Cb was causing crash (because
@@ -340,6 +343,23 @@ public class KeySignature implements MusicElement, Cloneable
       return accidentals[index];
     }
     
+    /**
+     * Returns the clef associated to this key signature
+     */
+    public Clef getClef() {
+    	if (m_clef == null)
+    		m_clef = Clef.G;
+    	return m_clef;
+    }
+    
+    /**
+     * Sets the clef associated to this key signature
+     * @param clef
+     */
+    public void setClef(Clef clef) {
+    	m_clef = clef;
+    }
+    
 	/**
 	 * Returns <TT>true</TT> if the key has only flats or naturals.
 	 * Takes into account the additionnals accidentals.
@@ -464,16 +484,18 @@ public class KeySignature implements MusicElement, Cloneable
 
     public static byte convertToModeType(String mode)
     {
-      if ("AEO".equalsIgnoreCase(mode)) return KeySignature.AEOLIAN;
-      else if ("DOR".equalsIgnoreCase(mode)) return KeySignature.DORIAN;
-      else if ("ION".equalsIgnoreCase(mode)) return KeySignature.IONIAN;
-      else if ("LOC".equalsIgnoreCase(mode)) return KeySignature.LOCRIAN;
-      else if ("LYD".equalsIgnoreCase(mode)) return KeySignature.LYDIAN;
-      else if ("MAJ".equalsIgnoreCase(mode)) return KeySignature.MAJOR;
-      else if ("MIN".equalsIgnoreCase(mode) || ("M".equalsIgnoreCase(mode))) return KeySignature.MINOR;
-      else if ("MIX".equalsIgnoreCase(mode)) return KeySignature.MIXOLYDIAN;
-      else if ("PHR".equalsIgnoreCase(mode)) return KeySignature.PHRYGIAN;
-      else return -1;
+    	mode = mode.trim().toUpperCase();
+      if ("AEO".equals(mode)) return KeySignature.AEOLIAN;
+      else if ("DOR".equals(mode)) return KeySignature.DORIAN;
+      else if ("ION".equals(mode)) return KeySignature.IONIAN;
+      else if ("LOC".equals(mode)) return KeySignature.LOCRIAN;
+      else if ("LYD".equals(mode)) return KeySignature.LYDIAN;
+      else if ("MAJ".equals(mode) || ("".equals(mode))) return KeySignature.MAJOR;
+      else if ("MIN".equals(mode) || ("M".equals(mode))) return KeySignature.MINOR;
+      else if ("MIX".equals(mode)) return KeySignature.MIXOLYDIAN;
+      else if ("PHR".equals(mode)) return KeySignature.PHRYGIAN;
+      //"EXP" = explicit -> return other
+      else return KeySignature.OTHER;
     }
 
   public static byte convertToAccidentalType(String accidental) throws IllegalArgumentException
@@ -566,6 +588,7 @@ public class KeySignature implements MusicElement, Cloneable
   	public Object clone() {
   		KeySignature k = new KeySignature(this.getNote(), this.getAccidental(), this.getMode());
   		k.accidentals = accidentals;
+  		k.m_clef = (Clef) m_clef.clone();
   		return k;
   	}
 

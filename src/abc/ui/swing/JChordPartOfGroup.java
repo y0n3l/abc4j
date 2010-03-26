@@ -17,25 +17,26 @@ package abc.ui.swing;
 
 import java.awt.geom.Point2D;
 
+import abc.notation.Clef;
 import abc.notation.MultiNote;
 import abc.notation.Note;
 
 class JChordPartOfGroup extends JChord implements JGroupableNote {
 	
-	public JChordPartOfGroup(MultiNote multiNote, ScoreMetrics metrics, Point2D base){
-		super(multiNote, metrics, base);
+	public JChordPartOfGroup(MultiNote multiNote, Clef clef, ScoreMetrics metrics, Point2D base){
+		super(multiNote, clef, metrics, base);
 	}
 
 	protected JNote createAnchorNote(Note note, Point2D base, ScoreMetrics metrics) {
-		return new JNotePartOfGroup(note, base, getMetrics());
+		return new JNotePartOfGroup(note, getClef(), base, getMetrics());
 	}
 
 	protected JChord createNormalizedChord(MultiNote mNote, ScoreMetrics mtrx, Point2D base) {
 		//Is this the fastest chord resulting from the decomposition of the original chord ?
 		if (multiNote.getStrictDurations()[0]==mNote.getStrictDurations()[0])
-			return new JChordPartOfGroup(mNote, mtrx, base);
+			return new JChordPartOfGroup(mNote, getClef(), mtrx, base);
 		else
-			return new JChord(mNote, mtrx, base);
+			return new JChord(mNote, getClef(), mtrx, base);
 	}
 
 	public void setStemYEnd(int value) {

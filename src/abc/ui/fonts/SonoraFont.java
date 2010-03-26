@@ -118,17 +118,31 @@ public class SonoraFont implements MusicalFont, Serializable {
 	}
 	
 	public char getClef(Clef clef) throws MissingGlyphException {
-		if (clef.equals(Clef.G)) return '\uF026';
-		else if (clef.equals(Clef.F)) return '\uF03F';
-		else if (clef.equals(Clef.C)) return '\uF042';
-		else if (clef.equals(Clef.DRUM)) return '\uF03A';
-		else if (clef.equals(Clef.G_8va)) return '\uF0A0';
-		else if (clef.equals(Clef.G_8vb)) return '\uF056';
-		else if (clef.equals(Clef.F_8vb)) return '\uF074';
+		if (clef.isG()) {
+			switch(clef.getOctaveTransposition()) {
+			case 0: return '\uF026'; //G
+			case 1: return '\uF0A0'; //G 8va
+			case -1: return '\uF056'; //G 8vb
+			}
+		}
+		else if (clef.isF()) {
+			switch(clef.getOctaveTransposition()) {
+			case 0: return '\uF03F'; //F
+			case 1: return '\uF10E'; //F 8va
+			case -1: return '\uF074'; //F 8vb
+			}
+		}
+		else if (clef.isC()) {
+			switch(clef.getOctaveTransposition()) {
+			case 0: return '\uF042'; //C
+			}
+		}
+		else if (clef.isPerc()) return '\uF03A';
 		else if (clef.equals(Clef.ottava_8va)) return '\uF0C3';
 		else if (clef.equals(Clef.ottava_8vb)) return '\uF0D7';
 		else if (clef.equals(Clef.ottava_15ma)) return '\uF0DB';
 		else if (clef.equals(Clef.ottava_15mb)) return '\uF100';
+		else if (clef.equals(Clef.NONE)) return ' ';
 		throw new MissingGlyphException(clef, this);
 	}
 	

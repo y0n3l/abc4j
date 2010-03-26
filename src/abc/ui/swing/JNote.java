@@ -22,6 +22,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import abc.notation.AccidentalType;
+import abc.notation.Clef;
 import abc.notation.GracingType;
 import abc.notation.MusicElement;
 import abc.notation.Note;
@@ -66,14 +67,15 @@ class JNote extends JNoteElementAbstract {
 
 	private double m_width = -1;
 	private double boundingBox_width = -1;
-
-	public JNote(Note noteValue, Point2D base, ScoreMetrics c) {
-		super(noteValue, base, c);
+	
+	public JNote(Note noteValue, Clef clef, Point2D base, ScoreMetrics c) {
+		super(noteValue, clef, base, c);
 		note = noteValue;
 		valuateNoteChars();
 
 		if (!note.isRest()) {
-			if (noteValue.getHeight()<Note.B) {
+			//if (noteValue.getHeight()<Note.B) {
+			if (noteValue.isLowerThan(getClef().getMiddleNote())) {
 				setStemUp(true);
 			} else {
 				setStemUp(false);
@@ -249,7 +251,9 @@ class JNote extends JNoteElementAbstract {
 				+ glyphDimension.getWidth()*0.93,
 				notePosition.getY()-glyphDimension.getHeight()/2);
 		}
-		if (note.getHeight()>=Note.c && note.getStrictDuration() < Note.EIGHTH) {
+		//if (note.getHeight()>=Note.c && note.getStrictDuration() < Note.EIGHTH) {
+		if (note.isHigherThan(getClef().getMiddleNote())
+				&& note.getStrictDuration() < Note.EIGHTH) {
 			stemUpBeginPosition.setLocation(stemUpBeginPosition.getX(), stemUpBeginPosition.getY()-glyphDimension.getHeight()/2);
 			stemDownBeginPosition.setLocation(stemDownBeginPosition.getX(), stemDownBeginPosition.getY()-glyphDimension.getHeight()/2);
 		}
@@ -356,20 +360,8 @@ class JNote extends JNoteElementAbstract {
 		tieEndUnderAnchor = new Point2D.Double(tieAnchors.getMinX(), tieAnchors.getMaxY());
 	}
 
-	public static double getOffset(Note note) {
-		double positionOffset = 0;
-		byte noteHeight = note.getStrictHeight();
-		switch (noteHeight) {
-			case Note.C : positionOffset = -1.5; break;
-			case Note.D : positionOffset = -1;break;
-			case Note.E : positionOffset = -0.5;break;
-			case Note.F : positionOffset = 0;break;
-			case Note.G : positionOffset = 0.5;break;
-			case Note.A : positionOffset = 1;break;
-			case Note.B : positionOffset = 1.5;break;
-		}
-		positionOffset += note.getOctaveTransposition()*3.5;
-		return positionOffset;
+	protected double getOffset(Note note) {
+		return JClef.getOffset(note, getClef());
 	}
 
 	public Point2D getNotePosition(){
@@ -457,7 +449,8 @@ class JNote extends JNoteElementAbstract {
 	 */
 	private boolean isOnStaffLine() {
 		//TODO if (staffLine.getClef() == Clef.G) {
-		switch(note.getStrictHeight()) {
+		return JClef.isOnStaffLine(note, getClef());
+		/*switch(note.getStrictHeight()) {
 		case Note.C:
 		case Note.E:
 		case Note.G:
@@ -466,7 +459,7 @@ class JNote extends JNoteElementAbstract {
 		default: //D F A
 			return (note.getOctaveTransposition() % 2) == 1;
 		}
-		//}
+		//}*/
 	}
 
 	protected void renderExtendedStaffLines(Graphics2D context, ScoreMetrics metrics, Point2D base){
@@ -476,9 +469,11 @@ class JNote extends JNoteElementAbstract {
 		//used for height
 		Dimension noteGlyphDimension = metrics.getGlyphDimension(ScoreMetrics.NOTATION_CONTEXT_NOTE);
 		int extSize = (int)glyphDimension.getWidth()/3;
-		if (note.getHeight()<=Note.C){
-			double currentOffset = getOffset(new Note(Note.C, AccidentalType.NONE));
-			int currentPosition = (int)(base.getY()-currentOffset*noteGlyphDimension.getHeight()/1.5);
+		Note low = getClef().getNoteFirstExtendedLineLow();
+		Note high = getClef().getNoteFirstExtendedLineHigh();
+		if (note.getHeight()<=low.getHeight()){
+			double currentOffset = getOffset(low);
+			int currentPosition = (int)(base.getY()-1-currentOffset*noteGlyphDimension.getHeight()/1.5);
 			double offset = getOffset(note);
 			Stroke dfs = context.getStroke();
 			context.setStroke(metrics.getStemStroke());
@@ -492,9 +487,9 @@ class JNote extends JNoteElementAbstract {
 			}
 			context.setStroke(dfs);
 		}
-		else if (note.getHeight()>=Note.a){
-			double currentOffset = getOffset(new Note(Note.a, AccidentalType.NONE));
-			int currentPosition = (int)(base.getY()-currentOffset*noteGlyphDimension.getHeight()-noteGlyphDimension.getHeight()/2);
+		else if (note.getHeight()>=high.getHeight()){
+			double currentOffset = getOffset(high);
+			int currentPosition = (int)(base.getY()-1-currentOffset*noteGlyphDimension.getHeight()-noteGlyphDimension.getHeight()/2);
 			double offset = getOffset(note);
 			Stroke dfs = context.getStroke();
 			context.setStroke(metrics.getStemStroke());
