@@ -77,7 +77,7 @@ class JNote extends JNoteElementAbstract {
 
 		if (!note.isRest()) {
 			//if (noteValue.getHeight()<Note.B) {
-			if (noteValue.isLowerThan(getClef().getMiddleNote())) {
+			if ((getClef() == null) || noteValue.isLowerThan(getClef().getMiddleNote())) {
 				setStemUp(true);
 			} else {
 				setStemUp(false);
@@ -480,6 +480,15 @@ class JNote extends JNoteElementAbstract {
 		//FIXME: "Gracing" branch changes not integrated here
 		//used for width which vary from normal to grace note
 		Dimension glyphDimension = metrics.getGlyphDimension(getNotationContext());
+		//FIXME Breve and long are longer, so draws a longer extended staff line
+		if (note.getStrictDuration() == Note.BREVE
+				|| note.getStrictDuration() == Note.LONG) {
+			Rectangle2D bounds = metrics.getBounds(
+				new char[] {getMusicalFont().getNoteWithoutStem(note.getStrictDuration())},
+				getNotationContext());
+			glyphDimension = new Dimension((int)bounds.getHeight(),
+					(int)bounds.getWidth());
+		}
 		//used for height
 		Dimension noteGlyphDimension = metrics.getGlyphDimension(ScoreMetrics.NOTATION_CONTEXT_NOTE);
 		int extSize = (int)glyphDimension.getWidth()/3;

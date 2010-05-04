@@ -587,7 +587,7 @@ public class KeySignature implements MusicElement, Cloneable
 
   	public Object clone() {
   		KeySignature k = new KeySignature(this.getNote(), this.getAccidental(), this.getMode());
-  		k.accidentals = accidentals;
+  		k.accidentals = (byte[]) accidentals.clone();
   		k.m_clef = (Clef) m_clef.clone();
   		return k;
   	}

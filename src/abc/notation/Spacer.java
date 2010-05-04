@@ -16,5 +16,13 @@
 package abc.notation;
 
 /** A tagging class used to represent a spacer */ 
-public class Spacer extends DecorableElement implements MusicPresentationElement {
+public class Spacer extends DecorableElement implements MusicPresentationElement, Cloneable {
+	
+	public Spacer() {
+		
+	}
+	
+	public Object clone() {
+		return new Spacer();
+	}
 }

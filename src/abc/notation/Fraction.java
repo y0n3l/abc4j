@@ -16,7 +16,7 @@
 package abc.notation;
 
 /** This class enables the representation of a fraction. */
-public class Fraction
+public class Fraction implements Cloneable
 {
   private float numerator = 0;
   private int denominator = 1;
@@ -86,6 +86,10 @@ public class Fraction
           (new Integer((int)numerator)).toString() + "/" +
           (new Integer(denominator)).toString()
           );
+  }
+  
+  public Object clone() {
+	  return new Fraction(getNumerator(), getDenominator());
   }
 }
 

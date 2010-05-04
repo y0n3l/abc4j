@@ -149,31 +149,45 @@ public class Engraver implements Serializable {
 		Integer i = new Integer(noteDuration);
 		if (spacesAfter.containsKey(i))
 			return ((Double) spacesAfter.get(i)).doubleValue();
-		//This assumes that 64th and dotted whole space are defined!
-		//TODO getLongest, getShortest
-		else if (noteDuration <= Note.SIXTY_FOURTH) 
-			return getSpaceAfter(Note.SIXTY_FOURTH);
-		else if (noteDuration >= Note.DOTTED_WHOLE)
-			return getSpaceAfter(Note.DOTTED_WHOLE);
 		else {
-			try {
-				//System.out.println("Unknown note duration : "+noteDuration);
-				int[] nearests = getNearestDurations(noteDuration);
-				int topD = nearests[0], bottomD = nearests[1];
-				//System.out.println(" --> nearests : top="+topD+", bottom="+bottomD);
-				if (topD == bottomD)
-					return getSpaceAfter(topD);
-				float percent = (float)(noteDuration-bottomD)/(float)(topD-bottomD);
-				//System.out.println(" --> % = "+(noteDuration-bottomD)+"/"+(topD-bottomD)+"="+percent);
-				double topL = getSpaceAfter(topD);
-				double bottomL = getSpaceAfter(bottomD);
-				double ret = (double) ((percent*(topL-bottomL)) + bottomL);
-				//System.out.println(" --> topL="+topL+", bottomL="+bottomL+" = "+ret);
-				return ret;
-			} catch (Exception e) {
-				System.err.println(e.getMessage());
-				return 0;
+			int longest = Note.SIXTY_FOURTH, shortest = Note.LONG;
+			for (Iterator itDur = spacesAfter.keySet().iterator(); itDur.hasNext();) {
+				int dur = ((Integer) itDur.next()).intValue();
+				if (dur < shortest) shortest = dur;
+				if (dur > longest) longest = dur;
 			}
+			if (noteDuration < shortest)
+				//return getSpaceAfter(shortest);
+				return ((Double) spacesAfter.get(new Integer(shortest))).doubleValue();
+			else if (noteDuration > longest)
+				//return getSpaceAfter(longest);
+				return ((Double) spacesAfter.get(new Integer(longest))).doubleValue();
+		}
+/*		else if (noteDuration <= Note.SIXTY_FOURTH) {
+			System.out.println("getSpaceAfter("+noteDuration+") <= "+Note.SIXTY_FOURTH);
+			return getSpaceAfter(Note.SIXTY_FOURTH);
+		}
+		else if (noteDuration >= Note.DOTTED_WHOLE) {
+			System.out.println("getSpaceAfter("+noteDuration+") >= "+Note.DOTTED_WHOLE);
+			return getSpaceAfter(Note.DOTTED_WHOLE);
+		}*/
+		try {
+			//System.out.println("Unknown note duration : "+noteDuration);
+			int[] nearests = getNearestDurations(noteDuration);
+			int topD = nearests[0], bottomD = nearests[1];
+			//System.out.println(" --> nearests : top="+topD+", bottom="+bottomD);
+			if (topD == bottomD)
+				return getSpaceAfter(topD);
+			float percent = (float)(noteDuration-bottomD)/(float)(topD-bottomD);
+			//System.out.println(" --> % = "+(noteDuration-bottomD)+"/"+(topD-bottomD)+"="+percent);
+			double topL = getSpaceAfter(topD);
+			double bottomL = getSpaceAfter(bottomD);
+			double ret = (double) ((percent*(topL-bottomL)) + bottomL);
+			//System.out.println(" --> topL="+topL+", bottomL="+bottomL+" = "+ret);
+			return ret;
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+			return 0;
 		}
 	}
 	

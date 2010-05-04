@@ -18,7 +18,7 @@ package abc.notation;
 /**
  * A class to describe words (lyrics) for a tune. 
  */
-public class Words implements MusicElement {
+public class Words implements MusicElement, Cloneable {
 	/** the content of the words. */
 	private String content = null;
 	
@@ -32,6 +32,10 @@ public class Words implements MusicElement {
 	 * @return The content of this words element. */
 	public String getContent() {
 		return content;
+	}
+	
+	public Object clone() {
+		return new Words(getContent());
 	}
 	
 }

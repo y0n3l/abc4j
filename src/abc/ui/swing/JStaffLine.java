@@ -121,6 +121,20 @@ class JStaffLine extends JScoreElementAbstract {
 			return null;
 	}
 	
+	/**
+	 * Returns the number of elements in the staff elements array
+	 */
+	protected int countElement() {
+		return m_staffElements.size();
+	}
+	
+	/**
+	 * Returns the Vector of elements
+	 */
+	protected Vector getStaffElements() {
+		return m_staffElements;
+	}
+		
 	public JScoreElement getScoreElementAt(Point point) {
 		JScoreElement scoreEl = null;
 		for (int i=0; i<m_staffElements.size(); i++) {

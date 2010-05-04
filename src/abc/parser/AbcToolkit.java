@@ -49,9 +49,11 @@ public class AbcToolkit {
      * with taking into account the default note length. 
      * @return The absolute note duration for the specified relative note
      * with taking into account the default note length. 
-     * ONLY Possible values are <TT>Note.WHOLE</TT>, <TT>Note.HALF</TT>, 
-     * <TT>Note.QUARTER</TT>, <TT>Note.EIGHTH</TT>, <TT>Note.SIXTEENTH</TT>, 
-     * <TT>Note.THIRTY_SECOND</TT>, <TT>Note.SIXTY_FOURTH</TT>. 
+     * ONLY Possible values are {@link Note#LONG}, {@link Note#BREVE},
+     * {@link Note#WHOLE}, {@link Note#HALF}, {@link Note#QUARTER},
+     * {@link Note#EIGHTH}, {@link Note#SIXTEENTH}, {@link Note#THIRTY_SECOND},
+     * {@link Note#SIXTY_FOURTH}.
+     *  
      * Usefull to convert notes such as : 
      * <IMG src="./images/dottedcrotchet.gif"/> 
      * @exception IllegalArgumentException Thrown if the computing of the 
@@ -78,37 +80,23 @@ public class AbcToolkit {
     		absoluteDuration = defaultDuration * relativeDuration.getNumerator();
     		absoluteDuration = absoluteDuration / relativeDuration.getDenominator();
     		int remainingDurTmp = 0;
-    		if (absoluteDuration>=2*Note.WHOLE)
+    		if (absoluteDuration>=2*Note.LONG)
 	    		throw new IllegalArgumentException ("Cannot calculate the dots for " + relativeDuration +
 	    				" with a default duration equals to " + defaultDuration + 
 	    				" : absolute note length was equal to " + absoluteDuration);
-    		else
-    		if (absoluteDuration>=Note.WHOLE) {
-    			remainingDurTmp = absoluteDuration - Note.WHOLE; absoluteDuration = Note.WHOLE;
-    		} else
-    			if (absoluteDuration>=Note.HALF) {
-    				remainingDurTmp = absoluteDuration - Note.HALF; absoluteDuration = Note.HALF;
-    			}
-    			else
-    				if (absoluteDuration>=Note.QUARTER) {
-        				remainingDurTmp = absoluteDuration - Note.QUARTER; absoluteDuration = Note.QUARTER;
-        			}
-        			else
-        				if (absoluteDuration>=Note.EIGHTH) {
-            				remainingDurTmp = absoluteDuration - Note.EIGHTH; absoluteDuration = Note.EIGHTH;
-            			}
-            			else
-            				if (absoluteDuration>=Note.SIXTEENTH) {
-                				remainingDurTmp = absoluteDuration - Note.SIXTEENTH; absoluteDuration = Note.SIXTEENTH;
-                			}
-            				else
-            				if (absoluteDuration>=Note.THIRTY_SECOND) {
-                				remainingDurTmp = absoluteDuration - Note.THIRTY_SECOND; absoluteDuration = Note.THIRTY_SECOND;
-                			}
-            				else
-                				if (absoluteDuration>=Note.SIXTY_FOURTH) {
-                    				remainingDurTmp = absoluteDuration -Note.SIXTY_FOURTH; absoluteDuration = Note.SIXTY_FOURTH;
-                    			}
+    		else {
+    			short[] durs = new short[] {
+    				Note.LONG, Note.BREVE, Note.WHOLE, Note.HALF, Note.QUARTER,
+    				Note.EIGHTH, Note.SIXTEENTH, Note.THIRTY_SECOND, Note.SIXTY_FOURTH
+    			};
+    			for (int i = 0; i < durs.length; i++) {
+					if (absoluteDuration >= durs[i]) {
+						remainingDurTmp = absoluteDuration - durs[i];
+						absoluteDuration = durs[i];
+						break;
+					}
+				}
+    		}
     		//from here, absDurTemp contains the *real* note duration (without the dots)
     		//and remainingDurTemp contains the part that should be expressed using dots.
     		if (remainingDurTmp!=0) {

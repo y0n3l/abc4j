@@ -19,7 +19,7 @@ package abc.notation;
  * In music theory, the term interval describes the relationship
  * between the pitches of two notes.
  */
-public class Interval {
+public class Interval implements Cloneable {
 	
 	//Interesting page : http://en.wikipedia.org/wiki/Interval_(music)
 	
@@ -250,6 +250,8 @@ public class Interval {
 			setDirection(UPWARD);
 		}
 		int deltaHeight = 0, deltaOctave = 0, deltaSemitones = 0;
+		deltaSemitones = Math.abs(high.getMidiLikeHeight(key) - low.getMidiLikeHeight(key));
+		
 		//delta strict height
 		byte[] notes = new byte[] { Note.C, Note.D, Note.E, Note.F, Note.G,
 				Note.A, Note.B };
@@ -262,8 +264,9 @@ public class Interval {
 		deltaHeight = height2 - height1;
 		
 		//delta octave
-		deltaSemitones = Math.abs(high.getMidiLikeHeight(key) - low.getMidiLikeHeight(key));
 		deltaOctave = (int) Math.floor(deltaSemitones / 12);
+		if (height1==height2)
+			deltaOctave = high.getOctaveTransposition() - low.getOctaveTransposition();
 		setLabel((byte) (deltaHeight + deltaOctave*OCTAVE));
 		
 		//delta between the wanted interval and major/perfect interval
@@ -291,7 +294,8 @@ public class Interval {
 			setQuality((byte) (delta + 1));
 			break;
 		default:
-			System.err.println("Could not compute the qualification of the interval between "+low+" and "+high);
+			System.err.println("Could not compute the qualification of the interval between "
+					+low+" and "+high+" : label="+m_label+", delta="+delta);
 		}
 	}
 	
@@ -707,5 +711,9 @@ public class Interval {
 				ret += " and a "+label2string(newLabel);
 		}
 		return ret;
+	}
+	
+	public Object clone() {
+		return new Interval(getLabel(), getQuality(), getDirection());
 	}
 }

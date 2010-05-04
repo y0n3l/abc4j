@@ -753,13 +753,19 @@ public class Note extends NoteAbstract implements Cloneable
 	  //Thread.dumpStack();
   }
 
-  /** Sets the strict duration of this note.
-   * @param strictDuration This note strict duration. Possible values are ONLY
-   * <TT>Note.WHOLE</TT>, <TT>Note.HALF</TT>,
-   * <TT>Note.QUARTER</TT>, <TT>Note.EIGHTH</TT>, <TT>Note.SIXTEENTH</TT>,
-   * <TT>Note.THIRTY_SECOND</TT>, <TT>Note.SIXTY_FOURTH</TT>.
-   * @exception IllegalArgumentException Thrown if the given duration does not
-   * match the excepted ones. */
+	/**
+	 * Sets the strict duration of this note.
+	 * 
+	 * @param strictDuration
+	 *            This note strict duration. Possible values are ONLY
+	 *            {@link #LONG}, {@link #BREVE}, {@link #WHOLE},
+	 *            {@link #HALF}, {@link #QUARTER}, {@link #EIGHTH},
+	 *            {@link #SIXTEENTH}, {@link #THIRTY_SECOND},
+	 *            {@link #SIXTY_FOURTH}.
+	 * @exception IllegalArgumentException
+	 *                Thrown if the given duration does not match the excepted
+	 *                ones.
+	 */
   public void setStrictDuration(short strictDuration) throws IllegalArgumentException {
 	  if (isStrictDuration(strictDuration)) {
 		  m_strictDuration = strictDuration;
@@ -768,6 +774,7 @@ public class Note extends NoteAbstract implements Cloneable
 	  }
 	  else
 		  throw new IllegalArgumentException("The note duration " + strictDuration + " is not equals to " +
+				  "Note.LONG, Note.BREVE, " +
 				  "Note.WHOLE, Note.HALF, Note.QUARTER, Note.EIGHTH, Note.SIXTEENTH, " +
 				  "Note.THIRTY_SECOND or Note.SIXTY_FOURTH");
 	  // Re init the whole duration => will be computed later on request only.
@@ -928,23 +935,22 @@ public class Note extends NoteAbstract implements Cloneable
     return string2Return;
   }
 
-  /** Returns <TT>true</TT> if the duration of the note is one of the
-   * following : <TT>Note.WHOLE</TT>, <TT>Note.HALF</TT>,
-   * <TT>Note.QUARTER</TT>, <TT>Note.EIGHTH</TT>, <TT>Note.SIXTEENTH</TT>,
-   * <TT>Note.THIRTY_SECOND</TT>, <TT>Note.SIXTY_FOURTH</TT>.
-   * @param noteDuration The note duration to be checked
-   * @return <TT>true</TT> if the duration of the note is one of the
-   * following : <TT>Note.WHOLE</TT>, <TT>Note.HALF</TT>,
-   * <TT>Note.QUARTER</TT>, <TT>Note.EIGHTH</TT>, <TT>Note.SIXTEENTH</TT>,
-   * <TT>Note.THIRTY_SECOND</TT>, <TT>Note.SIXTY_FOURTH</TT>.
-   * <TT>false</TT> otherwise. */
-  public static boolean isStrictDuration(short noteDuration) {
-	  return (
-			  (noteDuration==Note.WHOLE)|| (noteDuration==Note.HALF) ||
-			  (noteDuration==Note.QUARTER) || (noteDuration==Note.EIGHTH) ||
-			  (noteDuration==Note.SIXTEENTH) || (noteDuration==Note.THIRTY_SECOND) ||
-			  (noteDuration==Note.SIXTY_FOURTH));
-  }
+	/**
+	 * Returns <TT>true</TT> if the duration of the note is one of the
+	 * following : {@link #LONG}, {@link #BREVE}, {@link #WHOLE},
+	 * {@link #HALF}, {@link #QUARTER}, {@link #EIGHTH}, {@link #SIXTEENTH},
+	 * {@link #THIRTY_SECOND}, {@link #SIXTY_FOURTH}.
+	 * 
+	 * @param noteDuration
+	 *            The note duration to be checked
+	 */
+	public static boolean isStrictDuration(short noteDuration) {
+		return ((noteDuration == LONG) || (noteDuration == BREVE)
+				|| (noteDuration == WHOLE) || (noteDuration == HALF)
+				|| (noteDuration == QUARTER) || (noteDuration == EIGHTH)
+				|| (noteDuration == SIXTEENTH)
+				|| (noteDuration == THIRTY_SECOND) || (noteDuration == SIXTY_FOURTH));
+	}
 
   	/** Compute a duration that takes strict duration as a reference plus
   	 * the duration of the optional dots and the tuplet if any. */
@@ -1077,13 +1083,7 @@ public class Note extends NoteAbstract implements Cloneable
 	}
 	
 	public Object clone() {
-		Object o = null;
-		try {
-			o = super.clone();
-		} catch (CloneNotSupportedException never) {
-			System.err.println(never.getMessage());
-		}
-		return o;
+		return super.clone();
 	}
 }
 

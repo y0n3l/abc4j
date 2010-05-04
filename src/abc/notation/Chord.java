@@ -261,6 +261,10 @@ public class Chord implements MusicPresentationElement, Cloneable {
 		Object o = null;
 		try {
 			o = super.clone();
+			if (m_bass != null)
+			((Chord) o).m_bass = (Note) m_bass.clone();
+			if (m_note != null)
+			((Chord) o).m_note = (Note) m_note.clone();
 		} catch (CloneNotSupportedException never) {
 			System.err.println(never.getMessage());
 		}

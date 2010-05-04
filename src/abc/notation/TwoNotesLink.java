@@ -16,7 +16,7 @@
 package abc.notation;
 
 /** This class abstracts any kind of relationship  between two notes. */
-public class TwoNotesLink {
+public class TwoNotesLink implements Cloneable {
 	
 	/** The note starting the link between the two notes. */	
 	private NoteAbstract start = null;
@@ -61,5 +61,19 @@ public class TwoNotesLink {
 	
 	public String toString() {
 		return "TwoNotesLink("+start+" ; "+end+")";
+	}
+	
+	public Object clone() {
+		Object o = null;
+		try {
+			o = super.clone();
+			if (start != null)
+			((TwoNotesLink) o).start = (NoteAbstract) start.clone();
+			if (end != null)
+			((TwoNotesLink) o).end = (NoteAbstract) end.clone();
+		} catch (CloneNotSupportedException never) {
+			System.err.println(never.getMessage());
+		}
+		return o;
 	}
 }

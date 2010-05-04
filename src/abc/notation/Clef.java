@@ -316,6 +316,14 @@ public class Clef implements MusicElement, Cloneable {
 		Object o = null;
 		try {
 			o = super.clone();
+			if (m_referenceNote != null)
+			((Clef) o).m_referenceNote = (Note) m_referenceNote.clone();
+			if (m_middleNote != null)
+			((Clef) o).m_middleNote = (Note) m_referenceNote.clone();
+			if (m_lowNote != null)
+			((Clef) o).m_lowNote = (Note) m_referenceNote.clone();
+			if (m_highNote != null)
+			((Clef) o).m_highNote = (Note) m_referenceNote.clone();
 		} catch (CloneNotSupportedException never) {
 			System.err.println(never.getMessage());
 		}

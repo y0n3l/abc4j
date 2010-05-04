@@ -16,5 +16,9 @@
 package abc.notation;
 
 /** A tagging class to represent slurs between notes. */
-public class SlurDefinition extends TwoNotesLink implements MusicElement {
+public class SlurDefinition extends TwoNotesLink implements MusicElement, Cloneable {
+	
+	public Object clone() {
+		return super.clone();
+	}
 }

@@ -16,6 +16,13 @@
 package abc.notation;
 
 /** A tagging class used to delimiter groups of notes in score. */
-public class NotesSeparator implements MusicPresentationElement {
+public class NotesSeparator implements MusicPresentationElement, Cloneable {
 
+	public NotesSeparator() {
+		
+	}
+	
+	public Object clone() {
+		return new NotesSeparator();
+	}
 }

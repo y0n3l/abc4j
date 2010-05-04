@@ -19,7 +19,7 @@ package abc.notation;
 import java.util.Vector;
 
 /** This is the abstract class to define notes or multi notes. */
-public class NoteAbstract extends DecorableElement implements MusicElement
+public class NoteAbstract extends DecorableElement implements MusicElement, Cloneable
 {
 
   /** The chord name. */
@@ -287,6 +287,23 @@ public class NoteAbstract extends DecorableElement implements MusicElement
     return string2Return;
   }
 
-
+	public Object clone() {
+		Object o = super.clone();
+		if (m_chord != null)
+		((NoteAbstract) o).m_chord = (Chord) m_chord.clone();
+		if (m_dynamic != null)
+		((NoteAbstract) o).m_dynamic = (Dynamic) m_dynamic.clone();
+		if (m_decorations != null)
+		((NoteAbstract) o).m_decorations = (Decoration[]) m_decorations.clone();
+		if (m_gracingNotes != null)
+		((NoteAbstract) o).m_gracingNotes = (Note[]) m_gracingNotes.clone();
+		if (m_tuplet != null)
+		((NoteAbstract) o).m_tuplet = (Tuplet) m_tuplet.clone();
+		if (slurDefinitions != null)
+		((NoteAbstract) o).slurDefinitions = (Vector) slurDefinitions.clone();
+		if (tieDefinition != null)
+		((NoteAbstract) o).tieDefinition = (TieDefinition) tieDefinition.clone();
+		return o;
+	}
 }
 

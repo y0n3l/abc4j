@@ -23,7 +23,7 @@ package abc.notation;
  * <li>spacer
  * </ul>
  */
-public abstract class DecorableElement implements MusicElement {
+public abstract class DecorableElement implements MusicElement, Cloneable {
 
 	protected Decoration[] m_decorations = null;
 
@@ -95,4 +95,18 @@ public abstract class DecorableElement implements MusicElement {
 		m_dynamic = dyn;
 	}
 
+	public Object clone() {
+		Object o = null;
+		try {
+			o = super.clone();
+			if (m_decorations != null)
+			((DecorableElement) o).m_decorations = (Decoration[]) m_decorations.clone();
+			if (m_dynamic != null)
+			((DecorableElement) o).m_dynamic = (Dynamic) m_dynamic.clone();
+		} catch (CloneNotSupportedException never) {
+			System.err.println(never.getMessage());
+		}
+		return o;
+	}
+	
 }

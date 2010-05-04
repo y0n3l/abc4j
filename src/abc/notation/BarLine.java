@@ -16,7 +16,7 @@
 package abc.notation;
 
 /** This class defines bar lines. */
-public class BarLine extends DecorableElement implements MusicElement
+public class BarLine extends DecorableElement implements MusicElement, Cloneable
 {
   /** The simple bar line type. Ex: | */
   public static final byte SIMPLE = 0;
@@ -57,6 +57,10 @@ public class BarLine extends DecorableElement implements MusicElement
   public byte getType()
   { return m_type; }
 
+	public Object clone() {
+		return new BarLine(getType());
+	}
+	
 	/**
 	 * Converts the specified string to a bar line type.
 	 * 

@@ -15,6 +15,7 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.notation;
 
+import java.util.Iterator;
 import java.util.Vector;
 
 /** This class describes the way a multipart music tune is defined. */
@@ -72,7 +73,13 @@ public class MultiPartsDefinition extends RepeatedPartAbstract implements Clonea
     return parts;
   }
   
-  	public Object clone() {
-  		return new MultiPartsDefinition(this);
+  	public Object clone(Tune t) {
+  		MultiPartsDefinition mpd = new MultiPartsDefinition();
+  		for (Iterator it = m_parts.iterator(); it.hasNext();) {
+  			RepeatedPartAbstract rpa = (RepeatedPartAbstract) it.next();
+  			mpd.m_parts.addElement(rpa.clone(t));
+		}
+  		mpd.setNumberOfRepeats(getNumberOfRepeats());
+  		return mpd;
   	}
 }

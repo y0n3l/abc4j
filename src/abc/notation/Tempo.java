@@ -17,7 +17,7 @@ package abc.notation;
 
 /** The tempo class enables you to define tempo values from a reference note
  * length. */
-public class Tempo implements MusicElement
+public class Tempo implements MusicElement, Cloneable
 {
   /** The length taken as reference to define the tempo value. */
   private short m_referenceLength = Note.QUARTER;
@@ -59,4 +59,8 @@ public class Tempo implements MusicElement
    * @return The number of notes of the specified length per minutes. */
   public int getNotesNumberPerMinute(short refLength)
   { return (int)(m_value * (((float)m_referenceLength)/((float)refLength))); }
+  
+  public Object clone() {
+	  return new Tempo(getReference(), getNotesNumberPerMinute());
+  }
 }

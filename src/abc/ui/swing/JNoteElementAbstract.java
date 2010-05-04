@@ -126,6 +126,8 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 	}
 	
 	protected Clef getClef() {
+		if (m_clef == null)
+			m_clef = Clef.G;
 		return m_clef;
 	}
 	
@@ -152,7 +154,7 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 	  boolean isup = stemUp;
 	  if (autoStem && (note != null)) {
 		//if (note.getHeight()<Note.B) {
-		if (note.isLowerThan(getClef().getMiddleNote())) {
+		if ((getClef() == null) || note.isLowerThan(getClef().getMiddleNote())) {
 		  isup = true;
 		} else {
 		  isup = false;

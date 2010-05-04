@@ -310,6 +310,9 @@ public class SonoraFont implements MusicalFont, Serializable {
 	}
 	
 	public char getNoteWithoutStem(short strictDuration) {
+		if (strictDuration >= Note.WHOLE) {//breve and long
+			return getNoteStemUpChar(strictDuration);
+		}
 		if (strictDuration >= Note.HALF)
 			return '\uF092';
 		else
@@ -325,7 +328,7 @@ public class SonoraFont implements MusicalFont, Serializable {
 		case Note.QUARTER: return '\uF0CE';
 		case Note.HALF: return '\uF0EE';
 		case Note.WHOLE: return '\uF0B7';
-		//case Note.BREVE: return '\uF0E3';
+		case Note.BREVE: return '\uF0E3';
 		default: return UNKNWON_NOTE;
 		}
 	}

@@ -16,5 +16,13 @@
 package abc.notation;
 
 /** A tagging class used to represent an end of staff line. */ 
-public class EndOfStaffLine implements MusicPresentationElement {
+public class EndOfStaffLine implements MusicPresentationElement, Cloneable {
+	
+	public EndOfStaffLine() {
+		
+	}
+	
+	public Object clone() {
+		return new EndOfStaffLine();
+	}
 }

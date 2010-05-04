@@ -33,7 +33,7 @@ package abc.notation;
  * <b>NOTE:</b>The symbols T,H,L,M,P,S,O and ABC2.0 features and are not supported
  * by the abc4j 1.6 parser.
  */
-public class Decoration implements SymbolElement, MusicElement
+public class Decoration implements SymbolElement, MusicElement, Cloneable
 {
 
   public static final byte UNKNOWN = 0;
@@ -305,5 +305,9 @@ public class Decoration implements SymbolElement, MusicElement
 		else if (m_type == SEGNO) return ("S");
 		else if (m_type == CODA) return ("O");
 		return "";
+	}
+	
+	public Object clone() {
+		return new Decoration(getType());
 	}
 }

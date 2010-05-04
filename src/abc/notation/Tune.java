@@ -67,6 +67,8 @@ public class Tune implements Cloneable
 	  this.m_area = tune.m_area;
 	  this.m_book = tune.m_book;
 	  this.m_composer = tune.m_composer;
+	  if (tune.m_defaultPart != null)
+		  this.m_defaultPart = (Part)tune.m_defaultPart.clone();
 	  this.m_discography = tune.m_discography;
 	  this.m_elemskip = tune.m_elemskip;
 	  this.m_fileurl = tune.m_fileurl;
@@ -75,20 +77,27 @@ public class Tune implements Cloneable
 	  this.m_information = tune.m_information;
 	  if (tune.m_key != null)
 		  this.m_key = (KeySignature)tune.m_key.clone();
+	  this.m_lyricist = tune.m_lyricist;
+	  //m_multiPartsDef after m_parts
 	  this.m_notes = tune.m_notes;
 	  this.m_origin = tune.m_origin;
+	  if (tune.m_parts != null) {
+		  this.m_parts = new Hashtable();
+		for (Iterator itK = tune.m_parts.keySet().iterator(); itK.hasNext();) {
+			Character key = (Character) itK.next();
+			Part value = (Part) tune.m_parts.get(key);
+			this.m_parts.put(new Character(key.charValue()), value.clone());
+		}
+		//this.m_parts = (Hashtable)tune.m_parts.clone();
+	  }
+	  if (tune.m_multiPartsDef != null)
+		  this.m_multiPartsDef = (MultiPartsDefinition)tune.m_multiPartsDef.clone(this);
+	  this.m_referenceNumber = tune.m_referenceNumber;
 	  this.m_rhythm = tune.m_rhythm;
 	  this.m_source = tune.m_source;
-	  this.m_referenceNumber = tune.m_referenceNumber;
-	  this.m_transcriptionNotes = tune.m_transcriptionNotes;
 	  if (tune.m_titles != null)
 		  this.m_titles = (Vector)tune.m_titles.clone();
-	  if (tune.m_parts != null)
-		  this.m_parts = (Hashtable)tune.m_parts.clone();
-	  if (tune.m_defaultPart != null)
-		  this.m_defaultPart = (Part)tune.m_defaultPart.clone();
-	  if (tune.m_multiPartsDef != null)
-		  this.m_multiPartsDef = (MultiPartsDefinition)tune.m_multiPartsDef.clone();
+	  this.m_transcriptionNotes = tune.m_transcriptionNotes;
   }
 
   /** Sets the geographic area where this tune comes from.
@@ -615,7 +624,7 @@ public class Tune implements Cloneable
   /**
    * A Music is a collection of {@link MusicElement} (notes, bars...).
    */
-  public class Music extends Vector {
+  public class Music extends Vector implements Cloneable {
 	  
 	private static final long serialVersionUID = 5411161761359626571L;
 	protected NoteAbstract lastNote = null; 
@@ -913,5 +922,9 @@ public class Tune implements Cloneable
 		return hasObject(Tempo.class);
 	}
 	//TODO hasLyrics...
+	
+	public Object clone() {
+		return super.clone();
+	}
   }
 }

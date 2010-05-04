@@ -184,10 +184,8 @@ public class JScoreComponent extends JComponent
 	public void refresh() {
 		initGfx();
 		if (m_jTune!=null) {
-			//resetDisplayTitles();
 			setTune(m_jTune.getTune());
- 			//resetNoteStems();
-		}
+ 		}
 		repaint();
 	}
 
@@ -195,6 +193,9 @@ public class JScoreComponent extends JComponent
 	 * @param os The PNG output stream
 	 * @throws IOException Thrown if the given file cannot be accessed. */
 	public void writeScoreTo(OutputStream os) throws IOException {
+		if (m_jTune!=null) {
+			setTune(m_jTune.getTune());
+ 		}
 		BufferedImage bufferedImage = new BufferedImage((int)m_dimension.getWidth(), (int)m_dimension.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		Graphics2D bufferedImageGfx = (Graphics2D)bufferedImage.createGraphics();
 		bufferedImageGfx.setColor(Color.WHITE);

@@ -353,12 +353,9 @@ public class MultiNote extends NoteAbstract implements Cloneable
   }
 
 	public Object clone() {
-		Object o = null;
-		try {
-			o = super.clone();
-		} catch (CloneNotSupportedException never) {
-			System.err.println(never.getMessage());
-		}
+		Object o = super.clone();
+		if (m_notes != null)
+		((MultiNote) o).m_notes = (Vector) m_notes.clone();
 		return o;
 	}
 }

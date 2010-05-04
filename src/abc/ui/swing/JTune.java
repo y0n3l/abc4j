@@ -175,9 +175,7 @@ public class JTune extends JScoreElementAbstract {
 	}
 
 	public Tune getTune() {
-		if (m_tuneBeforeTransposition != null)
-			return m_tuneBeforeTransposition;
-		return m_tune;
+		return m_tuneBeforeTransposition;
 	}
 
 	/** Returns the hashtable that maps pure music objects to their corresponding
@@ -259,13 +257,14 @@ public class JTune extends JScoreElementAbstract {
 	/** Sets the tune to be renderered.
 	 * @param tune The tune to be displayed. */
 	protected void setTune(Tune tune) {
-		m_tune = tune;
-		m_tuneBeforeTransposition = null;
+		m_tuneBeforeTransposition = tune;
+		m_tune = null;
 		m_isOutdated = true;
 	}
 	
 	protected void setOutdated() {
 		m_isOutdated = true;
+		m_tune = null;
 	}
 	
 	private void computeTextFieldToJText(byte textField) {
@@ -360,16 +359,17 @@ public class JTune extends JScoreElementAbstract {
 	private void compute() {
 		getBase().setLocation(getTemplate().getAttributeSize(ScoreAttribute.MARGIN_LEFT),
 				getTemplate().getAttributeSize(ScoreAttribute.MARGIN_TOP));
-		m_isOutdated = false;
 		cursor = (Point2D) getBase().clone();
 		
 		double componentWidth = 0, componentHeight = 0;
 		
 		//System.out.println("Passage #"+(++DEBUG));
 		
-		if (m_tuneBeforeTransposition == null)
-			m_tuneBeforeTransposition = (Tune) m_tune.clone();
-		m_tune = Tune.transpose(m_tuneBeforeTransposition, getTransposition());
+		//if (m_isOutdated || (m_tuneBeforeTransposition == null))
+		//	m_tuneBeforeTransposition = (Tune) m_tune.clone();
+		m_isOutdated = false;
+		m_tune = Tune.transpose(m_tuneBeforeTransposition,
+				getTransposition());
 
 		getEngraver().adaptToTune(m_tune, getMetrics());
 
@@ -789,6 +789,27 @@ public class JTune extends JScoreElementAbstract {
 					boolean isup = (noteStemPolicy == STEMS_UP) ? true : false;
 					stemmable.setAutoStem(false);
 					stemmable.setStemUp(isup);
+				}
+			}
+			//if element N is up, element N-1 is middle staff,
+			//and N-2 is up too, then set N-1 up
+			//e.g.: in G clef A B A (B is up), c B c (B is down)
+			int count = currentStaffLine.countElement();
+			if (stemmable.isStemUp() && (count >= 2)) {
+				Vector staffElements = currentStaffLine.getStaffElements();
+				JScoreElement N1 = (JScoreElement) staffElements.get(count-2);
+				JScoreElement N2 = (JScoreElement) staffElements.get(count-3);
+				if ((N1 instanceof JStemmableElement)
+					&& (N1 instanceof JNote)
+					&& (((JStemmableElement)N1).isFollowingStemmingPolicy())
+					&& (N2 instanceof JStemmableElement)
+					&& !((JStemmableElement) N1).isStemUp()
+					&& ((JStemmableElement) N2).isStemUp()) {
+					Note n = (Note) ((JNote) N1).getMusicElement();
+					if (n.getHeight() == ((JNote) N1).getClef().getMiddleNote().getHeight()) {
+						((JStemmableElement) N1).setAutoStem(false);
+						((JStemmableElement) N1).setStemUp(true);
+					}
 				}
 			}
 			//grace notes

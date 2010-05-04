@@ -40,4 +40,6 @@ public abstract class RepeatedPartAbstract
    * @return An array of singles parts that would sound the same as the
    * playing of this repeated part. */
   public abstract Part[] toPartsArray();
+  
+  public abstract Object clone(Tune t);
 }

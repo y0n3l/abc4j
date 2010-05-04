@@ -16,7 +16,7 @@
 package abc.notation;
 
 /** A special bar line that enables you to repeat part of music from a tune. */
-public class RepeatBarLine extends BarLine implements MusicElement
+public class RepeatBarLine extends BarLine implements MusicElement, Cloneable
 {
   private byte m_repeatNumber=0;
 
@@ -46,5 +46,8 @@ public class RepeatBarLine extends BarLine implements MusicElement
       return "?";
   }
 
+  public Object clone() {
+	  return new RepeatBarLine(getRepeatNumber());
+  }
 }
 

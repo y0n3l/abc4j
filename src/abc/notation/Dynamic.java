@@ -18,7 +18,7 @@ package abc.notation;
 /**
  * Constants for dynamics (crescendo, decrescendo, mp, fff...)
  */
-public class Dynamic implements SymbolElement {
+public class Dynamic implements SymbolElement, Cloneable {
 	
 	/** <I>pppp</I> dynamic, should be played at volume 15 in midi */
 	public static final byte PPPP = 0;
@@ -101,6 +101,10 @@ public class Dynamic implements SymbolElement {
 			return isType(((Dynamic) o).getType());
 		} else
 			return super.equals(o);
+	}
+	
+	public Object clone() {
+		return new Dynamic(getType());
 	}
 
 }

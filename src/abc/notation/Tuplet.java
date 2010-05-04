@@ -18,7 +18,7 @@ package abc.notation;
 import java.util.Vector;
 
 /** A class to define tuplets. */
-public class Tuplet
+public class Tuplet implements Cloneable
 {
   /** Notes composing the tuplet. */
   private Vector m_notes = null;
@@ -62,4 +62,15 @@ public class Tuplet
   public Vector getNotesAsVector()
   { return (Vector)m_notes.clone(); }
 
+  public Object clone() {
+		Object o = null;
+		try {
+			o = super.clone();
+			if (m_notes != null)
+			((Tuplet) o).m_notes = (Vector) m_notes.clone();
+		} catch (CloneNotSupportedException never) {
+			System.err.println(never.getMessage());
+		}
+		return o;
+	}
 }

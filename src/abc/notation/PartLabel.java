@@ -16,7 +16,7 @@
 package abc.notation;
 
 /** A simple presentation element : the label of a Part */
-public class PartLabel implements MusicPresentationElement {
+public class PartLabel implements MusicPresentationElement, Cloneable {
 
 	private char m_label = ' ';
 	
@@ -26,5 +26,9 @@ public class PartLabel implements MusicPresentationElement {
 	
 	public char getLabel() {
 		return m_label;
+	}
+	
+	public Object clone() {
+		return new PartLabel(getLabel());
 	}
 }

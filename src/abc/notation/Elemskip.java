@@ -15,7 +15,7 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.notation;
 
-public class Elemskip implements MusicElement
+public class Elemskip implements MusicElement, Cloneable
 {
   //private int elemskip;
 
@@ -27,5 +27,9 @@ public class Elemskip implements MusicElement
   public String toString ()
   {
     return "";
+  }
+  
+  public Object clone() {
+	  return new Elemskip(0);
   }
 }
