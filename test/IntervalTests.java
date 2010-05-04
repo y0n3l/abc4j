@@ -72,6 +72,16 @@ public class IntervalTests extends TestCase {
 		assertEquals(Interval.QUADRUPLE_AUGMENTED, fifthQuadAug.getQuality());
 		assertEquals(11, fifthQuadAug.getSemitones());
 
+		//diminished 2nd
+		Interval dim2nd = new Interval(
+				new Note(Note.C, AccidentalType.DOUBLE_SHARP),
+				new Note(Note.D, AccidentalType.NATURAL),
+				null);
+		assertEquals(Interval.SECOND, dim2nd.getLabel());
+		assertEquals(Interval.DIMINISHED, dim2nd.getQuality());
+		assertEquals(0, dim2nd.getSemitones());
+		assertEquals(Interval.UPWARD, dim2nd.getDirection());
+
 		//augmented 2nd
 		Interval aug2nd = new Interval(
 				new Note(Note.e),
@@ -147,6 +157,31 @@ public class IntervalTests extends TestCase {
 						renvThreeAugOct.getLabel());
 		assertEquals(Interval.MAJOR, renvThreeAugOct.getQuality());
 		assertEquals(1*12 + 2, renvThreeAugOct.getSemitones());
+		
+		Interval dimOct = new Interval(
+				new Note(Note.C, AccidentalType.SHARP),
+				new Note(Note.c),
+				null);
+		assertEquals(Interval.OCTAVE, dimOct.getLabel());
+		assertEquals(Interval.DIMINISHED, dimOct.getQuality());
+		assertEquals(11, dimOct.getSemitones());
+		
+		Interval dblDimOct = new Interval(
+				new Note(Note.C, AccidentalType.SHARP),
+				new Note(Note.c, AccidentalType.FLAT),
+				null);
+		assertEquals(Interval.OCTAVE, dblDimOct.getLabel());
+		assertEquals(Interval.DOUBLE_DIMINISHED, dblDimOct.getQuality());
+		assertEquals(10, dblDimOct.getSemitones());
+	
+		Interval augOct = new Interval(
+				new Note(Note.C),
+				new Note(Note.c, AccidentalType.SHARP),
+				null);
+		assertEquals(Interval.OCTAVE, augOct.getLabel());
+		assertEquals(Interval.AUGMENTED, augOct.getQuality());
+		assertEquals(13, augOct.getSemitones());
+		
 	}
 	
 	public void test3renverse() {
