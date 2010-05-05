@@ -15,8 +15,10 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.notation;
 
+import java.io.Serializable;
+
 /** A tagging interface for all elements that are part of a tune's music. */
-public interface MusicElement
+public interface MusicElement extends Serializable
 {
 }
 

@@ -22,7 +22,6 @@ import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import abc.notation.AccidentalType;
 import abc.notation.Clef;
 import abc.notation.GracingType;
 import abc.notation.MusicElement;

@@ -27,7 +27,9 @@ package abc.notation;
  * key, "b" is the key accidental and "aeolian" is the mode. */
 public class KeySignature implements MusicElement, Cloneable
 {
-    private static final byte[][] accidentalsRules = {
+	private static final long serialVersionUID = -8079964017180751158L;
+
+	private static final byte[][] accidentalsRules = {
 //	Flyd C Cmaj Cion Gmix Ddor Amin Am Aeol  Ephr Bloc
 //						C    					D    					E    					F    					G    					A    					B
 /*C*/ {AccidentalType.NATURAL, 	AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL },	// C

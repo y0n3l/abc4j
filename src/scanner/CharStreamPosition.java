@@ -15,11 +15,14 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package scanner;
 
+import java.io.Serializable;
 import java.lang.Cloneable;
 
 /** This class defines positions in a stream of characters. */
-public class CharStreamPosition implements Cloneable
+public class CharStreamPosition implements Cloneable, Serializable
 {
+
+  private static final long serialVersionUID = 9202215234974140708L;
   /** The column of the character. (first char has column 1).*/
   private int m_column = 1;
   /** The line of the character. (first char has line 1).*/

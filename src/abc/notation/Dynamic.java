@@ -20,6 +20,7 @@ package abc.notation;
  */
 public class Dynamic implements SymbolElement, Cloneable {
 	
+	private static final long serialVersionUID = 8365793395464369901L;
 	/** <I>pppp</I> dynamic, should be played at volume 15 in midi */
 	public static final byte PPPP = 0;
 	/** <I>ppp</I> dynamic, should be played at volume 30 in midi */

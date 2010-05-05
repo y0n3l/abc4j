@@ -15,9 +15,12 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.notation;
 
+import java.io.Serializable;
+
 /** This class enables the representation of a fraction. */
-public class Fraction implements Cloneable
+public class Fraction implements Cloneable, Serializable
 {
+  private static final long serialVersionUID = 2832587773244232648L;
   private float numerator = 0;
   private int denominator = 1;
 

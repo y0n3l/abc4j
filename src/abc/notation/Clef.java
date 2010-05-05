@@ -20,6 +20,7 @@ package abc.notation;
  */
 public class Clef implements MusicElement, Cloneable {
 	
+	private static final long serialVersionUID = 548811480906259853L;
 	public static final Clef TREBLE = new Clef("G", 2, 0, 0, 5);
 	public static final Clef ALTO = new Clef("C", 3, 0, 0, 5);
 	public static final Clef TENOR = new Clef("C", 4, 0, 0, 5);
@@ -84,10 +85,10 @@ public class Clef implements MusicElement, Cloneable {
 	/** Number of lines in the staff (1 for perc, 5 for all others) */
 	private int m_staffLines = 5;
 	
-	private Note m_referenceNote = null;
-	private Note m_middleNote = null;
-	private Note m_lowNote = null;
-	private Note m_highNote = null;
+	private transient Note m_referenceNote = null;
+	private transient Note m_middleNote = null;
+	private transient Note m_lowNote = null;
+	private transient Note m_highNote = null;
 	
 	/** Creates a clef with the specified parameters.
 	 * @param name The name of the clef

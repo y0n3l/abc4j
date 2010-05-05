@@ -19,6 +19,8 @@ public class Elemskip implements MusicElement, Cloneable
 {
   //private int elemskip;
 
+  private static final long serialVersionUID = 6942300879598299042L;
+
   public Elemskip (int elemskipValue)
   {
     //elemskip = elemskipValue;

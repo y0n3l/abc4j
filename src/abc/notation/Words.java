@@ -19,6 +19,9 @@ package abc.notation;
  * A class to describe words (lyrics) for a tune. 
  */
 public class Words implements MusicElement, Cloneable {
+	
+	private static final long serialVersionUID = -604338641904126084L;
+	
 	/** the content of the words. */
 	private String content = null;
 	

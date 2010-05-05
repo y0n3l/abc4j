@@ -18,6 +18,9 @@ package abc.notation;
 /** A special bar line that enables you to repeat part of music from a tune. */
 public class RepeatBarLine extends BarLine implements MusicElement, Cloneable
 {
+
+  private static final long serialVersionUID = 6130499407941371335L;
+  
   private byte m_repeatNumber=0;
 
   /** Creates a new repeat bar line.

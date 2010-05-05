@@ -18,6 +18,8 @@ package abc.notation;
 /** A tagging class used to represent an end of staff line. */ 
 public class EndOfStaffLine implements MusicPresentationElement, Cloneable {
 	
+	private static final long serialVersionUID = 9046724300943610729L;
+
 	public EndOfStaffLine() {
 		
 	}

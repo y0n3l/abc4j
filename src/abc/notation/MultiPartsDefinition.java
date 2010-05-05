@@ -21,6 +21,8 @@ import java.util.Vector;
 /** This class describes the way a multipart music tune is defined. */
 public class MultiPartsDefinition extends RepeatedPartAbstract implements Cloneable
 {
+  private static final long serialVersionUID = 7800603529025920851L;
+  
   private Vector m_parts = new Vector();
 
   /** Creates a new multi part definition. */

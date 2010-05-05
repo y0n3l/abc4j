@@ -25,6 +25,8 @@ package abc.notation;
  */
 public abstract class DecorableElement implements MusicElement, Cloneable {
 
+	private static final long serialVersionUID = 6909509549064348544L;
+
 	protected Decoration[] m_decorations = null;
 
 	protected Dynamic m_dynamic = null;

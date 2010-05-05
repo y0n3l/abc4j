@@ -215,6 +215,25 @@ public class JScoreComponent extends JComponent
 			fos.close();
 		}
 	}
+	
+	/**
+	 * Sets tune and template in one shot, this is optimized version,
+	 * it avoid 2 calculation (first at setTemplate and second at setTune).
+	 * 
+	 * @param tune
+	 * @param template
+	 */
+	public void setTuneAndTemplate(Tune tune, ScoreTemplate template) {
+		//from setTemplate(template)
+		if (m_template != null)
+			m_template.removeListener(this);
+		m_template = template;
+		m_template.setGraphics(getGraphics2D());
+		m_template.addListener(this);
+		//from refresh()
+		initGfx();
+		setTune(tune);
+	}
 
 	/** Sets the tune to be renderered.
 	 * @param tune The tune to be displayed. */

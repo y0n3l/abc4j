@@ -19,6 +19,8 @@ package abc.notation;
  * length. */
 public class Tempo implements MusicElement, Cloneable
 {
+  private static final long serialVersionUID = -9003671935699760878L;
+  
   /** The length taken as reference to define the tempo value. */
   private short m_referenceLength = Note.QUARTER;
   /** The tempo value in notes per minutes. */

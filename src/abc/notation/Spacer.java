@@ -17,7 +17,9 @@ package abc.notation;
 
 /** A tagging class used to represent a spacer */ 
 public class Spacer extends DecorableElement implements MusicPresentationElement, Cloneable {
-	
+
+	private static final long serialVersionUID = 2710245368984769854L;
+
 	public Spacer() {
 		
 	}

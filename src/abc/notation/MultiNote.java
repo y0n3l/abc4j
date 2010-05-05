@@ -21,6 +21,8 @@ import java.util.Vector;
 /** A multi note is a group of notes that should be played together. */
 public class MultiNote extends NoteAbstract implements Cloneable
 {
+  private static final long serialVersionUID = 8194309683281786117L;
+  
   /** Notes contained in this multinote. */
   private Vector m_notes;
 

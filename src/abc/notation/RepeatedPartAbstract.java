@@ -15,10 +15,14 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.notation;
 
+import java.io.Serializable;
+
 /** Abstract class that defines the number of times a part in a tune's music should
  * be repeated. */
-public abstract class RepeatedPartAbstract
+public abstract class RepeatedPartAbstract implements Serializable
 {
+  private static final long serialVersionUID = -7080407911337277773L;
+  
   private int m_repeatNumber = 1;
   /** Creates a new repeated part. By default this part is repeated
    * only once. */

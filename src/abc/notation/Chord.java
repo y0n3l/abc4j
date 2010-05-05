@@ -39,6 +39,7 @@ public class Chord implements MusicPresentationElement, Cloneable {
 	//TODO getFrettedFingerings(EADGBE, DADGAD...)
 	//TODO getNotes - generate a MultiNote
 	
+	private static final long serialVersionUID = 7349845779154689148L;
 	/** The unicode sharp char \u266F (&#9839;) */
 	public static final char UNICODE_SHARP = '\u266F';
 	/** The unicode flat char \u266D (&#9837;) */

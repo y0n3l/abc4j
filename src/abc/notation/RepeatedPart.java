@@ -18,6 +18,8 @@ package abc.notation;
 /** A simple <TT>Part</TT> repeated several times. */
 public class RepeatedPart extends RepeatedPartAbstract
 {
+  private static final long serialVersionUID = 3084581464382319491L;
+  
   private Part m_part = null;
 
   /** Creates a new repeated part that will repeat the given part.

@@ -36,6 +36,8 @@ package abc.notation;
 public class Decoration implements SymbolElement, MusicElement, Cloneable
 {
 
+  private static final long serialVersionUID = 8903942534378714085L;
+
   public static final byte UNKNOWN = 0;
 
   /** Staccato. Ex: <TT>.</TT> */

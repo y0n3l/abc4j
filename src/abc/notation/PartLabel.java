@@ -18,6 +18,8 @@ package abc.notation;
 /** A simple presentation element : the label of a Part */
 public class PartLabel implements MusicPresentationElement, Cloneable {
 
+	private static final long serialVersionUID = -4712754516181803338L;
+	
 	private char m_label = ' ';
 	
 	protected PartLabel(char label) {

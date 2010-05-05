@@ -15,8 +15,12 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.notation;
 
+import java.io.Serializable;
+
 /** <TT>Part</TT> objects are used to define parts in tunes. */
-public class Part implements Cloneable {
+public class Part implements Cloneable, Serializable {
+	
+  private static final long serialVersionUID = 7633083530672682502L;
   private char m_label;
   //private Tune m_tune = null;
   private Tune.Music m_music = null;

@@ -15,8 +15,12 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.notation;
 
+import java.io.Serializable;
+
 /** This class abstracts any kind of relationship  between two notes. */
-public class TwoNotesLink implements Cloneable {
+public class TwoNotesLink implements Cloneable, Serializable {
+	
+	private static final long serialVersionUID = 4174972765782118146L;
 	
 	/** The note starting the link between the two notes. */	
 	private NoteAbstract start = null;
@@ -66,11 +70,12 @@ public class TwoNotesLink implements Cloneable {
 	public Object clone() {
 		Object o = null;
 		try {
+			//this is a shallow copy
 			o = super.clone();
-			if (start != null)
-			((TwoNotesLink) o).start = (NoteAbstract) start.clone();
-			if (end != null)
-			((TwoNotesLink) o).end = (NoteAbstract) end.clone();
+//			if (start != null)
+//			((TwoNotesLink) o).start = (NoteAbstract) start.clone();
+//			if (end != null)
+//			((TwoNotesLink) o).end = (NoteAbstract) end.clone();
 		} catch (CloneNotSupportedException never) {
 			System.err.println(never.getMessage());
 		}

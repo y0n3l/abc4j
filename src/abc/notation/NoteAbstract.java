@@ -16,12 +16,15 @@
 
 package abc.notation;
 
+import java.util.Iterator;
 import java.util.Vector;
 
 /** This is the abstract class to define notes or multi notes. */
 public class NoteAbstract extends DecorableElement implements MusicElement, Cloneable
 {
 
+  private static final long serialVersionUID = 7275657390476103339L;
+  
   /** The chord name. */
   private Chord m_chord = null;
   private Note[] m_gracingNotes = null;
@@ -284,25 +287,46 @@ public class NoteAbstract extends DecorableElement implements MusicElement, Clon
     if (staccato)					string2Return = string2Return.concat(".");
     if (m_decorations!=null)	string2Return = string2Return.concat("{"+m_decorations.toString()+"}");
     //string2Return = string2Return.concat(notes.toString());
-    return string2Return;
+    return string2Return+"@"+hashCode();
   }
 
 	public Object clone() {
 		Object o = super.clone();
+		NoteAbstract clone = (NoteAbstract) o;
 		if (m_chord != null)
-		((NoteAbstract) o).m_chord = (Chord) m_chord.clone();
+		clone.m_chord = (Chord) m_chord.clone();
 		if (m_dynamic != null)
-		((NoteAbstract) o).m_dynamic = (Dynamic) m_dynamic.clone();
+		clone.m_dynamic = (Dynamic) m_dynamic.clone();
 		if (m_decorations != null)
-		((NoteAbstract) o).m_decorations = (Decoration[]) m_decorations.clone();
+		clone.m_decorations = (Decoration[]) m_decorations.clone();
 		if (m_gracingNotes != null)
-		((NoteAbstract) o).m_gracingNotes = (Note[]) m_gracingNotes.clone();
+		clone.m_gracingNotes = (Note[]) m_gracingNotes.clone();
 		if (m_tuplet != null)
-		((NoteAbstract) o).m_tuplet = (Tuplet) m_tuplet.clone();
-		if (slurDefinitions != null)
-		((NoteAbstract) o).slurDefinitions = (Vector) slurDefinitions.clone();
-		if (tieDefinition != null)
-		((NoteAbstract) o).tieDefinition = (TieDefinition) tieDefinition.clone();
+		clone.m_tuplet = (Tuplet) m_tuplet.clone();
+		/*if (slurDefinitions != null) {
+			clone.slurDefinitions = new Vector();
+			for (Iterator itSlurs = slurDefinitions.iterator(); itSlurs.hasNext();) {
+				SlurDefinition slur = (SlurDefinition) itSlurs.next();
+				SlurDefinition cloneSlur = slur;
+				if (slur.getStart().equals(this)) {
+					cloneSlur = (SlurDefinition) slur.clone();
+					slur.setStart(clone);
+				}
+				if (slur.getEnd().equals(this))
+					slur.setEnd(clone);
+				clone.slurDefinitions.addElement(slur);
+			}
+		}
+		if (tieDefinition != null) {
+			TieDefinition oTie = tieDefinition;
+			if (oTie.getStart().equals(this)) {
+				oTie = (TieDefinition) tieDefinition.clone();
+				oTie.setStart((NoteAbstract) o);
+			}
+			if (oTie.getEnd().equals(this))
+				oTie.setEnd((NoteAbstract) o);
+			((NoteAbstract) o).tieDefinition = oTie;
+		}*/
 		return o;
 	}
 }

@@ -18,6 +18,8 @@ package abc.notation;
 /** This class defines bar lines. */
 public class BarLine extends DecorableElement implements MusicElement, Cloneable
 {
+  private static final long serialVersionUID = -1007382315266780584L;
+  
   /** The simple bar line type. Ex: | */
   public static final byte SIMPLE = 0;
   /** The repeat open bar line type. Ex: |: */

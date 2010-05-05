@@ -15,6 +15,12 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.notation;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -24,9 +30,11 @@ import scanner.PositionableInCharStream;
 
 /** This class encapsulates all information retrieved from a tune transcribed
  * using abc notation : header and music. */
-public class Tune implements Cloneable
+public class Tune implements Cloneable, Serializable
 {
-  //    Field name                     header this elsewhere Used by Examples and notes
+  private static final long serialVersionUID = 5621598596188277056L;
+  
+//    Field name                     header this elsewhere Used by Examples and notes
   private String m_lyricist = null;       //yes							  A: author of lyrics (v2)
   private String m_area = null;           //yes                           A:Donegal, A:Bampton (v1.6)
   private String m_book = null;           //yes         yes       archive B:O'Neills
@@ -611,8 +619,36 @@ public class Tune implements Cloneable
     return string2return;
   }
   
+	/**
+  	 * Returns a deep clone of the Tune object
+  	 */
   	public Object clone() {
-  		return new Tune(this);
+  		/*if (false) {
+  			Tune ret = new Tune(this);
+  			return ret;
+  		}*/
+  		Tune ret = null;
+  		try {
+  			long s = System.currentTimeMillis();
+			// Write the object out to a byte array
+			FastByteArrayOutputStream fbos = new FastByteArrayOutputStream();
+			ObjectOutputStream out = new ObjectOutputStream(fbos);
+			out.writeObject(this);
+			out.flush();
+			out.close();
+
+			// Retrieve an input stream from the byte array and read
+			// a copy of the object back in.
+			ObjectInputStream in = new ObjectInputStream(fbos.getInputStream());
+			ret = (Tune) in.readObject();
+			long e = System.currentTimeMillis();
+			System.out.println("Tune.clone: "+fbos.getSize()+" en "+((e-s)/1000.0)+"s");
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException cnfe) {
+			cnfe.printStackTrace();
+		}
+		return ret;
   	}
 
   /** Creates a new score. 
@@ -624,12 +660,17 @@ public class Tune implements Cloneable
   /**
    * A Music is a collection of {@link MusicElement} (notes, bars...).
    */
-  public class Music extends Vector implements Cloneable {
+  public class Music extends Vector implements Cloneable, Serializable {
 	  
 	private static final long serialVersionUID = 5411161761359626571L;
-	protected NoteAbstract lastNote = null; 
+	
+	protected transient NoteAbstract lastNote = null; 
     public Music ()
     { super (); }
+    
+    private Music(int initialCapacity) {
+    	super(initialCapacity);
+    }
 
     public void addElement(KeySignature key) {
       if (Tune.this.getKey()==null)
@@ -647,6 +688,14 @@ public class Tune implements Cloneable
      * @return The last note that has been added to this score. <TT>null</TT>
      * if no note in this score. */
     public NoteAbstract getLastNote() {
+    	if (lastNote == null) {
+    		for (int i = super.size()-1; i >= 0; i--) {
+    			if (super.elementAt(i) instanceof NoteAbstract) {
+    				lastNote = (NoteAbstract) super.elementAt(i);
+    				break;
+    			}
+    		}
+    	}
     	return lastNote;
     }
     
@@ -924,7 +973,132 @@ public class Tune implements Cloneable
 	//TODO hasLyrics...
 	
 	public Object clone() {
+		/*Music ret = new Music(size());
+		for (Iterator it = this.iterator(); it.hasNext();) {
+			MusicElement me = (MusicElement) it.next();
+			MusicElement clone = (MusicElement) me.clone();
+			ret.addElement(clone);
+			if (me instanceof NoteAbstract) {
+				
+			}
+		}
+		return ret;*/
 		return super.clone();
 	}
+  }
+  
+  /**
+   * ByteArrayInputStream implementation that does not
+   * synchronize methods.
+   */
+  private class FastByteArrayInputStream extends InputStream {
+  	/** Our byte buffer */
+  	protected byte[] buf = null;
+  	/** Number of bytes that we can read from the buffer */
+  	protected int count = 0;
+  	/** Number of bytes that have been read from the buffer */
+  	protected int pos = 0;
+
+  	public FastByteArrayInputStream(byte[] buf, int count) {
+  		this.buf = buf;
+  		this.count = count;
+  	}
+
+  	public final int available() {
+  		return count - pos;
+  	}
+
+  	public final int read() {
+  		return (pos < count) ? (buf[pos++] & 0xff) : -1;
+  	}
+
+  	public final int read(byte[] b, int off, int len) {
+  		if (pos >= count)
+  			return -1;
+  		if ((pos + len) > count)
+  			len = (count - pos);
+  		System.arraycopy(buf, pos, b, off, len);
+  		pos += len;
+  		return len;
+  	}
+
+  	public final long skip(long n) {
+  		if ((pos + n) > count)
+  			n = count - pos;
+  		if (n < 0)
+  			return 0;
+  		pos += n;
+  		return n;
+  	}
+  }
+  
+  /**
+   * ByteArrayOutputStream implementation that doesn't
+   * synchronize methods and doesn't copy the data on
+   * toByteArray().
+   */
+  private class FastByteArrayOutputStream extends OutputStream {
+  	/** Buffer and size */
+  	protected byte[] buf = null;
+  	protected int size = 0;
+
+  	/** Constructs a stream with buffer capacity size 5K */
+  	public FastByteArrayOutputStream() {
+  		this(5 * 1024);
+  	}
+
+  	/** Constructs a stream with the given initial size */
+  	public FastByteArrayOutputStream(int initSize) {
+  		this.size = 0;
+  		this.buf = new byte[initSize];
+  	}
+
+  	/** Ensures that we have a large enough buffer for the given size. */
+  	private void verifyBufferSize(int sz) {
+  		if (sz > buf.length) {
+  			byte[] old = buf;
+  			buf = new byte[Math.max(sz, 2 * buf.length)];
+  			System.arraycopy(old, 0, buf, 0, old.length);
+  			old = null;
+  		}
+  	}
+
+  	public int getSize() {
+  		return size;
+  	}
+
+  	/**
+  	 * Returns the byte array containing the written data. Note that this array
+  	 * will almost always be larger than the amount of data actually written.
+  	 */
+  	public byte[] getByteArray() {
+  		return buf;
+  	}
+
+  	public final void write(byte b[]) {
+  		verifyBufferSize(size + b.length);
+  		System.arraycopy(b, 0, buf, size, b.length);
+  		size += b.length;
+  	}
+
+  	public final void write(byte b[], int off, int len) {
+  		verifyBufferSize(size + len);
+  		System.arraycopy(b, off, buf, size, len);
+  		size += len;
+  	}
+
+  	public final void write(int b) {
+  		verifyBufferSize(size + 1);
+  		buf[size++] = (byte) b;
+  	}
+
+  	public void reset() {
+  		size = 0;
+  	}
+
+  	/** Returns a ByteArrayInputStream for reading back the written data */
+  	public InputStream getInputStream() {
+  		return new FastByteArrayInputStream(buf, size);
+  	}
   }
 }

@@ -18,6 +18,8 @@ package abc.notation;
 /** A tagging class to represent ties between notes. */
 public class TieDefinition extends TwoNotesLink implements MusicElement, Cloneable {
 	
+	private static final long serialVersionUID = -4574126325031721955L;
+
 	public Object clone() {
 		return super.clone();
 	}

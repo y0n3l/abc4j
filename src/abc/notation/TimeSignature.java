@@ -19,6 +19,8 @@ package abc.notation;
 public class TimeSignature extends Fraction
 						implements MusicElement, Cloneable {
 	
+	private static final long serialVersionUID = -2501211100528653135L;
+
 	/** The 2/2 time signature constant. */
 	public static final TimeSignature SIGNATURE_2_2 = new TimeSignature(2,2);
 

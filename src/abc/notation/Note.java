@@ -61,6 +61,9 @@ import java.util.Vector;
  */
 public class Note extends NoteAbstract implements Cloneable
 {
+
+  private static final long serialVersionUID = -5606744266433398412L;
+  
   /** The <TT>C</TT> note height type. */
   public static final byte C		= 0;
   /** The <TT>D</TT> note height type. */

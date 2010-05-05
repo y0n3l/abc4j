@@ -15,13 +15,17 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.notation;
 
+import java.io.Serializable;
+
 /**
  * In music theory, the term interval describes the relationship
  * between the pitches of two notes.
  */
-public class Interval implements Cloneable {
+public class Interval implements Cloneable, Serializable {
 	
 	//Interesting page : http://en.wikipedia.org/wiki/Interval_(music)
+	
+	private static final long serialVersionUID = -2402929528152000306L;
 	
 	//labels
 	public static final byte UNISON = 0;

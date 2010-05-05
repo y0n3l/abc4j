@@ -15,11 +15,14 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.notation;
 
+import java.io.Serializable;
 import java.util.Vector;
 
 /** A class to define tuplets. */
-public class Tuplet implements Cloneable
+public class Tuplet implements Cloneable, Serializable
 {
+  private static final long serialVersionUID = -800634088496917971L;
+  
   /** Notes composing the tuplet. */
   private Vector m_notes = null;
   private int m_totalRelativeLength = -1;
