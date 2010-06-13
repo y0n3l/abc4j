@@ -16,11 +16,11 @@
 package abc.notation;
 
 /** A tagging class to represent slurs between notes. */
-public class SlurDefinition extends TwoNotesLink implements MusicElement, Cloneable {
+public class SlurDefinition extends TwoNotesLink implements Cloneable {
 
 	private static final long serialVersionUID = 7825560604417815595L;
 
-	public Object clone() {
+	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 }

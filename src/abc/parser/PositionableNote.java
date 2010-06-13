@@ -25,6 +25,7 @@ import scanner.PositionableInCharStream;
  */
 public class PositionableNote extends Note implements PositionableInCharStream
 {
+	private static final long serialVersionUID = 1828128323496336180L;
   private CharStreamPosition m_position = null;
   private int m_length = -1;
 

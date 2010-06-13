@@ -16,6 +16,7 @@
 package abc.notation;
 
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Vector;
 
 /** A multi note is a group of notes that should be played together. */
@@ -32,6 +33,10 @@ public class MultiNote extends NoteAbstract implements Cloneable
   	public MultiNote (Vector notes) {
 		super();
 		m_notes = fromLowestToHighest(notes);
+		int y = 1;
+		for (Iterator it = m_notes.iterator(); it.hasNext();) {
+			((Note) it.next()).getReference().setY(y++);
+		}
   	}
   	
   	/** Returns <TT>true</TT> if this chord contains the specified note.
@@ -313,12 +318,16 @@ public class MultiNote extends NoteAbstract implements Cloneable
 		  return null;
   }
   
-  protected void setNotes(Note[] notes) {
-	  Vector v = new Vector(notes.length);
-	  for (int i = 0; i < notes.length; i++) {
-		v.addElement(notes[i]);
-	  }
-	  m_notes = fromLowestToHighest(v);
+	protected void setNotes(Note[] notes) {
+		Vector v = new Vector(notes.length);
+		for (int i = 0; i < notes.length; i++) {
+			v.addElement(notes[i]);
+		}
+		m_notes = fromLowestToHighest(v);
+		int y = 1;
+		for (Iterator it = m_notes.iterator(); it.hasNext();) {
+			((Note) it.next()).getReference().setY(y++);
+		}
 	}
 
 
@@ -354,7 +363,7 @@ public class MultiNote extends NoteAbstract implements Cloneable
 	return string2Return;
   }
 
-	public Object clone() {
+	public Object clone() throws CloneNotSupportedException {
 		Object o = super.clone();
 		if (m_notes != null)
 		((MultiNote) o).m_notes = (Vector) m_notes.clone();

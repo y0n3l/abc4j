@@ -16,9 +16,12 @@
 package abc.notation;
 
 /**
- * Interface for {@link abc.notation.Decoration} and
+ * Abstract class (was: interface) for {@link abc.notation.Decoration} and
  * {@link abc.notation.Dynamic}.
  */
-public interface SymbolElement extends MusicElement {
+public abstract class SymbolElement extends MusicElement implements Cloneable {
 
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
 }

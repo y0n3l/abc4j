@@ -18,7 +18,7 @@ package abc.notation;
 import java.io.Serializable;
 
 /** This class enables the representation of a fraction. */
-public class Fraction implements Cloneable, Serializable
+public class Fraction extends MusicElement implements Cloneable, Serializable
 {
   private static final long serialVersionUID = 2832587773244232648L;
   private float numerator = 0;
@@ -91,8 +91,8 @@ public class Fraction implements Cloneable, Serializable
           );
   }
   
-  public Object clone() {
-	  return new Fraction(getNumerator(), getDenominator());
+  public Object clone() throws CloneNotSupportedException {
+	  return super.clone();
   }
 }
 

@@ -18,7 +18,7 @@ package abc.notation;
 /**
  * This class contains constants for clef
  */
-public class Clef implements MusicElement, Cloneable {
+public class Clef extends MusicElement implements Cloneable {
 	
 	private static final long serialVersionUID = 548811480906259853L;
 	public static final Clef TREBLE = new Clef("G", 2, 0, 0, 5);
@@ -192,7 +192,11 @@ public class Clef implements MusicElement, Cloneable {
 			Note ref = getReferenceNote();
 			if ((ref != null) && (getLineNumber() != -1)) {
 				if (m_lineNumber == 3 || isPerc()) {
-					m_middleNote = (Note) ref.clone();
+					try {
+						m_middleNote = (Note) ref.clone();
+					} catch (CloneNotSupportedException never) {
+						never.printStackTrace();
+					}
 				}
 				else {
 					Interval interval = null;
@@ -313,21 +317,16 @@ public class Clef implements MusicElement, Cloneable {
 		return getName();
 	}
 	
-	public Object clone() {
-		Object o = null;
-		try {
-			o = super.clone();
-			if (m_referenceNote != null)
-			((Clef) o).m_referenceNote = (Note) m_referenceNote.clone();
-			if (m_middleNote != null)
-			((Clef) o).m_middleNote = (Note) m_referenceNote.clone();
-			if (m_lowNote != null)
-			((Clef) o).m_lowNote = (Note) m_referenceNote.clone();
-			if (m_highNote != null)
-			((Clef) o).m_highNote = (Note) m_referenceNote.clone();
-		} catch (CloneNotSupportedException never) {
-			System.err.println(never.getMessage());
-		}
+	public Object clone() throws CloneNotSupportedException {
+		Object o = super.clone();
+		if (m_referenceNote != null)
+		((Clef) o).m_referenceNote = (Note) m_referenceNote.clone();
+		if (m_middleNote != null)
+		((Clef) o).m_middleNote = (Note) m_referenceNote.clone();
+		if (m_lowNote != null)
+		((Clef) o).m_lowNote = (Note) m_referenceNote.clone();
+		if (m_highNote != null)
+		((Clef) o).m_highNote = (Note) m_referenceNote.clone();
 		return o;
 	}
 	

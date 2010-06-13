@@ -25,6 +25,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
@@ -67,9 +70,9 @@ public class JScoreComponent extends JComponent
 	 * outdated and does not represent the tune currently set. */
 	private boolean m_isBufferedImageOutdated = true;
 
-	/** The selected item in this score. <TT>null</TT> if no
+	/** A vector of selected item(s) in this score. <TT>null</TT> if no
 	 * item is selected. */
-	private JScoreElement m_selectedItem = null;
+	private Collection m_selectedItems = null;
 
 	//protected int staffLinesSpacing = -1;
 
@@ -243,7 +246,7 @@ public class JScoreComponent extends JComponent
 							getTemplate());
 		m_jTune.setColor(getForeground());
 
-		m_selectedItem = null;
+		m_selectedItems = null;
 		m_dimension.setSize(m_jTune.getWidth(), m_jTune.getHeight());
 		setPreferredSize(m_dimension);
 		setSize(m_dimension);
@@ -306,9 +309,10 @@ public class JScoreComponent extends JComponent
 	 * highlighting.
 	 * @see #setSelectedItem(JScoreElement) */
 	public void setSelectedItem(MusicElement elmnt) {
-		JScoreElementAbstract r = null;
+		JScoreElement r = null;
 		if (elmnt!=null)
-			r = (JScoreElementAbstract)m_jTune.getRenditionObjectsMapping().get(elmnt);
+			//r = (JScoreElementAbstract)m_jTune.getRenditionObjectsMapping().get(elmnt);
+			r = m_jTune.getRenditionObjectFor(elmnt);
 		//if (r!=null)
 		//	System.out.println("Selecting item " + elmnt + "->" + r + "@" + r.getBase());
 		setSelectedItem(r);
@@ -322,18 +326,39 @@ public class JScoreComponent extends JComponent
 	 * highlighting.
 	 * @see #setSelectedItem(MusicElement) */
 	public void setSelectedItem(JScoreElement elmnt){
-		if (m_selectedItem!=null) {
-			getGraphics2D().setColor(Color.BLACK);
-			((JScoreElementAbstract) m_selectedItem)
-				.render(getGraphics2D());
+		if (m_selectedItems!=null) {
+			for (Iterator it = m_selectedItems.iterator(); it.hasNext();) {
+				((JScoreElement) it.next()).setColor(null);
+			}
+			m_selectedItems = null;
 		}
 		if (elmnt!=null) {
-			m_selectedItem = elmnt;
-			getGraphics2D().setColor(SELECTED_ITEM_COLOR);
-			((JScoreElementAbstract) m_selectedItem)
-				.render(getGraphics2D());
+			m_selectedItems = new Vector(1, 0);
+			m_selectedItems.add(elmnt);
+			elmnt.setColor(SELECTED_ITEM_COLOR);
 		}
 		repaint();
+	}
+	
+	/** Highlights the given elements in the score.
+	 * If item(s) was previously selected, it is unselected.
+	 * @param elments A collection of score element to be highlighted in the
+	 * score. <TT>null</TT> or empty collection can be specified to remove
+	 * highlighting.
+	 */
+	public void setSelectedItems(Collection elements) {
+		if (m_selectedItems!=null) {
+			for (Iterator it = m_selectedItems.iterator(); it.hasNext();) {
+				((JScoreElement) it.next()).setColor(null);
+			}
+			m_selectedItems = null;
+		}
+		if ((elements != null) && (elements.size() > 0)) {
+			m_selectedItems = elements;
+			for (Iterator it = m_selectedItems.iterator(); it.hasNext();) {
+				((JScoreElement) it.next()).setColor(SELECTED_ITEM_COLOR);
+			}
+		}
 	}
 
 	/** Returns the graphical element that corresponds to a tune element.
@@ -343,7 +368,8 @@ public class JScoreComponent extends JComponent
 	 * does not have any graphical representation. */
 	public JScoreElement getRenditionElementFor(MusicElement elmnt) {
 		if (m_jTune!=null)
-			return (JScoreElement)m_jTune.getRenditionObjectsMapping().get(elmnt);
+			//return (JScoreElement)m_jTune.getRenditionObjectsMapping().get(elmnt);
+			return m_jTune.getRenditionObjectFor(elmnt);
 		else
 			return null;
 	}

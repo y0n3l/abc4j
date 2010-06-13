@@ -26,6 +26,7 @@ import abc.notation.MultiNote;
  */
 public class PositionableMultiNote extends MultiNote implements PositionableInCharStream
 {
+	private static final long serialVersionUID = 4066435012161183112L;
   private CharStreamPosition m_position = null;
   private int m_length = -1;
 

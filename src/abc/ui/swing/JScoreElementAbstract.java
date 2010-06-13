@@ -63,6 +63,12 @@ abstract class JScoreElementAbstract implements JScoreElement {
 
 	/** The staff line that contains this score element. */
 	protected JStaffLine staffLine = null;
+	
+	private boolean m_isRendered = false;
+	
+	private Color m_color = null;
+	
+	private transient Graphics2D g2d = null;
 
 	/** Constructor
 	 * @param base The base location
@@ -130,6 +136,8 @@ abstract class JScoreElementAbstract implements JScoreElement {
 	 * sub <TT>JScoreElement</TT> contained in this one. <TT>null</TT>
 	 * is returned if no matching element has been found. */
 	public JScoreElement getScoreElementAt(Point location) {
+		if (location == null)
+			return null;
 		if (getBoundingBox().contains(location))
 			return this;
 		else
@@ -213,21 +221,49 @@ abstract class JScoreElementAbstract implements JScoreElement {
 
 	/**
 	 * Set the color for renderer, get color value in the score
-	 * template.
+	 * template, or apply the specified color for the current
+	 * element.
 	 * @param g2
 	 * @param scoreElement
 	 */
 	protected void setColor(Graphics2D g2, byte scoreElement) {
-		Color c = getTemplate().getElementColor(scoreElement);
-		Color d = getTemplate().getElementColor(ScoreElements._DEFAULT);
-		if ((c != null) && !c.equals(d))
-			g2.setColor(c);
+		if (m_color != null)
+			g2.setColor(m_color);
+		else {
+			Color c = getTemplate().getElementColor(scoreElement);
+			Color d = getTemplate().getElementColor(ScoreElements._DEFAULT);
+			if ((c != null) && !c.equals(d))
+				g2.setColor(c);
+		}
 	}
 	
 	/** Renders this Score element to the given graphic context.
 	 * @param g2 */
 	public double render(Graphics2D g2) {
+		setRendered(true);
+		g2d = g2;
 		return getWidth();
+	}
+	
+	protected boolean isRendered() {
+		return m_isRendered && (g2d != null);
+	}
+	protected void setRendered(boolean b) {
+		m_isRendered = b;
+	}
+	/**
+	 * Sets the color of the score element.<br>
+	 * If element is already rendered, it's refreshed.
+	 * @param c <code>null</code> to use the default color
+	 */
+	public void setColor(Color c) {
+		boolean renderAgain = (c != m_color) && isRendered();
+		m_color = c;
+		if (renderAgain)
+			render(g2d);
+	}
+	protected Color getColor() {
+		return m_color;
 	}
 
 	protected void renderDecorations(Graphics2D context){
@@ -293,7 +329,10 @@ abstract class JScoreElementAbstract implements JScoreElement {
 	public String toString() {
 		String ret = super.toString();
 		if (getMusicElement() != null)
-			ret += " <" + getMusicElement().toString() + ">";
+			ret += " <" + getMusicElement().toString()
+			+ " ref"
+			+ getMusicElement().getReference().toString()
+			+">";
 		return ret;
 	}
 	

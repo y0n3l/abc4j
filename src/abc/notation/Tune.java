@@ -72,6 +72,7 @@ public class Tune implements Cloneable, Serializable
   /** Copy constructor
    * @param tune The tune to be copied in depth. */
   public Tune(Tune tune) {
+	  try {
 	  this.m_area = tune.m_area;
 	  this.m_book = tune.m_book;
 	  this.m_composer = tune.m_composer;
@@ -106,6 +107,9 @@ public class Tune implements Cloneable, Serializable
 	  if (tune.m_titles != null)
 		  this.m_titles = (Vector)tune.m_titles.clone();
 	  this.m_transcriptionNotes = tune.m_transcriptionNotes;
+	  } catch (CloneNotSupportedException never) {
+		  never.printStackTrace();
+	  }
   }
 
   /** Sets the geographic area where this tune comes from.
@@ -483,12 +487,20 @@ public class Tune implements Cloneable, Serializable
 					noneTranspKey);
 			// Note transp = Note.transpose(original, semitones, lastKey);
 			Note transpHeight = interval.calculateSecondNote(lastKeyNote, lastKey);
-			transp = (Note) ((Note) original).clone();
+			try {
+				transp = (Note) ((Note) original).clone();
+			} catch (CloneNotSupportedException never) {
+				never.printStackTrace();
+			}
 			((Note) transp).setHeight(transpHeight.getHeight());
 			((Note) transp).setOctaveTransposition(transpHeight.getOctaveTransposition());
 			((Note) transp).setAccidental(transpHeight.getAccidental());
 		} else if (original instanceof MultiNote) {
-			transp = (MultiNote) ((MultiNote) original).clone();
+			try {
+				transp = (MultiNote) ((MultiNote) original).clone();
+			} catch (CloneNotSupportedException never) {
+				never.printStackTrace();
+			}
 			Note[] notes = ((MultiNote) transp).toArray();
 			for (int k = 0; k < notes.length; k++) {
 				notes[k] = (Note) transpose_Note(notes[k], noneTranspKeyNote,
@@ -496,21 +508,21 @@ public class Tune implements Cloneable, Serializable
 			}
 			((MultiNote) transp).setNotes(notes);
 		}
-		TieDefinition tie = original.getTieDefinition();
-		if (tie != null) {
-			if (tie.getStart() == original)
-				tie.setStart(transp);
-			else if (tie.getEnd() == original)
-				tie.setEnd(transp);
-		}
-		Vector slurs = original.getSlurDefinitions();
-		for (Iterator it = slurs.iterator(); it.hasNext();) {
-			SlurDefinition slur = (SlurDefinition) it.next();
-			if (slur.getStart() == original)
-				slur.setStart(transp);
-			else if (slur.getEnd() == original)
-				slur.setEnd(transp);
-		}
+//		TieDefinition tie = original.getTieDefinition();
+//		if (tie != null) {
+//			if (tie.getStart() == original)
+//				tie.setStart(transp);
+//			else if (tie.getEnd() == original)
+//				tie.setEnd(transp);
+//		}
+//		Vector slurs = original.getSlurDefinitions();
+//		for (Iterator it = slurs.iterator(); it.hasNext();) {
+//			SlurDefinition slur = (SlurDefinition) it.next();
+//			if (slur.getStart() == original)
+//				slur.setStart(transp);
+//			else if (slur.getEnd() == original)
+//				slur.setEnd(transp);
+//		}
 		Chord chord = transp.getChord();
 		if (chord != null) {
 			if (chord.hasNote())
@@ -664,26 +676,37 @@ public class Tune implements Cloneable, Serializable
 	  
 	private static final long serialVersionUID = 5411161761359626571L;
 	
-	protected transient NoteAbstract lastNote = null; 
-    public Music ()
+	protected transient NoteAbstract lastNote = null;
+	
+	public Music ()
     { super (); }
-    
-    private Music(int initialCapacity) {
-    	super(initialCapacity);
-    }
 
     public void addElement(KeySignature key) {
       if (Tune.this.getKey()==null)
         Tune.this.setKey(key);
-      super.addElement(key);
+      addElement0(key);
     }
     
     public void addElement(NoteAbstract note) {
     	//System.out.println("adding note " + note + " to " + this);
         lastNote = note;
-        super.addElement(note);
+        addElement0(note);
     }
-    
+
+	public void addElement(MusicElement element) {
+		addElement0(element);
+	}
+
+	private synchronized void addElement0(MusicElement me) {
+		if (me == null)
+			System.err.println("addElement0 null");
+		else if (me.getReference().getPart() == ' ') {
+			// do not change x in tune.getMusic()
+			me.getReference().setX(size());
+			super.addElement(me);
+		}
+	}
+
     /* Returns the last note that has been added to this score.
      * @return The last note that has been added to this score. <TT>null</TT>
      * if no note in this score. */
@@ -721,7 +744,7 @@ public class Tune implements Cloneable, Serializable
     
     public int indexOf(MusicElement elmnt) {
     	if (elmnt != null) {
-	    	Object elmntIt = null;
+    		Object elmntIt = null;
 	    	boolean isLooking4Note = elmnt instanceof Note;
 	    	for (int i=0; i<size(); i++){
 	    		elmntIt = elementAt(i);
@@ -852,6 +875,21 @@ public class Tune implements Cloneable, Serializable
     	return lowestNote;
 
 	}
+    
+    /**
+     * Returns an element for the given reference, <TT>null</TT>
+     * if not found
+     * @param ref
+     * @return
+     */
+    public MusicElement getElementByReference(MusicElementReference ref) {
+    	for (Iterator it = iterator(); it.hasNext();) {
+			MusicElement element = (MusicElement) it.next();
+			if (element.getReference().equals(ref))
+				return element;
+		}
+    	return null;
+    }
     
     /** Returns a collection of Note between begin and end included
      * @param elmtBegin

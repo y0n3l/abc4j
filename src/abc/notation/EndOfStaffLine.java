@@ -16,7 +16,7 @@
 package abc.notation;
 
 /** A tagging class used to represent an end of staff line. */ 
-public class EndOfStaffLine implements MusicPresentationElement, Cloneable {
+public class EndOfStaffLine extends MusicPresentationElement implements Cloneable {
 	
 	private static final long serialVersionUID = 9046724300943610729L;
 
@@ -24,7 +24,7 @@ public class EndOfStaffLine implements MusicPresentationElement, Cloneable {
 		
 	}
 	
-	public Object clone() {
-		return new EndOfStaffLine();
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 }

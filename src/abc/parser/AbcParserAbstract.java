@@ -1162,8 +1162,8 @@ public class AbcParserAbstract
 	        }
 	        if (decorations.size() > 0)
 	        	note.setDecorations((Decoration[])decorations.toArray(new Decoration[1]));
+	        m_music.addElement(note);
         }
-        m_music.addElement(note);
       }
       else
       if (FIRST_TUPLET_ELEMENT.contains(m_tokenType))
@@ -1227,7 +1227,7 @@ public class AbcParserAbstract
         	while (i >= 0) {
 	        	SlurDefinition slurDef = (SlurDefinition)slursDefinitionStack.elementAt(i);
 	        	if (!slurDef.getStart().equals(lastParsedNote)) {
-		        	slurDef.setEnd(lastParsedNote);
+		        	slurDef.setEnd(lastParsedNote.getReference());
 		        	slursDefinitionStack.removeElementAt(i);
 		        	lastParsedNote.addSlurDefinition(slurDef);
 		        	break;
@@ -1568,7 +1568,7 @@ public class AbcParserAbstract
 		  while (i >= 0) {
 			  SlurDefinition currentSlurDef = (SlurDefinition)slursDefinitionStack.elementAt(i);
 			  if (currentSlurDef.getStart()==null){
-			  	  currentSlurDef.setStart(note);
+			  	  currentSlurDef.setStart(note.getReference());
 				  note.addSlurDefinition(currentSlurDef);
 			  }
 			  i--;
@@ -1686,7 +1686,7 @@ public class AbcParserAbstract
         
         if (isTied) {
         	TieDefinition tieDef = new TieDefinition();
-        	tieDef.setStart(note);
+        	tieDef.setStart(note.getReference());
         	note.setTieDefinition(tieDef);
         	addNoteStartingTieFor(note);
         	//tieStartingNote = note;
@@ -1695,7 +1695,7 @@ public class AbcParserAbstract
         	//if (tieStartingNote!=null && note!=tieStartingNote && ((Note)note).getHeight()==tieStartingNote.getHeight()) {
             Note startTieNote = getNoteStartingTieFor(note);
             if (startTieNote!=null) {
-              	startTieNote.getTieDefinition().setEnd(note);
+              	startTieNote.getTieDefinition().setEnd(note.getReference());
               	((Note)note).setTieDefinition(startTieNote.getTieDefinition());
               	removeNoteStartingTieFor(startTieNote);
               	//tieStartingNote=null;

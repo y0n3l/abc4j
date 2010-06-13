@@ -16,6 +16,7 @@
 package abc.notation;
 
 import java.io.Serializable;
+import java.util.Iterator;
 
 /** <TT>Part</TT> objects are used to define parts in tunes. */
 public class Part implements Cloneable, Serializable {
@@ -31,11 +32,6 @@ public class Part implements Cloneable, Serializable {
     m_music = tune.createMusic();
   }
   
-  Part (Part root) {
-	  m_label = root.m_label;
-	  m_music = (Tune.Music)root.m_music.clone();
-  }
-
   /** Sets the label that identifies this part.
    * @param labelValue The label that identifies this part. */
   public void setLabel(char labelValue)
@@ -46,15 +42,36 @@ public class Part implements Cloneable, Serializable {
   public char getLabel()
   { return m_label; }
 
-  /** Returns the music to this part.
-   * @return The music associated to this part. */
-  public Tune.Music getMusic()
-  {return m_music;}
+	/**
+	 * Returns the music to this part.
+	 * 
+	 * @return The music associated to this part.
+	 */
+	public Tune.Music getMusic() {
+		for (Iterator it = m_music.iterator(); it.hasNext();) {
+			MusicElement element = (MusicElement) it.next();
+			element.getReference().setPart(getLabel());
+			if (element instanceof MultiNote) {
+				MultiNote multi = (MultiNote) element;
+				Note[] notes = multi.toArray();
+				if (notes != null) {
+					for (int i = 0; i < notes.length; i++) {
+						notes[i].getReference().setPart(getLabel());
+						notes[i].getReference().setX(element.getReference().getX());
+					}
+				}
+			}
+		}
+		return m_music;
+	}
 
   void setMusic(Tune.Music score)
   {m_music = score;}
   	
-  	public Object clone(){
-  		return new Part(this);
+  	public Object clone() throws CloneNotSupportedException {
+  		//return new Part(this);
+  		Object o = super.clone();
+  		((Part)o).m_music = (Tune.Music)m_music.clone();
+  		return o;
   	}
 }

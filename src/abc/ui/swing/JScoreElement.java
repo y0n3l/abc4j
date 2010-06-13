@@ -15,6 +15,7 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -53,6 +54,13 @@ public interface JScoreElement {
 	 * @return The base of this element. The base is the point that is used 
 	 * as a reference to draw the element at this location. */
 	public Point2D getBase();
+	
+	/**
+	 * Sets the color of the score element.<br>
+	 * If element is already rendered, it's refreshed.
+	 * @param c <code>null</code> to use the default color
+	 */
+	public void setColor(Color c);
 	
 	/**
 	 * Stemmable element interface contains two methods :

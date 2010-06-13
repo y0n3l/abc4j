@@ -16,7 +16,7 @@
 package abc.notation;
 
 /** A simple presentation element : the label of a Part */
-public class PartLabel implements MusicPresentationElement, Cloneable {
+public class PartLabel extends MusicPresentationElement implements Cloneable {
 
 	private static final long serialVersionUID = -4712754516181803338L;
 	
@@ -30,7 +30,7 @@ public class PartLabel implements MusicPresentationElement, Cloneable {
 		return m_label;
 	}
 	
-	public Object clone() {
-		return new PartLabel(getLabel());
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 }

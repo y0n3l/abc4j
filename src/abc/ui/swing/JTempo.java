@@ -42,7 +42,7 @@ public class JTempo extends JText {
 	protected JTempo(ScoreMetrics mtrx, Point2D base, Tempo tempo) {
 		super(mtrx, "", ScoreElements.TEMPO);
 		m_tempo = tempo;
-		m_refNote = new char[] { getMusicalFont().getNoteStemUpChar(m_tempo.getReference()) };
+		m_refNote = new char[] { getMusicalFont().getNoteStemUpChar(m_tempo.getReferenceLength()) };
 		m_refNoteBounds = getMetrics().getBounds(m_refNote,
 				ScoreMetrics.NOTATION_CONTEXT_TEMPO);
 		m_noteHeadBounds = getMetrics().getBounds(

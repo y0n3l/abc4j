@@ -17,7 +17,7 @@ package abc.notation;
 
 /** The tempo class enables you to define tempo values from a reference note
  * length. */
-public class Tempo implements MusicElement, Cloneable
+public class Tempo extends MusicElement implements Cloneable
 {
   private static final long serialVersionUID = -9003671935699760878L;
   
@@ -46,7 +46,7 @@ public class Tempo implements MusicElement, Cloneable
    * @return The reference length used to express this tempo. Possible
    * values are <TT>Note.SIXTY_FOURTH</TT>, <TT>Note.THIRTY_SECOND</TT> ...
    * or <TT>Note.WHOLE</TT>. */
-  public short getReference()
+  public short getReferenceLength()
   { return m_referenceLength; }
 
   /** Returns the number of note per minutes considering that those notes' length
@@ -62,7 +62,7 @@ public class Tempo implements MusicElement, Cloneable
   public int getNotesNumberPerMinute(short refLength)
   { return (int)(m_value * (((float)m_referenceLength)/((float)refLength))); }
   
-  public Object clone() {
-	  return new Tempo(getReference(), getNotesNumberPerMinute());
+  public Object clone() throws CloneNotSupportedException {
+	  return super.clone();
   }
 }

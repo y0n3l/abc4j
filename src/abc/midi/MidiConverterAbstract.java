@@ -35,6 +35,7 @@ import abc.notation.Note;
 import abc.notation.RepeatBarLine;
 import abc.notation.Tempo;
 import abc.notation.Tune;
+import abc.notation.Tune.Music;
 
 /** MidiConverter class defines various static methods to convert abc related stuff
  * to midi : notes, tunes etc... */
@@ -101,13 +102,13 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 						if (note.hasGracingNotes()) {
 							graceNotes = note.getGracingNotes();
 							for (int j=0;j<graceNotes.length;j++) {
-								noteDuration = getNoteLengthInTicks(graceNotes[j]);
+								noteDuration = getNoteLengthInTicks(graceNotes[j], staff);
 								playNote(graceNotes[j], i, currentKey, elapsedTime, noteDuration, track);
 								elapsedTime+=noteDuration;
 							}
 						}
 						//The note duration if the note isn't part of a tuplet.
-						noteDuration = getNoteLengthInTicks(note);
+						noteDuration = getNoteLengthInTicks(note, staff);
 						playNote(note, i, currentKey, elapsedTime, noteDuration, track);
 						elapsedTime+=noteDuration;
 					}
@@ -115,8 +116,8 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 						//==================================================================== MULTI NOTE
 						if ((staff.elementAt(i) instanceof abc.notation.MultiNote)) {
 							MultiNote multiNote = (MultiNote)staff.elementAt(i);
-							playMultiNote(multiNote, i, currentKey, elapsedTime, track);
-							elapsedTime+=getNoteLengthInTicks(multiNote);
+							playMultiNote(multiNote, i, currentKey, elapsedTime, track, staff);
+							elapsedTime+=getNoteLengthInTicks(multiNote, staff);
 						}
 				}
     				//====================================================================== REPEAT BAR LINE
@@ -200,7 +201,7 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   		 }
   	 }
 
-  protected void playMultiNote(MultiNote multiNote, int indexInScore, KeySignature currentKey, long reference, Track track) throws InvalidMidiDataException
+  protected void playMultiNote(MultiNote multiNote, int indexInScore, KeySignature currentKey, long reference, Track track, Music staff) throws InvalidMidiDataException
   {
     Vector notesVector = multiNote.getNotesAsVector();
     for (int j=0; j<notesVector.size(); j++)
@@ -213,7 +214,7 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
     {
       Note note = (Note)(notesVector.elementAt(j));
       //TODO needs to be improved to take into account multi notes with different notes length
-      long noteDuration = getNoteLengthInTicks(multiNote);
+      long noteDuration = getNoteLengthInTicks(multiNote, staff);
       if (!note.isRest() && !note.isEndingTie())
         addNoteOffEventsFor(track, reference+noteDuration, getNoteOffMessageFor(note, currentKey));
     }
@@ -278,10 +279,13 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 
   	/** Returns the length of the note in ticks, thanks to the sequence
   	 * resolution and the default note length. */
-  	protected static long getNoteLengthInTicks(Note note) {
+  	protected static long getNoteLengthInTicks(Note note, Music staff) {
   		short noteLength = note.getDuration();
-  		if (note.isBeginningTie() && note.getTieDefinition().getEnd()!=null)
-  			noteLength+= ((Note)note.getTieDefinition().getEnd()).getDuration();
+  		if (note.isBeginningTie() && note.getTieDefinition().getEnd()!=null) {
+  			noteLength +=
+  				((Note)staff.getElementByReference(note.getTieDefinition().getEnd()))
+  				.getDuration();
+  		}
   		float numberOfQuarterNotesInThisNote = (float)noteLength / Note.QUARTER;
   		float lengthInTicks = (float)SEQUENCE_RESOLUTION * numberOfQuarterNotesInThisNote;
   		return (long)lengthInTicks;
@@ -292,12 +296,12 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
    * manipulated internally.
    * @return The length of the multi note in ticks : this is equal to the length
    * of the longest note of the multi note. */
-  public static long getNoteLengthInTicks(MultiNote note) {
+  public static long getNoteLengthInTicks(MultiNote note, Music staff) {
 	  Note[] notes = note.toArray();
 	  //if (notes!=null) {
 		  notes = MultiNote.excludeTiesEndings(notes);
 		  if (notes!=null)
-			  return getNoteLengthInTicks(note.getShortestNote());
+			  return getNoteLengthInTicks(note.getShortestNote(), staff);
 	  //}
 	  else
 		  return 0;

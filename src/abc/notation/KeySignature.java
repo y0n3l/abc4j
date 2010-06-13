@@ -25,7 +25,7 @@ package abc.notation;
  * </PRE>
  * If we consider the key namned "Ab aeolian", "A" is the note of this
  * key, "b" is the key accidental and "aeolian" is the mode. */
-public class KeySignature implements MusicElement, Cloneable
+public class KeySignature extends MusicElement implements Cloneable
 {
 	private static final long serialVersionUID = -8079964017180751158L;
 
@@ -552,8 +552,13 @@ public class KeySignature implements MusicElement, Cloneable
 	}
 	
 	static public KeySignature transpose(KeySignature key, int semitones) {
-		if ((semitones % 12) == 0)
-			return (KeySignature) key.clone();
+		if ((semitones % 12) == 0) {
+			try {
+				return (KeySignature) key.clone();
+			} catch (CloneNotSupportedException cnse) {
+				cnse.printStackTrace();
+			}
+		}
 		Note keyNote = new Note(key.getNote(), key.getAccidental());
 		//looks for added accidentals, compare to new key with only mode
 		KeySignature reference = new KeySignature(
@@ -587,10 +592,10 @@ public class KeySignature implements MusicElement, Cloneable
 		return ret;
 	}
 
-  	public Object clone() {
-  		KeySignature k = new KeySignature(this.getNote(), this.getAccidental(), this.getMode());
-  		k.accidentals = (byte[]) accidentals.clone();
-  		k.m_clef = (Clef) m_clef.clone();
+  	public Object clone() throws CloneNotSupportedException {
+  		Object k = super.clone();
+  		((KeySignature) k).accidentals = (byte[]) accidentals.clone();
+  		((KeySignature) k).m_clef = (Clef) m_clef.clone();
   		return k;
   	}
 

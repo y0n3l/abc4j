@@ -40,8 +40,9 @@ public class Tuplet implements Cloneable, Serializable
     m_notes = notes;
     m_totalRelativeLength = totalRelativeLength;
     m_totalDuration = (short)(m_totalRelativeLength * defaultNoteLength);
-    for (int i=0; i<notes.size(); i++)
+    for (int i=0; i<notes.size(); i++) {
       ((NoteAbstract)notes.elementAt(i)).setTuplet(this);
+    }
   }
 
   /** Returns the total relative length of this tuplet.
@@ -59,21 +60,20 @@ public class Tuplet implements Cloneable, Serializable
   public short getTotalDuration() {
 	  return m_totalDuration;
   }
+  
+  public int getNumberOfNotes() {
+	  return m_notes.size();
+  }
 
   /** Returns a new vector containing all notes of this multi note.
    * @return A new vector containing all notes of this multi note. */
   public Vector getNotesAsVector()
   { return (Vector)m_notes.clone(); }
 
-  public Object clone() {
-		Object o = null;
-		try {
-			o = super.clone();
-			if (m_notes != null)
+  public Object clone() throws CloneNotSupportedException {
+		Object o = super.clone();
+		if (m_notes != null)
 			((Tuplet) o).m_notes = (Vector) m_notes.clone();
-		} catch (CloneNotSupportedException never) {
-			System.err.println(never.getMessage());
-		}
 		return o;
 	}
 }

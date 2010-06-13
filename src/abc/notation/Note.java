@@ -220,7 +220,13 @@ public class Note extends NoteAbstract implements Cloneable
 	 * @param key
 	 */
 	static public Note createEnharmonic(Note note, KeySignature key) {
-		Note ret = (Note) note.clone();
+		Note ret;
+		try {
+			ret = (Note) note.clone();
+		} catch (CloneNotSupportedException never) {
+			never.printStackTrace();
+			ret = null;
+		}
 		if (note.getAccidental() == AccidentalType.NONE)
 			return ret; //is in the key
 		if ((note.getAccidental() == AccidentalType.DOUBLE_FLAT)
@@ -302,7 +308,13 @@ public class Note extends NoteAbstract implements Cloneable
 	 * @see #createEnharmonic(Note, KeySignature)
 	 */
 	static public Note createEnharmonic(Note note, byte[] accidentalTypes) {
-		Note ret = (Note) note.clone();
+		Note ret;
+		try {
+			ret = (Note) note.clone();
+		} catch (CloneNotSupportedException never) {
+			never.printStackTrace();
+			ret = null;
+		}
 		if (ret.isRest() || (accidentalTypes[0] == ret.getAccidental()))
 			return ret;
 		Vector nearNotes = new Vector(9);
@@ -347,7 +359,13 @@ public class Note extends NoteAbstract implements Cloneable
 	 */
 	static public Note transpose(Note note, int semitones)
 			throws NoteHeightException {
-		Note ret = (Note) note.clone();
+		Note ret;
+		try {
+			ret = (Note) note.clone();
+		} catch (CloneNotSupportedException never) {
+			never.printStackTrace();
+			ret = null;
+		}
 		//if semitones == 0, E## will be transposed as F#
 		//ensure that we will return NATURAL or SHARP accidental
 		if (ret.isRest()/* || (semitones == 0)*/)
@@ -964,7 +982,7 @@ public class Note extends NoteAbstract implements Cloneable
   	    	//ignore the strict duration of the note. => more simple
   	    	//but may need to ne improved.
   	    	Tuplet tuplet = getTuplet();
-  	    	int notesNb = tuplet.getNotesAsVector().size();
+  	    	int notesNb = tuplet.getNumberOfNotes();
   	    	float totalTupletDuration = tuplet.getTotalDuration();
   	    	//The correction for the note duration because that's a tuplet.
   	    	duration = (short)(totalTupletDuration / notesNb);
@@ -1085,7 +1103,7 @@ public class Note extends NoteAbstract implements Cloneable
 		}
 	}
 	
-	public Object clone() {
+	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 }

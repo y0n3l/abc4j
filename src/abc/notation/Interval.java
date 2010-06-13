@@ -528,8 +528,13 @@ public class Interval implements Cloneable, Serializable {
 	 */
 	//TODO throw NoteHeightException if 2nd note is to low/high
 	public Note calculateSecondNote(Note n1, KeySignature key) {
-		if (n1.isRest())
-			return (Note) n1.clone();
+		if (n1.isRest()) {
+			try {
+				return (Note) n1.clone();
+			} catch (CloneNotSupportedException never) {
+				never.printStackTrace();
+			}
+		}
 		byte[] notes = new byte[] { Note.C, Note.D, Note.E, Note.F, Note.G,
 				Note.A, Note.B };
 		int height1 = n1.getStrictHeight();
@@ -554,7 +559,13 @@ public class Interval implements Cloneable, Serializable {
 			}
 			steps--;
 		}
-		Note n2 = (Note) n1.clone();
+		Note n2;
+		try {
+			n2 = (Note) n1.clone();
+		} catch (CloneNotSupportedException never) {
+			never.printStackTrace();
+			n2 = null;
+		}
 		n2.setHeight(notes[index]);
 		n2.setOctaveTransposition((byte) octaveTransp);
 		n2.setAccidental(AccidentalType.NATURAL);
@@ -717,7 +728,7 @@ public class Interval implements Cloneable, Serializable {
 		return ret;
 	}
 	
-	public Object clone() {
-		return new Interval(getLabel(), getQuality(), getDirection());
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 }

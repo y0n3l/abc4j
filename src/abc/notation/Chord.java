@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
  * Complex chords can be entered, and sometimes it's not a chord!
  * So before gettings chord properties, check {@link #isChord()}.
  */
-public class Chord implements MusicPresentationElement, Cloneable {
+public class Chord extends MusicPresentationElement implements Cloneable {
 	
 	//TODO getFrettedFingerings(EADGBE, DADGAD...)
 	//TODO getNotes - generate a MultiNote
@@ -258,17 +258,12 @@ public class Chord implements MusicPresentationElement, Cloneable {
 		return super.toString() + ": " + getText();
 	}
 	
-	public Object clone() {
-		Object o = null;
-		try {
-			o = super.clone();
-			if (m_bass != null)
-			((Chord) o).m_bass = (Note) m_bass.clone();
-			if (m_note != null)
-			((Chord) o).m_note = (Note) m_note.clone();
-		} catch (CloneNotSupportedException never) {
-			System.err.println(never.getMessage());
-		}
+	public Object clone() throws CloneNotSupportedException {
+		Object o = super.clone();
+		if (m_bass != null)
+		((Chord) o).m_bass = (Note) m_bass.clone();
+		if (m_note != null)
+		((Chord) o).m_note = (Note) m_note.clone();
 		return o;
 	}
 }

@@ -21,6 +21,7 @@ import javax.sound.midi.MidiEvent;
 import abc.notation.KeySignature;
 import abc.notation.Note;
 import abc.notation.MultiNote;
+import abc.notation.Tune.Music;
 
 /** A basic midi converter that just plays melody, ignores ornaments and chords. */
 public class BasicPositionableMidiConverter extends BasicMidiConverter
@@ -34,13 +35,13 @@ public class BasicPositionableMidiConverter extends BasicMidiConverter
     super.playNote(note, indexInScore,  currentKey, reference, duration, track);
   }
 
-  protected void playMultiNote(MultiNote multiNote, int indexInScore, KeySignature currentKey, long reference, Track track) throws InvalidMidiDataException
+  protected void playMultiNote(MultiNote multiNote, int indexInScore, KeySignature currentKey, long reference, Track track, Music staff) throws InvalidMidiDataException
   {
     //System.out.println("play multiNote " + multiNote);
     //MidiEvent[] array = {new MidiEvent(new NotationMarkerMessage((PositionableInCharStream)multiNote), reference)};
     MidiEvent[] array = {new MidiEvent(new NoteIndexMessage(indexInScore), reference)};
     addEventsToTrack(track, array);
-    super.playMultiNote(multiNote, indexInScore, currentKey, reference, track);
+    super.playMultiNote(multiNote, indexInScore, currentKey, reference, track, staff);
 
   }
 

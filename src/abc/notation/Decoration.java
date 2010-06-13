@@ -33,7 +33,7 @@ package abc.notation;
  * <b>NOTE:</b>The symbols T,H,L,M,P,S,O and ABC2.0 features and are not supported
  * by the abc4j 1.6 parser.
  */
-public class Decoration implements SymbolElement, MusicElement, Cloneable
+public class Decoration extends SymbolElement implements Cloneable
 {
 
   private static final long serialVersionUID = 8903942534378714085L;
@@ -309,7 +309,7 @@ public class Decoration implements SymbolElement, MusicElement, Cloneable
 		return "";
 	}
 	
-	public Object clone() {
-		return new Decoration(getType());
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 }

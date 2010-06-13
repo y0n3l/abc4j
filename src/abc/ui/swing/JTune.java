@@ -37,6 +37,7 @@ import abc.notation.BarLine;
 import abc.notation.Clef;
 import abc.notation.KeySignature;
 import abc.notation.MultiNote;
+import abc.notation.MusicElementReference;
 import abc.notation.Note;
 import abc.notation.NoteAbstract;
 import abc.notation.NotesSeparator;
@@ -80,6 +81,7 @@ public class JTune extends JScoreElementAbstract {
 
 	/** The tune to be displayed. */
 	private Tune m_tune = null;
+	private Music m_music = null;
 
 	/**
 	 * Sets this to <TT>true</TT> each time you need that
@@ -177,14 +179,30 @@ public class JTune extends JScoreElementAbstract {
 	public Tune getTune() {
 		return m_tuneBeforeTransposition;
 	}
-
-	/** Returns the hashtable that maps pure music objects to their corresponding
-	 * rendition objects.
-	 * @return Returns the hashtable that maps pure music objects (<DEL>ScoreElement</DEL> <B>MusicElement</B> instances
-	 * from abc.notation.* package) to rendition objects (JScoreElement instances from
-	 * abc.ui.swing.score.* package) */
-	public Hashtable getRenditionObjectsMapping() {
-		return m_scoreElements;
+	
+	/**
+	 * Returns the rendition object (JNote, JChord...) for
+	 * the given music element reference
+	 * @param note
+	 * @return
+	 */
+	public JScoreElement getRenditionObjectFor(MusicElementReference ref) {
+		//fast way
+		JScoreElement jse = (JScoreElement) m_scoreElements.get(ref);
+		if (jse == null) {
+			//if null, search comparing ref with all keys
+			//System.out.println("Can't find "+ref+", compare keys");
+			Enumeration e = m_scoreElements.keys();
+			while (e.hasMoreElements()) {
+				MusicElementReference mer = (MusicElementReference) e.nextElement();
+				if (ref.equals(mer)) {
+					jse = (JScoreElement) m_scoreElements.get(mer);
+					//System.out.println("found!");
+					break;
+				}
+			}
+		}
+		return jse;
 	}
 	
 	/**
@@ -194,9 +212,9 @@ public class JTune extends JScoreElementAbstract {
 	 * @return
 	 */
 	public JScoreElement getRenditionObjectFor(MusicElement musicElement) {
-		JScoreElement ret = (JScoreElement) m_scoreElements.get(musicElement);
+		JScoreElement ret = getRenditionObjectFor(musicElement.getReference());
 		//If it's a Note, look for chords which may contain this note
-		if (musicElement instanceof Note) {
+		/*if ((ret == null) && (musicElement instanceof Note)) {
 			Note note = (Note) musicElement;
 			Enumeration e = m_scoreElements.keys();
 			while (e.hasMoreElements()) {
@@ -213,7 +231,7 @@ public class JTune extends JScoreElementAbstract {
 					}
 				}
 			}
-		}
+		}*/
 		return ret;
 	}
 
@@ -230,10 +248,6 @@ public class JTune extends JScoreElementAbstract {
 		if (m_engraver == null)
 			m_engraver = new Engraver();
 		return m_engraver;
-	}
-	
-	protected Hashtable getScoreElements() {
-		return m_scoreElements;
 	}
 
 	/** Returns the part of the score (as a JScoreElement instance) located
@@ -368,6 +382,7 @@ public class JTune extends JScoreElementAbstract {
 		//if (m_isOutdated || (m_tuneBeforeTransposition == null))
 		//	m_tuneBeforeTransposition = (Tune) m_tune.clone();
 		m_isOutdated = false;
+		m_music = null;
 		m_tune = Tune.transpose(m_tuneBeforeTransposition,
 				getTransposition());
 
@@ -432,7 +447,7 @@ public class JTune extends JScoreElementAbstract {
 		//getMusic() returns 4 lines
 		//it's ok for audio rendition, but for graphical
 		//we just need one occurence of each part.
-		Music score = m_tune.getMusicForGraphicalRendition();
+		m_music = m_tune.getMusicForGraphicalRendition();
 		
 		ArrayList lessThanQuarter = new ArrayList();
 		//int durationInGroup = 0;
@@ -442,16 +457,22 @@ public class JTune extends JScoreElementAbstract {
 		int staffLineNb = 0;
 		//init attributes that are for iterating through the score of the tune.
 		currentKey = m_tune.getKey();
-		if (currentKey != null)
-			previousKey = (KeySignature) currentKey.clone();
+		if (currentKey != null) {
+			try {
+				previousKey = (KeySignature) currentKey.clone();
+			} catch (CloneNotSupportedException never) {
+				never.printStackTrace();
+			}
+		}
 		else
 			previousKey = null;
 		previousTime = null;
 		currentTime = null;
 		currentStaffLineInitialized = false;
 		currentStaffLine = null;
-		for (int i=0; i<score.size(); i++) {
-			MusicElement s = (MusicElement)score.elementAt(i);
+		for (int i=0; i<m_music.size(); i++) {
+			MusicElement s = (MusicElement)m_music.elementAt(i);
+			//System.out.println(s.toString() + " " + s.getReference().toString());
 			// ==== Notes>quarter, rests, notes without slur,tuplet ====
 			if (
 					(
@@ -478,13 +499,22 @@ public class JTune extends JScoreElementAbstract {
 				//here or in initStaffLine?
 				if (currentStaffLineInitialized && !currentKey.equals(previousKey)) {
 					appendToScore(new JKeySignature(currentKey, previousKey, cursor, getMetrics()));
-					previousKey = (KeySignature) currentKey.clone();
+					try {
+						previousKey = (KeySignature) currentKey.clone();
+					} catch (CloneNotSupportedException never) {
+						never.printStackTrace();
+					}
 				}
 			} else
 			// ==== Time signature ====
 			if (s instanceof TimeSignature) {
-				if (currentTime != null)
-					previousTime = (TimeSignature) currentTime.clone();
+				if (currentTime != null) {
+					try {
+						previousTime = (TimeSignature) currentTime.clone();
+					} catch (CloneNotSupportedException never) {
+						never.printStackTrace();
+					}
+				}
 				currentTime = (TimeSignature)s;
 				//if (previousTime != null)
 				if (currentStaffLineInitialized && !currentTime.equals(previousTime))
@@ -694,7 +724,7 @@ public class JTune extends JScoreElementAbstract {
 		cursor.setLocation(cursorNewLocationX, cursor.getY());
 
 		if (element instanceof JNote)
-			m_scoreElements.put(((JScoreElementAbstract)element).getMusicElement(), element);
+			m_scoreElements.put(element.getMusicElement().getReference(), element);
 		else
 		if (element instanceof JGroupOfNotes) {
 			JGroupOfNotes g = (JGroupOfNotes)element;
@@ -702,7 +732,7 @@ public class JTune extends JScoreElementAbstract {
 
 			for (int j=0; j<g.getRenditionElements().length; j++) {
 				if ((g.getRenditionElements()[j]) instanceof JNote)
-					m_scoreElements.put(g.getMusicElements()[j], g.getRenditionElements()[j]);
+					m_scoreElements.put(g.getMusicElements()[j].getReference(), g.getRenditionElements()[j]);
 				else
 				if (g.getRenditionElements()[j] instanceof JChord){
 					JNote[] jnotes = ((JChord)g.getRenditionElements()[j]).getScoreElements();
@@ -712,9 +742,9 @@ public class JTune extends JScoreElementAbstract {
 					//TODO the ordering of the get notes as vector and the jnotes should be the same...
 					//System.out.println("Warning - abc4j - current limitation prevents you from using chords with different notes lengths.");
 					for (int i=0; i<jnotes.length; i++)
-						m_scoreElements.put(jnotes[i].getMusicElement(), jnotes[i]);
+						m_scoreElements.put(jnotes[i].getMusicElement().getReference(), jnotes[i]);
 					//adds also the chords itself
-					m_scoreElements.put(g.getRenditionElements()[j].getMusicElement(), g.getRenditionElements()[j]);
+					m_scoreElements.put(g.getRenditionElements()[j].getMusicElement().getReference(), g.getRenditionElements()[j]);
 				}
 			}
 		}
@@ -726,9 +756,9 @@ public class JTune extends JScoreElementAbstract {
 			//TODO the ordering of the get notes as vector and the jnotes should be the same...
 			//System.out.println("Warning - abc4j - current limitation prevents you from using chords with different notes lengths.");
 			for (int i=0; i<jnotes.length; i++)
-				m_scoreElements.put(jnotes[i].getMusicElement(), jnotes[i]);
+				m_scoreElements.put(jnotes[i].getMusicElement().getReference(), jnotes[i]);
 			//adds also the chords itself
-			m_scoreElements.put(element.getMusicElement(), element);
+			m_scoreElements.put(element.getMusicElement().getReference(), element);
 		}
 	}
 
@@ -1020,13 +1050,8 @@ public class JTune extends JScoreElementAbstract {
 	}
 
 	private JSlurOrTie getJSlurOrTie(TwoNotesLink slurDef) {
-		JNoteElementAbstract elmtStart;
-		if (slurDef.getStart() instanceof Note) {
-			elmtStart = (JNote)m_scoreElements.get(slurDef.getStart());
-		} else {
-			//instanceof MultiNote
-			elmtStart = (JChord)m_scoreElements.get(slurDef.getStart());
-		}
+		JNoteElementAbstract elmtStart
+			= (JNoteElementAbstract) getRenditionObjectFor(slurDef.getStart());
 		return elmtStart.getJSlurDefinition();
 	}
 
@@ -1044,29 +1069,8 @@ public class JTune extends JScoreElementAbstract {
 			return new Point2D[] {};
 		}
 		JNoteElementAbstract elmtStart, elmtEnd;
-		//JNote elmtStartLow, elmtStartHigh, elmtEndLow, elmtEndHigh;
-		elmtStart = (JNoteElementAbstract) m_scoreElements.get(slurDef.getStart());
-		elmtEnd = (JNoteElementAbstract) m_scoreElements.get(slurDef.getEnd());
-		//elmtStart = (JNoteElementAbstract) getRenditionObjectFor(slurDef.getStart());
-		//elmtEnd = (JNoteElementAbstract) getRenditionObjectFor(slurDef.getEnd());
-		/*if (slurDef.getStart() instanceof MultiNote) {
-			elmtStart = (JChord)m_scoreElements.get(slurDef.getStart());
-			elmtStartLow = ((JChord)elmtStart).getLowestNote();
-			elmtStartHigh = ((JChord)elmtStart).getHighestNote();
-		} else {
-			//instanceof Note
-			elmtStart = (JNote)m_scoreElements.get(slurDef.getStart());
-			elmtStartLow = elmtStartHigh = (JNote) elmtStart;
-		}
-		if (slurDef.getEnd() instanceof MultiNote) {
-			elmtEnd = (JChord)m_scoreElements.get(slurDef.getEnd());
-			elmtEndLow = ((JChord)elmtEnd).getLowestNote();
-			elmtEndHigh = ((JChord)elmtEnd).getHighestNote();
-		} else {
-			//instanceof Note
-			elmtEnd = (JNote)m_scoreElements.get(slurDef.getEnd());
-			elmtEndLow = elmtEndHigh = (JNote) elmtEnd;
-		}*/
+		elmtStart = (JNoteElementAbstract) getRenditionObjectFor(slurDef.getStart());
+		elmtEnd = (JNoteElementAbstract) getRenditionObjectFor(slurDef.getEnd());
 		if (elmtStart == null || elmtStart == null) {
 			System.err.println("getLinkPoints error: elmtStart or elmtEnd are null");
 			return new Point2D[] {};
@@ -1140,16 +1144,7 @@ public class JTune extends JScoreElementAbstract {
 		p[UNDER_OUT][END] = elmtEnd.getSlurUnderAnchorOutOfStem();
 		p[ABOVE_IN][END] = elmtEnd.getSlurAboveAnchor();
 		p[ABOVE_OUT][END] = elmtEnd.getSlurAboveAnchorOutOfStem();
-/*
-		p[UNDER_IN][START] = elmtStartLow.getSlurUnderAnchor();
-		p[UNDER_OUT][START] = elmtStartLow.getSlurUnderAnchorOutOfStem();
-		p[ABOVE_IN][START] = elmtStartHigh.getSlurAboveAnchor();
-		p[ABOVE_OUT][START] = elmtStartHigh.getSlurAboveAnchorOutOfStem();
-		p[UNDER_IN][END] = elmtEndLow.getSlurUnderAnchor();
-		p[UNDER_OUT][END] = elmtEndLow.getSlurUnderAnchorOutOfStem();
-		p[ABOVE_IN][END] = elmtEndHigh.getSlurAboveAnchor();
-		p[ABOVE_OUT][END] = elmtEndHigh.getSlurAboveAnchorOutOfStem();
-*/
+
 		//
 		//determinate peaks (lowest/highest) note and note glyph
 		// FIXME: ties should enclose note decorations
@@ -1157,12 +1152,16 @@ public class JTune extends JScoreElementAbstract {
 		NoteAbstract[] peakNote = new NoteAbstract[4];
 		JNoteElementAbstract[] peakNoteGlyph = new JNoteElementAbstract[4];
 
+		NoteAbstract startNote =// (NoteAbstract) m_music.getElementByReference(slurDef.getStart());
+			(NoteAbstract) elmtStart.getMusicElement();
+		NoteAbstract endNote =// (NoteAbstract) m_music.getElementByReference(slurDef.getEnd());
+			(NoteAbstract) elmtEnd.getMusicElement();
 		//under in
-		peakNote[UNDER_IN] = m_tune.getMusic().getLowestNoteBewteen(slurDef.getStart(), slurDef.getEnd());
-		peakNoteGlyph[UNDER_IN] = (JNoteElementAbstract)m_scoreElements.get(peakNote[UNDER_IN]);
-
+		peakNote[UNDER_IN] = m_music.getLowestNoteBewteen(startNote, endNote);
+		peakNoteGlyph[UNDER_IN] = (JNoteElementAbstract) getRenditionObjectFor(peakNote[UNDER_IN]);
+		
 		//under out of stems
-		peakNoteGlyph[UNDER_OUT] = getLowestNoteGlyphBetween(slurDef.getStart(), slurDef.getEnd(), true);
+		peakNoteGlyph[UNDER_OUT] = getLowestNoteGlyphBetween(startNote, endNote, true);
 		//enhance: if lowest glyph strictly between start/end is at same Y than start or end
 		if (peakNoteGlyph[UNDER_OUT] == null) { //no notes between start and end
 			peakNoteGlyph[UNDER_OUT] = p[UNDER_OUT][START].getY()>p[UNDER_OUT][END].getY()
@@ -1177,11 +1176,11 @@ public class JTune extends JScoreElementAbstract {
 		peakNote[UNDER_OUT] = (NoteAbstract) peakNoteGlyph[UNDER_OUT].getMusicElement();
 
 		//above in
-		peakNote[ABOVE_IN] = m_tune.getMusic().getHighestNoteBewteen(slurDef.getStart(), slurDef.getEnd());
-		peakNoteGlyph[ABOVE_IN] = (JNoteElementAbstract)m_scoreElements.get(peakNote[ABOVE_IN]);
+		peakNote[ABOVE_IN] = m_music.getHighestNoteBewteen(startNote, endNote);
+		peakNoteGlyph[ABOVE_IN] = (JNoteElementAbstract)getRenditionObjectFor(peakNote[ABOVE_IN]);
 
 		//above out of stems (e.g. tuplet)
-		peakNoteGlyph[ABOVE_OUT] = getHighestNoteGlyphBetween(slurDef.getStart(), slurDef.getEnd(), true);
+		peakNoteGlyph[ABOVE_OUT] = getHighestNoteGlyphBetween(startNote, endNote, true);
 		//enhance: if lowest glyph strictly between start/end is at same Y than start or end
 		if (peakNoteGlyph[ABOVE_OUT] == null) { //no notes between start and end
 			peakNoteGlyph[ABOVE_OUT] = p[ABOVE_OUT][START].getY()<p[ABOVE_OUT][END].getY()
@@ -1202,13 +1201,13 @@ public class JTune extends JScoreElementAbstract {
 		//
 		for (short i = 0; i < 4; i++) {
 			int factor = (i<=UNDER_OUT)?(1):(-1);
-			if (peakNote[i].equals(slurDef.getStart())) {
+			if (peakNote[i].getReference().equals(slurDef.getStart())) {
 				p[i][CONTROL] = new Point2D.Double(
 					p[i][START].getX() + (p[i][END].getX()-p[i][START].getX())/2,
 					p[i][START].getY() + factor*getMetrics().getSlurAnchorYOffset()
 				);
 			}
-			else if (peakNote[i].equals(slurDef.getEnd())) {
+			else if (peakNote[i].getReference().equals(slurDef.getEnd())) {
 				p[i][CONTROL] = new Point2D.Double(
 					p[i][START].getX() + (p[i][END].getX()-p[i][START].getX())/2,
 					p[i][END].getY() + factor*getMetrics().getSlurAnchorYOffset()
@@ -1300,7 +1299,7 @@ public class JTune extends JScoreElementAbstract {
 
 			try {
 				SlurInfos slurInfos = new SlurInfos(p2d,
-					getNoteGlyphesBetween(slurDef.getStart(), slurDef.getEnd()),
+					getNoteGlyphesBetween(startNote, endNote),
 					getMetrics());
 
 				//Check results
@@ -1366,7 +1365,7 @@ public class JTune extends JScoreElementAbstract {
 			//System.out.print((cpt++) + " : ");
 			try {
 				SlurInfos slurInfos = new SlurInfos(p2d,
-					getNoteGlyphesBetween(slurDef.getStart(), slurDef.getEnd()),
+					getNoteGlyphesBetween(startNote, endNote),
 					getMetrics());
 				if (slurInfos.mark>bestMark || (bestCurve==null)) {
 					bestMark = slurInfos.mark;
@@ -1484,10 +1483,10 @@ public class JTune extends JScoreElementAbstract {
 	private Collection getNoteGlyphesBetween(NoteAbstract start, NoteAbstract end) {
 		Collection jnotes = new Vector();
 		try {
-			Collection notes = m_tune.getMusic().getNotesBetween(start, end);
+			Collection notes = m_music.getNotesBetween(start, end);
 			for (Iterator it = notes.iterator(); it.hasNext();) {
 				NoteAbstract n = (NoteAbstract) it.next();
-				jnotes.add((JNoteElementAbstract) m_scoreElements.get(n));
+				jnotes.add((JNoteElementAbstract) getRenditionObjectFor(n));
 			}
 		} catch (Exception e) {
 			// TODO: handle exception, shouldn't happen
@@ -1537,7 +1536,11 @@ public class JTune extends JScoreElementAbstract {
 		cursor.setLocation(cursor.getX()+width, cursor.getY());
 		if (currentKey!=null) {
 			JKeySignature sk = new JKeySignature(currentKey, previousKey, cursor, getMetrics());
-			previousKey = (KeySignature) currentKey.clone();
+			try {
+				previousKey = (KeySignature) currentKey.clone();
+			} catch (CloneNotSupportedException never) {
+				never.printStackTrace();
+			}
 			sl.addElement(sk);
 			//initElements.addElement(sk);
 			width = sk.getWidth();

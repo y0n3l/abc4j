@@ -16,7 +16,7 @@
 package abc.notation;
 
 /** A tagging class used to delimiter groups of notes in score. */
-public class NotesSeparator implements MusicPresentationElement, Cloneable {
+public class NotesSeparator extends MusicPresentationElement implements Cloneable {
 
 	private static final long serialVersionUID = -5701446747007252762L;
 
@@ -24,7 +24,7 @@ public class NotesSeparator implements MusicPresentationElement, Cloneable {
 		
 	}
 	
-	public Object clone() {
-		return new NotesSeparator();
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 }

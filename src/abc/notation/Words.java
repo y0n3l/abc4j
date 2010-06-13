@@ -18,7 +18,7 @@ package abc.notation;
 /**
  * A class to describe words (lyrics) for a tune. 
  */
-public class Words implements MusicElement, Cloneable {
+public class Words extends MusicElement implements Cloneable {
 	
 	private static final long serialVersionUID = -604338641904126084L;
 	
@@ -37,8 +37,8 @@ public class Words implements MusicElement, Cloneable {
 		return content;
 	}
 	
-	public Object clone() {
-		return new Words(getContent());
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 	
 }

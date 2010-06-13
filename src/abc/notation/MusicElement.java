@@ -17,8 +17,24 @@ package abc.notation;
 
 import java.io.Serializable;
 
-/** A tagging interface for all elements that are part of a tune's music. */
-public interface MusicElement extends Serializable
-{
-}
+/**
+ * A tagging abstract class (was: interface) for all elements that are part of a
+ * tune's music.
+ */
+public abstract class MusicElement implements Cloneable, Serializable {
 
+	private MusicElementReference _reference = new MusicElementReference();
+
+	/**
+	 * Returns the reference of the element in the Tune.Music collection.<br>
+	 */
+	public MusicElementReference getReference() {
+		return _reference;
+	}
+	
+	public Object clone() throws CloneNotSupportedException {
+		Object o = super.clone();
+		((MusicElement) o)._reference = (MusicElementReference) _reference.clone();
+		return o;
+	}
+}

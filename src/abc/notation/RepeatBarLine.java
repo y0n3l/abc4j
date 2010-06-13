@@ -16,7 +16,7 @@
 package abc.notation;
 
 /** A special bar line that enables you to repeat part of music from a tune. */
-public class RepeatBarLine extends BarLine implements MusicElement, Cloneable
+public class RepeatBarLine extends BarLine implements Cloneable
 {
 
   private static final long serialVersionUID = 6130499407941371335L;
@@ -49,8 +49,8 @@ public class RepeatBarLine extends BarLine implements MusicElement, Cloneable
       return "?";
   }
 
-  public Object clone() {
-	  return new RepeatBarLine(getRepeatNumber());
+  public Object clone() throws CloneNotSupportedException {
+	  return super.clone();
   }
 }
 

@@ -84,10 +84,10 @@ class JGroupOfNotes extends JScoreElementAbstract
 			}
 		//m_jNotes[i]=n;
 		if (notes[0].getTuplet()!=null) {
-			nUpletSize = notes[0].getTuplet().getNotesAsVector().size();
+			nUpletSize = notes[0].getTuplet().getNumberOfNotes();
 			SlurDefinition slurDef = new SlurDefinition();
-			slurDef.setStart(notes[0]);
-			slurDef.setEnd(notes[notes.length-1]);
+			slurDef.setStart(notes[0].getReference());
+			slurDef.setEnd(notes[notes.length-1].getReference());
 			JSlurOrTie jSlurDef = new JSlurOrTie(slurDef, getMetrics());
 			jSlurDef.setPosition(JSlurOrTie.POSITION_ABOVE);
 			jSlurDef.setOutOfStems(true);

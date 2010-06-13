@@ -18,7 +18,7 @@ package abc.notation;
 /**
  * Constants for dynamics (crescendo, decrescendo, mp, fff...)
  */
-public class Dynamic implements SymbolElement, Cloneable {
+public class Dynamic extends SymbolElement implements Cloneable {
 	
 	private static final long serialVersionUID = 8365793395464369901L;
 	/** <I>pppp</I> dynamic, should be played at volume 15 in midi */
@@ -104,8 +104,8 @@ public class Dynamic implements SymbolElement, Cloneable {
 			return super.equals(o);
 	}
 	
-	public Object clone() {
-		return new Dynamic(getType());
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 }

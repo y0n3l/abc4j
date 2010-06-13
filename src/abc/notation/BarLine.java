@@ -16,7 +16,7 @@
 package abc.notation;
 
 /** This class defines bar lines. */
-public class BarLine extends DecorableElement implements MusicElement, Cloneable
+public class BarLine extends DecorableElement implements Cloneable
 {
   private static final long serialVersionUID = -1007382315266780584L;
   
@@ -59,8 +59,8 @@ public class BarLine extends DecorableElement implements MusicElement, Cloneable
   public byte getType()
   { return m_type; }
 
-	public Object clone() {
-		return new BarLine(getType());
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 	
 	/**

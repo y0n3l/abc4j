@@ -15,9 +15,16 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.notation;
 
-/** A tagging interface for all elements composing a tune's music that are
+import java.io.Serializable;
+
+/** A tagging abstract class (was: interface) for all elements composing a tune's music that are
  * releated to the way this music is rendered graphicaly on a score for instance. */
-public interface MusicPresentationElement extends MusicElement
+public abstract class MusicPresentationElement extends MusicElement implements Cloneable, Serializable
 {
+	
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
+	
 }
 

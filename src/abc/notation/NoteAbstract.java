@@ -16,11 +16,10 @@
 
 package abc.notation;
 
-import java.util.Iterator;
 import java.util.Vector;
 
 /** This is the abstract class to define notes or multi notes. */
-public class NoteAbstract extends DecorableElement implements MusicElement, Cloneable
+public class NoteAbstract extends DecorableElement implements Cloneable
 {
 
   private static final long serialVersionUID = 7275657390476103339L;
@@ -201,7 +200,7 @@ public class NoteAbstract extends DecorableElement implements MusicElement, Clon
 		while (i < slurDefinitions.size()) {
 			SlurDefinition slur = (SlurDefinition) slurDefinitions.elementAt(i);
 			if (slur.getStart() != null) {
-				if (slur.getStart().equals(this))
+				if (slur.getStart().equals(getReference()))
 					return true;
 			}
 			i++;
@@ -214,7 +213,7 @@ public class NoteAbstract extends DecorableElement implements MusicElement, Clon
 		while (i < slurDefinitions.size()) {
 			SlurDefinition slur = (SlurDefinition) slurDefinitions.elementAt(i);
 			if (slur.getEnd() != null) {
-				if (slur.getEnd().equals(this))
+				if (slur.getEnd().equals(getReference()))
 					return true;
 			}
 			i++;
@@ -255,14 +254,14 @@ public class NoteAbstract extends DecorableElement implements MusicElement, Clon
    * @return <TT>true</TT> if this note is beginning a tie, <TT>false</TT>
    * otherwise. */
   public boolean isBeginningTie() {
-	  return tieDefinition!=null && this.equals(tieDefinition.getStart());
+	  return tieDefinition!=null && getReference().equals(tieDefinition.getStart());
   }
 
   /** Returns <TT>true</TT> if this note is ending a tie.
    * @return <TT>true</TT> if this note is ending a tie, <TT>false</TT>
    * otherwise. */
   public boolean isEndingTie() {
-	  return tieDefinition!=null && this.equals(tieDefinition.getEnd());
+	  return tieDefinition!=null && getReference().equals(tieDefinition.getEnd());
   }
 
 
@@ -290,7 +289,7 @@ public class NoteAbstract extends DecorableElement implements MusicElement, Clon
     return string2Return+"@"+hashCode();
   }
 
-	public Object clone() {
+	public Object clone() throws CloneNotSupportedException {
 		Object o = super.clone();
 		NoteAbstract clone = (NoteAbstract) o;
 		if (m_chord != null)
@@ -301,32 +300,9 @@ public class NoteAbstract extends DecorableElement implements MusicElement, Clon
 		clone.m_decorations = (Decoration[]) m_decorations.clone();
 		if (m_gracingNotes != null)
 		clone.m_gracingNotes = (Note[]) m_gracingNotes.clone();
-		if (m_tuplet != null)
-		clone.m_tuplet = (Tuplet) m_tuplet.clone();
-		/*if (slurDefinitions != null) {
-			clone.slurDefinitions = new Vector();
-			for (Iterator itSlurs = slurDefinitions.iterator(); itSlurs.hasNext();) {
-				SlurDefinition slur = (SlurDefinition) itSlurs.next();
-				SlurDefinition cloneSlur = slur;
-				if (slur.getStart().equals(this)) {
-					cloneSlur = (SlurDefinition) slur.clone();
-					slur.setStart(clone);
-				}
-				if (slur.getEnd().equals(this))
-					slur.setEnd(clone);
-				clone.slurDefinitions.addElement(slur);
-			}
-		}
-		if (tieDefinition != null) {
-			TieDefinition oTie = tieDefinition;
-			if (oTie.getStart().equals(this)) {
-				oTie = (TieDefinition) tieDefinition.clone();
-				oTie.setStart((NoteAbstract) o);
-			}
-			if (oTie.getEnd().equals(this))
-				oTie.setEnd((NoteAbstract) o);
-			((NoteAbstract) o).tieDefinition = oTie;
-		}*/
+		//do not clone tuplet
+		//if (m_tuplet != null)
+		//clone.m_tuplet = (Tuplet) m_tuplet.clone();
 		return o;
 	}
 }
