@@ -199,6 +199,8 @@ class JChord extends JNoteElementAbstract {
 	}
 	
 	protected JNote getHighestNote() {
+		if (m_normalizedChords != null)
+			return m_normalizedChords[0].getHighestNote();
 		JNote highest = null;
 		JNote current;
 		for (int i=0; i<m_sNoteInstances.length; i++) {
@@ -213,6 +215,8 @@ class JChord extends JNoteElementAbstract {
 	}
 	
 	protected JNote getLowestNote() {
+		if (m_normalizedChords != null)
+			return m_normalizedChords[0].getLowestNote();
 		JNote lowest = null;
 		JNote current;
 		for (int i=0; i<m_sNoteInstances.length; i++) {
