@@ -24,8 +24,6 @@ public class NoteAbstract extends DecorableElement implements Cloneable
 
   private static final long serialVersionUID = 7275657390476103339L;
   
-  /** The chord name. */
-  private Chord m_chord = null;
   private Note[] m_gracingNotes = null;
   private boolean generalGracing		= false;
   private boolean staccato			= false;
@@ -46,30 +44,6 @@ public class NoteAbstract extends DecorableElement implements Cloneable
   /** The tuplet this note may belongs to. <TT>null</TT>
    * if this note does not belong to any tuplet. */
   private Tuplet m_tuplet = null;
-
-  /** Sets the name of the chord.
-   * @param chordName The name of the chord, ex: Gm6. */
-  public void setChordName(String chordName)
-  { m_chord = new Chord(chordName); }
-  
-  /**
-   * Sets the chord instead of only the chord name
-   * @param chord e.g. new Chord("Gm6")
-   */
-  public void setChord(Chord chord)
-  { m_chord = chord; }
-
-  /** Returns the name of the chord.
-   * @return The name of the chord, <TT>null</TT> if no chord has been set.
-   * @see #getChord()
-   */
-  public String getChordName()
-  { return m_chord!=null?m_chord.getText():null; }
-  
-  /** Returns the Chord object instead of its name
-   * @return a {@link Chord} object, or <TT>null</TT> */
-  public Chord getChord()
-  { return m_chord; }
 
   /** Returns the gracing notes to be played with this note.
    * @return The gracing notes to be played with this note. <TT>null</TT> if

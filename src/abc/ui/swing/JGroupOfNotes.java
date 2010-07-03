@@ -222,10 +222,10 @@ class JGroupOfNotes extends JScoreElementAbstract
 			if (jnea instanceof JChordPartOfGroup) {
 				JChordPartOfGroup jcpog = getChordReallyPartOfGroup((JChordPartOfGroup) jnea);
 				jcpog.setStemYEnd(stemY);
-				jcpog.onBaseChanged();
+		//		jcpog.onBaseChanged();
 			} else { //JNotePartOfGroup
 				((JNotePartOfGroup) jnea).setStemYEnd(stemY);
-				jnea.onBaseChanged();
+		//		jnea.onBaseChanged();
 			}
 		}
 	}

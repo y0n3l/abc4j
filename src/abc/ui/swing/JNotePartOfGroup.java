@@ -79,17 +79,20 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 
 		int stemYBegin = (int)(noteY - glyphDimension.getHeight()/2);
 
-		//if (stemYEnd < 0) {
+		if (stemYEnd < 0) {
+			// if stemYEnd hasn't been set give it a default
 			if (isStemUp()) {
 				//stemYBegin = (int)(displayPosition.getY() - glyphDimension.getHeight()/6);
-				// if stemYEnd hasn't been set give it a default
-				/*if (stemYEnd < 0)*/ stemYEnd = (int)(displayPosition.getY() - metrics.getStemLengthForContext(getNotationContext()));
+				stemYEnd = (int)(displayPosition.getY()
+						+ glyphDimension.getHeight()/2
+						- metrics.getStemLengthForContext(getNotationContext()));
 			} else {
 				//stemYBegin = (int)(displayPosition.getY() + glyphDimension.getHeight()/6);
-				// if stemYEnd hasn't been set give it a default
-				/*if (stemYEnd < 0)*/ stemYEnd = (int)(displayPosition.getY() + metrics.getStemLengthForContext(getNotationContext()));
+				stemYEnd = (int)(displayPosition.getY()
+						- glyphDimension.getHeight()/2
+						+ metrics.getStemLengthForContext(getNotationContext()));
 			}
-		//}
+		}
 
 		setStemUpBeginPosition(new Point2D.Double(noteX + glyphDimension.getWidth(), stemYBegin));
 		setStemDownBeginPosition(new Point2D.Double(noteX, stemYBegin));

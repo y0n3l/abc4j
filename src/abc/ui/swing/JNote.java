@@ -308,7 +308,7 @@ class JNote extends JNoteElementAbstract {
 		if (m_jGracenotes != null)
 			m_jGracenotes.setBase(gracesPosition);
 		calcDotsPosition();
-		calcDecorationPosition();
+		//calcDecorationPosition();
 		calcSlursAndTiesPosition();
 	}
 
@@ -419,7 +419,7 @@ class JNote extends JNoteElementAbstract {
 		renderDecorations(g);
 		renderChordName(g);
 		
-		//renderDebugBoundingBox(g);
+		//renderDebugBoundingBoxOuter(g);
 		//renderDebugSlurAnchors(g);
 		//renderDebugDecorationAnchors(g);
 		

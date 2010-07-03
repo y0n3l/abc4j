@@ -16,17 +16,22 @@
 package abc.ui.swing;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Vector;
 
+import abc.notation.Chord;
 import abc.notation.DecorableElement;
 import abc.notation.Decoration;
 import abc.notation.MusicElement;
+import abc.notation.NoteAbstract;
 import abc.notation.Tune;
 import abc.ui.fonts.MusicalFont;
+import abc.ui.scoretemplates.HorizontalAlign;
+import abc.ui.scoretemplates.ScoreAttribute;
 import abc.ui.scoretemplates.ScoreElements;
 
 /** This class defines a score rendition element. Rendition scores elements
@@ -265,12 +270,50 @@ abstract class JScoreElementAbstract implements JScoreElement {
 	protected Color getColor() {
 		return m_color;
 	}
+	
+	protected void renderChordName(Graphics2D gfx) {
+		MusicElement me = getMusicElement();
+		Chord chord = null;
+		if (me instanceof DecorableElement)
+			chord = ((DecorableElement) me).getChord();
+		Point2D displayPos = null;
+		if (this instanceof JNote)
+			displayPos = ((JNote) this).getDisplayPosition();
+		else if (this instanceof JChord)
+			displayPos = ((JChord) this).getHighestNote().getDisplayPosition();
+		else if (this instanceof JSpacer)
+			displayPos = getBase();
+		if (chord != null) {
+			JChordName chordName = new JChordName(getMetrics(), chord);
+			Dimension dimension = chordName.getDimension();
+			double y = getStaffLine().getBase().getY()/* not yet defined*/
+				//- (displayPosition.getY()%m_metrics.getStaffLinesSpacing())
+				- getMetrics().getStaffCharBounds().getHeight()
+				- getTemplate().getAttributeSize(ScoreAttribute.CHORD_LINE_SPACING)
+				+ dimension.getHeight();
+			double x = displayPos.getX();
+			byte[] pos = getTemplate().getPosition(ScoreElements.TEXT_CHORDS);
+			if (pos != null) {
+				switch (pos[1]) {
+				case HorizontalAlign.RIGHT:
+					x -= dimension.getWidth(); break;
+				case HorizontalAlign.CENTER:
+					x -= dimension.getWidth()/2; break;
+				case HorizontalAlign.LEFT:
+				default:
+					break;
+				}
+				chordName.setBase(new Point2D.Double(x, y));
+				chordName.render(gfx);	
+			}
+		}
+	}
 
 	protected void renderDecorations(Graphics2D context){
 		if (m_jDecorations != null && m_jDecorations.size() > 0) {
 			Color previousColor = context.getColor();
 			setColor(context, ScoreElements.DECORATION);
-			if (m_decorationAnchors[JDecoration.ABOVE_STAFF] == null)
+			//if (m_decorationAnchors[JDecoration.ABOVE_STAFF] == null)
 				calcDecorationPosition();
 			//first decoration is on top
 			JDecoration jDeco = null;

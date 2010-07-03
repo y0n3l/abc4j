@@ -23,14 +23,11 @@ import java.awt.geom.Point2D;
 import java.awt.geom.QuadCurve2D;
 import java.awt.geom.Rectangle2D;
 
-import abc.notation.Chord;
 import abc.notation.Clef;
 import abc.notation.Decoration;
 import abc.notation.GracingType;
-import abc.notation.MusicElement;
 import abc.notation.Note;
 import abc.notation.NoteAbstract;
-import abc.ui.scoretemplates.HorizontalAlign;
 import abc.ui.scoretemplates.ScoreAttribute;
 import abc.ui.scoretemplates.ScoreElements;
 import abc.ui.swing.JScoreElement.JStemmableElement;
@@ -215,16 +212,17 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 			
 			ScoreMetrics metrics = getMetrics();
 			Rectangle2D bb = getBoundingBox();
+			boolean isStemUp = isStemUp();
 			double noteHeight = metrics.getNoteHeight();
 			double noteWidth = metrics.getNoteWidth();
 			double noteHeadX = lowest.getNotePosition().getX() + noteWidth * 0.5;
 			double aboveNoteHeadY = highest.getNotePosition().getY() - noteHeight*1.5;
 			double underNoteHeadY = lowest.getNotePosition().getY() + noteHeight*0.5;
 			double stemX = lowest.getStemBeginPosition().getX();
-			double endStemY = isStemUp()
+			double endStemY = isStemUp
 							?(bb.getMinY()-noteHeight*0.5)
 							:(bb.getMaxY()+noteHeight*0.5);
-			double middleStemY = isStemUp()
+			double middleStemY = isStemUp
 							?(endStemY + noteHeight*1.5)
 							:(endStemY - noteHeight*1.5);
 			double aboveStaffY = (getStaffLine()!=null
@@ -250,7 +248,7 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 					Math.max(underNoteHeadY, endStemY));
 			double aboveNoteOutOfStaffY = Math.min(aboveNoteHeadY, aboveStaffY);
 			double underNoteOutOfStaffY = Math.max(underNoteHeadY, underStaffY);
-			double endStemOutOfStaffY = isStemUp()
+			double endStemOutOfStaffY = isStemUp
 							?Math.min(endStemY, aboveStaffY)
 							:Math.max(endStemY, underStaffY);
 			
@@ -263,13 +261,13 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 			m_decorationAnchors[JDecoration.UNDER_NOTE]
 				= new Point2D.Double(noteHeadX, underNoteHeadY);
 			m_decorationAnchors[JDecoration.VERTICAL_NEAR_STEM]
-				= new Point2D.Double(noteHeadX, isStemUp()?aboveNoteHeadY:underNoteHeadY);
+				= new Point2D.Double(noteHeadX, isStemUp?aboveNoteHeadY:underNoteHeadY);
 			m_decorationAnchors[JDecoration.VERTICAL_NEAR_STEM_OUT_STAFF]
-			    				= new Point2D.Double(noteHeadX, isStemUp()?aboveNoteOutOfStaffY:underNoteOutOfStaffY);
+			    				= new Point2D.Double(noteHeadX, isStemUp?aboveNoteOutOfStaffY:underNoteOutOfStaffY);
 			m_decorationAnchors[JDecoration.VERTICAL_AWAY_STEM]
-				= new Point2D.Double(noteHeadX, isStemUp()?underNoteHeadY:aboveNoteHeadY);
+				= new Point2D.Double(noteHeadX, isStemUp?underNoteHeadY:aboveNoteHeadY);
 			m_decorationAnchors[JDecoration.VERTICAL_AWAY_STEM_OUT_STAFF]
-			    				= new Point2D.Double(noteHeadX, isStemUp()?underNoteOutOfStaffY:aboveNoteOutOfStaffY);
+			    				= new Point2D.Double(noteHeadX, isStemUp?underNoteOutOfStaffY:aboveNoteOutOfStaffY);
 			m_decorationAnchors[JDecoration.HORIZONTAL_NEAR_STEM]
 				= new Point2D.Double(isStemUp()?rightNoteHeadX:leftNoteHeadX, noteHeadY);
 			m_decorationAnchors[JDecoration.HORIZONTAL_AWAY_STEM]
@@ -331,42 +329,6 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 
 	public Point2D getSlurUnderAnchorOutOfStem() {
 		return slurUnderAnchorOutOfStem;
-	}
-
-	protected void renderChordName(Graphics2D gfx) {
-		MusicElement me = getMusicElement();
-		Chord chord = null;
-		if (me instanceof NoteAbstract)
-			chord = ((NoteAbstract) me).getChord();
-		Point2D displayPos = null;
-		if (this instanceof JNote)
-			displayPos = ((JNote) this).getDisplayPosition();
-		else if (this instanceof JChord)
-			displayPos = ((JChord) this).getHighestNote().getDisplayPosition();
-		if (chord != null) {
-			JChordName chordName = new JChordName(getMetrics(), chord);
-			Dimension dimension = chordName.getDimension();
-			double y = getStaffLine().getBase().getY()/* not yet defined*/
-				//- (displayPosition.getY()%m_metrics.getStaffLinesSpacing())
-				- getMetrics().getStaffCharBounds().getHeight()
-				- getTemplate().getAttributeSize(ScoreAttribute.CHORD_LINE_SPACING)
-				+ dimension.getHeight();
-			double x = displayPos.getX();
-			byte[] pos = getTemplate().getPosition(ScoreElements.TEXT_CHORDS);
-			if (pos != null) {
-				switch (pos[1]) {
-				case HorizontalAlign.RIGHT:
-					x -= dimension.getWidth(); break;
-				case HorizontalAlign.CENTER:
-					x -= dimension.getWidth()/2; break;
-				case HorizontalAlign.LEFT:
-				default:
-					break;
-				}
-				chordName.setBase(new Point2D.Double(x, y));
-				chordName.render(gfx);	
-			}
-		}
 	}
 
 	/* Render each indiviual gracenote associated with this note. */

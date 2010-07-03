@@ -199,33 +199,52 @@ class JChord extends JNoteElementAbstract {
 	}
 	
 	protected JNote getHighestNote() {
-		if (m_normalizedChords != null)
-			return m_normalizedChords[0].getHighestNote();
 		JNote highest = null;
 		JNote current;
-		for (int i=0; i<m_sNoteInstances.length; i++) {
-			current = ((JNote)m_sNoteInstances[i]);
-			if (highest == null)
-				highest = current;
-			else if (((Note) current.getMusicElement()).isHigherThan(
-					(Note) highest.getMusicElement()))
-				highest = current;
+		if (m_normalizedChords != null) {
+			for (int i=0; i<m_normalizedChords.length; i++) {
+				current = m_normalizedChords[i].getHighestNote();
+				if (highest == null)
+					highest = current;
+				else if (((Note) current.getMusicElement()).isHigherThan(
+						(Note) highest.getMusicElement()))
+					highest = current;
+			}
+		} else {
+			for (int i=0; i<m_sNoteInstances.length; i++) {
+				current = ((JNote)m_sNoteInstances[i]);
+				if (highest == null)
+					highest = current;
+				else if (((Note) current.getMusicElement()).isHigherThan(
+						(Note) highest.getMusicElement()))
+					highest = current;
+			}
 		}
 		return highest;
 	}
 	
 	protected JNote getLowestNote() {
-		if (m_normalizedChords != null)
-			return m_normalizedChords[0].getLowestNote();
 		JNote lowest = null;
 		JNote current;
-		for (int i=0; i<m_sNoteInstances.length; i++) {
-			current = ((JNote)m_sNoteInstances[i]);
-			if (lowest == null)
-				lowest = current;
-			else if (((Note) current.getMusicElement()).isLowerThan(
-					(Note) lowest.getMusicElement()))
-				lowest = current;
+		if (m_normalizedChords != null) {
+			for (int i=0; i<m_normalizedChords.length; i++) {
+				current = m_normalizedChords[i].getLowestNote();
+				if (lowest == null)
+					lowest = current;
+				else if (((Note) current.getMusicElement()).isLowerThan(
+						(Note) lowest.getMusicElement()))
+					lowest = current;
+			}
+		}
+		else {
+			for (int i=0; i<m_sNoteInstances.length; i++) {
+				current = ((JNote)m_sNoteInstances[i]);
+				if (lowest == null)
+					lowest = current;
+				else if (((Note) current.getMusicElement()).isLowerThan(
+						(Note) lowest.getMusicElement()))
+					lowest = current;
+			}
 		}
 		return lowest;
 	}
@@ -429,7 +448,7 @@ class JChord extends JNoteElementAbstract {
 									getBoundingBox().getMinY()-metrics.getSlurAnchorYOffset())
 				:slurAboveAnchor;
 				
-			calcDecorationPosition();
+			//calcDecorationPosition();
 		}
 		
 		if (m_jGracenotes != null) {
@@ -515,7 +534,7 @@ class JChord extends JNoteElementAbstract {
 		
 		renderGraceNotes(context);
 		renderChordName(context);
-//		renderDecorations(context);
+		renderDecorations(context);
 
 		//renderDebugBoundingBox(context);
 		//renderDebugSlurAnchors(context);

@@ -23,13 +23,48 @@ package abc.notation;
  * <li>spacer
  * </ul>
  */
-public abstract class DecorableElement extends MusicElement implements Cloneable {
+public abstract class DecorableElement extends MusicElement implements
+		Cloneable {
 
 	private static final long serialVersionUID = 6909509549064348544L;
+
+	/**
+	 * The chord name.
+	 */
+	protected Chord m_chord = null;
 
 	protected Decoration[] m_decorations = null;
 
 	protected Dynamic m_dynamic = null;
+
+	public Object clone() throws CloneNotSupportedException {
+		Object o = super.clone();
+		if (m_decorations != null)
+			((DecorableElement) o).m_decorations = (Decoration[]) m_decorations
+					.clone();
+		if (m_dynamic != null)
+			((DecorableElement) o).m_dynamic = (Dynamic) m_dynamic.clone();
+		return o;
+	}
+
+	/**
+	 * Returns the Chord object instead of its name
+	 * 
+	 * @return a {@link Chord} object, or <TT>null</TT>
+	 */
+	public Chord getChord() {
+		return m_chord;
+	}
+
+	/**
+	 * Returns the name of the chord.
+	 * 
+	 * @return The name of the chord, <TT>null</TT> if no chord has been set.
+	 * @see #getChord()
+	 */
+	public String getChordName() {
+		return m_chord != null ? m_chord.getText() : null;
+	}
 
 	/**
 	 * Returns the decorations for this note.
@@ -89,6 +124,26 @@ public abstract class DecorableElement extends MusicElement implements Cloneable
 		return m_dynamic != null;
 	}
 
+	/**
+	 * Sets the chord instead of only the chord name
+	 * 
+	 * @param chord
+	 *            e.g. new Chord("Gm6")
+	 */
+	public void setChord(Chord chord) {
+		m_chord = chord;
+	}
+
+	/**
+	 * Sets the name of the chord.
+	 * 
+	 * @param chordName
+	 *            The name of the chord, ex: Gm6.
+	 */
+	public void setChordName(String chordName) {
+		m_chord = new Chord(chordName);
+	}
+
 	public void setDecorations(Decoration[] dec) {
 		m_decorations = dec;
 	}
@@ -97,13 +152,4 @@ public abstract class DecorableElement extends MusicElement implements Cloneable
 		m_dynamic = dyn;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
-		Object o = super.clone();
-		if (m_decorations != null)
-		((DecorableElement) o).m_decorations = (Decoration[]) m_decorations.clone();
-		if (m_dynamic != null)
-		((DecorableElement) o).m_dynamic = (Dynamic) m_dynamic.clone();
-		return o;
-	}
-	
 }
