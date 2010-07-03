@@ -114,7 +114,11 @@ public class JText extends JScoreElementAbstract {
 	}
 
 	public String getText() {
-		return m_text;
+		String p = getTemplate().getTextPrefix(m_textField);
+		String s = getTemplate().getTextSuffix(m_textField);
+		p = p!=null?p:"";
+		s = s!=null?s:"";
+		return p+m_text+s;
 	}
 
 	/**

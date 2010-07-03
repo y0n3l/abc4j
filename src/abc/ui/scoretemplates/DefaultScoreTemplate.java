@@ -23,7 +23,9 @@ import java.util.Hashtable;
 import abc.ui.swing.ScoreTemplate;
 
 /**
- * Default score template prints
+ * Default score template.
+ * 
+ * Texts:
  * <ul><li>At top center: title and subtitles
  * <li>At top right: composer and origin (area)
  * <li>At top left: lyricist, rhythm, group, parts order
@@ -35,6 +37,10 @@ import abc.ui.swing.ScoreTemplate;
  * Main font family is Palatino Linotype, which is a bit wider,
  * easier to read (especially for lyrics). Arial and Dialog are
  * used in case of lack of Palatino.
+ * 
+ * Source field is prefixed by <TT>"Source: "</TT>
+ * 
+ * Stave lines are in dark gray, all elements are in black.
  */
 public class DefaultScoreTemplate extends ScoreTemplate implements Cloneable {
 
@@ -52,6 +58,7 @@ public class DefaultScoreTemplate extends ScoreTemplate implements Cloneable {
 		color();
 		positions();
 		fonts();
+		texts();
 	}
 	
 	private void color() {
@@ -132,6 +139,10 @@ public class DefaultScoreTemplate extends ScoreTemplate implements Cloneable {
 			VerticalAlign.BOTTOM,
 			HorizontalAlign.LEFT
 		);
+	}
+	
+	private void texts() {
+		setTextPrefix(ScoreElements.TEXT_SOURCE, "Source: ");
 	}
 	
 }

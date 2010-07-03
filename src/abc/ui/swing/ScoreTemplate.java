@@ -69,6 +69,8 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 		float m_fontSize = 100f;
 		SizeUnit m_fontSizeUnit = SizeUnit.PERCENT;
 		int m_fontStyle = Font.PLAIN;
+		String m_prefix = null;
+		String m_suffix = null;
 		Hashtable m_textAttributes = null;
 		byte m_textField;
 		boolean m_visible = true;
@@ -81,6 +83,8 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 			ret.m_fontSize = m_fontSize;
 			ret.m_fontSizeUnit = (SizeUnit) m_fontSizeUnit.clone();
 			ret.m_fontStyle = m_fontStyle;
+			ret.m_prefix = m_prefix;
+			ret.m_suffix = m_suffix;
 			if (m_textAttributes != null)
 				ret.m_textAttributes = (Hashtable) m_textAttributes.clone();
 			ret.m_textField = m_textField;
@@ -111,6 +115,8 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 			ret.append("\tfont face: "+Arrays.toString(m_fontFamilyNames)+";\n");
 			ret.append("\tfont size: "+m_fontSize+m_fontSizeUnit+";\n");
 			ret.append("\tfont style: "+styleToString()+";\n");
+			ret.append("\tprefix: "+m_prefix+";\n");
+			ret.append("\tsuffix: "+m_suffix+";\n");
 			if (m_textAttributes != null) {
 				ret.append("\ttext attributes {\n");
 				Iterator it = m_textAttributes.keySet().iterator();
@@ -603,6 +609,30 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 		}
 		return font;
 	}
+
+	/**
+	 * Returns the prefix of a text field
+	 * 
+	 * @param field
+	 *            one of {@link ScoreElements} constants
+	 * @return
+	 *            a string or <code>null</code>
+	 */
+	public String getTextPrefix(byte field) {
+		return getFieldInfos(field).m_prefix;
+	}
+	
+	/**
+	 * Returns the suffix of a text field
+	 * 
+	 * @param field
+	 *            one of {@link ScoreElements} constants
+	 * @return
+	 *            a string or <code>null</code>
+	 */
+	public String getTextSuffix(byte field) {
+		return getFieldInfos(field).m_suffix;
+	}
 	
 	/**
 	 * Returns the font size of a field, in pt
@@ -942,6 +972,34 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 			fi.m_fontSize = size;
 			fi.m_fontSizeUnit = unit;
 		}
+		notifyListeners();
+	}
+	
+	/**
+	 * Sets the prefix of a field, e.g. "Source:" for source
+	 * field.
+	 * 
+	 * @param field
+	 *            one of {@link ScoreElements} constants
+	 * @param s
+	 *            a string or <code>null</code>
+	 */
+	public void setTextPrefix(byte field, String s) {
+		getFieldInfos(field).m_prefix = s;
+		notifyListeners();
+	}
+
+	/**
+	 * Sets the prefix of a field, e.g. "Source:" for source
+	 * field.
+	 * 
+	 * @param field
+	 *            one of {@link ScoreElements} constants
+	 * @param s
+	 *            a string or <code>null</code>
+	 */
+	public void setTextSuffix(byte field, String s) {
+		getFieldInfos(field).m_suffix = s;
 		notifyListeners();
 	}
 
