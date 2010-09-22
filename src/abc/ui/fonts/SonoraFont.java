@@ -29,7 +29,7 @@ import abc.notation.TimeSignature;
 /**
  * Font definition for SONORA.TTF
  */
-public class SonoraFont implements MusicalFont, Serializable {
+public class SonoraFont extends MusicalFontAbstract implements MusicalFont, Serializable {
 	
 	private static final long serialVersionUID = 659612792568835733L;
 
@@ -144,16 +144,6 @@ public class SonoraFont implements MusicalFont, Serializable {
 		else if (clef.equals(Clef.ottava_15mb)) return '\uF100';
 		else if (clef.equals(Clef.NONE)) return ' ';
 		throw new MissingGlyphException(clef, this);
-	}
-	
-	public char getDecoration(Decoration decoration) {
-		return getDecoration(decoration, false);
-	}
-	public char getDecoration(Decoration decoration, boolean inverted) {
-		return getDecoration(decoration.getType(), inverted);
-	}
-	public char getDecoration(int decoration) {
-		return getDecoration(decoration, false);
 	}
 	
 	public char getDecoration(int decoration, boolean inverted) {

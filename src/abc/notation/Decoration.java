@@ -129,7 +129,9 @@ public class Decoration extends SymbolElement implements Cloneable
   /** cello thumb symbol, or snap-pizzicato mark */
   public static final byte THUMB = 35;
   
+  /** Grupetto */
   public static final byte TURN = 36;
+  public static final byte GRUPETTO_UP = TURN;
   
   /** vertical line on the upper part of the staff */
   public static final byte SHORT_PHRASE = 37;
@@ -148,11 +150,30 @@ public class Decoration extends SymbolElement implements Cloneable
   public static final byte FINE = 43;
   public static final byte SLIDE = 44;
   public static final byte TURNX = 45;
+  /** inverted grupetto */
   public static final byte TURN_INVERTED = 46;
+  public static final byte GRUPETTO_DOWN = TURN_INVERTED;
   public static final byte TURNX_INVERTED = 47;
   public static final byte ARPEGGIO = 48;
   public static final byte TRILL_START = 49;
   public static final byte TRILL_END = 50;
+  
+  /** Guitar bend up (tiré in French) */
+  public static final byte BEND_PULL = 51;
+  /** Guitar bend down (relâché in French) */
+  public static final byte BEND_RELEASE = 52;
+  /** Guitar bend up and down (tiré-relâché in French) */
+  public static final byte BEND_PULL_RELEASE = 53;
+  
+  public static final byte DOUBLE_UPPER_MORDANT = 54;
+  public static final byte DOUBLE_LOWER_MORDANT = 55;
+  
+  public static final byte GROUP_64TH = 56;
+  public static final byte GROUP_32ND = 57;
+  public static final byte GROUP_16TH = 58;
+  public static final byte GROUP_8TH = 59;
+  
+  public static final byte REPEAT_LAST_BAR = 60;
   
   /** The v1.6 ~ roll */
   public static final byte GENERAL_GRACING = 99;
