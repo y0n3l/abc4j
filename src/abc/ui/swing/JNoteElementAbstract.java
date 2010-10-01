@@ -120,6 +120,10 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 				}
 			}
 		}
+		
+		if (noteValue.hasDynamic()) {
+			m_jDynamic = new JDynamic(noteValue.getDynamic(), getMetrics());
+		}
 	}
 	
 	protected Clef getClef() {

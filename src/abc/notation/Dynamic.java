@@ -61,7 +61,7 @@ public class Dynamic extends SymbolElement implements Cloneable {
 		else if (str.equals("mp")) type = MP;
 		else if (str.equals("mf")) type = MF;
 		else if (str.equals("f")) type = F;
-		else if (str.equals("ff")) type = FFF;
+		else if (str.equals("ff")) type = FF;
 		else if (str.equals("fff")) type = FFF;
 		else if (str.equals("ffff")) type = FFFF;
 		else if (str.equals("fp")) type = FP;
@@ -106,6 +106,29 @@ public class Dynamic extends SymbolElement implements Cloneable {
 	
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
+	}
+	
+	public String toString() {
+		switch(m_type) {
+		case PPPP: return "pppp";
+		case PPP: return "ppp";
+		case PP: return "pp";
+		case P: return "p";
+		case MP: return "mp";
+		case MF: return "mf";
+		case F: return "f";
+		case FF: return "ff";
+		case FFF: return "fff";
+		case FFFF: return "ffff";
+		case FP: return "fp";
+		case FZ: return "fz";
+		case SF: return "sf";
+		case SFFZ: return "sffz";
+		case SFP: return "sfp";
+		case SFPP: return "sfpp";
+		case SFZ: return "sfz";
+		default: return "unknown dynamic";
+		}
 	}
 
 }

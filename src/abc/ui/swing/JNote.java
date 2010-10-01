@@ -417,6 +417,7 @@ class JNote extends JNoteElementAbstract {
 		renderNoteChars(g);
 		g.setColor(previousColor);
 		renderDecorations(g);
+		renderDynamic(g);
 		renderChordName(g);
 		
 		//renderDebugBoundingBoxOuter(g);

@@ -170,6 +170,7 @@ class JBar extends JScoreElementAbstract {
 		}
 		context.setColor(previousColor);
 		renderDecorations(context);
+		renderDynamic(context);
 		//renderDebugBoundingBoxOuter(context);
 		return getWidth();
 	}

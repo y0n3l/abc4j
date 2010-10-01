@@ -35,6 +35,7 @@ public abstract class ScoreElements {
 	public static final byte TIE = -9;
 	public static final byte GRACENOTE = -10;
 	public static final byte ACCIDENTAL = -11;
+	public static final byte DYNAMIC = -12;
 	
 	/** @see #TEXT_ORIGIN */
 	public static final byte TEXT_AREA = 9;

@@ -100,6 +100,22 @@ public class ScoreAttribute implements Cloneable, Serializable {
 		= new ScoreAttribute("ChordLineSpacing",
 				new Size(1.25f, SizeUnit.STAFF_HEIGHT));
 	
+	/** Horizontal position for dynamics, from the associated element
+	 * expressed in {@link SizeUnit#NOTE_WIDTH}.<br>
+	 * Default value: -1 * note width (a bit on the left)<br>
+	 * Type: size */
+	public static final ScoreAttribute DYNAMIC_HORIZONTAL_OFFSET
+		= new ScoreAttribute("DynamicHoriontalOffset",
+				new Size(-1f, SizeUnit.NOTE_WIDTH));
+
+	/** Vertical position for dynamics, from the bottom of the
+	 * staff line, expressed in {@link SizeUnit#NOTE_HEIGHT}.<br>
+	 * Default value: -6 * note height (above the staff)<br>
+	 * Type: size */
+	public static final ScoreAttribute DYNAMIC_VERTICAL_OFFSET
+		= new ScoreAttribute("DynamicVerticalOffset",
+				new Size(-6f, SizeUnit.NOTE_HEIGHT));
+	
 	/** Engraver mode, possible values are {@link Engraver#DEFAULT}
 	 * and {@link Engraver#NONE}.<br>
 	 * Default value: Engraver.DEFAULT<br>

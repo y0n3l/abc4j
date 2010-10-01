@@ -49,6 +49,7 @@ class JSpacer extends JScoreElementAbstract {
 	public double render(Graphics2D context){
 		super.render(context);
 		renderDecorations(context);
+		renderDynamic(context);
 		renderChordName(context);
 		return getWidth();
 	}

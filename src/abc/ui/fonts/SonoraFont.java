@@ -228,8 +228,8 @@ public class SonoraFont extends MusicalFontAbstract implements MusicalFont, Seri
 		case Dynamic.MF: return '\uF046';
 		case Dynamic.F: return '\uF066';
 		case Dynamic.FF: return '\uF0C4';
-		case Dynamic.FFF: return '\uF0EB';
-		case Dynamic.FFFF: return '\uF0EC';
+		case Dynamic.FFF: return '\uF0EC';
+		case Dynamic.FFFF: return '\uF0EB';
 		//case Dynamic.M: return '\uF0BD';
 		//case Dynamic.S: return '\uF073';
 		//case Dynamic.Z: return '\uF07A';

@@ -1440,7 +1440,9 @@ public class AbcParserAbstract
 				if (decType != Decoration.UNKNOWN)
 					symbols.add(new Decoration(decType));
 				else {
-					// TODO look at dynamics
+					byte dynType = Dynamic.convertToType(acc);
+					if (dynType != Dynamic.UNKNOWN)
+						symbols.add(new Dynamic(dynType));
 				}
 			}
 			current.remove(AbcTokenType.SYMBOL_BEGIN);

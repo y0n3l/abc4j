@@ -208,19 +208,6 @@ class JDecoration extends JScoreElementAbstract {
 	protected void onBaseChanged() {
 		// does nothing
 	}
-
-//	private Shape getRotatedDecoration(Graphics2D g2, char chars,
-//			double radians) {
-//		Shape glyphOutline = null;
-//		AffineTransform transform = AffineTransform.getRotateInstance(radians);
-//		GlyphVector glyphVector = getMetrics().getNotationFontForContext(ScoreMetrics.NOTATION_CONTEXT_NOTE)
-//				.createGlyphVector(g2.getFontRenderContext(),new char[] {chars});
-//		if (glyphVector.getNumGlyphs() > 0) {
-//			glyphOutline = glyphVector.getGlyphOutline(0);
-//			glyphOutline = transform.createTransformedShape(glyphOutline);
-//		}
-//		return (glyphOutline);
-//	}
 	
 	/** Renders this Score element to the given graphic context.
 	 * @param g2 */
@@ -255,32 +242,6 @@ class JDecoration extends JScoreElementAbstract {
 		g2.drawChars(new char[] { charDeco }, 0, 1,
 				(int)x, (int)y);
 		return bounds.getWidth();
-		/*if (m_decoration.getType() == Decoration.ROLL) {
-			// note.hasGeneralGracing() is ignored as
-			// ABC says the '~' typically denotes a roll
-			//
-			// where's the roll character in SONOROA??
-			// use 90CW rotated left bracket instead .....
-			Shape rotatedDecoration = getRotatedDecoration(
-				g2, getMetrics().getMusicalFont().getDecoration(m_decoration.getType()),
-				Math.PI/2);
-			if (rotatedDecoration != null) {
-				AffineTransform t = null;
-				try {
-					t = g2.getTransform();
-					g2.translate((int)getBase().getX(), (int)getBase().getY());
-					g2.fill(rotatedDecoration);
-				} finally {
-					g2.setTransform(t);
-				}
-			}
-		} else {
-			g2.drawChars(new char[] {
-					getMetrics().getMusicalFont().getDecoration(m_decoration.getType())
-					}, 0, 1,
-					(int)getBase().getX(), (int)getBase().getY());
-		}
-		return m_width;*/
 	}
 
 }

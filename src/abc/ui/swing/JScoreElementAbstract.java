@@ -27,7 +27,6 @@ import abc.notation.Chord;
 import abc.notation.DecorableElement;
 import abc.notation.Decoration;
 import abc.notation.MusicElement;
-import abc.notation.NoteAbstract;
 import abc.notation.Tune;
 import abc.ui.fonts.MusicalFont;
 import abc.ui.scoretemplates.HorizontalAlign;
@@ -53,8 +52,11 @@ abstract class JScoreElementAbstract implements JScoreElement {
 	 */
 	private Point2D m_base = null;
 	
-	/** vector of JDecoration instances for this note. */
+	/** vector of JDecoration instances for this element. */
 	protected Vector m_jDecorations = null;
+	
+	/** Dynamic for this element */
+	protected JDynamic m_jDynamic = null;
 	
 	/**
 	 * Array of anchors (Point2D) for decorations
@@ -307,6 +309,13 @@ abstract class JScoreElementAbstract implements JScoreElement {
 				chordName.setBase(new Point2D.Double(x, y));
 				chordName.render(gfx);	
 			}
+		}
+	}
+	
+	protected void renderDynamic(Graphics2D context) {
+		if (m_jDynamic != null) {
+			m_jDynamic.setAttachedTo(this);
+			m_jDynamic.render(context);
 		}
 	}
 

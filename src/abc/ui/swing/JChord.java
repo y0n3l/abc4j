@@ -535,6 +535,7 @@ class JChord extends JNoteElementAbstract {
 		renderGraceNotes(context);
 		renderChordName(context);
 		renderDecorations(context);
+		renderDynamic(context);
 
 		//renderDebugBoundingBox(context);
 		//renderDebugSlurAnchors(context);
