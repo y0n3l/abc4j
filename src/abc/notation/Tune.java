@@ -189,10 +189,10 @@ public class Tune implements Cloneable, Serializable
    * the tune to be added. */
   public void addHistory(String history)
   {
-    if (m_history==null)
-      m_history = new String(history);
+    if (m_history == null)
+      m_history = history;
     else
-      m_history = m_history.concat(history + "\n");
+      m_history += "\n" + history;
   }
 
   /** Returns historical information about the tune.
@@ -222,10 +222,15 @@ public class Tune implements Cloneable, Serializable
 		  return Clef.G;
   }
 
-  /** Sets additional information about the tune.
+  /** Adds additional informations about the tune.
    * @param information Additional information about the tune. */
-  public void setInformation(String information)
-  { m_information = information; }
+  public void addInformation(String information)
+  {
+    if (m_information == null)
+    	m_information = information;
+      else
+    	m_information += "\n" + information;
+  }
 
   /** Returns additional information about the tune.
    * @return Additional information about the tune,
@@ -245,12 +250,17 @@ public class Tune implements Cloneable, Serializable
   public String getLyricist()
   { return m_lyricist; }
 
-  /** Sets notes concerning the transcription of this tune.
+  /** Adds notes concerning the transcription of this tune.
    * Corresponds to the "N:" abc field.
    * Ex: N:see also O'Neills - 234
    * @param notes Notes concerning the transcription of this tune. */
-  public void setNotes(String notes)
-  { m_notes = notes; }
+  public void addNotes(String notes)
+  {
+	  if (m_notes == null)
+		  m_notes = notes;
+	  else
+		  m_notes += "\n" + notes;
+  }
 
   /** Returns notes concerning the transcription of this tune.
    * @return Notes concerning the transcription of this tune,
@@ -265,7 +275,7 @@ public class Tune implements Cloneable, Serializable
    * @param origin Origin of this tune : place or a person
    * that the music came from. N.B: For a person, setSource
    * is probably better.
-   * @see #setSource(java.lang.String)*/
+   * @see #addSource(java.lang.String)*/
   public void setOrigin(String origin)
   { m_origin = origin; }
 
@@ -332,13 +342,18 @@ public class Tune implements Cloneable, Serializable
   public String getRhythm()
   {return m_rhythm; }
 
-  /** Sets the source of this tune.
+  /** Adds a source of this tune.
    * Corresponds to the "S:" abc field.
    * Ex: S:collected in Brittany
    * @param source The source of this tune (place where
    * it has been collected for ex). */
-  public void setSource(String source)
-  { m_source = source; }
+  public void addSource(String source)
+  {
+	  if (m_source == null)
+		  m_source = source;
+	  else
+		  m_source += "\n" + source;
+  }
 
   /** Returns the source of this tune.
    * @return The source of this tune. <TT>null</TT> if no source is provided. */
@@ -391,10 +406,10 @@ public class Tune implements Cloneable, Serializable
    * addresses may be included. */
   public void addTranscriptionNotes(String transciptionNotes)
   {
-    if (m_transcriptionNotes==null)
-      m_transcriptionNotes = new String(transciptionNotes);
+    if (m_transcriptionNotes == null)
+      m_transcriptionNotes = transciptionNotes;
     else
-      m_transcriptionNotes = m_transcriptionNotes.concat(transciptionNotes + "\n");
+      m_transcriptionNotes += "\n" + transciptionNotes;
   }
 
   /** Returns transcription notes of this tune.

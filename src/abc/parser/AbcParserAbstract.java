@@ -125,7 +125,6 @@ public class AbcParserAbstract
     protected static Set FIRST_LINE_BREAK = new Set(AbcTokenType.LINE_BREAK);
 
     protected static Set FIRST_SPACE = new Set(AbcTokenType.SPACE);
-    protected static Set FIRST_SPACER = new Set(AbcTokenType.SPACER);
     //protected static Set FIRST_TEX_COMMAND = new Set(AbcTokenType.TEX_COMMAND);
 
     protected static Set FIRST_USER_DEFINED = new Set(AbcTokenType.USER_DEFINED);
@@ -167,6 +166,8 @@ public class AbcParserAbstract
     	.union(FIRST_GRACE_NOTES).union(FIRST_GRACINGS)
     	.union(FIRST_NOTE).union(FIRST_MULTI_NOTE);
     protected static Set FIRST_NOTE_ELEMENT = new Set(FIRST_NOTE_STEM);
+ 
+    protected static Set FIRST_SPACER = new Set(AbcTokenType.SPACER);
 
     protected static Set FIRST_TUPLET_SPEC = new Set(AbcTokenType.TUPLET_SPEC);
     protected static Set FIRST_TUPLET_ELEMENT = new Set(FIRST_TUPLET_SPEC);
@@ -411,11 +412,11 @@ public class AbcParserAbstract
             else if (field.getType() == AbcTextField.FILEURL) m_tune.setFileURL(field.getText());
             else if (field.getType() == AbcTextField.GROUP) m_tune.setGroup(field.getText());
             else if (field.getType() == AbcTextField.HISTORY) m_tune.addHistory(field.getText());
-            else if (field.getType() == AbcTextField.INFORMATION) m_tune.setInformation(field.getText());
-            else if (field.getType() == AbcTextField.NOTES) m_tune.setNotes(field.getText());
+            else if (field.getType() == AbcTextField.INFORMATION) m_tune.addInformation(field.getText());
+            else if (field.getType() == AbcTextField.NOTES) m_tune.addNotes(field.getText());
             else if (field.getType() == AbcTextField.ORIGIN) m_tune.setOrigin(field.getText());
             else if (field.getType() == AbcTextField.RHYTHM) m_tune.setRhythm(field.getText());
-            else if (field.getType() == AbcTextField.SOURCE) m_tune.setSource(field.getText());
+            else if (field.getType() == AbcTextField.SOURCE) m_tune.addSource(field.getText());
             else if (field.getType() == AbcTextField.TRANSCRNOTES) m_tune.addTranscriptionNotes(field.getText());
         }
     }
@@ -1134,10 +1135,17 @@ public class AbcParserAbstract
         
       if (FIRST_SPACER.contains(m_tokenType))
       {
+//    	  String chordName = null;
+//    	  //current.remove(FIRST_GUITAR_CHORD);
+//    	  if(FIRST_GUITAR_CHORD.contains(m_tokenType)) {
+//    		  accept(AbcTokenType.GUITAR_CHORD, null, follow);
+//    		  chordName = parseGuitarChord(new Set().createUnion(follow));
+//    	  }
       	  accept(AbcTokenType.SPACER, null, follow);
       	  Spacer spacer = new Spacer();
       	  spacer.setDynamic(dynamic);
       	  spacer.setDecorations((Decoration[])decorations.toArray(new Decoration[1]));
+      	  //spacer.setChordName(chordName);
       	  m_music.addElement(spacer);
       }
       else

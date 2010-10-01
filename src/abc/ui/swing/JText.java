@@ -41,6 +41,10 @@ public class JText extends JScoreElementAbstract {
 	private byte m_textField;
 
 	private String m_text = null;
+	
+	private int nb_lines = 1;
+	
+	private String[] m_text_lines = null;
 
 	/**
 	 * Constructor
@@ -56,6 +60,9 @@ public class JText extends JScoreElementAbstract {
 		super(mtrx);
 		this.m_text = text;
 		this.m_textField = textField;
+		this.m_text_lines = m_text!=null?m_text.split("\n")
+										:new String[0];
+		this.nb_lines = m_text_lines.length;
 	}
 
 	/**
@@ -67,7 +74,6 @@ public class JText extends JScoreElementAbstract {
 	public byte getHorizontalAlignment() {
 		return getTemplate().getPosition(m_textField)[1];
 	}
-
 
 	/**
 	 * Returns the vertical alignment
@@ -90,6 +96,10 @@ public class JText extends JScoreElementAbstract {
 	public Dimension getDimension() {
 		return new Dimension((int) getWidth(), (int) getHeight());
 	}
+	
+	private double getOneLineHeight() {
+		return (double) getMetrics().getTextFontHeight(m_textField);
+	}
 
 	/**
 	 * Returns the height of this score element.
@@ -97,7 +107,7 @@ public class JText extends JScoreElementAbstract {
 	 * @return The height of this score element.
 	 */
 	public double getHeight() {
-		return (double) getMetrics().getTextFontHeight(m_textField);
+		return nb_lines * getOneLineHeight();
 	}
 
 	/**
@@ -120,6 +130,18 @@ public class JText extends JScoreElementAbstract {
 		s = s!=null?s:"";
 		return p+m_text+s;
 	}
+	
+	protected String[] getTextLines() {
+		String p = getTemplate().getTextPrefix(m_textField);
+		String s = getTemplate().getTextSuffix(m_textField);
+		p = p!=null?p:"";
+		s = s!=null?s:"";
+		String[] ret = new String[nb_lines];
+		for (int i = 0; i < nb_lines; i++) {
+			ret[i] = p+m_text_lines[i]+s;
+		}
+		return ret;
+	}
 
 	/**
 	 * Returns the width of this score element.
@@ -127,7 +149,14 @@ public class JText extends JScoreElementAbstract {
 	 * @return The width of this score element.
 	 */
 	public double getWidth() {
-		return (double) getMetrics().getTextFontWidth(m_textField, getText());
+		String[] lines = getTextLines();
+		double max = 0;
+		for (int i = 0; i < lines.length; i++) {
+			max = Math.max(max,
+					(double) getMetrics().getTextFontWidth(m_textField, lines[i])
+				);
+		}
+		return max;
 	}
 
 	/** Callback invoked when the base has changed for this object. */
@@ -159,48 +188,63 @@ public class JText extends JScoreElementAbstract {
 			throw new RuntimeException(e);
 		}
 		musicFont = musicFont.deriveFont(font.getSize()*3f);
-		//sharp is translated up a little :)
-		AffineTransform at = AffineTransform.getTranslateInstance(0, -font.getSize()/2);
+		//sharp and natural are translated up a little :)
+		AffineTransform at = AffineTransform.getTranslateInstance(0, -font.getSize()/2.5);
 		Font musicFontSharp = musicFont.deriveFont(at);
+		at = AffineTransform.getTranslateInstance(0, -font.getSize()/3);
+		Font musicFontNatural = musicFont.deriveFont(at);
 		
 		char sharp = getMusicalFont().getAccidental(AccidentalType.SHARP);
 		char flat = getMusicalFont().getAccidental(AccidentalType.FLAT);
-		String text = getText().replace(Chord.UNICODE_SHARP, sharp)
-								.replace(Chord.UNICODE_FLAT, flat);
-		AttributedString as = new AttributedString(text);
-		as.addAttributes(font.getAttributes(), 0, text.length());
-		int begin = -1;
-		for (int i = 0; i < text.length(); i++) {
-			char charAtI = text.charAt(i);
-			if (begin == -1)
-				begin = i;
-			if ((charAtI == sharp) || (charAtI == flat)) {
-				if (begin != i) {
-					as.addAttribute(TextAttribute.FONT, font, begin, i);
-				}
-				as.addAttribute(TextAttribute.FONT,
-						charAtI==sharp?musicFontSharp:musicFont,
-						i, i+1);
-				begin = -1;
-			}
-		}
-		if (begin != -1) {
-			as.addAttributes(font.getAttributes(), begin, text.length());
-		}
-
-		Map attrib = getTemplate().getTextAttributes(m_textField);
-		if (attrib != null) {
-			Iterator it = attrib.keySet().iterator();
-			while (it.hasNext()) {
-				Attribute ta = (Attribute) it.next();
-				as.addAttribute(ta, attrib.get(ta));
-			}
-		}
-		//end of flat/sharp replacement
+		char natural = getMusicalFont().getAccidental(AccidentalType.NATURAL);
 		
-		g2.drawString(as.getIterator(),//getText(),
-				(float) getBase().getX(),
-				(float) getBase().getY()-leading);
+		String[] lines = getTextLines();
+		double line_height = getOneLineHeight();
+		for (int line_count = 0; line_count < lines.length; line_count++) {
+			String text = lines[line_count].replace(Chord.UNICODE_SHARP, sharp)
+				.replace(Chord.UNICODE_FLAT, flat)
+				.replace(Chord.UNICODE_NATURAL, natural)
+				.replaceAll("\\(b\\)", flat+"")
+				.replaceAll("\\(#\\)", sharp+"")
+				.replaceAll("\\(\\=\\)", natural+"");
+			
+			AttributedString as = new AttributedString(text);
+			as.addAttributes(font.getAttributes(), 0, text.length());
+			int begin = -1;
+			for (int i = 0; i < text.length(); i++) {
+				char charAtI = text.charAt(i);
+				if (begin == -1)
+					begin = i;
+				if ((charAtI == sharp) || (charAtI == flat) || (charAtI == natural)) {
+					if (begin != i) {
+						as.addAttribute(TextAttribute.FONT, font, begin, i);
+					}
+					as.addAttribute(TextAttribute.FONT,
+							charAtI==flat?musicFont
+								:(charAtI==sharp?musicFontSharp
+												:musicFontNatural),
+							i, i+1);
+					begin = -1;
+				}
+			}
+			if (begin != -1) {
+				as.addAttributes(font.getAttributes(), begin, text.length());
+			}
+
+			Map attrib = getTemplate().getTextAttributes(m_textField);
+			if (attrib != null) {
+				Iterator it = attrib.keySet().iterator();
+				while (it.hasNext()) {
+					Attribute ta = (Attribute) it.next();
+					as.addAttribute(ta, attrib.get(ta));
+				}
+			}
+			//end of flat/sharp replacement
+			
+			g2.drawString(as.getIterator(),
+					(float) getBase().getX(),
+					(float) (getBase().getY()-leading - (nb_lines-1-line_count)*line_height));
+		}
 		
 		g2.setFont(previousFont);
 		g2.setColor(previousColor);

@@ -984,8 +984,14 @@ public class JTune extends JScoreElementAbstract {
 	 * @param slurDef
 	 */
 	protected void drawLink(Graphics2D g2, TwoNotesLink slurDef) {
-		Point2D[] points = getLinkPoints(slurDef);
-		if (points.length != 3)
+		Point2D[] points = null;
+		try {
+			points = getLinkPoints(slurDef);
+		} catch (Exception e) {
+			System.err.println("Exception in drawLink : "+e.getMessage());
+			e.printStackTrace();
+		}
+		if ((points == null) || (points.length != 3))
 			return;
 
 		//TODO move this in JSlurOrTie.render(g2);

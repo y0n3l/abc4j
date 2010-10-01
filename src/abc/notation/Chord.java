@@ -44,6 +44,8 @@ public class Chord extends MusicPresentationElement implements Cloneable {
 	public static final char UNICODE_SHARP = '\u266F';
 	/** The unicode flat char \u266D (&#9837;) */
 	public static final char UNICODE_FLAT = '\u266D';
+	/** The unicode natural char \u266E (&#9838;) */
+	public static final char UNICODE_NATURAL = '\u266E';
 	
 	//for " (EbMaj7/Bb) "	| for "(/Bb)" :
 	//groupe 0 :(EbMaj7/Bb)	| groupe 0 :(/Bb)

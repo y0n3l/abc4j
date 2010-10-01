@@ -276,14 +276,15 @@ abstract class JScoreElementAbstract implements JScoreElement {
 		Chord chord = null;
 		if (me instanceof DecorableElement)
 			chord = ((DecorableElement) me).getChord();
-		Point2D displayPos = null;
-		if (this instanceof JNote)
-			displayPos = ((JNote) this).getDisplayPosition();
-		else if (this instanceof JChord)
-			displayPos = ((JChord) this).getHighestNote().getDisplayPosition();
-		else if (this instanceof JSpacer)
-			displayPos = getBase();
 		if (chord != null) {
+			Point2D displayPos = null;
+			if (this instanceof JNote)
+				displayPos = ((JNote) this).getDisplayPosition();
+			else if (this instanceof JChord)
+				displayPos = ((JChord) this).getHighestNote().getDisplayPosition();
+			else if (this instanceof JSpacer)
+				displayPos = getBase();
+
 			JChordName chordName = new JChordName(getMetrics(), chord);
 			Dimension dimension = chordName.getDimension();
 			double y = getStaffLine().getBase().getY()/* not yet defined*/
