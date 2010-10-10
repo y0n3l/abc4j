@@ -414,13 +414,11 @@ public class KeySignature extends MusicElement implements Cloneable
 	public boolean hasSharpsAndFlats() {
 		boolean hasSharp = false, hasFlat = false;
 		for (int i = 0; i < accidentals.length; i++) {
-			// TODO half flat and half sharp
+			// handle microtonal (half flat and half sharp)
 			// theorically, double sharp and double flat
 			// are never at key, but half sharp and half flat can
-			hasSharp = hasSharp || (accidentals[i] == Accidental.SHARP)
-					|| (accidentals[i] == Accidental.DOUBLE_SHARP);
-			hasFlat = hasFlat || (accidentals[i] == Accidental.FLAT)
-					|| (accidentals[i] == Accidental.DOUBLE_FLAT);
+			hasSharp = hasSharp || (accidentals[i].getValue() > 0);
+			hasFlat = hasFlat || (accidentals[i].getValue() < 0);
 		}
 		return hasSharp && hasFlat;
 	}
@@ -508,7 +506,7 @@ public class KeySignature extends MusicElement implements Cloneable
       else return KeySignature.OTHER;
     }
 
-  public static Accidental convertToAccidentalType(String accidental) throws IllegalArgumentException
+  public static Accidental convertToAccidental(String accidental) throws IllegalArgumentException
   {
     if (accidental==null) return Accidental.NATURAL;
     else if (accidental.equals("#")) return Accidental.SHARP;

@@ -820,9 +820,15 @@ public class AbcParserAbstract
         KeySignature key = null;
         Note note = null;
         byte modeSpec = KeySignature.MAJOR;
+        //Dphr ^g works, D phr ^g works too
+        //but if D ^g 2 spaces are accepted and there is only one
+        boolean foundaspace = false;
 
         note = parseKeyNote(current.createUnion(follow));
-        accept(AbcTokenType.SPACE, current, follow, true);
+        if (m_tokenType.equals(AbcTokenType.SPACE)) {
+        	accept(AbcTokenType.SPACE, current, follow, true);
+        	foundaspace = true;
+        }
         if (FIRST_MODE_SPEC.contains(m_tokenType))
         {
           current = new Set(AbcTokenType.SPACE).union(FIRST_GLOBAL_ACCIDENTAL);
@@ -831,8 +837,9 @@ public class AbcParserAbstract
         if (note!=null/* && modeSpec!=KeySignature.OTHER*/)
           key = new KeySignature(note.getHeight(), note.getAccidental(), modeSpec);
 
-        while(m_tokenType.equals(AbcTokenType.SPACE))
+        while(m_tokenType.equals(AbcTokenType.SPACE) || foundaspace)
         {
+          foundaspace = false;
           accept(AbcTokenType.SPACE, current, follow, true);
           if (FIRST_GLOBAL_ACCIDENTAL.contains(m_tokenType))
           {
@@ -862,7 +869,7 @@ public class AbcParserAbstract
 
         if (note!=null)
           keyNote = new Note(Note.convertToNoteType(note),
-        		 KeySignature.convertToAccidentalType(accidental));
+        		 KeySignature.convertToAccidental(accidental));
         return keyNote;
     }
 

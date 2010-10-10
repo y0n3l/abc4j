@@ -140,19 +140,19 @@ class JKeySignature extends JScoreElementAbstract {
 		
 		for (int twoPasses = 1; twoPasses <= 2; twoPasses++) {
 			Accidental accidental = twoPasses==1?firstAccidental:secondAccidental;
-			int[] order = (accidental.isFlat())
-						?flatOrder:sharpOrder;
-			char glyph = getMusicalFont().getAccidental(accidental);
-			double glyphWidth = getMetrics().getBounds(glyph).getWidth();
-			double[] Ys = (accidental==Accidental.FLAT)
-						?flatYs:sharpYs;
+			int[] order = (accidental.isFlat())?flatOrder:sharpOrder;
+			double[] Ys = (accidental.isFlat())?flatYs:sharpYs;
 			if ((twoPasses == 2) && key.hasSharpsAndFlats()) {
 				//A little space when changing accidental
-				baseX += glyphWidth;
-				m_width += glyphWidth;
+				double litSpace = getMetrics().getBounds(getMusicalFont().getAccidental(Accidental.NATURAL)).getWidth();
+				baseX += litSpace;
+				m_width += litSpace;
 			}
 			for (int i = 0; i < order.length; i++) {
-				if (accidentals[order[i]].equals(accidental)) {
+				if (accidentals[order[i]].getNearestOccidentalValue()
+						== accidental.getNearestOccidentalValue()) {
+					char glyph = getMusicalFont().getAccidental(accidentals[order[i]]);
+					double glyphWidth = getMetrics().getBounds(glyph).getWidth();
 					chars.add(cpt, new char[]{glyph});
 					positions.add(cpt, new Point2D.Double(baseX, Ys[i]));
 					baseX += glyphWidth;
