@@ -20,7 +20,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
-import abc.notation.AccidentalType;
+import abc.notation.Accidental;
 import abc.notation.Clef;
 import abc.notation.KeySignature;
 import abc.notation.Note;
@@ -97,34 +97,34 @@ class JKeySignature extends JScoreElementAbstract {
 		double[] sharpYs = new double[] {FsharpY,CsharpY,GsharpY,DsharpY,AsharpY,EsharpY,BsharpY};
 		double[] flatYs = new double[] {BflatY,EflatY,AflatY,DflatY,GflatY,CflatY,FflatY};
 		
-		byte firstAccidental, secondAccidental;
+		Accidental firstAccidental, secondAccidental;
 
 		if (key.isSharpDominant()) {
-			firstAccidental = AccidentalType.SHARP;
-			secondAccidental = AccidentalType.FLAT;
+			firstAccidental = Accidental.SHARP;
+			secondAccidental = Accidental.FLAT;
 		} else /*if (key.hasOnlyFlats())*/ {
-			firstAccidental = AccidentalType.FLAT;
-			secondAccidental = AccidentalType.SHARP;
+			firstAccidental = Accidental.FLAT;
+			secondAccidental = Accidental.SHARP;
 		}
 		
-		byte[] accidentals = key.getAccidentals();
+		Accidental[] accidentals = key.getAccidentals();
 		int cpt = 0;
 		
 		if ((previous_key != null) && !previous_key.equals(key)) {
 			//Before switching to a new key, maybe we need to
 			//print naturals
-			byte accidental = previous_key.isSharpDominant()
-					?AccidentalType.SHARP:AccidentalType.FLAT;
-			int[] order = (accidental == AccidentalType.FLAT)
+			Accidental accidental = previous_key.isSharpDominant()
+					?Accidental.SHARP:Accidental.FLAT;
+			int[] order = (accidental == Accidental.FLAT)
 					?flatOrder:sharpOrder;
-			char glyph = getMusicalFont().getAccidental(AccidentalType.NATURAL);
+			char glyph = getMusicalFont().getAccidental(Accidental.NATURAL);
 			double glyphWidth = getMetrics().getBounds(glyph).getWidth();
-			double[] Ys = (accidental==AccidentalType.FLAT)
+			double[] Ys = (accidental==Accidental.FLAT)
 					?flatYs:sharpYs;
-			byte[] previous_accidentals = previous_key.getAccidentals();
+			Accidental[] previous_accidentals = previous_key.getAccidentals();
 			for (int i = 0; i < order.length; i++) {
-				if ((previous_accidentals[order[i]] != AccidentalType.NATURAL)
-					&& (accidentals[order[i]] != previous_accidentals[order[i]])) {
+				if (!previous_accidentals[order[i]].isNatural()
+					&& !accidentals[order[i]].equals(previous_accidentals[order[i]])) {
 					chars.add(cpt, new char[]{glyph});
 					positions.add(cpt, new Point2D.Double(baseX, Ys[i]));
 					baseX += glyphWidth;
@@ -139,20 +139,20 @@ class JKeySignature extends JScoreElementAbstract {
 		}
 		
 		for (int twoPasses = 1; twoPasses <= 2; twoPasses++) {
-			byte accidental = twoPasses==1?firstAccidental:secondAccidental;
-			int[] order = (accidental == AccidentalType.FLAT)
+			Accidental accidental = twoPasses==1?firstAccidental:secondAccidental;
+			int[] order = (accidental.isFlat())
 						?flatOrder:sharpOrder;
 			char glyph = getMusicalFont().getAccidental(accidental);
 			double glyphWidth = getMetrics().getBounds(glyph).getWidth();
-			double[] Ys = (accidental==AccidentalType.FLAT)
+			double[] Ys = (accidental==Accidental.FLAT)
 						?flatYs:sharpYs;
-			if (twoPasses == 2 && key.hasSharpsAndFlats()) {
+			if ((twoPasses == 2) && key.hasSharpsAndFlats()) {
 				//A little space when changing accidental
 				baseX += glyphWidth;
 				m_width += glyphWidth;
 			}
 			for (int i = 0; i < order.length; i++) {
-				if (accidentals[order[i]] == accidental) {
+				if (accidentals[order[i]].equals(accidental)) {
 					chars.add(cpt, new char[]{glyph});
 					positions.add(cpt, new Point2D.Double(baseX, Ys[i]));
 					baseX += glyphWidth;

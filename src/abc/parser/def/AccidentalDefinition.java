@@ -20,29 +20,33 @@ import scanner.State;
 import scanner.Transition;
 import abc.parser.AbcTokenType;
 
-/** **/
-public class AccidentalDefinition extends AutomataDefinition
-{
-    public AccidentalDefinition()
-    {
-    	//TODO for ABC v2, accept _/ and ^/ (half flat/sharp)
-        State state = new State(AbcTokenType.ACCIDENTAL, true);
-        Transition trans = new Transition(state,'^');
-        getStartingState().addTransition(trans);
-        State state1 = new State(AbcTokenType.ACCIDENTAL, true);
-        trans = new Transition(state1,'^');
-        state.addTransition(trans);
+/** * */
+public class AccidentalDefinition extends AutomataDefinition {
+	
+	public AccidentalDefinition() {
+		State state = new State(AbcTokenType.ACCIDENTAL, true);
+		Transition trans = new Transition(state, '^');
+		getStartingState().addTransition(trans);
+		State state1 = new State(AbcTokenType.ACCIDENTAL, true);
+		trans = new Transition(state1, new char[] { '^', '3' });
+		state.addTransition(trans);
+		State state2 = new State(AbcTokenType.ACCIDENTAL, true);
+		state1.addTransition(new Transition(state2, '/'));
+		state.addTransition(new Transition(state2, '/'));
 
-        state = new State(AbcTokenType.ACCIDENTAL, true);
-        trans = new Transition(state,'_');
-        getStartingState().addTransition(trans);
-        state1 = new State(AbcTokenType.ACCIDENTAL, true);
-        trans = new Transition(state1,'_');
-        state.addTransition(trans);
+		state = new State(AbcTokenType.ACCIDENTAL, true);
+		trans = new Transition(state, '_');
+		getStartingState().addTransition(trans);
+		state1 = new State(AbcTokenType.ACCIDENTAL, true);
+		trans = new Transition(state1, new char[] { '_', '3' });
+		state.addTransition(trans);
+		state2 = new State(AbcTokenType.ACCIDENTAL, true);
+		state1.addTransition(new Transition(state2, '/'));
+		state.addTransition(new Transition(state2, '/'));
 
-        state = new State(AbcTokenType.ACCIDENTAL, true);
-        trans = new Transition(state,'=');
-        getStartingState().addTransition(trans);
-    }
+		state = new State(AbcTokenType.ACCIDENTAL, true);
+		trans = new Transition(state, '=');
+		getStartingState().addTransition(trans);
+
+	}
 }
-

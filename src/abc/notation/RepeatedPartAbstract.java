@@ -23,7 +23,7 @@ public abstract class RepeatedPartAbstract implements Serializable
 {
   private static final long serialVersionUID = -7080407911337277773L;
   
-  private int m_repeatNumber = 1;
+  private byte m_repeatNumber = 1;
   /** Creates a new repeated part. By default this part is repeated
    * only once. */
   public RepeatedPartAbstract()
@@ -31,12 +31,12 @@ public abstract class RepeatedPartAbstract implements Serializable
 
   /** Returns the number of times this part should be repeated.
    * @return The number of times this part should be repeated. */
-  public int getNumberOfRepeats()
+  public byte getNumberOfRepeats()
   { return m_repeatNumber; }
 
   /** Sets the number of times this part should be repeated.
    * @param repeatNumber The number of times this part should be repeated. */
-  public void setNumberOfRepeats(int repeatNumber)
+  public void setNumberOfRepeats(byte repeatNumber)
   { m_repeatNumber = repeatNumber; }
 
   /** Returns this repeated part as an array of singles parts. The playing of

@@ -23,6 +23,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.QuadCurve2D;
 import java.awt.geom.Rectangle2D;
 
+import abc.notation.Accidental;
 import abc.notation.Clef;
 import abc.notation.Decoration;
 import abc.notation.GracingType;
@@ -155,11 +156,16 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 	  boolean isup = stemUp;
 	  if (autoStem && (note != null)) {
 		//if (note.getHeight()<Note.B) {
+		//now depends on the clef!
+		//reset the note's accidental before checking
+		Accidental acc = note.getAccidental();
+		note.setAccidental(Accidental.NONE);
 		if ((getClef() == null) || note.isLowerThan(getClef().getMiddleNote())) {
 		  isup = true;
 		} else {
 		  isup = false;
 		}
+		note.setAccidental(acc);
 	  }
 	  return isup;
 	}

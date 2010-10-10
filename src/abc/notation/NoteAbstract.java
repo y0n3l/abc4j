@@ -32,7 +32,7 @@ public class NoteAbstract extends DecorableElement implements Cloneable
   /** The number of dots for this note. */
   private byte m_dotted = 0;
 
-  protected Vector slurDefinitions = new Vector(2);
+  private Vector slurDefinitions = null;// new Vector(2);
   //protected SlurDefinition slurDefinition = null;
   /** <TT>true</TT> if this note is part of a slur, <TT>false</TT>
    * otherwise. */
@@ -151,7 +151,9 @@ public class NoteAbstract extends DecorableElement implements Cloneable
    * @return Returns the slurDefinitions vector
    */
   public Vector getSlurDefinitions() {
-  	return slurDefinitions;
+	  if (slurDefinitions == null)
+		  slurDefinitions = new Vector(2);
+	  return slurDefinitions;
   }
   /**
    * @deprecated use {@link #getSlurDefinitions()} to get
@@ -161,15 +163,18 @@ public class NoteAbstract extends DecorableElement implements Cloneable
    * <TT>null</TT> if no slur has been added.
    */
   public SlurDefinition getSlurDefinition() {
-	  if (slurDefinitions.size() > 0) {
-		  return (SlurDefinition) slurDefinitions
-		  	.elementAt(slurDefinitions.size() - 1);
+	  if (slurDefinitions != null) {
+		  if (slurDefinitions.size() > 0) {
+			  return (SlurDefinition) slurDefinitions
+			  	.elementAt(slurDefinitions.size() - 1);
+		  }
 	  }
-	  //else
 	  return null;
   }
 
-  public boolean isBeginingSlur() {
+	public boolean isBeginingSlur() {
+		if (slurDefinitions == null)
+			return false;
 		int i = 0;
 		while (i < slurDefinitions.size()) {
 			SlurDefinition slur = (SlurDefinition) slurDefinitions.elementAt(i);
@@ -182,7 +187,9 @@ public class NoteAbstract extends DecorableElement implements Cloneable
 		return false;
 	}
 
-  public boolean isEndingSlur() {
+	public boolean isEndingSlur() {
+		if (slurDefinitions == null)
+			return false;
 		int i = 0;
 		while (i < slurDefinitions.size()) {
 			SlurDefinition slur = (SlurDefinition) slurDefinitions.elementAt(i);
@@ -199,7 +206,7 @@ public class NoteAbstract extends DecorableElement implements Cloneable
    * @param slurDefinition The slurDefinition to set.
    */
   public void addSlurDefinition(SlurDefinition slurDefinition) {
-  	slurDefinitions.addElement(slurDefinition);
+  	getSlurDefinitions().addElement(slurDefinition);
   }
   /**
    * @deprecated see {@link #addSlurDefinition(SlurDefinition)}

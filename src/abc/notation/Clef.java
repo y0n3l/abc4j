@@ -76,14 +76,14 @@ public class Clef extends MusicElement implements Cloneable {
 	private String clefName = null;
 	/** Number of the line staff where clef is printed.
 	 * 2 for treble, 3 for alto, 4 for tenor, 4 for bass... */
-	private int m_lineNumber = -1;
+	private byte m_lineNumber = -1;
 	/** Transposition in octave, +1 for *va, -1 for *vb... */
-	private int m_octaveTransposition = 0;
+	private byte m_octaveTransposition = 0;
 	/** Transposition in semitones, doesn't affect
 	 * printed output, only audio rendition. */
-	private int m_semitoneTransposition = 0;
+	private byte m_semitoneTransposition = 0;
 	/** Number of lines in the staff (1 for perc, 5 for all others) */
-	private int m_staffLines = 5;
+	private byte m_staffLines = 5;
 	
 	private transient Note m_referenceNote = null;
 	private transient Note m_middleNote = null;
@@ -96,7 +96,7 @@ public class Clef extends MusicElement implements Cloneable {
 	 */
 	private Clef(String name, int octaveTranspo) {
 		clefName = name;
-		m_octaveTransposition = octaveTranspo;
+		m_octaveTransposition = (byte) octaveTranspo;
 	}
 
 	/** Creates a clef with the specified parameters.
@@ -110,10 +110,10 @@ public class Clef extends MusicElement implements Cloneable {
 	private Clef(String name, int lineNumber, int octaveTranspo,
 			int semitoneTranspo, int staffLines) {
 		clefName = name;
-		setLineNumber(lineNumber);
-		setOctaveTransposition(octaveTranspo);
-		m_semitoneTransposition = semitoneTranspo;
-		setStaffLines(staffLines);
+		setLineNumber((byte)lineNumber);
+		setOctaveTransposition((byte) octaveTranspo);
+		m_semitoneTransposition = (byte) semitoneTranspo;
+		setStaffLines((byte)staffLines);
 	}
 	
 	/**
@@ -154,7 +154,7 @@ public class Clef extends MusicElement implements Cloneable {
 				label==5?Interval.PERFECT:Interval.MAJOR,
 				Interval.UPWARD);
 			m_highNote = interv.calculateSecondNote(getMiddleNote());
-			m_highNote.setAccidental(AccidentalType.NONE);
+			m_highNote.setAccidental(new Accidental());//Accidental.NONE
 		}
 		return m_highNote;
 	}
@@ -174,7 +174,7 @@ public class Clef extends MusicElement implements Cloneable {
 				label==5?Interval.PERFECT:Interval.MAJOR,
 				Interval.DOWNWARD);
 			m_lowNote = interv.calculateSecondNote(getMiddleNote());
-			m_lowNote.setAccidental(AccidentalType.NONE);
+			m_lowNote.setAccidental(new Accidental());//Accidental.NONE
 		}
 		return m_lowNote;
 	}
@@ -208,7 +208,7 @@ public class Clef extends MusicElement implements Cloneable {
 					case 5: interval = Interval.reverseOrder(Interval.PERFECT_FIFTH); break;
 					}
 					m_middleNote = interval.calculateSecondNote(ref);
-					m_middleNote.setAccidental(AccidentalType.NONE);
+					m_middleNote.setAccidental(new Accidental());//Accidental.NONE);
 				}
 			}
 		}
@@ -235,7 +235,7 @@ public class Clef extends MusicElement implements Cloneable {
 	}
 
 	/** Returns the transposition in octave, +1 for *va, -1 for *vb... */
-	public void setOctaveTransposition(int i) {
+	public void setOctaveTransposition(byte i) {
 		if (i < -2) i = -2;
 		else if (i > 2) i = 2;
 		m_octaveTransposition = i;
@@ -250,7 +250,7 @@ public class Clef extends MusicElement implements Cloneable {
 	
 	/** Sets the transposition in semitones, doesn't affect
 	 * printed output, only audio rendition. */
-	public void setSemitoneTransposition(int i) {
+	public void setSemitoneTransposition(byte i) {
 		m_semitoneTransposition = i;
 		reset();
 	}
@@ -271,7 +271,7 @@ public class Clef extends MusicElement implements Cloneable {
 	
 	/** Sets the number of the line staff where clef is printed.
 	 * 2 for treble, 3 for alto, 4 for tenor, 4 for bass... */
-	public void setLineNumber(int i) {
+	public void setLineNumber(byte i) {
 		if (i <= 0) i = 1;
 		else if (i > 5) i = 5;
 		m_lineNumber = i;
@@ -286,7 +286,7 @@ public class Clef extends MusicElement implements Cloneable {
 
 	/** Returns the number of lines in the staff
 	 * (1 for perc, 5 for all others) */
-	public void setStaffLines(int i) {
+	public void setStaffLines(byte i) {
 		if (i < 0) i = 0;
 		else if (i > 5) i = 5;
 		m_staffLines = i;

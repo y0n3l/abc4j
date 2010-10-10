@@ -23,7 +23,7 @@ public class MultiPartsDefinition extends RepeatedPartAbstract implements Clonea
 {
   private static final long serialVersionUID = 7800603529025920851L;
   
-  private Vector m_parts = new Vector();
+  private Vector m_parts = new Vector(3, 3);
 
   /** Creates a new multi part definition. */
   public MultiPartsDefinition() { 

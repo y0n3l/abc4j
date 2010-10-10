@@ -21,7 +21,7 @@ import javax.sound.midi.MidiEvent;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Track;
 
-import abc.notation.AccidentalType;
+import abc.notation.Accidental;
 import abc.notation.BarLine;
 import abc.notation.KeySignature;
 import abc.notation.MultiNote;
@@ -156,7 +156,7 @@ public abstract class OldMidiConverterAbstract implements MidiConverterInterface
 
   private void updateKey(KeySignature key, Note note)
   {
-    if (note.getAccidental()!=AccidentalType.NONE)
+    if (!note.getAccidental().isInTheKey())
       key.setAccidental(note.toRootOctaveHeigth(), note.getAccidental());
   }
 
@@ -213,32 +213,19 @@ public abstract class OldMidiConverterAbstract implements MidiConverterInterface
   protected byte getMidiNoteNumber (Note note, KeySignature key)
   {
     byte heigth = note.getHeight();
-    byte accidental = note.getAccidental();
+    Accidental accidental = new Accidental(note.getAccidental().getNearestOccidentalValue());
     byte midiNoteNumber = (byte)(heigth+(69-Note.A));
     midiNoteNumber = (byte)(midiNoteNumber + note.getOctaveTransposition()*12);
-    if (accidental == AccidentalType.NONE)
+    if (accidental.isInTheKey())
     {
-      byte absoluteAccidental = AccidentalType.NATURAL;
+      byte absoluteAccidental = (byte)Accidental.NATURAL.getValue();
       byte heightOnOneOctave = (byte)(heigth % 12);
-      absoluteAccidental = key.getAccidentalFor(heightOnOneOctave);
-      switch (absoluteAccidental)
-      {
-          case AccidentalType.FLAT :
-            midiNoteNumber --; break;
-          case AccidentalType.NATURAL	:
-            break;
-          case AccidentalType.SHARP :
-            midiNoteNumber ++; break;
-      }
+      absoluteAccidental = key.getAccidentalFor(heightOnOneOctave).getNearestOccidentalValue();
+      midiNoteNumber += absoluteAccidental;
     }
     else
     {
-      switch (accidental)
-      {
-          case AccidentalType.FLAT : midiNoteNumber --; break;
-          case AccidentalType.NATURAL	: break;
-          case AccidentalType.SHARP : midiNoteNumber ++; break;
-      }
+    	midiNoteNumber += accidental.getValue();
     }
     return midiNoteNumber;
   }

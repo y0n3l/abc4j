@@ -35,15 +35,15 @@ public class MusicElementReference implements Serializable, Cloneable {
 
 	private char part = ' ';
 
-	private int x = -1;
+	private short x = -1;
 
-	private int y = -1;
+	private byte y = -1;
 
 	protected MusicElementReference() {
-		this(' ', -1, -1);
+		this(' ', (short)-1, (byte)-1);
 	}
 	
-	public MusicElementReference(char p, int _x, int _y) {
+	public MusicElementReference(char p, short _x, byte _y) {
 		part = p;
 		x = _x;
 		y = _y;
@@ -53,11 +53,11 @@ public class MusicElementReference implements Serializable, Cloneable {
 		return part;
 	}
 
-	public int getX() {
+	public short getX() {
 		return x;
 	}
 
-	public int getY() {
+	public byte getY() {
 		return y;
 	}
 
@@ -65,11 +65,11 @@ public class MusicElementReference implements Serializable, Cloneable {
 		this.part = p;
 	}
 
-	protected void setX(int _x) {
+	protected void setX(short _x) {
 		this.x = _x;
 	}
 
-	protected void setY(int _y) {
+	protected void setY(byte _y) {
 		this.y = _y;
 	}
 

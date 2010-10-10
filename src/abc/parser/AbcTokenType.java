@@ -118,6 +118,9 @@ public class AbcTokenType implements TokenType
     public static AbcTokenType SYMBOL = new AbcTokenType("SYMBOL");
     public static AbcTokenType SYMBOL_BEGIN = new AbcTokenType("SYMBOL BEGIN");
     public static AbcTokenType SYMBOL_END = new AbcTokenType("SYMBOL END");
+    public static AbcTokenType ANNOTATION = new AbcTokenType("ANNOTATION");
+    public static AbcTokenType ANNOTATION_BEGIN = new AbcTokenType("ANNOTATION BEGIN");
+    public static AbcTokenType ANNOTATION_END = new AbcTokenType("ANNOTATION END");
     public static AbcTokenType GUITAR_CHORD = new AbcTokenType("GUITAR CHORD");
     public static AbcTokenType BEGIN_SLUR = new AbcTokenType("BEGIN SLUR");
     public static AbcTokenType END_SLUR = new AbcTokenType("END SLUR");

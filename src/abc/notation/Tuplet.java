@@ -25,7 +25,7 @@ public class Tuplet implements Cloneable, Serializable
   
   /** Notes composing the tuplet. */
   private Vector m_notes = null;
-  private int m_totalRelativeLength = -1;
+  private short m_totalRelativeLength = -1;
   private short m_totalDuration = -1;
 
   /** Creates a new tuplet composed of the specified notes. The total length
@@ -33,9 +33,9 @@ public class Tuplet implements Cloneable, Serializable
    * @param notes The <TT>NoteAbstract</TT> obejcts composing this tuplet,
    * encapsulated inside a <TT>Vector</TT>.
    * @param totalRelativeLength The total relative length of this tuplet
-   * multiplied by the delfault relative length gives the total absolute length
+   * multiplied by the default relative length gives the total absolute length
    * of this tuplet. */
-  public Tuplet (Vector notes, int totalRelativeLength, short defaultNoteLength)
+  public Tuplet (Vector notes, short totalRelativeLength, short defaultNoteLength)
   {
     m_notes = notes;
     m_totalRelativeLength = totalRelativeLength;
@@ -52,7 +52,7 @@ public class Tuplet implements Cloneable, Serializable
    * @deprecated use totalDuration() instead. Reference to relative length should
    * be avoided in the API bacause this is only related to the "abc world". 
    * @see #getTotalDuration() */
-  public int getTotalRelativeLength()
+  public short getTotalRelativeLength()
   { return m_totalRelativeLength; }
   
   /** Returns the total duration of this tuplet.

@@ -28,7 +28,8 @@ import scanner.Set;
 import scanner.Token;
 import scanner.TokenEvent;
 import scanner.TokenType;
-import abc.notation.AccidentalType;
+import abc.notation.Accidental;
+import abc.notation.Annotation;
 import abc.notation.BarLine;
 import abc.notation.Decoration;
 import abc.notation.Dynamic;
@@ -148,6 +149,8 @@ public class AbcParserAbstract
     protected static Set FIRST_GRACINGS = new Set(AbcTokenType.GRACING);
     protected static Set FIRST_SYMBOL_BEGIN = new Set(AbcTokenType.SYMBOL_BEGIN);
     protected static Set FIRST_SYMBOL = new Set(AbcTokenType.SYMBOL);
+    protected static Set FIRST_ANNOTATION_BEGIN = new Set(AbcTokenType.ANNOTATION_BEGIN);
+    protected static Set FIRST_ANNOTATION = new Set(AbcTokenType.ANNOTATION);
     protected static Set FIRST_TIE = new Set(AbcTokenType.TIE);
     protected static Set FIRST_BROKEN_RHYTHM = new Set(AbcTokenType.BROKEN_RHYTHM);
     protected static Set FIRST_REST = new Set(AbcTokenType.REST);
@@ -176,6 +179,7 @@ public class AbcParserAbstract
         .union(AbcTokenType.NO_LINE_BREAK);
     protected static Set FIRST_ELEMENT =
     	new Set(FIRST_SYMBOL_BEGIN)
+    	.union(FIRST_ANNOTATION_BEGIN)
     	.union(FIRST_SPACER)
     	.union(FIRST_NOTE_ELEMENT)
     	.union(FIRST_TUPLET_ELEMENT)
@@ -671,7 +675,7 @@ public class AbcParserAbstract
         current.remove(AbcTokenType.DIGIT);
         String digit = accept(AbcTokenType.DIGIT, current, follow);
         if (digit!=null && parts!=null)
-          parts.setNumberOfRepeats(Integer.parseInt(digit));
+          parts.setNumberOfRepeats(Byte.parseByte(digit));
       }
       return parts;
     }
@@ -695,7 +699,7 @@ public class AbcParserAbstract
     {
       Set current = null;
       Tempo tempo = null;
-      int tempoValue = -1;
+      short tempoValue = -1;
       if (m_tokenType.equals(AbcTokenType.C_TEMPO))
       {
         current = new Set().union(FIRST_NOTE_LENGTH).union(AbcTokenType.EQUALS).union(AbcTokenType.NUMBER);
@@ -714,7 +718,7 @@ public class AbcParserAbstract
         current.remove(AbcTokenType.NUMBER);
         String tempoString = accept(AbcTokenType.NUMBER, current, follow);
         if (tempoString!=null)
-          tempoValue = new Integer(tempoString).intValue();
+          tempoValue = new Short(tempoString).shortValue();
         if (refLength!=-1 && tempoValue!=-1)
           tempo = new Tempo(refLength, tempoValue);
       }
@@ -735,7 +739,7 @@ public class AbcParserAbstract
           tempoString = accept(AbcTokenType.NUMBER, current, follow);
           if (num!=null && denom!=null && tempoString!=null)
           try
-          { tempo = new Tempo(Note.convertToNoteLengthStrict(new Integer(num).intValue(), new Integer(denom).intValue()), new Integer(tempoString).intValue()); }
+          { tempo = new Tempo(Note.convertToNoteLengthStrict(new Integer(num).intValue(), new Integer(denom).intValue()), new Short(tempoString).shortValue()); }
           catch (IllegalArgumentException e)
           {
             //Invalid tempo => just ignore it.
@@ -744,7 +748,7 @@ public class AbcParserAbstract
         else
         //tempo has the form 1*digit
         if (tempoString!=null)
-          tempo = new Tempo(m_defaultNoteLength, new Integer(tempoString).intValue());
+          tempo = new Tempo(m_defaultNoteLength, new Short(tempoString).shortValue());
       }
       return tempo;
     }
@@ -832,9 +836,9 @@ public class AbcParserAbstract
           accept(AbcTokenType.SPACE, current, follow, true);
           if (FIRST_GLOBAL_ACCIDENTAL.contains(m_tokenType))
           {
-            byte[] ga = parseGlobalAccidental(current.createUnion(follow));
+            Object[] ga = parseGlobalAccidental(current.createUnion(follow));
             if (ga!=null && key!=null)
-              key.setAccidental(ga[0], ga[1]);
+              key.setAccidental(((Byte)ga[0]).byteValue(), (Accidental)ga[1]);
           }
         }
         return key;
@@ -857,7 +861,8 @@ public class AbcParserAbstract
         }
 
         if (note!=null)
-          keyNote = new Note(Note.convertToNoteType(note), KeySignature.convertToAccidentalType(accidental));
+          keyNote = new Note(Note.convertToNoteType(note),
+        		 KeySignature.convertToAccidentalType(accidental));
         return keyNote;
     }
 
@@ -968,22 +973,25 @@ public class AbcParserAbstract
         return number;
     }
 
-    /** global-accidental ::= accidental basenote */
-    private byte[] parseGlobalAccidental(Set follow)
+    /** global-accidental ::= accidental basenote
+     *
+     * @returns Object array [0] = Byte note height, [1] = Accidental
+     */
+    private Object[] parseGlobalAccidental(Set follow)
     {
       Set current= new Set(AbcTokenType.BASE_NOTE);
-      byte[] globalAccidental = new byte[2];
 
       String keyAcc = accept(AbcTokenType.ACCIDENTAL, current, follow);
-      byte accidentalType = AccidentalType.convertToAccidentalType(keyAcc);
+      Accidental accidental = Accidental.convertToAccidental(keyAcc);
 
       current.remove(AbcTokenType.BASE_NOTE);
       String noteHeigthString = accept(AbcTokenType.BASE_NOTE, current, follow);
       //byte index = 0;
-      byte noteHeigth = Note.convertToNoteType(noteHeigthString);
+      byte noteHeight = Note.convertToNoteType(noteHeigthString);
 
-      globalAccidental[0] = noteHeigth;
-      globalAccidental[1] = accidentalType;
+      Object[] globalAccidental = new Object[2];
+      globalAccidental[0] = new Byte(noteHeight);
+      globalAccidental[1] = accidental;
       return globalAccidental;
     }
 
@@ -1116,21 +1124,28 @@ public class AbcParserAbstract
      * begin-slur / end-slur / space / user-defined */
     private void parseElement(Set follow)
     {
-    	// symbols
+    	// symbols and annotations
     	Vector decorations = new Vector();
+    	Vector annotations = new Vector();
     	Dynamic dynamic = null;
-        if (FIRST_SYMBOL_BEGIN.contains(m_tokenType)) {
-      	  Vector symbols = parseSymbols(follow);
-      	  Iterator it = symbols.iterator();
-      	  while (it.hasNext()) {
-      		  SymbolElement symb = (SymbolElement) it.next();
-      		  if (symb instanceof Dynamic) {
-      			  if (dynamic == null)
-      				  dynamic = (Dynamic) symb;
-      			  it.remove();
-      		  }
-      	  }
-      	  decorations.addAll(symbols);
+        while (FIRST_SYMBOL_BEGIN.contains(m_tokenType)
+        		|| FIRST_ANNOTATION_BEGIN.contains(m_tokenType)) {
+        	if (FIRST_SYMBOL_BEGIN.contains(m_tokenType)) {
+        		Vector symbols = parseSymbols(follow);
+        		Iterator it = symbols.iterator();
+        		while (it.hasNext()) {
+        			SymbolElement symb = (SymbolElement) it.next();
+        			if (symb instanceof Dynamic) {
+        				if (dynamic == null)
+        					dynamic = (Dynamic) symb;
+        				it.remove();
+        			}
+        		}
+        		decorations.addAll(symbols);
+        	}
+        	else { //FIRST_ANNOTATION_BEGIN.contains(m_tokenType
+        		annotations.addAll(parseAnnotations(follow));
+        	}
         }
         
       if (FIRST_SPACER.contains(m_tokenType))
@@ -1144,7 +1159,10 @@ public class AbcParserAbstract
       	  accept(AbcTokenType.SPACER, null, follow);
       	  Spacer spacer = new Spacer();
       	  spacer.setDynamic(dynamic);
-      	  spacer.setDecorations((Decoration[])decorations.toArray(new Decoration[1]));
+      	  if (decorations.size() > 0)
+      		  spacer.setDecorations((Decoration[])decorations.toArray(new Decoration[1]));
+      	  if (annotations.size() > 0)
+      		  spacer.setAnnotations((Annotation[])annotations.toArray(new Annotation[1]));
       	  //spacer.setChordName(chordName);
       	  m_music.addElement(spacer);
       }
@@ -1170,6 +1188,8 @@ public class AbcParserAbstract
 	        }
 	        if (decorations.size() > 0)
 	        	note.setDecorations((Decoration[])decorations.toArray(new Decoration[1]));
+	        if (annotations.size() > 0)
+	        	note.setAnnotations((Annotation[])annotations.toArray(new Annotation[1]));
 	        m_music.addElement(note);
         }
       }
@@ -1192,6 +1212,8 @@ public class AbcParserAbstract
                 }
                 if (decorations.size() > 0)
                 	note.setDecorations((Decoration[])decorations.toArray(new Decoration[1]));
+                if (annotations.size() > 0)
+                	note.setAnnotations((Annotation[])annotations.toArray(new Annotation[1]));
         	}
         	m_music.addElement(note);
         }
@@ -1206,6 +1228,8 @@ public class AbcParserAbstract
         		barline.setDynamic(dynamic);
                 if (decorations.size() > 0)
                 	barline.setDecorations((Decoration[])decorations.toArray(new Decoration[1]));
+                if (annotations.size() > 0)
+                	barline.setAnnotations((Annotation[])annotations.toArray(new Annotation[1]));
         	}
           m_music.addElement(barline);
         }
@@ -1312,7 +1336,7 @@ public class AbcParserAbstract
         notesNumber--;
       }
       while(FIRST_NOTE_ELEMENT.contains(m_tokenType) && notesNumber>0);
-      return new Tuplet(notes, tupletSpec[1], m_defaultNoteLength);
+      return new Tuplet(notes, (short)tupletSpec[1], m_defaultNoteLength);
     }
 
     /** tuplet-spec ::= "(" DIGIT [":" [DIGIT] [":" [DIGIT]]]
@@ -1419,6 +1443,34 @@ public class AbcParserAbstract
       }*/
       return note;
     }
+    
+    /** Parse annotations "^top", "_bottom", "<left",
+     * ">right", "@software controlled placement"
+     * @param follow
+     * @return a vector of {@link Annotation}
+     */
+    private Vector parseAnnotations(Set follow) {
+    	Vector annotations = new Vector(3, 3);
+        while (FIRST_SYMBOL_BEGIN.contains(m_tokenType)) {
+			Set current = new Set().union(AbcTokenType.ANNOTATION_BEGIN)
+				.union(AbcTokenType.ANNOTATION);//.union(AbcTokenType.SPACE);
+			accept(AbcTokenType.ANNOTATION_BEGIN, current, follow);
+			current.remove(AbcTokenType.ANNOTATION);
+			String acc = accept(AbcTokenType.ANNOTATION, current, follow);
+			if (acc != null) {
+				annotations.add(new Annotation(acc));
+			}
+			current.remove(AbcTokenType.ANNOTATION_BEGIN);
+			accept(AbcTokenType.ANNOTATION_BEGIN, current, follow);
+			//optional space after closing +
+			current.remove(AbcTokenType.SPACE);
+			String s = "";
+			while (s != null) {
+				s = accept(AbcTokenType.SPACE, current, follow, true);
+			}
+        }
+        return annotations;
+   }
     
     /** Parse symbols between +...+ signs, like +mp+, +trill+
      * 
@@ -1722,7 +1774,7 @@ public class AbcParserAbstract
       if (m_tokenType.equals(AbcTokenType.REST))
       {
     	  String sNote=accept(AbcTokenType.REST, null, follow);
-        PositionableNote note = new PositionableNote(Note.convertToNoteType(sNote), AccidentalType.NONE);
+        PositionableNote note = new PositionableNote(Note.convertToNoteType(sNote), Accidental.NONE);
         if (sNote.equals("x"))
         	note.setInvisibleRest(true);
         //note.setPartOfSlur(!slursDefinitionStack.isEmpty());
@@ -1739,12 +1791,12 @@ public class AbcParserAbstract
     {
       Set current = new Set().union(FIRST_BASE_NOTE).union(FIRST_OCTAVE);
       Note note = null;
-      byte accidental = AccidentalType.NONE;
+      Accidental accidental = Accidental.NONE;
       byte noteHeigth = 0;
       byte octaveTransposition = 0;
 
       if (m_tokenType.equals(AbcTokenType.ACCIDENTAL))
-        accidental = AccidentalType.convertToAccidentalType(accept(AbcTokenType.ACCIDENTAL, current, follow));
+        accidental = Accidental.convertToAccidental(accept(AbcTokenType.ACCIDENTAL, current, follow));
       current.remove(FIRST_BASE_NOTE);
       String heigth = accept(AbcTokenType.BASE_NOTE, current, follow, true);
       if (heigth!=null) noteHeigth = Note.convertToNoteType(heigth);

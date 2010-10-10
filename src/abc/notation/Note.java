@@ -147,8 +147,8 @@ public class Note extends NoteAbstract implements Cloneable
 	 * @param key
 	 */
 	static public Note createFromMidiLikeHeight(int midiHeight, KeySignature key) {
-		byte acc = key.isFlatDominant() ? AccidentalType.FLAT
-				: AccidentalType.SHARP;
+		Accidental acc = key.isFlatDominant() ? Accidental.FLAT
+				: Accidental.SHARP;
 		return createFromMidiLikeHeight(midiHeight, acc);
 	}
 
@@ -160,7 +160,7 @@ public class Note extends NoteAbstract implements Cloneable
 	 * will determinate if alteration is sharp (E major, B major) or flat (Bb
 	 * major, C minor).
 	 * 
-	 * <B>Be careful!</B> note without accidental ({@link AccidentalType#NONE})
+	 * <B>Be careful!</B> note without accidental ({@link Accidental#NONE})
 	 * is considered as NATURAL. In fact it depends on the key!
 	 * If height = Note.E and accidental = NONE, it could be
 	 * E flat if key is Bb major, C minor...!
@@ -169,10 +169,10 @@ public class Note extends NoteAbstract implements Cloneable
 	 * @param key
 	 */
 	static public Note createFromMidiLikeHeight(int midiHeight,
-			byte preferredAccidental) {
+			Accidental preferredAccidental) {
 		return createEnharmonic(
 				createFromMidiLikeHeight(midiHeight),
-				new byte[] {preferredAccidental});
+				new Accidental[] {preferredAccidental});
 	}
 
 	/**
@@ -197,11 +197,11 @@ public class Note extends NoteAbstract implements Cloneable
 			throw new NoteHeightException(midiHeight);
 		// +132: we are sure we have a positive value
 		int strictHeight = (midiHeight + 132) % 12;
-		byte accident = AccidentalType.NATURAL;
+		Accidental accident = Accidental.NATURAL;
 		if ((strictHeight != C) && (strictHeight != D) && (strictHeight != E)
 				&& (strictHeight != F) && (strictHeight != G)
 				&& (strictHeight != A) && (strictHeight != B)) {
-			accident = AccidentalType.SHARP;
+			accident = Accidental.SHARP;
 			strictHeight -= 1;
 			midiHeight -= 1;
 		}
@@ -227,66 +227,66 @@ public class Note extends NoteAbstract implements Cloneable
 			never.printStackTrace();
 			ret = null;
 		}
-		if (note.getAccidental() == AccidentalType.NONE)
+		if (note.getAccidental().isInTheKey())
 			return ret; //is in the key
-		if ((note.getAccidental() == AccidentalType.DOUBLE_FLAT)
-				|| (note.getAccidental() == AccidentalType.DOUBLE_SHARP))
-			ret = createEnharmonic(note, new byte[] {AccidentalType.NATURAL, AccidentalType.SHARP});
-		if (ret.getAccidental() ==
-				key.getAccidentalFor(ret.getStrictHeight())) {
+		Accidental accValue = note.getAccidental();
+		if (accValue.isDoubleFlat() || accValue.isDoubleSharp())
+			ret = createEnharmonic(note, new Accidental[] {Accidental.NATURAL, Accidental.SHARP});
+		if (ret.getAccidental().equals(
+				key.getAccidentalFor(ret.getStrictHeight()))) {
 			//no need to change
-			ret.setAccidental(AccidentalType.NONE);
+			ret.setAccidental(Accidental.NONE);
 		}
 		//1st degree with different accidental than key accidental
 		else if (ret.getStrictHeight() == key.getDegree(Degree.TONIC)) {
-			if (key.getAccidental() == AccidentalType.SHARP)
-				ret = createEnharmonic(ret, new byte[] {AccidentalType.DOUBLE_SHARP, AccidentalType.SHARP, AccidentalType.NATURAL});
-			else if (key.getAccidental() == AccidentalType.FLAT)
-				ret = createEnharmonic(ret, new byte[] {AccidentalType.NATURAL, AccidentalType.FLAT});
+			if (key.getAccidental().isSharp())
+				ret = createEnharmonic(ret, new Accidental[] {Accidental.DOUBLE_SHARP, Accidental.SHARP, Accidental.NATURAL});
+			else if (key.getAccidental().isFlat())
+				ret = createEnharmonic(ret, new Accidental[] {Accidental.NATURAL, Accidental.FLAT});
 			else {//NATURAL
-				byte acc = key.hasOnlySharps()?AccidentalType.SHARP:AccidentalType.FLAT;
-				ret = createEnharmonic(ret, new byte[] {AccidentalType.NATURAL, acc});
+				Accidental acc = key.hasOnlySharps()?Accidental.SHARP:Accidental.FLAT;
+				ret = createEnharmonic(ret, new Accidental[] {Accidental.NATURAL, acc});
 			}
 		}
 		//7th degree (leading note) is always sharp, never key note flat
 		else if (ret.getStrictHeight() == key.getDegree(Degree.LEADING_TONE)) {
-			if (key.getAccidental() == AccidentalType.FLAT)
-				ret = createEnharmonic(ret, new byte[] {AccidentalType.NATURAL, AccidentalType.FLAT});
-			else if (key.getAccidental() == AccidentalType.SHARP)
-				ret = createEnharmonic(ret, new byte[] {AccidentalType.DOUBLE_SHARP, AccidentalType.SHARP, AccidentalType.NATURAL});
+			if (key.getAccidental().isFlat())
+				ret = createEnharmonic(ret, new Accidental[] {Accidental.NATURAL, Accidental.FLAT});
+			else if (key.getAccidental().isSharp())
+				ret = createEnharmonic(ret, new Accidental[] {Accidental.DOUBLE_SHARP, Accidental.SHARP, Accidental.NATURAL});
 			else
-				ret = createEnharmonic(ret, new byte[] {AccidentalType.SHARP, AccidentalType.NATURAL});
+				ret = createEnharmonic(ret, new Accidental[] {Accidental.SHARP, Accidental.NATURAL});
 		}
 		//2nd degree (supertonic) flat is never 1st sharp
 //		else if (((ret.getStrictHeight() == key.getDegree(1))
-//				&& (ret.getAccidental() == AccidentalType.SHARP))
+//				&& (ret.getAccidental().isSharp()))
 //				|| ((ret.getStrictHeight() == key.getDegree(2))
-//				&& (ret.getAccidental() == AccidentalType.FLAT))) {
+//				&& (ret.getAccidental().isFlat()))) {
 //			ret = createEnharmonic(note,
-//				new byte[] {AccidentalType.NATURAL, AccidentalType.FLAT});
+//				new Accidental[] {Accidental.NATURAL, Accidental.FLAT});
 //		}
 		else {
 			//1st prefered accidental is given by the key
 			//2nd is flat or sharp depends on key dominant accidental
-			byte dominant = AccidentalType.NATURAL;
+			Accidental dominant = Accidental.NATURAL;
 			if (key.hasOnlyFlats())
-				dominant = AccidentalType.FLAT;
+				dominant = Accidental.FLAT;
 			else if (key.hasOnlySharps())
-				dominant = AccidentalType.SHARP;
+				dominant = Accidental.SHARP;
 			//other degrees
 			for (int i = Degree.SUPERTONIC; i <= Degree.SUBMEDIANT; i++) {
 				if (ret.getStrictHeight() == key.getDegree(i))
-					ret = createEnharmonic(note, new byte[] {
+					ret = createEnharmonic(note, new Accidental[] {
 						key.getAccidentalFor(ret.getStrictHeight()),
-						AccidentalType.NATURAL, dominant });
+						Accidental.NATURAL, dominant });
 			}
 		}
 
 		//second time, for cases where new note has been computed
-		if (ret.getAccidental() ==
-				key.getAccidentalFor(ret.getStrictHeight())) {
+		if (ret.getAccidental().equals(
+				key.getAccidentalFor(ret.getStrictHeight()))) {
 			//set accidental to NONE
-			ret.setAccidental(AccidentalType.NONE);
+			ret.setAccidental(Accidental.NONE);
 		}
 		return ret;
 	}
@@ -298,7 +298,7 @@ public class Note extends NoteAbstract implements Cloneable
 	 * e.g.: enharmonics of _E (E flat) are ^D (D sharp) and __F (F double
 	 * flat).
 	 * 
-	 * <B>Be careful!</B> note without accidental ({@link AccidentalType#NONE})
+	 * <B>Be careful!</B> note without accidental ({@link Accidental#NONE})
 	 * is considered as NATURAL. In fact it depends on the key!
 	 * If height = Note.E and accidental = NONE, it could be
 	 * E flat if key is Bb major, C minor...!
@@ -307,7 +307,7 @@ public class Note extends NoteAbstract implements Cloneable
 	 * @param accidentalTypes array of accidental types, by order of preference
 	 * @see #createEnharmonic(Note, KeySignature)
 	 */
-	static public Note createEnharmonic(Note note, byte[] accidentalTypes) {
+	static public Note createEnharmonic(Note note, Accidental[] accidentalTypes) {
 		Note ret;
 		try {
 			ret = (Note) note.clone();
@@ -315,7 +315,7 @@ public class Note extends NoteAbstract implements Cloneable
 			never.printStackTrace();
 			ret = null;
 		}
-		if (ret.isRest() || (accidentalTypes[0] == ret.getAccidental()))
+		if (ret.isRest() || (accidentalTypes[0].equals(ret.getAccidental())))
 			return ret;
 		Vector nearNotes = new Vector(9);
 		for (int i = -4; i <= 4; i++) {
@@ -334,7 +334,7 @@ public class Note extends NoteAbstract implements Cloneable
 			for (Iterator it = nearNotes.iterator(); it.hasNext();) {
 				Note nearNote = (Note) it.next();
 				nearNote.setAccidental(accidentalTypes[i]);
-				if (nearNote.getMidiLikeHeight() == note.getMidiLikeHeight())
+				if (nearNote.getMidiLikeMicrotonalHeight() == note.getMidiLikeMicrotonalHeight())
 					return nearNote;
 			}
 		}
@@ -370,13 +370,14 @@ public class Note extends NoteAbstract implements Cloneable
 		//ensure that we will return NATURAL or SHARP accidental
 		if (ret.isRest()/* || (semitones == 0)*/)
 			return ret;
+		float microtonalOffset = ret.getAccidental().getMicrotonalOffset();
 		int newMidiHeight = ret.getMidiLikeHeight() + semitones;
 		if ((newMidiHeight < Byte.MIN_VALUE)
 				|| (newMidiHeight > Byte.MAX_VALUE))
 			throw new NoteHeightException(newMidiHeight);
 		Note newHeight = createFromMidiLikeHeight(newMidiHeight);
 		ret.setHeight(newHeight.getHeight());
-		ret.setAccidental(newHeight.getAccidental());
+		ret.setAccidental(new Accidental(newHeight.getAccidental().getValue()+microtonalOffset));
 		ret.setOctaveTransposition(newHeight.getOctaveTransposition());
 		return ret;
 	}
@@ -406,7 +407,7 @@ public class Note extends NoteAbstract implements Cloneable
 
   private byte octaveTransposition = 0;
   /** Accidental for this note. */
-  private byte accidental = AccidentalType.NONE;
+  private Accidental m_accidental = new Accidental();//Accidental.NONE;
   /** The full whole duration that takes into account the dots. (why not
    * the tuplet stuff ? :/ ) */
   private short m_duration = -1;
@@ -418,7 +419,7 @@ public class Note extends NoteAbstract implements Cloneable
   /** <TT>true</TT> if this note is tied, <TT>false</TT> otherwise. */
 
   /** Creates an abc note with the specified height. Accidental will inherit
-   * its default value <TT>AccidentalType.NONE</TT>.
+   * its default value <TT>Accidental.NONE</TT>.
    * @param heightValue The heigth of this note as a byte that respect the scale defined by
    * constants such as C D E F G A B c d e ..... The heigth is <TT>REST</TT> if
    * this note is a rest.
@@ -433,15 +434,26 @@ public class Note extends NoteAbstract implements Cloneable
    * constants such as C D E F G A B c d e ..... The heigth is <TT>REST</TT> if
    * this note is a rest.
    * @param accidentalValue Accidental for this note. Possible values are
-   * <TT>AccidentalType.NATURAL</TT>, <TT>AccidentalType.SHARP</TT> (#),
-   * <TT>AccidentalType.FLAT</TT> (b) or <TT>AccidentalType.NONE</TT>.
+   * <TT>Accidental.NATURAL</TT>, <TT>Accidental.SHARP</TT> (#),
+   * <TT>Accidental.FLAT</TT> (b) or <TT>Accidental.NONE</TT>.
    * @see #setAccidental(byte)
-   * @see #setHeight(byte) */
-  public Note (byte heightValue, byte accidentalValue)
+   * @see #setHeight(byte)
+   * @deprecated use {@link #Note(byte, Accidental)}
+   */
+  public Note (byte heightValue, float accidentalValue)
   {
-    super();
-    setHeight(heightValue);
-    setAccidental(accidentalValue);
+    this(heightValue, new Accidental(accidentalValue));
+  }
+  /** Creates an abc note with the specified heigth and accidental.
+   * @param heightValue The heigth of this note as a byte that respect the scale defined by
+   * constants such as C D E F G A B c d e ..... The heigth is <TT>REST</TT> if
+   * this note is a rest.
+   * @param accidental
+   */
+  public Note (byte heightValue, Accidental accidental) {
+	  super();
+	  setHeight(heightValue);
+	  setAccidental(accidental);
   }
 
   /** Creates an abc note with the specified heigth, accidental and octave
@@ -450,17 +462,34 @@ public class Note extends NoteAbstract implements Cloneable
    * constants such as C D E F G A B c d e ..... The heigth is <TT>REST</TT> if
    * this note is a rest.
    * @param accidentalValue Accidental for this note. Possible values are
-   * <TT>AccidentalType.NATURAL</TT>, <TT>AccidentalType.SHARP</TT> (#),
-   * <TT>AccidentalType.FLAT</TT> (b) or <TT>AccidentalType.NONE</TT>.
+   * <TT>Accidental.NATURAL</TT>, <TT>Accidental.SHARP</TT> (#),
+   * <TT>Accidental.FLAT</TT> (b) or <TT>Accidental.NONE</TT>.
    * @param octaveTranspositionValue The octave transposition for this note :
    * 1, 2 or 3 means "1, 2 or 3 octave(s) higher than the reference octave" and
    * -1, -2 or -3 means "1, 2 or 3 octave(s) less than the reference octave".
    * @see #setAccidental(byte)
    * @see #setOctaveTransposition(byte)
-   * @see #setHeight(byte) */
-  public Note (byte heightValue, byte accidentalValue, byte octaveTranspositionValue)
+   * @see #setHeight(byte)
+   * @deprecated
+   */
+  public Note (byte heightValue, float accidentalValue, byte octaveTranspositionValue)
   {
     this(heightValue, accidentalValue);
+    setOctaveTransposition((byte)(octaveTransposition+octaveTranspositionValue));
+  }
+  /** Creates an abc note with the specified heigth, accidental and octave
+   * transposition.
+   * @param heightValue The heigth of this note as a byte that respect the scale defined by
+   * constants such as C D E F G A B c d e ..... The heigth is <TT>REST</TT> if
+   * this note is a rest.
+   * @param accidental
+   * @param octaveTranspositionValue The octave transposition for this note :
+   * 1, 2 or 3 means "1, 2 or 3 octave(s) higher than the reference octave" and
+   * -1, -2 or -3 means "1, 2 or 3 octave(s) less than the reference octave".
+   */
+  public Note (byte heightValue, Accidental accidental, byte octaveTranspositionValue)
+  {
+    this(heightValue, accidental);
     setOctaveTransposition((byte)(octaveTransposition+octaveTranspositionValue));
   }
   
@@ -550,7 +579,7 @@ public class Note extends NoteAbstract implements Cloneable
 	 * @see #isLowerThan(Note, KeySignature)
 	 */
 	public boolean isHigherThan(Note aNote, KeySignature key) {
-		return getMidiLikeHeight(key) > aNote.getMidiLikeHeight(key);
+		return getMidiLikeMicrotonalHeight(key) > aNote.getMidiLikeMicrotonalHeight(key);
 	}
   
 	/**
@@ -583,7 +612,7 @@ public class Note extends NoteAbstract implements Cloneable
 	 * @see #isHigherThan(Note, KeySignature)
 	 */
 	public boolean isLowerThan(Note aNote, KeySignature key) {
-		return getMidiLikeHeight(key) < aNote.getMidiLikeHeight(key);
+		return getMidiLikeMicrotonalHeight(key) < aNote.getMidiLikeMicrotonalHeight(key);
 	}
 	
 	/** Returns true if this note is not printed on score
@@ -608,14 +637,13 @@ public class Note extends NoteAbstract implements Cloneable
 	 * <li>B, = -1
 	 * </ul>
 	 * 
-	 * <B>Be careful!</B> note without accidental ({@link AccidentalType#NONE})
+	 * <B>Be careful!</B> note without accidental ({@link Accidental#NONE})
 	 * is considered as NATURAL. In fact it depends on the key! If height =
 	 * Note.E and accidental = NONE, it could be E flat if key is Bb major, C
 	 * minor...!
 	 * 
 	 * @see #getMidiLikeHeight(KeySignature)
 	 */
-	// FIXME should return a byte, like getHeight?
 	public int getMidiLikeHeight() {
 		return getMidiLikeHeight(null);
 	}
@@ -629,30 +657,46 @@ public class Note extends NoteAbstract implements Cloneable
 	 * </ul>
 	 * 
 	 * @param key To determinate the midi-like height when
-	 * note has no accidental ({@link AccidentalType#NONE})
+	 * note accidental is not defined
 	 */
-	// FIXME should return a byte, like getHeight?
 	public int getMidiLikeHeight(KeySignature key) {
-		int midiLikeHeight = getHeight();
-		byte acc = accidental;
-		if ((acc == AccidentalType.NONE) && (key != null))
-			acc = key.getAccidentalFor(getStrictHeight());
-		switch (acc) {
-		// TODO case AccidentalType.HALF_SHARP & HALF_FLAT:
-		case AccidentalType.SHARP:
-			midiLikeHeight++;
-			break;
-		case AccidentalType.FLAT:
-			midiLikeHeight--;
-			break;
-		case AccidentalType.DOUBLE_SHARP:
-			midiLikeHeight += 2;
-			break;
-		case AccidentalType.DOUBLE_FLAT:
-			midiLikeHeight -= 2;
-			break;
-		}
-		return midiLikeHeight;
+		return getHeight() + getAccidental(key).getNearestOccidentalValue();
+	}
+	
+	/**
+	 * Returns a "midi-like" height with float value taking into
+	 * account the microtonal accidental.
+	 * <ul>
+	 * <li>C = 0
+	 * <li>^c = 13
+	 * <li>B, = -1
+	 * </ul>
+	 * 
+	 * <B>Be careful!</B> note without accidental ({@link Accidental#NONE})
+	 * is considered as NATURAL. In fact it depends on the key! If height =
+	 * Note.E and accidental = NONE, it could be E flat if key is Bb major, C
+	 * minor...!
+	 * 
+	 * @see #getMidiLikeMicrotonalHeight(KeySignature)
+	 */
+	public float getMidiLikeMicrotonalHeight() {
+		return getMidiLikeMicrotonalHeight(null);
+	}
+	
+	/**
+	 * Returns a "midi-like" height with float value taking into
+	 * account the microtonal accidental.
+	 * <ul>
+	 * <li>C = 0
+	 * <li>^c = 13
+	 * <li>B, = -1
+	 * </ul>
+	 * 
+	 * @param key To determinate the midi-like height when
+	 * note accidental is not defined
+	 */
+	public float getMidiLikeMicrotonalHeight(KeySignature key) {
+		return getHeight() + getAccidental(key).getValue();
 	}
 
   /**
@@ -838,36 +882,44 @@ public class Note extends NoteAbstract implements Cloneable
 
   /** Sets the accidental for this note.
    * @param accidentalValue Accidental for this note. Possible values are
-   * <TT>AccidentalType.NATURAL</TT>, <TT>AccidentalType.SHARP</TT> (#),
-   * <TT>AccidentalType.FLAT</TT> (b) or <TT>AccidentalType.NONE</TT>. */
+   * <TT>Accidental.NATURAL</TT>, <TT>Accidental.SHARP</TT> (#),
+   * <TT>Accidental.FLAT</TT> (b) or <TT>Accidental.NONE</TT>.
+   * @deprecated see {@link #setAccidental(Accidental)}
+   */
   public void setAccidental(byte accidentalValue)
-  { accidental = accidentalValue; }
+  { setAccidental(new Accidental(accidentalValue)); }
+  public void setAccidental(float accidentalValue)
+  { setAccidental(new Accidental(accidentalValue)); }
+  /** Sets the accidental for this note. */
+  public void setAccidental(Accidental accidental) {
+	  m_accidental = accidental;
+  }
 
   /** Returns accidental for this note if any.
    * @return Accidental for this note if any. Possible values are
-   * <TT>AccidentalType.NATURAL</TT>, <TT>AccidentalType.FLAT</TT>, <TT>AccidentalType.SHARP</TT>
-   * or <TT>AccidentalType.NONE</TT>.
+   * <TT>Accidental.NATURAL</TT>, <TT>Accidental.FLAT</TT>, <TT>Accidental.SHARP</TT>
+   * or <TT>Accidental.NONE</TT>.
    * @see #setAccidental(byte) */
-  public byte getAccidental()
-  { return accidental; }
+  public Accidental getAccidental()
+  { return m_accidental; }
 
   /** Returns accidental for this note.
    * If the note has no accidental, returns the accidental at key for
    * this note (if key is not null)
-   * @return Accidental for this note if any. Possible values are
-   * <TT>AccidentalType.NATURAL</TT>, <TT>AccidentalType.FLAT</TT>, <TT>AccidentalType.SHARP</TT>
-   * or <TT>AccidentalType.NONE</TT>.
-   * If key is not null, AccidentalType.NONE is never returned
+   * @return If key is not null, accidental is allways defined (never set to NONE, at least to NATURAL)
    */
-  public byte getAccidental(KeySignature key) {
-	  if ((key != null) && (accidental == AccidentalType.NONE)) {
+  public Accidental getAccidental(KeySignature key) {
+	  if ((key != null) && (m_accidental.isInTheKey())) {
 		  return key.getAccidentalFor(getStrictHeight());
 	  }
-	  return accidental;
+	  return m_accidental;
   }
 
+  /**
+   * @return false if {@link Accidental#isInTheKey()}
+   */
   public boolean hasAccidental() {
-	  return accidental != AccidentalType.NONE;
+	  return !m_accidental.isInTheKey();
   }
 
   /** A convenient method that returns <TT>true</TT> if this note is a rest.
@@ -938,13 +990,7 @@ public class Note extends NoteAbstract implements Cloneable
     if (strictHeight == g) 	string2Return = string2Return.concat("g"); else
     if (strictHeight == a) 	string2Return = string2Return.concat("a"); else
     if (strictHeight == b) 	string2Return = string2Return.concat("b");*/
-    switch(accidental) {
-    case AccidentalType.NATURAL: string2Return = string2Return.concat("="); break;
-    case AccidentalType.FLAT: string2Return = string2Return.concat("b"); break;
-    case AccidentalType.SHARP: string2Return = string2Return.concat("#"); break;
-    case AccidentalType.DOUBLE_FLAT: string2Return = string2Return.concat("bb"); break;
-    case AccidentalType.DOUBLE_SHARP: string2Return = string2Return.concat("##"); break;
-    }
+    string2Return += m_accidental.toString();
     if (octaveTransposition >= 1) {
     	for (int i = 1; i <= octaveTransposition; i++)
     		string2Return = string2Return.concat("'");
@@ -1070,15 +1116,7 @@ public class Note extends NoteAbstract implements Cloneable
 	 */
 	public String getName() {
 		try {
-			String acc = "";
-			switch(getAccidental()) {
-			case AccidentalType.SHARP:
-				acc = "#";
-				break;
-			case AccidentalType.FLAT:
-				acc = "b";
-				break;
-			}
+			String acc = m_accidental.toString();
 			switch(getStrictHeight()) {
 			case REST:
 				return "";

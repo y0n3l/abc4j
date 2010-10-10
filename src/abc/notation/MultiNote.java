@@ -33,7 +33,7 @@ public class MultiNote extends NoteAbstract implements Cloneable
   	public MultiNote (Vector notes) {
 		super();
 		m_notes = fromLowestToHighest(notes);
-		int y = 1;
+		byte y = 1;
 		for (Iterator it = m_notes.iterator(); it.hasNext();) {
 			((Note) it.next()).getReference().setY(y++);
 		}
@@ -324,7 +324,7 @@ public class MultiNote extends NoteAbstract implements Cloneable
 			v.addElement(notes[i]);
 		}
 		m_notes = fromLowestToHighest(v);
-		int y = 1;
+		byte y = 1;
 		for (Iterator it = m_notes.iterator(); it.hasNext();) {
 			((Note) it.next()).getReference().setY(y++);
 		}
@@ -355,8 +355,8 @@ public class MultiNote extends NoteAbstract implements Cloneable
 		if (n.getStrictHeight() == Note.b) 	string2Return = string2Return.concat("b");*/
 		if (n.getOctaveTransposition() == 1) 	string2Return = string2Return.concat("'"); else
 		if (n.getOctaveTransposition() == -1) 	string2Return = string2Return.concat(",");
-		if (n.getAccidental() == AccidentalType.FLAT)	string2Return = string2Return.concat("b");
-		if (n.getAccidental() == AccidentalType.SHARP)	string2Return = string2Return.concat("#");
+		if (n.getAccidental().isFlat())		string2Return = string2Return.concat("b");
+		if (n.getAccidental().isSharp())	string2Return = string2Return.concat("#");
 		//string2Return = string2Return.concat(relativeLength.toString());
 	  }
 	  string2Return = string2Return.concat("]");

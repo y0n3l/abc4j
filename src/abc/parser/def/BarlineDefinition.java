@@ -41,19 +41,40 @@ public class BarlineDefinition extends AutomataDefinition
         trans = new Transition(state3,chars1);
         state2.addTransition(trans);
 
+        //ABC v2 [|] invisible bar line
+        //XXX doesn't work, why?
+        if (abcVersion.equals(AbcVersion.v2_0)) {
+        	State stateI1 = new State(AbcTokenType.UNKNOWN, false);
+        	getStartingState().addTransition(new Transition(stateI1, '['));
+        	State stateI2 = new State(AbcTokenType.BARLINE, true);
+        	trans = new Transition(stateI2, '|');
+        	State stateI3 = new State(AbcTokenType.BARLINE, true);
+        	stateI2.addTransition(new Transition(stateI3, ']'));
+        	stateI1.addTransition(trans);
+        }
+
         State state4 = new State(AbcTokenType.UNKNOWN, false);
         getStartingState().addTransition(new Transition(state4,'['));
         State state5 = new State(AbcTokenType.BARLINE, true);
         trans = new Transition(state5, '|');
         state4.addTransition(trans);
 
-        //ABC v2 dotted bar .|
+        //ABC v2 dotted bar .| or .|.
         if (abcVersion.equals(AbcVersion.v2_0)) {
 	        State state6 = new State(AbcTokenType.UNKNOWN, false);
 	        getStartingState().addTransition(new Transition(state6,'.'));
 	        State state7 = new State(AbcTokenType.BARLINE, true);
 	        trans = new Transition(state7, '|');
 	        state6.addTransition(trans);
+
+	        State state8 = new State(AbcTokenType.UNKNOWN, false);
+	        getStartingState().addTransition(new Transition(state8,'.'));
+	        State state9 = new State(AbcTokenType.BARLINE, true);
+	        trans = new Transition(state9, '|');
+	        State stateA = new State(AbcTokenType.BARLINE, true);
+	        state9.addTransition(new Transition(stateA, '.'));
+	        state8.addTransition(trans);
+
         }
     }
 }

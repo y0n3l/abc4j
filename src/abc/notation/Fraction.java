@@ -21,7 +21,7 @@ import java.io.Serializable;
 public class Fraction extends MusicElement implements Cloneable, Serializable
 {
   private static final long serialVersionUID = 2832587773244232648L;
-  private float numerator = 0;
+  private int numerator = 0;
   private int denominator = 1;
 
   /** Creates a new fraction with the specified numerator and denominator values.
@@ -43,7 +43,7 @@ public class Fraction extends MusicElement implements Cloneable, Serializable
   /** Returns the numerator of this fraction.
    * @return The numerator value of this fraction. */
     public int getNumerator()
-  { return (int)numerator; }
+  { return numerator; }
 
   /**
    * @param denominatorValue The denominator of this fraction.
@@ -72,8 +72,8 @@ public class Fraction extends MusicElement implements Cloneable, Serializable
    * one. */
   public float multipliedBy (Fraction fraction)
   {
-    float newNumerator = numerator * fraction.getNumerator();
-    float newDenominator = denominator * fraction.getDenominator();
+    int newNumerator = numerator * fraction.getNumerator();
+    int newDenominator = denominator * fraction.getDenominator();
     return (newNumerator/newDenominator);
   }
 
@@ -83,12 +83,10 @@ public class Fraction extends MusicElement implements Cloneable, Serializable
   public String toString()
   {
     if (denominator==1)
-      return (new Integer((int)numerator)).toString();
+      return String.valueOf(numerator);
     else
-      return (
-          (new Integer((int)numerator)).toString() + "/" +
-          (new Integer(denominator)).toString()
-          );
+    	return String.valueOf(numerator)+"/"
+    		 + String.valueOf(denominator);
   }
   
   public Object clone() throws CloneNotSupportedException {

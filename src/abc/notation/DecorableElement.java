@@ -16,7 +16,9 @@
 package abc.notation;
 
 /**
- * A decorable element is an element than can receive decorations and dynamics:
+ * A decorable element is an element than can receive one chord name, one
+ * dynamic, multiple decorations and multiple annotations:
+ * 
  * <ul>
  * <li>note and multinote
  * <li>bar line
@@ -27,6 +29,8 @@ public abstract class DecorableElement extends MusicElement implements
 		Cloneable {
 
 	private static final long serialVersionUID = 6909509549064348544L;
+
+	protected Annotation[] m_annotations = null;
 
 	/**
 	 * The chord name.
@@ -39,12 +43,25 @@ public abstract class DecorableElement extends MusicElement implements
 
 	public Object clone() throws CloneNotSupportedException {
 		Object o = super.clone();
+		if (m_annotations != null)
+			((DecorableElement) o).m_annotations = (Annotation[]) m_annotations
+					.clone();
 		if (m_decorations != null)
 			((DecorableElement) o).m_decorations = (Decoration[]) m_decorations
 					.clone();
 		if (m_dynamic != null)
 			((DecorableElement) o).m_dynamic = (Dynamic) m_dynamic.clone();
 		return o;
+	}
+
+	/**
+	 * Returns the annotations for this element.
+	 * 
+	 * @return The annotationss for this element. <TT>null</TT> if it has not.
+	 * @see #hasAnnotations()
+	 */
+	public Annotation[] getAnnotations() {
+		return m_annotations;
 	}
 
 	/**
@@ -67,10 +84,9 @@ public abstract class DecorableElement extends MusicElement implements
 	}
 
 	/**
-	 * Returns the decorations for this note.
+	 * Returns the decorations for this element.
 	 * 
-	 * @return The decorations for this note. <TT>null</TT> if this note has
-	 *         no decoration.
+	 * @return The decorations for this element. <TT>null</TT> if it has not.
 	 * @see #hasDecorations()
 	 */
 	public Decoration[] getDecorations() {
@@ -78,20 +94,36 @@ public abstract class DecorableElement extends MusicElement implements
 	}
 
 	/**
-	 * Returns the dynamic for this note.
+	 * Returns the dynamic for this element.
 	 * 
-	 * @return Dynamic for this note, <TT>null</TT> if not set
+	 * @return Dynamic for this element, <TT>null</TT> if not set
 	 */
 	public Dynamic getDynamic() {
 		return m_dynamic;
 	}
 
 	/**
-	 * Test if the note has the specified type of decoration
+	 * Returns <TT>true</TT> if this element has annotations, <TT>false</TT>
+	 * otherwise.
+	 * 
+	 * @return <TT>true</TT> if this element has annotations, <TT>false</TT>
+	 *         otherwise.
+	 */
+	public boolean hasAnnotations() {
+		if (m_annotations != null && m_annotations.length > 0) {
+			for (int i = 0; i < m_annotations.length; i++) {
+				if (m_annotations[i] != null)
+					return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Test if the element has the specified type of decoration
 	 * 
 	 * @param decorationType
 	 *            {@link Decoration#DOWNBOW}, {@link Decoration#STACCATO}...
-	 * @return
 	 */
 	public boolean hasDecoration(byte decorationType) {
 		if (hasDecorations()) {
@@ -104,10 +136,10 @@ public abstract class DecorableElement extends MusicElement implements
 	}
 
 	/**
-	 * Returns <TT>true</TT> if this note has decorations, <TT>false</TT>
+	 * Returns <TT>true</TT> if this element has decorations, <TT>false</TT>
 	 * otherwise.
 	 * 
-	 * @return <TT>true</TT> if this note has decorations, <TT>false</TT>
+	 * @return <TT>true</TT> if this element has decorations, <TT>false</TT>
 	 *         otherwise.
 	 */
 	public boolean hasDecorations() {
@@ -122,6 +154,10 @@ public abstract class DecorableElement extends MusicElement implements
 
 	public boolean hasDynamic() {
 		return m_dynamic != null;
+	}
+
+	public void setAnnotations(Annotation[] ann) {
+		m_annotations = ann;
 	}
 
 	/**

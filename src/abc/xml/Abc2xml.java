@@ -36,7 +36,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import abc.notation.AccidentalType;
+import abc.notation.Accidental;
 import abc.notation.BarLine;
 import abc.notation.EndOfStaffLine;
 import abc.notation.KeySignature;
@@ -109,56 +109,56 @@ public class Abc2xml {
 	protected static final int DIVISIONS_PER_QUARTER_NOTE = 480;
 
 	/** C major */
-	protected static final byte[] KEY_NO_ACCIDENTAL = { AccidentalType.NATURAL, AccidentalType.NATURAL,
-			AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL,
-			AccidentalType.NATURAL };
+	protected static final Accidental[] KEY_NO_ACCIDENTAL = { Accidental.NATURAL, Accidental.NATURAL,
+			Accidental.NATURAL, Accidental.NATURAL, Accidental.NATURAL, Accidental.NATURAL,
+			Accidental.NATURAL };
 	/** G major */
-	protected static final byte[] KEY_SHARP_1ST = { AccidentalType.NATURAL, AccidentalType.NATURAL,
-			AccidentalType.NATURAL, AccidentalType.SHARP, AccidentalType.NATURAL, AccidentalType.NATURAL,
-			AccidentalType.NATURAL };
+	protected static final Accidental[] KEY_SHARP_1ST = { Accidental.NATURAL, Accidental.NATURAL,
+			Accidental.NATURAL, Accidental.SHARP, Accidental.NATURAL, Accidental.NATURAL,
+			Accidental.NATURAL };
 	/** D major */
-	protected static final byte[] KEY_SHARP_2ND = { AccidentalType.SHARP, AccidentalType.NATURAL,
-			AccidentalType.NATURAL, AccidentalType.SHARP, AccidentalType.NATURAL, AccidentalType.NATURAL,
-			AccidentalType.NATURAL };
+	protected static final Accidental[] KEY_SHARP_2ND = { Accidental.SHARP, Accidental.NATURAL,
+			Accidental.NATURAL, Accidental.SHARP, Accidental.NATURAL, Accidental.NATURAL,
+			Accidental.NATURAL };
 	/** A major */
-	protected static final byte[] KEY_SHARP_3RD = { AccidentalType.SHARP, AccidentalType.NATURAL,
-			AccidentalType.NATURAL, AccidentalType.SHARP, AccidentalType.SHARP, AccidentalType.NATURAL,
-			AccidentalType.NATURAL };
+	protected static final Accidental[] KEY_SHARP_3RD = { Accidental.SHARP, Accidental.NATURAL,
+			Accidental.NATURAL, Accidental.SHARP, Accidental.SHARP, Accidental.NATURAL,
+			Accidental.NATURAL };
 	/** E major */
-	protected static final byte[] KEY_SHARP_4TH = { AccidentalType.SHARP, AccidentalType.SHARP, AccidentalType.NATURAL,
-			AccidentalType.SHARP, AccidentalType.SHARP, AccidentalType.NATURAL, AccidentalType.NATURAL };
+	protected static final Accidental[] KEY_SHARP_4TH = { Accidental.SHARP, Accidental.SHARP, Accidental.NATURAL,
+			Accidental.SHARP, Accidental.SHARP, Accidental.NATURAL, Accidental.NATURAL };
 	/** B major */
-	protected static final byte[] KEY_SHARP_5TH = { AccidentalType.SHARP, AccidentalType.SHARP, AccidentalType.NATURAL,
-			AccidentalType.SHARP, AccidentalType.SHARP, AccidentalType.SHARP, AccidentalType.NATURAL };
+	protected static final Accidental[] KEY_SHARP_5TH = { Accidental.SHARP, Accidental.SHARP, Accidental.NATURAL,
+			Accidental.SHARP, Accidental.SHARP, Accidental.SHARP, Accidental.NATURAL };
 	/** F# major */
-	protected static final byte[] KEY_SHARP_6TH = { AccidentalType.SHARP, AccidentalType.SHARP, AccidentalType.SHARP,
-			AccidentalType.SHARP, AccidentalType.SHARP, AccidentalType.SHARP, AccidentalType.NATURAL };
+	protected static final Accidental[] KEY_SHARP_6TH = { Accidental.SHARP, Accidental.SHARP, Accidental.SHARP,
+			Accidental.SHARP, Accidental.SHARP, Accidental.SHARP, Accidental.NATURAL };
 	/** C# major */
-	protected static final byte[] KEY_SHARP_7TH = { AccidentalType.SHARP, AccidentalType.SHARP, AccidentalType.SHARP,
-			AccidentalType.SHARP, AccidentalType.SHARP, AccidentalType.SHARP, AccidentalType.SHARP };
+	protected static final Accidental[] KEY_SHARP_7TH = { Accidental.SHARP, Accidental.SHARP, Accidental.SHARP,
+			Accidental.SHARP, Accidental.SHARP, Accidental.SHARP, Accidental.SHARP };
 
 	/** F major */
-	protected static final byte[] KEY_FLAT_1ST = { AccidentalType.NATURAL, AccidentalType.NATURAL,
-			AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL,
-			AccidentalType.FLAT };
+	protected static final Accidental[] KEY_FLAT_1ST = { Accidental.NATURAL, Accidental.NATURAL,
+			Accidental.NATURAL, Accidental.NATURAL, Accidental.NATURAL, Accidental.NATURAL,
+			Accidental.FLAT };
 	/** Bb major */
-	protected static final byte[] KEY_FLAT_2ND = { AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.FLAT,
-			AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.FLAT };
+	protected static final Accidental[] KEY_FLAT_2ND = { Accidental.NATURAL, Accidental.NATURAL, Accidental.FLAT,
+			Accidental.NATURAL, Accidental.NATURAL, Accidental.NATURAL, Accidental.FLAT };
 	/** Eb major */
-	protected static final byte[] KEY_FLAT_3RD = { AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.FLAT,
-			AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.FLAT, AccidentalType.FLAT };
+	protected static final Accidental[] KEY_FLAT_3RD = { Accidental.NATURAL, Accidental.NATURAL, Accidental.FLAT,
+			Accidental.NATURAL, Accidental.NATURAL, Accidental.FLAT, Accidental.FLAT };
 	/** Ab major */
-	protected static final byte[] KEY_FLAT_4TH = { AccidentalType.NATURAL, AccidentalType.FLAT, AccidentalType.FLAT,
-			AccidentalType.NATURAL, AccidentalType.NATURAL, AccidentalType.FLAT, AccidentalType.FLAT };
+	protected static final Accidental[] KEY_FLAT_4TH = { Accidental.NATURAL, Accidental.FLAT, Accidental.FLAT,
+			Accidental.NATURAL, Accidental.NATURAL, Accidental.FLAT, Accidental.FLAT };
 	/** Db major */
-	protected static final byte[] KEY_FLAT_5TH = { AccidentalType.NATURAL, AccidentalType.FLAT, AccidentalType.FLAT,
-			AccidentalType.NATURAL, AccidentalType.FLAT, AccidentalType.FLAT, AccidentalType.FLAT };
+	protected static final Accidental[] KEY_FLAT_5TH = { Accidental.NATURAL, Accidental.FLAT, Accidental.FLAT,
+			Accidental.NATURAL, Accidental.FLAT, Accidental.FLAT, Accidental.FLAT };
 	/** Gb major */
-	protected static final byte[] KEY_FLAT_6TH = { AccidentalType.FLAT, AccidentalType.FLAT, AccidentalType.FLAT,
-			AccidentalType.NATURAL, AccidentalType.FLAT, AccidentalType.FLAT, AccidentalType.FLAT };
+	protected static final Accidental[] KEY_FLAT_6TH = { Accidental.FLAT, Accidental.FLAT, Accidental.FLAT,
+			Accidental.NATURAL, Accidental.FLAT, Accidental.FLAT, Accidental.FLAT };
 	/** Cb major */
-	protected static final byte[] KEY_FLAT_7TH = { AccidentalType.FLAT, AccidentalType.FLAT, AccidentalType.FLAT,
-			AccidentalType.FLAT, AccidentalType.FLAT, AccidentalType.FLAT, AccidentalType.FLAT };
+	protected static final Accidental[] KEY_FLAT_7TH = { Accidental.FLAT, Accidental.FLAT, Accidental.FLAT,
+			Accidental.FLAT, Accidental.FLAT, Accidental.FLAT, Accidental.FLAT };
 
 	private KeySignature keySignature;
 
@@ -493,7 +493,7 @@ public class Abc2xml {
 	protected Node convert(Document doc, KeySignature signature) {
 		Element keyEl = doc.createElement(KEY_TAG);
 		Element fifthEl = doc.createElement(FIFTHS_TAG);
-		byte[] acc = signature.getAccidentals();
+		Accidental[] acc = signature.getAccidentals();
 		if (Arrays.equals(acc, KEY_NO_ACCIDENTAL))
 			fifthEl.appendChild(doc.createTextNode("0"));
 		else if (signature.hasOnlySharps()) {
@@ -633,23 +633,12 @@ public class Abc2xml {
 			pitchEl.appendChild(stepEl);
 
 			if (keySignature != null) {
-				byte accidental = note.getAccidental();
-				if (accidental == AccidentalType.NONE) {
+				Accidental accidental = note.getAccidental();
+				if (accidental.isInTheKey()) {
 					accidental = keySignature.getAccidentalFor(note.getStrictHeight());
 				}
-				if (accidental != AccidentalType.NONE) {
-					int alterValue = 0;
-					switch (accidental) {
-					case AccidentalType.FLAT:
-						alterValue = -1;
-						break;
-					case AccidentalType.NATURAL:
-						alterValue = 0;
-						break;
-					case AccidentalType.SHARP:
-						alterValue = 1;
-						break;
-					}
+				if (accidental.isDefined()) {
+					int alterValue = accidental.getNearestOccidentalValue();
 
 					Element alterEl = doc.createElement(ALTER_TAG);
 					alterEl.appendChild(doc.createTextNode(Integer.toString(alterValue)));
@@ -666,17 +655,13 @@ public class Abc2xml {
 			if (note.hasAccidental()) {
 				Node acc = doc.createElement(ACCIDENTAL_TAG);
 				Node accValue = null;
-				switch (note.getAccidental()) {
-				case AccidentalType.FLAT:
+				if (note.getAccidental().isFlat())
 					accValue = doc.createTextNode("flat");
-					break;
-				case AccidentalType.NATURAL:
+				else if (note.getAccidental().isNatural())
 					accValue = doc.createTextNode("natural");
-					break;
-				case AccidentalType.SHARP:
+				else if (note.getAccidental().isSharp())
 					accValue = doc.createTextNode("sharp");
-					break;
-				}
+				//TODO double flat/sharp
 				acc.appendChild(accValue);
 				noteEl.appendChild(acc);
 			}

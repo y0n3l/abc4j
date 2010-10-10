@@ -114,14 +114,16 @@ public class Chord extends MusicPresentationElement implements Cloneable {
 										&& (group[9] != null) && (group[9].length() > 0)));
 				if (hasNote || hasBass) {
 					byte height = Note.convertToNoteType(group[3]);
-					byte accidental = AccidentalType.convertToAccidentalType(group[4]);
+					Accidental accidental = 
+						Accidental.convertToAccidental(group[4]);
 					if (hasNote)
 						m_note = new Note(height, accidental);
 					else //this is a bass without note
 						m_bass = new Note(height, accidental);
 					if (hasNote && hasBass) {
 						height = Note.convertToNoteType(group[9]);
-						accidental = AccidentalType.convertToAccidentalType(group[10]);
+						accidental = 
+							Accidental.convertToAccidental(group[10]);
 						m_bass = new Note(height, accidental);
 					}
 					m_isOptional = (group[1].contains("(")
@@ -222,16 +224,10 @@ public class Chord extends MusicPresentationElement implements Cloneable {
 			case Note.F: ret = "F"; break;
 			case Note.G: ret = "G"; break;
 			}
-			switch(note.getAccidental()) {
-			case AccidentalType.NONE:
-			case AccidentalType.NATURAL: break;
-			case AccidentalType.FLAT:
+			if (note.getAccidental().isFlat())
 				ret += unicode?"\u266D":"b";
-				break;
-			case AccidentalType.SHARP:
+			else if (note.getAccidental().isSharp())
 				ret += unicode?"\u266F":"#";
-				break;
-			}
 			return ret;
 		}
 	}

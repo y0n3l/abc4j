@@ -27,7 +27,7 @@ import javax.sound.midi.Sequence;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 
-import abc.notation.AccidentalType;
+import abc.notation.Accidental;
 import abc.notation.BarLine;
 import abc.notation.KeySignature;
 import abc.notation.MultiNote;
@@ -249,7 +249,7 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 
   private static void updateKey(KeySignature key, Note note)
   {
-    if (note.getAccidental()!=AccidentalType.NONE)
+    if (!note.getAccidental().isInTheKey())
       key.setAccidental(note.toRootOctaveHeigth(), note.getAccidental());
   }
 
@@ -318,34 +318,20 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   public static byte getMidiNoteNumber (Note note, KeySignature key)
   {
     byte heigth = note.getStrictHeight();
-    byte accidental = note.getAccidental();
+    Accidental accidental = new Accidental(note.getAccidental().getNearestOccidentalValue());
     byte midiNoteNumber = (byte)(heigth+(69-Note.A));
     midiNoteNumber = (byte)(midiNoteNumber + note.getOctaveTransposition()*12);
-    if (accidental == AccidentalType.NONE)
+    if (accidental.isInTheKey())
     {
-      byte absoluteAccidental = AccidentalType.NATURAL;
+      byte absoluteAccidental = (byte) Accidental.NATURAL.getValue();
       byte heightOnOneOctave = (byte)(heigth % 12);
-      absoluteAccidental = key.getAccidentalFor(heightOnOneOctave);
-      switch (absoluteAccidental)
-      {
-          case AccidentalType.FLAT :
-            midiNoteNumber --; break;
-          case AccidentalType.NATURAL	:
-            break;
-          case AccidentalType.SHARP :
-            midiNoteNumber ++; break;
-      }
+      absoluteAccidental = (byte)
+      (key.getAccidentalFor(heightOnOneOctave).getNearestOccidentalValue());
+      midiNoteNumber += absoluteAccidental; //-1 flat, 0 natural, +1 sharp
     }
     else
     {
-      switch (accidental)
-      {
-          case AccidentalType.DOUBLE_FLAT: midiNoteNumber -= 2; break;
-          case AccidentalType.FLAT: midiNoteNumber --; break;
-          case AccidentalType.NATURAL: break;
-          case AccidentalType.SHARP: midiNoteNumber ++; break;
-          case AccidentalType.DOUBLE_SHARP: midiNoteNumber += 2; break;
-      }
+    	midiNoteNumber += (byte) accidental.getValue(); //-2 dbl flat, -1 flat, 0 natural...
     }
     return midiNoteNumber;
   }

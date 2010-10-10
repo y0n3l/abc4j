@@ -51,7 +51,7 @@ public class TempoMessage extends MetaMessage {
 			int b = ((int)bytes[1]&0xFF)<<8;
 			int c = ((int)bytes[2]&0xFF);
 			int microsecondsPerQuarterNote = a+b+c;
-			int nbOfQuarterNotesPerMinute = MICRO_SECOND_NB_IN_ONE_MINUTE / microsecondsPerQuarterNote;
+			short nbOfQuarterNotesPerMinute = (short)(MICRO_SECOND_NB_IN_ONE_MINUTE / microsecondsPerQuarterNote);
 			tempo = new Tempo(nbOfQuarterNotesPerMinute);
 		}
 		catch (Exception e) {

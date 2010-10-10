@@ -18,6 +18,7 @@ package abc.ui.fonts;
 import java.awt.Font;
 import java.io.Serializable;
 
+import abc.notation.Accidental;
 import abc.notation.Clef;
 import abc.notation.Decoration;
 import abc.notation.Note;
@@ -31,8 +32,8 @@ public interface MusicalFont extends Cloneable, Serializable {
 	/** Returns the Font object */
 	public Font getFont() throws Exception;
 	
-	/** Returns the glyph for an {@link abc.notation.AccidentalType} */
-	public char getAccidental(byte accidentalType);
+	/** Returns the glyph for an {@link abc.notation.Accidental} */
+	public char getAccidental(Accidental acc);
 
 	/** Returns the glyph for {@link abc.notation.BarLine} */
 	public char getBarLine(byte barLine);

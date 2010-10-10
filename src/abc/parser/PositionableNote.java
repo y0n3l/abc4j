@@ -15,6 +15,7 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.parser;
 
+import abc.notation.Accidental;
 import abc.notation.Note;
 import scanner.CharStreamPosition;
 import scanner.PositionableInCharStream;
@@ -29,11 +30,11 @@ public class PositionableNote extends Note implements PositionableInCharStream
   private CharStreamPosition m_position = null;
   private int m_length = -1;
 
-  public PositionableNote(byte heigthValue, byte accidentalValue)
-  { super(heigthValue, accidentalValue); }
+  public PositionableNote(byte heigthValue, Accidental accidental)
+  { super(heigthValue, accidental); }
 
-  public PositionableNote(byte heigthValue, byte accidentalValue, byte octaveTranspositionValue)
-  { super(heigthValue, accidentalValue, octaveTranspositionValue); }
+  public PositionableNote(byte heigthValue, Accidental accidental, byte octaveTranspositionValue)
+  { super(heigthValue, accidental, octaveTranspositionValue); }
 
   public CharStreamPosition getPosition()
   { return m_position; }

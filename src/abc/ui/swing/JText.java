@@ -28,7 +28,7 @@ import java.text.AttributedCharacterIterator.Attribute;
 import java.util.Iterator;
 import java.util.Map;
 
-import abc.notation.AccidentalType;
+import abc.notation.Accidental;
 import abc.notation.Chord;
 import abc.notation.MusicElement;
 import abc.ui.scoretemplates.ScoreElements;
@@ -194,9 +194,11 @@ public class JText extends JScoreElementAbstract {
 		at = AffineTransform.getTranslateInstance(0, -font.getSize()/3);
 		Font musicFontNatural = musicFont.deriveFont(at);
 		
-		char sharp = getMusicalFont().getAccidental(AccidentalType.SHARP);
-		char flat = getMusicalFont().getAccidental(AccidentalType.FLAT);
-		char natural = getMusicalFont().getAccidental(AccidentalType.NATURAL);
+		char sharp = getMusicalFont().getAccidental(Accidental.SHARP);
+		char flat = getMusicalFont().getAccidental(Accidental.FLAT);
+		char natural = getMusicalFont().getAccidental(Accidental.NATURAL);
+		char double_flat = getMusicalFont().getAccidental(Accidental.DOUBLE_FLAT);
+		char double_sharp = getMusicalFont().getAccidental(Accidental.DOUBLE_SHARP);
 		
 		String[] lines = getTextLines();
 		double line_height = getOneLineHeight();
@@ -205,7 +207,9 @@ public class JText extends JScoreElementAbstract {
 				.replace(Chord.UNICODE_FLAT, flat)
 				.replace(Chord.UNICODE_NATURAL, natural)
 				.replaceAll("\\(b\\)", flat+"")
+				.replaceAll("\\(bb\\)", double_flat+"")
 				.replaceAll("\\(#\\)", sharp+"")
+				.replaceAll("\\(##\\)", double_sharp+"")
 				.replaceAll("\\(\\=\\)", natural+"");
 			
 			AttributedString as = new AttributedString(text);

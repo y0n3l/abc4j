@@ -65,7 +65,7 @@ public class Tune implements Cloneable, Serializable
   /** Creates a new empty tune. */
   public Tune() {
     super();
-    m_titles = new Vector();
+    m_titles = new Vector(2, 2);
     m_defaultPart = new Part(this, ' ');
   }
   
@@ -717,7 +717,7 @@ public class Tune implements Cloneable, Serializable
 			System.err.println("addElement0 null");
 		else if (me.getReference().getPart() == ' ') {
 			// do not change x in tune.getMusic()
-			me.getReference().setX(size());
+			me.getReference().setX((short) size());
 			super.addElement(me);
 		}
 	}

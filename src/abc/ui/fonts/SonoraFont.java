@@ -18,7 +18,7 @@ package abc.ui.fonts;
 import java.awt.Font;
 import java.io.Serializable;
 
-import abc.notation.AccidentalType;
+import abc.notation.Accidental;
 import abc.notation.BarLine;
 import abc.notation.Clef;
 import abc.notation.Decoration;
@@ -90,21 +90,34 @@ public class SonoraFont extends MusicalFontAbstract implements MusicalFont, Seri
 		return font;
 	}
 
-	public char getAccidental(byte accidentalType)
+	public char getAccidental(Accidental acc)
 	throws MissingGlyphException, IllegalArgumentException {
-		switch(accidentalType) {
-		case AccidentalType.NONE: throw new IllegalAccessError("No glyph for NONE accidental type");
-		case AccidentalType.FLAT: return '\uF062';
-		case AccidentalType.NATURAL: return '\uF06E';
-		case AccidentalType.SHARP: return '\uF023';
-		case AccidentalType.DOUBLE_FLAT: return '\uF0BA';
-		case AccidentalType.DOUBLE_SHARP: return '\uF099';//F0DC
+		if (acc.isInTheKey())
+			throw new IllegalAccessError("No glyph for NONE accidental type");
+		if (acc.isFlat()) return '\uF062';
+		if (acc.isNatural()) return '\uF06E';
+		if (acc.isSharp()) return '\uF023';
+		if (acc.isDoubleFlat()) return '\uF0BA';
+		if (acc.isDoubleSharp()) return '\uF099';//F0DC
+		if (acc.equals(Accidental.HALF_FLAT)) return '\uF0F5';
+		if (acc.equals(Accidental.FLAT_AND_A_HALF)) return '\uF0F6';
+		if (acc.equals(Accidental.HALF_SHARP)) return '\uF0F7';
+		if (acc.equals(Accidental.SHARP_AND_A_HALF)) return '\uF0F8';
+		
+		//case Accidental.COMMA_SHARP_ONE: return '\uF08E'; //Koma Diyezi
+		//case Accidental.COMMA_SHARP_FIVE: return '\uF08F'; //Küçük Mücennep Diyezi
+		//case Accidental.COMMA_SHARP_EIGHT: return '\uF090'; //Buyuk Mücennep Diyezi
+		//case Accidental.COMMA_FLAT_ONE: return '\uF091'; //Koma Bemolü
+		//case Accidental.COMMA_FLAT_FOUR: return '\uF092'; //Bakiyye Bemolü
+		//case Accidental.COMMA_FLAT_EIGHT: return '\uF093'; //Tanini Bemolü
+		
+		//TODO HALF_SHARP derived from F023
+		//TODO HALF_FLAT derived from F062
 		//TODO HALF_SHARP derived from F023
 		//TODO HALF_FLAT derived from F062
 		//also exists "sharp and half", "flat and half" but
 		//don't know how to write them in ABC
-		}
-		throw new MissingGlyphException("Accidental type "+accidentalType, this);
+		throw new MissingGlyphException("Accidental type "+acc.toString(), this);
 	}
 	
 	/** Returns the simple bar line glyph */

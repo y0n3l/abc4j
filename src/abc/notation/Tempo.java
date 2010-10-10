@@ -24,19 +24,19 @@ public class Tempo extends MusicElement implements Cloneable
   /** The length taken as reference to define the tempo value. */
   private short m_referenceLength = Note.QUARTER;
   /** The tempo value in notes per minutes. */
-  private int m_value;
+  private short m_value;
 
   /** Creates a tempo object with the specified tempo value and quarter as
    * length reference.
    * @param notesNbPerMinute The number of quarter notes per minutes. */
-  public Tempo (int notesNbPerMinute)
+  public Tempo (short notesNbPerMinute)
   { m_value = notesNbPerMinute; }
 
   /** Creates a tempo object with the specified tempo value and the specified
    * length reference.
    * @param referenceLength The reference length.
    * @param value The number of reference lengths per minutes. */
-  public Tempo (short referenceLength, int value)
+  public Tempo (short referenceLength, short value)
   {
     m_referenceLength = referenceLength;
     m_value = value;
@@ -53,14 +53,14 @@ public class Tempo extends MusicElement implements Cloneable
    * is the reference length.
    * @return the number of note per minutes considering that those notes' length
    * is the reference length.  */
-  public int getNotesNumberPerMinute()
+  public short getNotesNumberPerMinute()
   { return m_value; }
 
   /** Returns the tempo for the given length as reference.
    * @param refLength The note length in which this tempo should be expressed.
    * @return The number of notes of the specified length per minutes. */
-  public int getNotesNumberPerMinute(short refLength)
-  { return (int)(m_value * (((float)m_referenceLength)/((float)refLength))); }
+  public short getNotesNumberPerMinute(short refLength)
+  { return (short)(m_value * (((float)m_referenceLength)/((float)refLength))); }
   
   public Object clone() throws CloneNotSupportedException {
 	  return super.clone();

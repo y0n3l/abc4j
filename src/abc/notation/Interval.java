@@ -235,7 +235,7 @@ public class Interval implements Cloneable, Serializable {
 	 * 
 	 * The parameter key, if specified, helps to determinate the
 	 * accidentals of the notes if n1.getAccidental() equals
-	 * AccidentalType.NONE (e.g. in D major, F with accidental NONE
+	 * Accidental.NONE (e.g. in D major, F with accidental NONE
 	 * is understood as F sharp).
 	 * 
 	 * If n1 is lower than n2, interval order is upward,
@@ -568,7 +568,7 @@ public class Interval implements Cloneable, Serializable {
 		}
 		n2.setHeight(notes[index]);
 		n2.setOctaveTransposition((byte) octaveTransp);
-		n2.setAccidental(AccidentalType.NATURAL);
+		n2.setAccidental(Accidental.NATURAL);
 		
 		//and now compute accidentals!
 		int delta = n1.getMidiLikeHeight(key) + getDirection()*getSemitones()
@@ -577,12 +577,12 @@ public class Interval implements Cloneable, Serializable {
 			//do nothing
 		} else {
 			n2 = Note.transpose(n2, /*factor*Math.abs*/(delta));
-			byte[] acc = calculateSecondNoteAccidental(n1, key);
+			Accidental[] acc = calculateSecondNoteAccidental(n1, key);
 			n2 = Note.createEnharmonic(n2, acc);
 		}
 		if (key != null) {
-			if (n2.getAccidental() == key.getAccidentalFor(n2.getStrictHeight()))
-				n2.setAccidental(AccidentalType.NONE);
+			if (n2.getAccidental().equals(key.getAccidentalFor(n2.getStrictHeight())))
+				n2.setAccidental(Accidental.NONE);
 		}
 		return n2;
 	}
@@ -597,83 +597,74 @@ public class Interval implements Cloneable, Serializable {
 		return calculateSecondNote(n1, null);
 	}
 	
-	private byte[] calculateSecondNoteAccidental(Note n1, KeySignature key) {
+	private Accidental[] calculateSecondNoteAccidental(Note n1, KeySignature key) {
+		Accidental n1AccValue = n1.getAccidental(key);
 		if (isPerfectUnisonOrOctave()) {
-			return new byte[] {n1.getAccidental(key)};
+			return new Accidental[] {n1AccValue};
 		} else if ((isAugmented() && isUpward())
 				|| (isDiminished() && isDownward())) {
-			switch (n1.getAccidental(key)) {
-			case AccidentalType.DOUBLE_FLAT:
-				return new byte[] { AccidentalType.FLAT, AccidentalType.NATURAL };
-			case AccidentalType.FLAT:
-				return new byte[] { AccidentalType.NATURAL, AccidentalType.SHARP };
-			case AccidentalType.NONE:
-			case AccidentalType.NATURAL:
-				return new byte[] { AccidentalType.SHARP, AccidentalType.DOUBLE_SHARP };
-			case AccidentalType.SHARP:
-				return new byte[] { AccidentalType.DOUBLE_SHARP, AccidentalType.SHARP };
-			case AccidentalType.DOUBLE_SHARP:
-				return new byte[] { AccidentalType.NATURAL, AccidentalType.SHARP };
-			}
+			if (n1AccValue.isDoubleFlat())
+				return new Accidental[] { Accidental.FLAT, Accidental.NATURAL };
+			else if (n1AccValue.isFlat())
+				return new Accidental[] { Accidental.NATURAL, Accidental.SHARP };
+			else if ((n1AccValue.isInTheKey()) || (n1AccValue.isNatural()))
+				return new Accidental[] { Accidental.SHARP, Accidental.DOUBLE_SHARP };
+			else if (n1AccValue.isSharp())
+				return new Accidental[] { Accidental.DOUBLE_SHARP, Accidental.SHARP };
+			else if (n1AccValue.isDoubleSharp())
+				return new Accidental[] { Accidental.NATURAL, Accidental.SHARP };
 		} else if ((isDiminished() && isUpward())
 				|| (isAugmented() && isDownward())) {
-			switch (n1.getAccidental(key)) {
-			case AccidentalType.DOUBLE_FLAT:
-				return new byte[] { AccidentalType.FLAT, AccidentalType.NATURAL };
-			case AccidentalType.FLAT:
-				return new byte[] { AccidentalType.DOUBLE_FLAT, AccidentalType.FLAT, AccidentalType.NATURAL };
-			case AccidentalType.NONE:
-			case AccidentalType.NATURAL:
-				return new byte[] { AccidentalType.FLAT, AccidentalType.DOUBLE_FLAT };
-			case AccidentalType.SHARP:
+			if (n1AccValue.isDoubleFlat())
+				return new Accidental[] { Accidental.FLAT, Accidental.NATURAL };
+			else if (n1AccValue.isFlat())
+				return new Accidental[] { Accidental.DOUBLE_FLAT, Accidental.FLAT, Accidental.NATURAL };
+			else if ((n1AccValue.isInTheKey()) || (n1AccValue.isNatural()))
+				return new Accidental[] { Accidental.FLAT, Accidental.DOUBLE_FLAT };
+			else if (n1AccValue.isSharp()) {
 				if (allowPerfectQuality())
-					return new byte[] { AccidentalType.NATURAL, AccidentalType.SHARP, AccidentalType.FLAT };
+					return new Accidental[] { Accidental.NATURAL, Accidental.SHARP, Accidental.FLAT };
 				else
-					return new byte[] { AccidentalType.NATURAL, AccidentalType.FLAT, AccidentalType.DOUBLE_FLAT };
-			case AccidentalType.DOUBLE_SHARP:
-				return new byte[] { AccidentalType.SHARP, AccidentalType.NATURAL };
+					return new Accidental[] { Accidental.NATURAL, Accidental.FLAT, Accidental.DOUBLE_FLAT };
 			}
+			else if (n1AccValue.isDoubleSharp())
+				return new Accidental[] { Accidental.SHARP, Accidental.NATURAL };
 		} else if (((m_quality == MINOR) && isUpward())
 				|| (((m_quality == MAJOR) || (m_quality == PERFECT)) && isDownward())) {
-			switch (n1.getAccidental(key)) {
-			case AccidentalType.DOUBLE_FLAT:
-				return new byte[] { AccidentalType.DOUBLE_FLAT, AccidentalType.FLAT };
-			case AccidentalType.FLAT:
-				return new byte[] { AccidentalType.FLAT, AccidentalType.DOUBLE_FLAT };
-			case AccidentalType.NONE:
-			case AccidentalType.NATURAL:
+			if (n1AccValue.isDoubleFlat())
+				return new Accidental[] { Accidental.DOUBLE_FLAT, Accidental.FLAT };
+			else if (n1AccValue.isFlat())
+				return new Accidental[] { Accidental.FLAT, Accidental.DOUBLE_FLAT };
+			else if ((n1AccValue.isInTheKey()) || (n1AccValue.isNatural()))
 				//F# <- B, but Bb -> f
-				return new byte[] { AccidentalType.NATURAL,
-					(m_quality==PERFECT&&(m_label%OCTAVE)==FOURTH)?AccidentalType.SHARP:AccidentalType.FLAT };
-			case AccidentalType.SHARP:
+				return new Accidental[] { Accidental.NATURAL,
+					(m_quality==PERFECT&&(m_label%OCTAVE)==FOURTH)?Accidental.SHARP:Accidental.FLAT };
+			else if (n1AccValue.isSharp()) {
 				if (allowPerfectQuality()) //A# <- e#, F## <- B#
-					return new byte[] { AccidentalType.SHARP, AccidentalType.DOUBLE_SHARP };
+					return new Accidental[] { Accidental.SHARP, Accidental.DOUBLE_SHARP };
 				else
-					return new byte[] { AccidentalType.NATURAL, AccidentalType.SHARP };
-			case AccidentalType.DOUBLE_SHARP:
-				return new byte[] { AccidentalType.SHARP, AccidentalType.DOUBLE_SHARP };
+					return new Accidental[] { Accidental.NATURAL, Accidental.SHARP };
 			}
+			else if (n1AccValue.isDoubleSharp())
+				return new Accidental[] { Accidental.SHARP, Accidental.DOUBLE_SHARP };
 		} else if ((((m_quality == MAJOR) || (m_quality == PERFECT)) && isUpward())
 				|| ((m_quality == MINOR) && isDownward())) {
-			switch (n1.getAccidental(key)) {
-			case AccidentalType.DOUBLE_FLAT:
-				return new byte[] { AccidentalType.FLAT, AccidentalType.DOUBLE_FLAT };
-			case AccidentalType.FLAT:
-				return new byte[] { AccidentalType.NATURAL, AccidentalType.FLAT };
-			case AccidentalType.NONE:
-			case AccidentalType.NATURAL:
+			if (n1AccValue.isDoubleFlat())
+				return new Accidental[] { Accidental.FLAT, Accidental.DOUBLE_FLAT };
+			else if (n1AccValue.isFlat())
+				return new Accidental[] { Accidental.NATURAL, Accidental.FLAT };
+			else if ((n1AccValue.isInTheKey()) || (n1AccValue.isNatural()))
 				//F -> Bb, but B -> f#
-				return new byte[] { AccidentalType.NATURAL,
-					(m_quality==PERFECT&&(m_label%OCTAVE)==FOURTH)?AccidentalType.FLAT:AccidentalType.SHARP };
-			case AccidentalType.SHARP:
-				return new byte[] { AccidentalType.SHARP,
-					(m_quality==PERFECT&&(m_label%OCTAVE)==FOURTH)?AccidentalType.NATURAL:AccidentalType.DOUBLE_SHARP };
-			case AccidentalType.DOUBLE_SHARP:
-				return new byte[] { AccidentalType.DOUBLE_SHARP, AccidentalType.SHARP };
-			}
+				return new Accidental[] { Accidental.NATURAL,
+					(m_quality==PERFECT&&(m_label%OCTAVE)==FOURTH)?Accidental.FLAT:Accidental.SHARP };
+			else if (n1AccValue.isSharp())
+				return new Accidental[] { Accidental.SHARP,
+					(m_quality==PERFECT&&(m_label%OCTAVE)==FOURTH)?Accidental.NATURAL:Accidental.DOUBLE_SHARP };
+			else if (n1AccValue.isDoubleSharp())
+				return new Accidental[] { Accidental.DOUBLE_SHARP, Accidental.SHARP };
 		}
 		System.err.println("calculateSecondNoteAccidental("+n1+") for interval "+toString()+" gave no good result");
-		return new byte[] { AccidentalType.NATURAL };
+		return new Accidental[] { Accidental.NATURAL };
 	}
 
 	public String toString() {
