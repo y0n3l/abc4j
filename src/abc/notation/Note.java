@@ -980,7 +980,9 @@ public class Note extends NoteAbstract implements Cloneable
   {
     if (num==1 && denom==1) return Note.WHOLE;
     else if (num==1 && denom==2) return Note.HALF;
+    else if (num==3 && denom==2) return Note.DOTTED_WHOLE;
     else if (num==1 && denom==4) return Note.QUARTER;
+    else if (num==3 && denom==4) return Note.DOTTED_HALF;
     else if (num==1 && denom==8) return Note.EIGHTH;
     else if (num==3 && denom==8) return Note.DOTTED_QUARTER;
     else if (num==1 && denom==16) return Note.SIXTEENTH;
