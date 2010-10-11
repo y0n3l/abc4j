@@ -29,6 +29,9 @@ public class CommentDefinition extends AutomataDefinition
         char[] chars = {'%'};
         Transition trans = new Transition(state,chars);
         getStartingState().addTransition(trans);
+        //accept %%
+        State state1 = new State(AbcTokenType.COMMENT, true);
+        state.addTransition(new Transition(state1, chars));
     }
 
 }

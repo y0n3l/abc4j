@@ -712,15 +712,31 @@ public class Note extends NoteAbstract implements Cloneable
   public byte getStrictHeight() {
 	  return getStrictHeight(strictHeight);
   }
+  
+	public static short getStrictDuration(short duration) {
+		if (isStrictDuration(duration))
+			return duration;
+		short[] strictDurs = new short[] { LONG, BREVE, WHOLE, HALF, QUARTER,
+				EIGHTH, SIXTEENTH, THIRTY_SECOND, SIXTY_FOURTH };
+		for (int i = 1; i < strictDurs.length; i++) {
+			if (strictDurs[i] < duration)
+				return strictDurs[i];
+		}
+		return SIXTY_FOURTH;
+	}
 
-  /** Returns this note absolute height. This height doesn't take in account
-   * octave transposition.
-   * @param height A height of a note as a byte that respect the scale defined by
-   * constants such as C D E F G A B c d e ....
-   * @return The height of this note on the first octave. Possible values are
-   * <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>, <TT>A</TT>(440Hz)
-   * <TT>B</TT> or <TT>REST</TT> only.
-   * @see #getHeight() */
+  /**
+	 * Returns this note absolute height. This height doesn't take in account
+	 * octave transposition.
+	 * 
+	 * @param height
+	 *            A height of a note as a byte that respect the scale defined by
+	 *            constants such as C D E F G A B c d e ....
+	 * @return The height of this note on the first octave. Possible values are
+	 *         <TT>C</TT>, <TT>D</TT>, <TT>E</TT>, <TT>F</TT>, <TT>G</TT>,
+	 *         <TT>A</TT>(440Hz) <TT>B</TT> or <TT>REST</TT> only.
+	 * @see #getHeight()
+	 */
   public static byte getStrictHeight(byte height) {
 	  if (height==REST)
 		  return REST;
@@ -966,9 +982,13 @@ public class Note extends NoteAbstract implements Cloneable
     else if (num==1 && denom==2) return Note.HALF;
     else if (num==1 && denom==4) return Note.QUARTER;
     else if (num==1 && denom==8) return Note.EIGHTH;
+    else if (num==3 && denom==8) return Note.DOTTED_QUARTER;
     else if (num==1 && denom==16) return Note.SIXTEENTH;
+    else if (num==3 && denom==16) return Note.DOTTED_EIGHTH;
     else if (num==1 && denom==32) return Note.THIRTY_SECOND;
+    else if (num==3 && denom==32) return Note.DOTTED_SIXTEENTH;
     else if (num==1 && denom==64) return Note.SIXTY_FOURTH;
+    else if (num==1 && denom==64) return Note.DOTTED_THIRTY_SECOND;
     else throw new IllegalArgumentException(num + "/" + denom + " doesn't correspond to any strict note length");
   }
 

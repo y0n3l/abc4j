@@ -30,6 +30,7 @@ public class JTempo extends JText {
 	
 	private Tempo m_tempo = null;
 	private char[] m_refNote;
+	private boolean m_dotted;
 	private String m_number;
 	private Rectangle2D m_refNoteBounds;
 	private Rectangle2D m_noteHeadBounds;
@@ -42,7 +43,16 @@ public class JTempo extends JText {
 	protected JTempo(ScoreMetrics mtrx, Point2D base, Tempo tempo) {
 		super(mtrx, "", ScoreElements.TEMPO);
 		m_tempo = tempo;
-		m_refNote = new char[] { getMusicalFont().getNoteStemUpChar(m_tempo.getReferenceLength()) };
+		m_dotted = !Note.isStrictDuration(m_tempo.getReferenceLength());
+		short refLength = m_tempo.getReferenceLength();
+		if (m_dotted) {
+			refLength = Note.getStrictDuration(refLength);
+			m_refNote = new char[] {
+				getMusicalFont().getNoteStemUpChar(refLength),
+				getMusicalFont().getDot() };
+		} else {
+			m_refNote = new char[] { getMusicalFont().getNoteStemUpChar(refLength) };
+		}
 		m_refNoteBounds = getMetrics().getBounds(m_refNote,
 				ScoreMetrics.NOTATION_CONTEXT_TEMPO);
 		m_noteHeadBounds = getMetrics().getBounds(
@@ -107,7 +117,7 @@ public class JTempo extends JText {
 		g2.setFont(getMetrics()
 				.getNotationFontForContext(ScoreMetrics.NOTATION_CONTEXT_TEMPO));
 		setColor(g2, ScoreElements.TEMPO);
-		g2.drawString(m_refNote[0] + "",
+		g2.drawString(String.valueOf(m_refNote),
 				(int)(getBase().getX()),
 				(int)(m_y+noteHeadHeight));
 		g2.drawString(m_number,

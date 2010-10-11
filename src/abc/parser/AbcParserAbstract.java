@@ -743,6 +743,7 @@ public class AbcParserAbstract
           catch (IllegalArgumentException e)
           {
             //Invalid tempo => just ignore it.
+        	  System.err.println("parseTempo : "+e.getMessage());
           }
         }
         else
