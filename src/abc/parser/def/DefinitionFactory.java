@@ -67,7 +67,7 @@ public class DefinitionFactory
     else if (abcTokenType==(AbcTokenType.PART)) automataDef = new PartDefinition();
     else if (abcTokenType==(AbcTokenType.PARENTHESIS_OPEN)) automataDef = new ParenthesisOpenDefinition();
     else if (abcTokenType==(AbcTokenType.PARENTHESIS_CLOSE)) automataDef = new ParenthesisCloseDefinition();
-    else if (abcTokenType==(AbcTokenType.FRACTION)) automataDef = new FractionDefinition();
+    else if (abcTokenType==(AbcTokenType.PLUS)) automataDef = new PlusDefinition();
     else if (abcTokenType==(AbcTokenType.SPACE)) automataDef = new SpaceDefinition();
     else if (abcTokenType==(AbcTokenType.LINE_FEED)) automataDef = new LineFeedDefinition();
     else if (abcTokenType==(AbcTokenType.LINE_BREAK)) automataDef = new LineBreakDefinition();

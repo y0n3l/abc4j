@@ -79,6 +79,7 @@ public class AbcTokenType implements TokenType
     public static AbcTokenType DIGIT = new AbcTokenType("DIGIT");
     /** The fraction token type : character '/'. */
     public static AbcTokenType FRACTION = new AbcTokenType("FRACTION");
+    public static AbcTokenType PLUS = new AbcTokenType("PLUS");
     /** The parenthesis open token type : character '('. */
     public static AbcTokenType PARENTHESIS_OPEN = new AbcTokenType("PARENTHESIS OPEN");
     /** The parenthesis close token type : character ')'. */

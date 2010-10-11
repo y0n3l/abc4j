@@ -19,6 +19,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
+import abc.notation.Decoration;
 import abc.notation.MusicElement;
 import abc.notation.TimeSignature;
 import abc.ui.scoretemplates.ScoreElements;
@@ -36,7 +37,18 @@ class JTimeSignature extends JScoreElementAbstract {
 	public JTimeSignature(TimeSignature ts, Point2D base, ScoreMetrics c) {
 		super(c);
 		m_ts = ts;
-		m_numChars = getMusicalFont().getTimeSignatureDigits(ts.getNumerator());
+		if (!ts.isSumOfNumerators()) {
+			m_numChars = getMusicalFont().getTimeSignatureDigits(ts.getNumerator());
+		} else {
+			String s_numChars = "";
+			int[] sumOfNums = ts.getSumOfNumerators();
+			for (int i = 0; i < sumOfNums.length; i++) {
+				if (s_numChars.length() > 0)
+					s_numChars += getMusicalFont().getDecoration(Decoration.PLUS);
+				s_numChars += String.valueOf(getMusicalFont().getTimeSignatureDigits(sumOfNums[i]));
+			}
+			m_numChars = s_numChars.toCharArray();
+		}
 		m_denomChars = getMusicalFont().getTimeSignatureDigits(ts.getDenominator());
 		setBase(base);
 	}

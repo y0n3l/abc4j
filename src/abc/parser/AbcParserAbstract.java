@@ -564,13 +564,23 @@ public class AbcParserAbstract
       return meter;
     }
 
-    /** meter-fraction ::= 1*DIGIT "/" 1*DIGIT */
+    /** meter-fraction ::= 1*DIGIT [n*("+" DIGIT)] "/" 1*DIGIT */
     private TimeSignature parseMeterFraction(Set follow)
     {
-        Set current = new Set(AbcTokenType.NUMBER).union(AbcTokenType.FRACTION);
+        Set current = new Set(AbcTokenType.NUMBER).union(AbcTokenType.FRACTION)
+        	.union(AbcTokenType.PLUS);
         TimeSignature fraction = null;
         String numString = accept(AbcTokenType.NUMBER, current, follow);
-
+        String plus = null;
+        while ((plus=accept(AbcTokenType.PLUS, current, follow)) != null) {
+	        String nb = accept(AbcTokenType.NUMBER, current, follow);
+	        if (plus != null && nb != null) {
+	        	if (numString == null) numString = nb;
+	        	else numString += plus + nb;
+	        }
+        }
+        current.remove(AbcTokenType.PLUS);
+        
         current.remove(AbcTokenType.FRACTION);
         accept(AbcTokenType.FRACTION, current, follow);
 
@@ -578,9 +588,13 @@ public class AbcParserAbstract
         String denomString = accept(AbcTokenType.NUMBER, current, follow);
         if (numString!=null && denomString!=null)
         {
-          int num = Integer.parseInt(numString);
+        	String[] sumOfNumS = numString.split("\\+");
+        	int[] sumOfNum = new int[sumOfNumS.length];
+        	for (int i = 0; i < sumOfNumS.length; i++) {
+				sumOfNum[i] = Integer.parseInt(sumOfNumS[i]);
+			}
           int denom = Integer.parseInt(denomString);
-          fraction = new TimeSignature(num, denom);
+          fraction = new TimeSignature(sumOfNum, denom);
         }
         return fraction;
     }
