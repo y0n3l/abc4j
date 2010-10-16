@@ -15,16 +15,62 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
+import abc.ui.scoretemplates.HorizontalAlign;
 import abc.ui.scoretemplates.ScoreElements;
+import abc.ui.scoretemplates.VerticalAlign;
 
 /** TODO doc */
-class JAnnotation extends JText {
+public class JAnnotation extends JText {
 
+	private byte hAlign = HorizontalAlign.CENTER;
+	private byte vAlign = VerticalAlign.TOP;
+	
 	/** Constructor
 	 * @param mtrx The score metrics needed
 	 */
 	protected JAnnotation(ScoreMetrics mtrx, String text) {
 		super(mtrx, text, ScoreElements.TEXT_ANNOTATIONS);
+		setTextPosition();
+	}
+	
+	private void setTextPosition() {
+		String s = getText();
+		String newText = s.substring(1);
+		if (newText.length() == 0)
+			newText = s;
+		char c = s.charAt(0);
+		switch(c) {
+		case '<':
+			vAlign = VerticalAlign.MIDDLE;
+			hAlign = HorizontalAlign.LEFT;
+			setText(newText);
+			break;
+		case '>':
+			vAlign = VerticalAlign.MIDDLE;
+			hAlign = HorizontalAlign.RIGHT;
+			setText(newText);
+			break;
+		case '_':
+			vAlign = VerticalAlign.UNDER_STAFF;
+			hAlign = HorizontalAlign.CENTER;
+			setText(newText);
+			break;
+		case '^':
+		case '@':
+			setText(newText);
+		default:
+			vAlign = VerticalAlign.ABOVE_STAFF;
+			hAlign = HorizontalAlign.CENTER;
+			break;
+		}
+	}
+
+	public byte getHorizontalAlignment() {
+		return hAlign;
+	}
+
+	public byte getVerticalAlignment() {
+		return vAlign;
 	}
 
 }

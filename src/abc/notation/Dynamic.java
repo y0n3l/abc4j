@@ -50,6 +50,15 @@ public class Dynamic extends SymbolElement implements Cloneable {
 	public static final byte SFZ = 14;
 	public static final byte FZ = 15;
 	public static final byte SFFZ = 16;
+	public static final byte CRESCENDO = 17;
+	public static final byte CRESCENDO_BEGIN = 18;
+	public static final byte CRESCENDO_END = 19;
+	public static final byte DECRESCENDO = 20;
+	public static final byte DECRESCENDO_BEGIN = 21;
+	public static final byte DECRESCENDO_END = 22;
+	public static final byte DIMINUENDO = 23;
+	public static final byte DIMINUENDO_BEGIN = 24;
+	public static final byte DIMINUENDO_END = 25;
 	
 	public static byte convertToType(String str)
 	{
@@ -71,6 +80,24 @@ public class Dynamic extends SymbolElement implements Cloneable {
 		else if (str.equals("sfz")) type = SFZ;
 		else if (str.equals("fz")) type = FZ;
 		else if (str.equals("sffz")) type = SFFZ;
+		else if (str.equals("cresc") || str.equals("crescendo"))
+			type = CRESCENDO;
+		else if (str.equals("cresc(") || str.equals("crescendo("))
+			type = CRESCENDO_BEGIN;
+		else if (str.equals("cresc)") || str.equals("crescendo)"))
+			type = CRESCENDO_END;
+		else if (str.equals("decresc") || str.equals("decrescendo"))
+			type = DECRESCENDO;
+		else if (str.equals("decresc(") || str.equals("decrescendo("))
+			type = DECRESCENDO_BEGIN;
+		else if (str.equals("decresc)") || str.equals("decrescendo)"))
+			type = DECRESCENDO_END;
+		else if (str.equals("dimin") || str.equals("diminuendo"))
+			type = DIMINUENDO;
+		else if (str.equals("dimin(") || str.equals("diminuendo("))
+			type = DIMINUENDO_BEGIN;
+		else if (str.equals("dimin)") || str.equals("diminuendo)"))
+			type = DIMINUENDO_END;
 		return type;
 	}
 	

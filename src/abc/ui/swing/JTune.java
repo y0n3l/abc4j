@@ -1510,6 +1510,11 @@ public class JTune extends JScoreElementAbstract {
 				cursor.getY() + getTemplate().getAttributeSize(
 						ScoreAttribute.FIRST_STAFF_TOP_MARGIN));
 		} else /*if (m_staffLines.size() > 0)*/ {
+			//if needed, add a bar line to previous staff
+			if (!(currentStaffLine.m_staffElements.lastElement()
+					instanceof JBar)) {
+				currentStaffLine.addElement(new JBar(new BarLine(), cursor, getMetrics()));
+			}
 			//add a space between each lines
 			cursor.setLocation(
 				getBase().getX(),

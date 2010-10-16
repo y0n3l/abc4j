@@ -382,14 +382,17 @@ class JNote extends JNoteElementAbstract {
 			noteGlyphHeight = glyphDimension.getHeight()*6;
 		else if (note.getStrictDuration() == Note.WHOLE)
 			noteGlyphHeight = glyphDimension.getHeight();
-		else if (note.isRest())
-			noteGlyphHeight = getMetrics().getBounds(
-				getMusicalFont().getRestChar(note.getStrictDuration()),
-				getNotationContext())
-				.getHeight();
-		if (isStemUp()) {
+		if (note.isRest()) {
 			return new Rectangle2D.Double(
-					(int)getBase().getX(),//(int)(displayPosition.getX()),
+					getBase().getX(),
+					getBase().getY()-getMetrics().getStaffCharBounds().getHeight(),
+					m_width,
+					getMetrics().getStaffCharBounds().getHeight()
+				);
+		}
+		else if (isStemUp()) {
+			return new Rectangle2D.Double(
+					(int)getBase().getX(),//,
 					(int)(displayPosition.getY()-noteGlyphHeight),
 					(int)m_width,//boundingBox_width,
 					noteGlyphHeight);
@@ -419,8 +422,9 @@ class JNote extends JNoteElementAbstract {
 		renderDecorations(g);
 		renderDynamic(g);
 		renderChordName(g);
+		renderAnnotations(g);
 		
-		//renderDebugBoundingBoxOuter(g);
+		//renderDebugBoundingBox(g);
 		//renderDebugSlurAnchors(g);
 		//renderDebugDecorationAnchors(g);
 		

@@ -133,6 +133,8 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 		return m_clef;
 	}
 	
+	public abstract Point2D getNotePosition();
+
 	public boolean isFollowingStemmingPolicy() {
 		return true;
 	}
@@ -243,6 +245,7 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 			double underStaffY = (getStaffLine()!=null
 							?getStaffLine().get1stLineY()
 							:underNoteHeadY) + noteHeight;
+			double middleStaffY = aboveStaffY + ((underStaffY-aboveStaffY)/2);
 			double noteHeadY = lowest.getNotePosition().getY() - noteHeight*0.5;
 			double leftNoteHeadX = (lowest.accidentalsPosition!=null
 										?lowest.accidentalsPosition.getX()
@@ -290,6 +293,12 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 				= new Point2D.Double(stemX, middleStemY);
 			m_decorationAnchors[JDecoration.ABOVE_STAFF_AFTER_NOTE]
 				= new Point2D.Double(aboveStaffAfterNoteX, aboveStaffAfterNoteY);
+			m_decorationAnchors[JDecoration.LEFT_NOTE]
+				= new Point2D.Double(leftNoteHeadX, noteHeadY);
+			m_decorationAnchors[JDecoration.RIGHT_NOTE]
+			    				= new Point2D.Double(rightNoteHeadX, noteHeadY);
+			m_decorationAnchors[JDecoration.MIDDLE_STAFF]
+			    				= new Point2D.Double(noteHeadX, middleStaffY);
 		}
 	}
 

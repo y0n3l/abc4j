@@ -52,10 +52,8 @@ public abstract class ScoreElements {
 	public static final byte TEXT_HISTORY = 6;
 	/** Informations or instructions */
 	public static final byte TEXT_INFORMATIONS = 7; //or instruction
-	/** Notes, Annotations (e.g. N:see also O'Neills - 234) */
+	/** Notes (e.g. N:see also O'Neills - 234) */
 	public static final byte TEXT_NOTES = 8;
-	/** Notes, Annotations (e.g. N:see also O'Neills - 234) */
-	public static final byte TEXT_ANNOTATIONS = 8;
 	/** Origin and area (e.g. O:UK, Yorkshire, Bradford) */
 	public static final byte TEXT_ORIGIN = 9;
 	/** Rhythm (e.g. R:R, R:reel) */
@@ -83,6 +81,8 @@ public abstract class ScoreElements {
 	public static final byte TEXT_PARTS_ORDER = 21;
 	/** Tempo */
 	public static final byte TEMPO = 22;
+	/** Annotations arround elements */
+	public static final byte TEXT_ANNOTATIONS = 23;
 	
 	public static String toString(byte b) {
 		switch (b) {

@@ -31,7 +31,9 @@ import java.util.Map;
 import abc.notation.Accidental;
 import abc.notation.Chord;
 import abc.notation.MusicElement;
+import abc.ui.scoretemplates.HorizontalAlign;
 import abc.ui.scoretemplates.ScoreElements;
+import abc.ui.scoretemplates.VerticalAlign;
 
 /**
  * TODO doc
@@ -45,6 +47,8 @@ public class JText extends JScoreElementAbstract {
 	private int nb_lines = 1;
 	
 	private String[] m_text_lines = null;
+	
+	private JScoreElementAbstract m_scoreElement = null;
 
 	/**
 	 * Constructor
@@ -58,11 +62,19 @@ public class JText extends JScoreElementAbstract {
 	 */
 	protected JText(ScoreMetrics mtrx, String text, byte textField) {
 		super(mtrx);
-		this.m_text = text;
 		this.m_textField = textField;
+		setText(text);
+	}
+	
+	protected void setAttachedTo(JScoreElementAbstract scoreEl) {
+		m_scoreElement = scoreEl;
+	}
+	
+	protected void setText(String text) {
+		this.m_text = text;
 		this.m_text_lines = m_text!=null?m_text.split("\n")
 										:new String[0];
-		this.nb_lines = m_text_lines.length;
+		this.nb_lines = m_text_lines.length;		
 	}
 
 	/**
@@ -245,9 +257,51 @@ public class JText extends JScoreElementAbstract {
 			}
 			//end of flat/sharp replacement
 			
+			double x = getBase().getX();
+			double y = getBase().getY();
+			
+			if ((m_scoreElement != null) && (this instanceof JAnnotation)) {
+				Rectangle2D box = m_scoreElement.getBoundingBox();
+				box = box.createUnion(
+						new Rectangle2D.Double(box.getMinX(), m_scoreElement.getStaffLine().get5thLineY(),
+										box.getWidth(), m_scoreElement.getStaffLine().getHeight()));
+				switch(getVerticalAlignment()) {
+				case VerticalAlign.UNDER_STAFF:
+				case VerticalAlign.BOTTOM:
+					y = box.getMaxY() + line_height;
+					break;
+				case VerticalAlign.MIDDLE:
+					//y = m_scoreElement.getBase().getY()+line_height/2;
+					y = box.getCenterY() + line_height/2;
+					if (m_scoreElement instanceof JNoteElementAbstract)
+						y = ((JNoteElementAbstract) m_scoreElement)
+								.getNotePosition().getY()
+							+ line_height/4;
+					break;
+				case VerticalAlign.ABOVE_STAFF:
+				case VerticalAlign.TOP:
+				default:
+					y = box.getMinY();
+					break;
+				}
+				switch(getHorizontalAlignment()) {
+				case HorizontalAlign.LEFT:
+					x = box.getMinX() - getWidth()
+						- getMetrics().getNoteWidth()/2;
+					break;
+				case HorizontalAlign.RIGHT:
+					x = box.getMaxX()
+						+ getMetrics().getNoteWidth()/2;
+					break;
+				case HorizontalAlign.CENTER:
+				default:
+					x = box.getCenterX() - getWidth() / 2;
+				}
+			}
+			
 			g2.drawString(as.getIterator(),
-					(float) getBase().getX(),
-					(float) (getBase().getY()-leading - (nb_lines-1-line_count)*line_height));
+					(float) x,
+					(float) (y-leading - (nb_lines-1-line_count)*line_height));
 		}
 		
 		g2.setFont(previousFont);

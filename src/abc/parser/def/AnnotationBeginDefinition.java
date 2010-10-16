@@ -26,9 +26,9 @@ public class AnnotationBeginDefinition extends AutomataDefinition {
 	public AnnotationBeginDefinition() {
 		State state = new State(AbcTokenType.ANNOTATION_BEGIN, true);
 		getStartingState().addTransition(new Transition(state, '"'));
-		State state1 = new State(AbcTokenType.ANNOTATION_BEGIN, true);
-		char[] chars = { '^', '_', '<', '>', '@' };
-		Transition trans = new Transition(state1, chars);
-		state.addTransition(trans);
+		//State state1 = new State(AbcTokenType.ANNOTATION_BEGIN, true);
+		//char[] chars = { '^', '_', '<', '>', '@' };
+		//Transition trans = new Transition(state1, chars);
+		//state.addTransition(trans);
 	}
 }

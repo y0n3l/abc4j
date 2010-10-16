@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import scanner.PositionableInCharStream;
@@ -571,7 +572,7 @@ public class Tune implements Cloneable, Serializable
 			Music globalScore = new Music();
 			Music defaultScore = m_defaultPart.getMusic();
 			for (int i = 0; i < defaultScore.size(); i++)
-				globalScore.addElement(defaultScore.elementAt(i));
+				globalScore.addElement((MusicElement) defaultScore.elementAt(i));
 			Part[] parts = m_multiPartsDef.toPartsArray();
 			for (int i = 0; i < parts.length; i++) {
 				char label = parts[i].getLabel();
@@ -581,7 +582,7 @@ public class Tune implements Cloneable, Serializable
 				globalScore.addElement(new PartLabel(label));
 				Music score = parts[i].getMusic();
 				for (int j = 0; j < score.size(); j++)
-					globalScore.addElement(score.elementAt(j));
+					globalScore.addElement((MusicElement) score.elementAt(j));
 				alreadyAddedParts.add(new Character(label));
 			}
 			return globalScore;
@@ -684,6 +685,17 @@ public class Tune implements Cloneable, Serializable
   Music createMusic()
   { return new Music(); }
 
+  public class Bar implements Cloneable, Serializable {
+	private static final long serialVersionUID = 2228266565656223997L;
+	private short barNumber;
+	  private int posInMusic;
+	  Bar(short barNum, int posInMus) {
+		  barNumber = barNum;
+		  posInMusic = posInMus;
+	  }
+	  void setBarNumber(short s) { barNumber = s; }
+	  short getBarNumber() { return barNumber; }
+  }
   /**
    * A Music is a collection of {@link MusicElement} (notes, bars...).
    */
@@ -693,20 +705,26 @@ public class Tune implements Cloneable, Serializable
 	
 	protected transient NoteAbstract lastNote = null;
 	
+	private short firstBarNumber = 1;
+	
+	private short currentBar = 1;
+	
+	private TreeMap bars = new TreeMap();
+	
+	public Music(short firstBarNo) {
+		super();
+		setFirstBarNumber(firstBarNo);
+		bars.put(new Short((short)firstBarNumber),
+				new Bar((short)firstBarNumber, 0));
+	}
 	public Music ()
-    { super (); }
-
-    public void addElement(KeySignature key) {
-      if (Tune.this.getKey()==null)
-        Tune.this.setKey(key);
-      addElement0(key);
+    {
+		this((short)1);
     }
-    
-    public void addElement(NoteAbstract note) {
-    	//System.out.println("adding note " + note + " to " + this);
-        lastNote = note;
-        addElement0(note);
-    }
+	
+	public void setFirstBarNumber(short s) {
+		firstBarNumber = s;
+	}
 
 	public void addElement(MusicElement element) {
 		addElement0(element);
@@ -715,14 +733,30 @@ public class Tune implements Cloneable, Serializable
 	private synchronized void addElement0(MusicElement me) {
 		if (me == null)
 			System.err.println("addElement0 null");
-		else if (me.getReference().getPart() == ' ') {
-			// do not change x in tune.getMusic()
-			me.getReference().setX((short) size());
+		else {
+			if (me instanceof NoteAbstract) {
+				lastNote = (NoteAbstract) me;
+			}
+			else if (me instanceof BarLine) {
+		    	currentBar++;
+		    	//BarLine barLine = (BarLine) me;
+		    	//barLine.removeAnnotation("BAR_NUMBER");
+		    	//barLine.addAnnotation(new Annotation("^"+currentBar, "BAR_NUMBER"));
+		    	bars.put(new Short(currentBar), new Bar(currentBar, size()));
+			}
+			else if (me instanceof KeySignature) {
+				if (Tune.this.getKey()==null)
+					Tune.this.setKey((KeySignature) me);
+			}
+			if (me.getReference().getPart() == ' ') {
+				// do not change x in tune.getMusic()
+				me.getReference().setX((short) size());
+			}
 			super.addElement(me);
 		}
 	}
 
-    /* Returns the last note that has been added to this score.
+    /** Returns the last note that has been added to this score.
      * @return The last note that has been added to this score. <TT>null</TT>
      * if no note in this score. */
     public NoteAbstract getLastNote() {
@@ -755,8 +789,70 @@ public class Tune implements Cloneable, Serializable
     		}
     	}
     	return foundElement;
-    }
-    
+	}
+
+	public Bar getFirstBar() {
+		return (Bar) bars.get(new Short(firstBarNumber));
+	}
+	public Bar getLastBar() {
+		return (Bar) bars.get(bars.lastKey());
+	}
+	public boolean hasNextBar() {
+		return getNextBar() != null;
+	}
+	public Bar getNextBar() {
+		return getNextBar(currentBar);
+	}
+	private Bar getNextBar(short barNum) {
+		short nextBar = barNum;
+		if (nextBar<firstBarNumber)
+			nextBar = (short) (firstBarNumber-1);
+		Short s = new Short(nextBar++);
+		if (bars.keySet().contains(s))
+			return (Bar) bars.get(s);
+		else {
+			return null;
+		}
+	}
+	public Bar getPreviousBar() {
+		Short s = new Short((short)(currentBar-1));
+		if ((currentBar > firstBarNumber) && bars.keySet().contains(s))
+			return (Bar) bars.get(s);
+		else {
+			return null;
+		}
+	}
+	public void moveToBar(Bar bar) {
+		currentBar = bar.getBarNumber();
+	}
+	public Collection getBarContent(Bar bar) {
+		int from = bar.posInMusic;
+		int to = size() - 1;
+		Bar next = getNextBar(bar.getBarNumber());
+		if (next != null) { to = next.posInMusic - 1;/*exclude barline*/ }
+		Collection ret = new Vector(to-from+1);
+		for (int i = from; i <= to; i++) {
+			ret.add(elementData[i]);
+		}
+		return ret;
+	}
+	/**
+	 * Return true if the bar is empty or contains only
+	 * barline and spacer(s). False if barline contain other
+	 * kind of music element
+	 * @param bar
+	 */
+	public boolean barIsEmpty(Bar bar) {
+		Iterator it = getBarContent(bar).iterator();
+		while (it.hasNext()) {
+			MusicElement me = (MusicElement) it.next();
+			if (!(me instanceof BarLine)
+				&& !(me instanceof Spacer))
+				return false;
+		}
+		return true;
+	}
+
     public int indexOf(MusicElement elmnt) {
     	if (elmnt != null) {
     		Object elmntIt = null;

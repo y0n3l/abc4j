@@ -211,6 +211,10 @@ public class SonoraFont extends MusicalFontAbstract implements MusicalFont, Seri
 		case Decoration.TURN_INVERTED:
 		case Decoration.TURNX_INVERTED:
 			return '\uF10D';
+		case Decoration.REPEAT_LAST_BAR:
+			return '\uF0D4';
+		case Decoration.REPEAT_LAST_TWO_BARS:
+			return '\uF0C7';
 		case Decoration.GENERAL_GRACING:
 			return '\uF015';
 		default:

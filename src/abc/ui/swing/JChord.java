@@ -161,6 +161,10 @@ class JChord extends JNoteElementAbstract {
 		return multiNote;
 	}
 	
+	public Point2D getNotePosition() {
+		return getLowestNote().getNotePosition();
+	}
+	
 	public double getWidth() {
 		return m_width; //suppose it has been calculated
 	}
@@ -536,6 +540,7 @@ class JChord extends JNoteElementAbstract {
 		renderChordName(context);
 		renderDecorations(context);
 		renderDynamic(context);
+		renderAnnotations(context);
 
 		//renderDebugBoundingBox(context);
 		//renderDebugSlurAnchors(context);

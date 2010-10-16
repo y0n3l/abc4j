@@ -21,8 +21,11 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Vector;
 
+import abc.notation.Annotation;
 import abc.notation.Chord;
 import abc.notation.DecorableElement;
 import abc.notation.Decoration;
@@ -197,6 +200,8 @@ abstract class JScoreElementAbstract implements JScoreElement {
 			double bottom = getStaffLine().get1stLineY() + noteHeight;
 			double top = getStaffLine().get5thLineY() - noteHeight;
 			double middle = bottom + (top-bottom)/2;
+			double left = x - getWidth();
+			double right = x + getWidth();
 			m_decorationAnchors[JDecoration.ABOVE_NOTE]
 				= m_decorationAnchors[JDecoration.ABOVE_STAFF]
 				= m_decorationAnchors[JDecoration.ABOVE_STAFF_AFTER_NOTE]
@@ -213,7 +218,12 @@ abstract class JScoreElementAbstract implements JScoreElement {
 			m_decorationAnchors[JDecoration.HORIZONTAL_AWAY_STEM]
 				= m_decorationAnchors[JDecoration.HORIZONTAL_NEAR_STEM]
 				= m_decorationAnchors[JDecoration.STEM_MIDDLE]
+				= m_decorationAnchors[JDecoration.MIDDLE_STAFF]
 				= new Point2D.Double(x, middle);
+			m_decorationAnchors[JDecoration.LEFT_NOTE]
+				= new Point2D.Double(left, middle);
+			m_decorationAnchors[JDecoration.RIGHT_NOTE]
+				= new Point2D.Double(right, middle);
 		}
 	}
 
@@ -271,6 +281,24 @@ abstract class JScoreElementAbstract implements JScoreElement {
 	}
 	protected Color getColor() {
 		return m_color;
+	}
+	
+	protected void renderAnnotations(Graphics2D gfx) {
+		MusicElement me = getMusicElement();
+		Collection annots = null;
+		if (me instanceof DecorableElement)
+			annots = ((DecorableElement) me).getAnnotations();
+		if (annots != null) {
+			Iterator it = annots.iterator();
+			while (it.hasNext()) {
+				Annotation annot = (Annotation) it.next();
+				JAnnotation jannot = new JAnnotation(getMetrics(),
+					annot.getText());
+				jannot.setAttachedTo(this);
+				jannot.setBase(getBase());
+				jannot.render(gfx);
+			}
+		}
 	}
 	
 	protected void renderChordName(Graphics2D gfx) {

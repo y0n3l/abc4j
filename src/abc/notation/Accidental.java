@@ -70,8 +70,10 @@ public class Accidental implements Cloneable, Serializable
 			|| accidental.equals("\u266D\u266D")) return DOUBLE_FLAT;
 		else if (accidental.equals("^/")) return HALF_SHARP;
 		else if (accidental.equals("_/")) return HALF_FLAT;
-		else if (accidental.equals("^3/")) return SHARP_AND_A_HALF;
-		else if (accidental.equals("_3/")) return FLAT_AND_A_HALF;
+		else if (accidental.equals("^3/")
+				|| accidental.equals("^3/2")) return SHARP_AND_A_HALF;
+		else if (accidental.equals("_3/")
+				|| accidental.equals("_3/2")) return FLAT_AND_A_HALF;
 		else throw new IllegalArgumentException(accidental + " is not a valid accidental");
 	}
 

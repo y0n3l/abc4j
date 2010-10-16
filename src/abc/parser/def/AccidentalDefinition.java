@@ -32,6 +32,8 @@ public class AccidentalDefinition extends AutomataDefinition {
 		state.addTransition(trans);
 		State state2 = new State(AbcTokenType.ACCIDENTAL, true);
 		state1.addTransition(new Transition(state2, '/'));
+		State state3 = new State(AbcTokenType.ACCIDENTAL, true);
+		state2.addTransition(new Transition(state3, '2'));
 		state.addTransition(new Transition(state2, '/'));
 
 		state = new State(AbcTokenType.ACCIDENTAL, true);
@@ -42,6 +44,8 @@ public class AccidentalDefinition extends AutomataDefinition {
 		state.addTransition(trans);
 		state2 = new State(AbcTokenType.ACCIDENTAL, true);
 		state1.addTransition(new Transition(state2, '/'));
+		state3 = new State(AbcTokenType.ACCIDENTAL, true);
+		state2.addTransition(new Transition(state3, '2'));
 		state.addTransition(new Transition(state2, '/'));
 
 		state = new State(AbcTokenType.ACCIDENTAL, true);

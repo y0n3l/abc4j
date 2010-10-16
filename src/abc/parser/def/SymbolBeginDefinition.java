@@ -30,6 +30,9 @@ public class SymbolBeginDefinition extends AutomataDefinition
     	if (abcVersion.isGreaterOrEqual(AbcVersion.v2_0)) {
 	      State state = new State(AbcTokenType.SYMBOL_BEGIN, true);
 	      getStartingState().addTransition(new Transition(state, '+'));
+	     
+	      state = new State(AbcTokenType.SYMBOL_BEGIN, true);
+	      getStartingState().addTransition(new Transition(state, '!'));
     	}
     }
 }

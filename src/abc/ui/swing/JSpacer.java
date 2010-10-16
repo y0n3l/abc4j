@@ -17,6 +17,7 @@ package abc.ui.swing;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 import abc.notation.MusicElement;
 import abc.notation.Spacer;
@@ -31,6 +32,13 @@ class JSpacer extends JScoreElementAbstract {
 		m_spacer = s;
 		addDecorations(s);
 		setBase(base);
+	}
+	
+	public Rectangle2D getBoundingBox() {
+		return new Rectangle2D.Double(
+				getBase().getX(), getStaffLine().get5thLineY(),
+				getWidth(), getStaffLine().getHeight()
+				);
 	}
 	
 	public double getWidth() {
@@ -51,6 +59,8 @@ class JSpacer extends JScoreElementAbstract {
 		renderDecorations(context);
 		renderDynamic(context);
 		renderChordName(context);
+		renderAnnotations(context);
+		//renderDebugBoundingBox(context);
 		return getWidth();
 	}
 }

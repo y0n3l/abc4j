@@ -15,6 +15,10 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.notation;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Vector;
+
 /**
  * A decorable element is an element than can receive one chord name, one
  * dynamic, multiple decorations and multiple annotations:
@@ -30,7 +34,7 @@ public abstract class DecorableElement extends MusicElement implements
 
 	private static final long serialVersionUID = 6909509549064348544L;
 
-	protected Annotation[] m_annotations = null;
+	protected Vector m_annotations = null;
 
 	/**
 	 * The chord name.
@@ -44,7 +48,7 @@ public abstract class DecorableElement extends MusicElement implements
 	public Object clone() throws CloneNotSupportedException {
 		Object o = super.clone();
 		if (m_annotations != null)
-			((DecorableElement) o).m_annotations = (Annotation[]) m_annotations
+			((DecorableElement) o).m_annotations = (Vector) m_annotations
 					.clone();
 		if (m_decorations != null)
 			((DecorableElement) o).m_decorations = (Decoration[]) m_decorations
@@ -60,7 +64,7 @@ public abstract class DecorableElement extends MusicElement implements
 	 * @return The annotationss for this element. <TT>null</TT> if it has not.
 	 * @see #hasAnnotations()
 	 */
-	public Annotation[] getAnnotations() {
+	public Collection getAnnotations() {
 		return m_annotations;
 	}
 
@@ -110,13 +114,7 @@ public abstract class DecorableElement extends MusicElement implements
 	 *         otherwise.
 	 */
 	public boolean hasAnnotations() {
-		if (m_annotations != null && m_annotations.length > 0) {
-			for (int i = 0; i < m_annotations.length; i++) {
-				if (m_annotations[i] != null)
-					return true;
-			}
-		}
-		return false;
+		return ((m_annotations != null) && (m_annotations.size() > 0));
 	}
 
 	/**
@@ -156,8 +154,30 @@ public abstract class DecorableElement extends MusicElement implements
 		return m_dynamic != null;
 	}
 
-	public void setAnnotations(Annotation[] ann) {
+	public void setAnnotations(Vector ann) {
 		m_annotations = ann;
+	}
+	
+	/**
+	 * Removes annotation(s) having the given identifier
+	 * @param annotIdentifier
+	 */
+	protected void removeAnnotation(String annotIdentifier) {
+		if (m_annotations != null) {
+			Iterator it = m_annotations.iterator();
+			while (it.hasNext()) {
+				Annotation ann = (Annotation) it.next();
+				if (ann.getIdentifier().equals(annotIdentifier))
+					it.remove();
+			}
+		}
+	}
+	
+	protected void addAnnotation(Annotation ann) {
+		if (m_annotations == null) {
+			m_annotations = new Vector(2, 2);
+		}
+		m_annotations.add(ann);
 	}
 
 	/**

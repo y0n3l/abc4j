@@ -67,6 +67,10 @@ class JStaffLine extends JScoreElementAbstract {
 	protected double get1stLineY() {
 		return getBase().getY();
 	}
+	/** Returns height between 1st and 5th line */
+	protected double getHeight() {
+		return getMetrics().getStaffCharBounds().getHeight();
+	}
 
 	public Point2D getBase() {
 		return ((JScoreElementAbstract)m_staffElements.elementAt(0)).getBase();

@@ -30,6 +30,9 @@ public class SymbolEndDefinition extends AutomataDefinition
     	if (abcVersion.isGreaterOrEqual(AbcVersion.v2_0)) {
 	      State state = new State(AbcTokenType.SYMBOL_END, true);
 	      getStartingState().addTransition(new Transition(state, '+'));
+
+	      state = new State(AbcTokenType.SYMBOL_END, true);
+	      getStartingState().addTransition(new Transition(state, '!'));
     	}
     }
 }

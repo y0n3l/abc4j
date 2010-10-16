@@ -96,6 +96,7 @@ public class DefaultScoreTemplate extends ScoreTemplate implements Cloneable {
 		setTextSize(ScoreElements.TEXT_SUBTITLE, 150, SizeUnit.PERCENT);
 		setTextSize(ScoreElements.TEXT_COMPOSER, 125, SizeUnit.PERCENT);
 		setTextSize(ScoreElements.PART_LABEL, 150, SizeUnit.PERCENT);
+		setTextSize(ScoreElements.TEXT_ANNOTATIONS, 100, SizeUnit.PERCENT);
 		setTextSize(FOOTNOTES, 10, SizeUnit.PT);
 		
 		Hashtable urlLink = new Hashtable();

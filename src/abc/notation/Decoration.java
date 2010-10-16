@@ -174,6 +174,7 @@ public class Decoration extends SymbolElement implements Cloneable
   public static final byte GROUP_8TH = 59;
   
   public static final byte REPEAT_LAST_BAR = 60;
+  public static final byte REPEAT_LAST_TWO_BARS = 61;
   
   /** The v1.6 ~ roll */
   public static final byte GENERAL_GRACING = 99;
@@ -307,6 +308,8 @@ public class Decoration extends SymbolElement implements Cloneable
 		else if (str.equals("arpeggio")) type = ARPEGGIO;
 		else if (str.equals("trill(")) type = TRILL_START;
 		else if (str.equals("trill)")) type = TRILL_END;
+		else if (str.equals("repeatbar")) type = REPEAT_LAST_BAR;
+		else if (str.equals("repeatbar2")) type = REPEAT_LAST_TWO_BARS;
 		return type;
 	}
 

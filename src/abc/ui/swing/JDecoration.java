@@ -25,6 +25,7 @@ import java.awt.geom.Rectangle2D;
 import abc.notation.Decoration;
 import abc.notation.MusicElement;
 import abc.notation.Tune;
+import abc.ui.fonts.MissingGlyphException;
 
 
 /** This class defines a score rendition element. Rendition scores elements
@@ -37,7 +38,6 @@ import abc.notation.Tune;
  */
 class JDecoration extends JScoreElementAbstract {
 
-	protected static final int POSITIONS_COUNT = 14;
 	
 	/** Above the staff, above the note if note is higher than staff */
 	protected static final byte ABOVE_STAFF = 0;
@@ -67,6 +67,14 @@ class JDecoration extends JScoreElementAbstract {
 	protected static final byte VERTICAL_NEAR_STEM_OUT_STAFF = 12;
 	/** under note head if stem up, above note head else */
 	protected static final byte VERTICAL_AWAY_STEM_OUT_STAFF = 13;
+	/** vertically in the middle of the staff */
+	protected static final byte MIDDLE_STAFF = 14;
+	/** horizontally on the left of the note/element */
+	protected static final byte LEFT_NOTE = 15;
+	/** horizontally on the right of the note/element (e.g. bend) */
+	protected static final byte RIGHT_NOTE = 16;
+	
+	protected static final int POSITIONS_COUNT = 17;
 
 	protected static byte getPosition(Decoration deco) {
 		switch (deco.getType()) {
@@ -103,6 +111,10 @@ class JDecoration extends JScoreElementAbstract {
 		case Decoration.STEM_COMBINE_UP_DOUBLE:
 		case Decoration.STEM_COMBINE_UP_TRIPLE:
 			return STEM_MIDDLE;
+		case Decoration.REPEAT_LAST_BAR:
+		//	return LEFT_NOTE;
+		case Decoration.REPEAT_LAST_TWO_BARS:
+			return MIDDLE_STAFF;
 		default:
 			return ABOVE_STAFF;
 		}
@@ -137,9 +149,14 @@ class JDecoration extends JScoreElementAbstract {
 		super(mtrx);
 		m_decoration = decoration;
 		if (base != null) setBase(base);
-		Rectangle2D bounds = getMetrics().getBounds(
+		Rectangle2D bounds = null;
+		try {
+			bounds = getMetrics().getBounds(
 				getMusicalFont().getDecoration(m_decoration)
 			);
+		} catch (MissingGlyphException mge) {
+			bounds = new Rectangle2D.Double(0, 0, 0, 0);
+		}
 		m_height = bounds.getHeight();
 		m_width = bounds.getWidth();
 	}
@@ -212,36 +229,42 @@ class JDecoration extends JScoreElementAbstract {
 	/** Renders this Score element to the given graphic context.
 	 * @param g2 */
 	public double render(Graphics2D g2) {
-		char charDeco = getMusicalFont().getDecoration(
-				m_decoration, m_isInverted);
-		Rectangle2D bounds = getMetrics().getBounds(charDeco);
-		double x = getBase().getX() - bounds.getWidth()/2;
-		double y = getBase().getY();
-		if (m_scoreElement != null) {
-			boolean isUnderNote = y > m_scoreElement.getBase().getY();
-			if (isUnderNote)
-				y += bounds.getHeight();
-			//avoid collisions
-			double offset = getMetrics().getNoteHeight() / 2;
-			
-			//first decoration is on top
-			for (int i = m_scoreElement.m_jDecorations.size()-1; i >= 0; i--) {
-				//JDecoration jdec = (JDecoration) it.next();
-				JDecoration jdec = (JDecoration) m_scoreElement.m_jDecorations.elementAt(i);
-				if (jdec == this)
-					break;
-				if (jdec.getBase().equals(getBase())) {
-					if (isUnderNote)
-						y = y + offset + jdec.getHeight();
-					else
-						y = y - offset - jdec.getHeight();
+		try {
+			char charDeco = getMusicalFont().getDecoration(
+					m_decoration, m_isInverted);
+			Rectangle2D bounds = getMetrics().getBounds(charDeco);
+			double x = getBase().getX() - bounds.getWidth()/2;
+			double y = getBase().getY();
+			if (getPosition() == MIDDLE_STAFF)
+				y = getBase().getY() + bounds.getHeight()/2;
+			if (m_scoreElement != null) {
+				boolean isUnderNote = y > m_scoreElement.getBase().getY();
+				if (isUnderNote)
+					y += bounds.getHeight();
+				//avoid collisions
+				double offset = getMetrics().getNoteHeight() / 2;
+				
+				//first decoration is on top
+				for (int i = m_scoreElement.m_jDecorations.size()-1; i >= 0; i--) {
+					//JDecoration jdec = (JDecoration) it.next();
+					JDecoration jdec = (JDecoration) m_scoreElement.m_jDecorations.elementAt(i);
+					if (jdec == this)
+						break;
+					if (jdec.getBase().equals(getBase())) {
+						if (isUnderNote)
+							y = y + offset + jdec.getHeight();
+						else
+							y = y - offset - jdec.getHeight();
+					}
 				}
 			}
+			//if (m_isInverted) y += bounds.getHeight();
+			g2.drawChars(new char[] { charDeco }, 0, 1,
+					(int)x, (int)y);
+			return bounds.getWidth();
+		} catch (MissingGlyphException mge) {
+			return 0;
 		}
-		//if (m_isInverted) y += bounds.getHeight();
-		g2.drawChars(new char[] { charDeco }, 0, 1,
-				(int)x, (int)y);
-		return bounds.getWidth();
 	}
 
 }

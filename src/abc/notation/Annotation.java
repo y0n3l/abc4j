@@ -33,22 +33,42 @@ public class Annotation extends MusicElement implements Cloneable {
 	
 	private static final long serialVersionUID = -5229829009603741539L;
 	
+	private String m_identifier = null;
+	
 	/** the content of the annotation. */
-	private String content = null;
+	private String m_text = null;
 	
 	/** Creates a new annotation.
 	 * @param theContent */
 	public Annotation(String theContent){
-		content = theContent;
+		m_text = theContent;
+	}
+
+	/** Creates a new annotation.
+	 * @param theContent
+	 * @param identifier Not displayed string, but useful if you want to
+	 * remove/update some kind of annotation
+	 */
+	public Annotation(String theContent, String identifier){
+		m_text = theContent;
+		m_identifier = identifier;
+	}
+
+	/** Returns the text of the annotation. */
+	public String getText() {
+		return m_text;
 	}
 	
-	/** Returns the text of the annotation. */
-	public String getContent() {
-		return content;
+	public String getIdentifier() {
+		return m_identifier;
 	}
 	
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
+	}
+	
+	public String toString() {
+		return getText();
 	}
 	
 }

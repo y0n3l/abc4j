@@ -31,6 +31,7 @@ import scanner.TokenType;
 import abc.notation.Accidental;
 import abc.notation.Annotation;
 import abc.notation.BarLine;
+import abc.notation.Chord;
 import abc.notation.Decoration;
 import abc.notation.Dynamic;
 import abc.notation.Fraction;
@@ -165,7 +166,7 @@ public class AbcParserAbstract
     protected static Set FIRST_NOTE_STEM =
     	new Set()
     	//.union(FIRST_SYMBOL_BEGIN)
-    	.union(FIRST_GUITAR_CHORD)
+    	//.union(FIRST_GUITAR_CHORD)
     	.union(FIRST_GRACE_NOTES).union(FIRST_GRACINGS)
     	.union(FIRST_NOTE).union(FIRST_MULTI_NOTE);
     protected static Set FIRST_NOTE_ELEMENT = new Set(FIRST_NOTE_STEM);
@@ -1150,8 +1151,10 @@ public class AbcParserAbstract
     	Vector decorations = new Vector();
     	Vector annotations = new Vector();
     	Dynamic dynamic = null;
+    	Chord chord = null;
         while (FIRST_SYMBOL_BEGIN.contains(m_tokenType)
-        		|| FIRST_ANNOTATION_BEGIN.contains(m_tokenType)) {
+        		|| FIRST_ANNOTATION_BEGIN.contains(m_tokenType)
+        		|| FIRST_GUITAR_CHORD.contains(m_tokenType)) {
         	if (FIRST_SYMBOL_BEGIN.contains(m_tokenType)) {
         		Vector symbols = parseSymbols(follow);
         		Iterator it = symbols.iterator();
@@ -1165,27 +1168,33 @@ public class AbcParserAbstract
         		}
         		decorations.addAll(symbols);
         	}
-        	else { //FIRST_ANNOTATION_BEGIN.contains(m_tokenType
-        		annotations.addAll(parseAnnotations(follow));
+        	else { //FIRST_ANNOTATION_BEGIN.contains(m_tokenType)
+        		// || FIRST_GUITAR_CHORD.contains(m_tokenType)
+        		Vector v = parseAnnotationsAndChord(follow);
+        		Iterator it = v.iterator();
+        		while (it.hasNext()) {
+        			Object o = it.next();
+        			if ((o instanceof Chord) && (chord == null))
+        				chord = (Chord) o;
+        			else if (o instanceof Annotation)
+        				annotations.add((Annotation) o);
+        			else if (o instanceof Chord)
+        				annotations.add(new Annotation(((Chord)o).getText()));
+        		}
         	}
         }
         
       if (FIRST_SPACER.contains(m_tokenType))
       {
-//    	  String chordName = null;
-//    	  //current.remove(FIRST_GUITAR_CHORD);
-//    	  if(FIRST_GUITAR_CHORD.contains(m_tokenType)) {
-//    		  accept(AbcTokenType.GUITAR_CHORD, null, follow);
-//    		  chordName = parseGuitarChord(new Set().createUnion(follow));
-//    	  }
       	  accept(AbcTokenType.SPACER, null, follow);
       	  Spacer spacer = new Spacer();
       	  spacer.setDynamic(dynamic);
       	  if (decorations.size() > 0)
       		  spacer.setDecorations((Decoration[])decorations.toArray(new Decoration[1]));
       	  if (annotations.size() > 0)
-      		  spacer.setAnnotations((Annotation[])annotations.toArray(new Annotation[1]));
-      	  //spacer.setChordName(chordName);
+      		  spacer.setAnnotations(annotations);
+      	  if (chord != null)
+      		  spacer.setChord(chord);
       	  m_music.addElement(spacer);
       }
       else
@@ -1211,7 +1220,9 @@ public class AbcParserAbstract
 	        if (decorations.size() > 0)
 	        	note.setDecorations((Decoration[])decorations.toArray(new Decoration[1]));
 	        if (annotations.size() > 0)
-	        	note.setAnnotations((Annotation[])annotations.toArray(new Annotation[1]));
+	        	note.setAnnotations(annotations);
+	        if (chord != null)
+	        	note.setChord(chord);
 	        m_music.addElement(note);
         }
       }
@@ -1235,7 +1246,9 @@ public class AbcParserAbstract
                 if (decorations.size() > 0)
                 	note.setDecorations((Decoration[])decorations.toArray(new Decoration[1]));
                 if (annotations.size() > 0)
-                	note.setAnnotations((Annotation[])annotations.toArray(new Annotation[1]));
+                	note.setAnnotations(annotations);
+                if (chord != null)
+                	note.setChord(chord);
         	}
         	m_music.addElement(note);
         }
@@ -1251,7 +1264,7 @@ public class AbcParserAbstract
                 if (decorations.size() > 0)
                 	barline.setDecorations((Decoration[])decorations.toArray(new Decoration[1]));
                 if (annotations.size() > 0)
-                	barline.setAnnotations((Annotation[])annotations.toArray(new Annotation[1]));
+                	barline.setAnnotations(annotations);
         	}
           m_music.addElement(barline);
         }
@@ -1471,16 +1484,20 @@ public class AbcParserAbstract
      * @param follow
      * @return a vector of {@link Annotation}
      */
-    private Vector parseAnnotations(Set follow) {
+    private Vector parseAnnotationsAndChord(Set follow) {
     	Vector annotations = new Vector(3, 3);
-        while (FIRST_SYMBOL_BEGIN.contains(m_tokenType)) {
+        while (FIRST_ANNOTATION_BEGIN.contains(m_tokenType)
+        	|| FIRST_GUITAR_CHORD.contains(m_tokenType)) {
 			Set current = new Set().union(AbcTokenType.ANNOTATION_BEGIN)
 				.union(AbcTokenType.ANNOTATION);//.union(AbcTokenType.SPACE);
 			accept(AbcTokenType.ANNOTATION_BEGIN, current, follow);
 			current.remove(AbcTokenType.ANNOTATION);
 			String acc = accept(AbcTokenType.ANNOTATION, current, follow);
 			if (acc != null) {
-				annotations.add(new Annotation(acc));
+				if (Chord.isChord(acc))
+					annotations.add(new Chord(acc));
+				else
+					annotations.add(new Annotation(acc));
 			}
 			current.remove(AbcTokenType.ANNOTATION_BEGIN);
 			accept(AbcTokenType.ANNOTATION_BEGIN, current, follow);
@@ -1537,7 +1554,8 @@ public class AbcParserAbstract
     {
       Set current = new Set()
       		//.union(FIRST_SYMBOL_BEGIN)
-      		.union(FIRST_GUITAR_CHORD).union(FIRST_GRACE_NOTES)
+      		//.union(FIRST_GUITAR_CHORD)
+      		.union(FIRST_GRACE_NOTES)
       		.union(FIRST_ACCIACCATURA).union(FIRST_GRACINGS)
       		.union(FIRST_NOTE).union(FIRST_MULTI_NOTE);
       NoteAbstract note = null;
