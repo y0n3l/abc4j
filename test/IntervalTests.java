@@ -1,5 +1,5 @@
 import junit.framework.TestCase;
-import abc.notation.AccidentalType;
+import abc.notation.Accidental;
 import abc.notation.Interval;
 import abc.notation.KeySignature;
 import abc.notation.Note;
@@ -34,15 +34,15 @@ public class IntervalTests extends TestCase {
 	}
 	
 	public void test2IntervalFromNotes() {
-		Note n1 = new Note(Note.E, AccidentalType.FLAT);
-		Note n2 = new Note(Note.B, AccidentalType.NONE);
+		Note n1 = new Note(Note.E, Accidental.FLAT);
+		Note n2 = new Note(Note.B, Accidental.NONE);
 		Interval fifthAug = new Interval(n1, n2, null);
 		assertEquals(Interval.FIFTH, fifthAug.getLabel());
 		assertEquals(Interval.AUGMENTED, fifthAug.getQuality());
 		assertEquals(8, fifthAug.getSemitones());
 		assertEquals(Interval.UPWARD, fifthAug.getDirection());
 		
-		KeySignature Gmin = new KeySignature(Note.G, AccidentalType.NATURAL, KeySignature.MINOR);
+		KeySignature Gmin = new KeySignature(Note.G, Accidental.NATURAL, KeySignature.MINOR);
 		//G minor has B flat and E flat
 		//note B has no accidental (NONE)
 		//our new interval will be understood as perfect fifth
@@ -52,21 +52,21 @@ public class IntervalTests extends TestCase {
 		assertEquals(7, fifthPerfect.getSemitones());
 
 		//double augmented
-		n2 = new Note(Note.B, AccidentalType.SHARP);
+		n2 = new Note(Note.B, Accidental.SHARP);
 		Interval fifthDblAug = new Interval(n1, n2, null);
 		assertEquals(Interval.FIFTH, fifthDblAug.getLabel());
 		assertEquals(Interval.DOUBLE_AUGMENTED, fifthDblAug.getQuality());
 		assertEquals(9, fifthDblAug.getSemitones());
 		
 		//triple augmented
-		n2 = new Note(Note.B, AccidentalType.DOUBLE_SHARP);
+		n2 = new Note(Note.B, Accidental.DOUBLE_SHARP);
 		Interval fifthTripleAug = new Interval(n1, n2, null);
 		assertEquals(Interval.FIFTH, fifthTripleAug.getLabel());
 		assertEquals(Interval.TRIPLE_AUGMENTED, fifthTripleAug.getQuality());
 		assertEquals(10, fifthTripleAug.getSemitones());
 
 		//quadruple augmented
-		n1 = new Note(Note.E, AccidentalType.DOUBLE_FLAT);
+		n1 = new Note(Note.E, Accidental.DOUBLE_FLAT);
 		Interval fifthQuadAug = new Interval(n1, n2, null);
 		assertEquals(Interval.FIFTH, fifthQuadAug.getLabel());
 		assertEquals(Interval.QUADRUPLE_AUGMENTED, fifthQuadAug.getQuality());
@@ -74,8 +74,8 @@ public class IntervalTests extends TestCase {
 
 		//diminished 2nd
 		Interval dim2nd = new Interval(
-				new Note(Note.C, AccidentalType.DOUBLE_SHARP),
-				new Note(Note.D, AccidentalType.NATURAL),
+				new Note(Note.C, Accidental.DOUBLE_SHARP),
+				new Note(Note.D, Accidental.NATURAL),
 				null);
 		assertEquals(Interval.SECOND, dim2nd.getLabel());
 		assertEquals(Interval.DIMINISHED, dim2nd.getQuality());
@@ -85,7 +85,7 @@ public class IntervalTests extends TestCase {
 		//augmented 2nd
 		Interval aug2nd = new Interval(
 				new Note(Note.e),
-				new Note(Note.f, AccidentalType.DOUBLE_SHARP),
+				new Note(Note.f, Accidental.DOUBLE_SHARP),
 				null);
 		assertEquals(Interval.SECOND, aug2nd.getLabel());
 		assertEquals(Interval.AUGMENTED, aug2nd.getQuality());
@@ -94,7 +94,7 @@ public class IntervalTests extends TestCase {
 		
 		Interval minor6th = new Interval(
 				new Note(Note.D),
-				new Note(Note.B, AccidentalType.FLAT),
+				new Note(Note.B, Accidental.FLAT),
 				null);
 		assertEquals(Interval.SIXTH, minor6th.getLabel());
 		assertEquals(Interval.MINOR, minor6th.getQuality());
@@ -102,7 +102,7 @@ public class IntervalTests extends TestCase {
 		
 		Interval minorOct6th = new Interval(
 				new Note(Note.D),
-				new Note(Note.b, AccidentalType.FLAT),
+				new Note(Note.b, Accidental.FLAT),
 				null);
 		assertEquals(Interval.OCTAVE+Interval.SIXTH, minorOct6th.getLabel());
 		assertEquals(Interval.MINOR, minorOct6th.getQuality());
@@ -120,7 +120,7 @@ public class IntervalTests extends TestCase {
 		
 		//renversed octave+fifth
 		Interval renversedOctFifth = new Interval(
-				new Note(Note.c, AccidentalType.NATURAL, (byte) 1),
+				new Note(Note.c, Accidental.NATURAL, (byte) 1),
 				new Note(Note.F),
 				null);
 		assertEquals(Interval.OCTAVE+Interval.FIFTH, renversedOctFifth.getLabel());
@@ -131,7 +131,7 @@ public class IntervalTests extends TestCase {
 		//3 octaves
 		Interval threeOct = new Interval(
 				new Note(Note.C),
-				new Note(Note.c, AccidentalType.NATURAL, (byte) 2),
+				new Note(Note.c, Accidental.NATURAL, (byte) 2),
 				null);
 		assertEquals(3*Interval.OCTAVE, threeOct.getLabel());
 		assertEquals(Interval.PERFECT, threeOct.getQuality());
@@ -140,7 +140,7 @@ public class IntervalTests extends TestCase {
 
 		//renversed 3 octave
 		Interval renvThreeOct = new Interval(
-				new Note(Note.c, AccidentalType.NATURAL, (byte) 2),
+				new Note(Note.c, Accidental.NATURAL, (byte) 2),
 				new Note(Note.C),
 				null);
 		assertEquals(3*Interval.OCTAVE, renvThreeOct.getLabel());
@@ -150,7 +150,7 @@ public class IntervalTests extends TestCase {
 
 		//renversed 3 octave + major second
 		Interval renvThreeAugOct = new Interval(
-				new Note(Note.d, AccidentalType.NATURAL, (byte) 0),
+				new Note(Note.d, Accidental.NATURAL, (byte) 0),
 				new Note(Note.C),
 				null);
 		assertEquals(1*Interval.OCTAVE + Interval.SECOND,
@@ -159,7 +159,7 @@ public class IntervalTests extends TestCase {
 		assertEquals(1*12 + 2, renvThreeAugOct.getSemitones());
 		
 		Interval dimOct = new Interval(
-				new Note(Note.C, AccidentalType.SHARP),
+				new Note(Note.C, Accidental.SHARP),
 				new Note(Note.c),
 				null);
 		assertEquals(Interval.OCTAVE, dimOct.getLabel());
@@ -167,8 +167,8 @@ public class IntervalTests extends TestCase {
 		assertEquals(11, dimOct.getSemitones());
 		
 		Interval dblDimOct = new Interval(
-				new Note(Note.C, AccidentalType.SHARP),
-				new Note(Note.c, AccidentalType.FLAT),
+				new Note(Note.C, Accidental.SHARP),
+				new Note(Note.c, Accidental.FLAT),
 				null);
 		assertEquals(Interval.OCTAVE, dblDimOct.getLabel());
 		assertEquals(Interval.DOUBLE_DIMINISHED, dblDimOct.getQuality());
@@ -176,7 +176,7 @@ public class IntervalTests extends TestCase {
 	
 		Interval augOct = new Interval(
 				new Note(Note.C),
-				new Note(Note.c, AccidentalType.SHARP),
+				new Note(Note.c, Accidental.SHARP),
 				null);
 		assertEquals(Interval.OCTAVE, augOct.getLabel());
 		assertEquals(Interval.AUGMENTED, augOct.getQuality());
@@ -207,7 +207,7 @@ public class IntervalTests extends TestCase {
 
 		//an octave + a fifth
 		Interval downOctFifth = new Interval(
-				new Note(Note.c, AccidentalType.NATURAL, (byte) 1),
+				new Note(Note.c, Accidental.NATURAL, (byte) 1),
 				new Note(Note.F),
 				null);
 		assertTrue(downOctFifth.isCompound());
@@ -218,8 +218,8 @@ public class IntervalTests extends TestCase {
 		assertFalse(upFourth.isCompound());
 		
 		//quadruple augmented
-		Note n1 = new Note(Note.E, AccidentalType.DOUBLE_FLAT);
-		Note n2 = new Note(Note.B, AccidentalType.DOUBLE_SHARP);
+		Note n1 = new Note(Note.E, Accidental.DOUBLE_FLAT);
+		Note n2 = new Note(Note.B, Accidental.DOUBLE_SHARP);
 		Interval fifthQuadAug = new Interval(n1, n2, null);
 		assertEquals(Interval.FIFTH, fifthQuadAug.getLabel());
 		assertEquals(Interval.QUADRUPLE_AUGMENTED, fifthQuadAug.getQuality());
@@ -251,7 +251,7 @@ public class IntervalTests extends TestCase {
 	private boolean areSimilar(Note n1, Note n2) {
 		boolean ret = (n1.getStrictHeight() == n2.getStrictHeight())
 			&& (n1.getOctaveTransposition() == n2.getOctaveTransposition())
-			&& (n1.getAccidental() == n2.getAccidental());
+			&& (n1.getAccidental().equals(n2.getAccidental()));
 		if (!ret) {
 			System.err.println(n1 + " and " + n2 + " are not similar, test will fail");
 		}
@@ -259,77 +259,77 @@ public class IntervalTests extends TestCase {
 	}
 	
 	public void test6calculateSecondNote() {
-	//	Note Cbb = new Note(Note.C, AccidentalType.DOUBLE_FLAT);
-		Note Cb = new Note(Note.C, AccidentalType.FLAT);
-		Note C = new Note(Note.C, AccidentalType.NATURAL);
-		Note Cs = new Note(Note.C, AccidentalType.SHARP);
-		Note Css = new Note(Note.C, AccidentalType.DOUBLE_SHARP);
-		Note Dbb = new Note(Note.D, AccidentalType.DOUBLE_FLAT);
-		Note Db = new Note(Note.D, AccidentalType.FLAT);
-		Note D = new Note(Note.D, AccidentalType.NATURAL);
-		Note Ds = new Note(Note.D, AccidentalType.SHARP);
-		Note Dss = new Note(Note.D, AccidentalType.DOUBLE_SHARP);
-		Note Ebb = new Note(Note.E, AccidentalType.DOUBLE_FLAT);
-		Note Eb = new Note(Note.E, AccidentalType.FLAT);
-		Note E = new Note(Note.E, AccidentalType.NATURAL);
-		Note Es = new Note(Note.E, AccidentalType.SHARP);
-		Note Ess = new Note(Note.E, AccidentalType.DOUBLE_SHARP);
-		Note Fbb = new Note(Note.F, AccidentalType.DOUBLE_FLAT);
-		Note Fb = new Note(Note.F, AccidentalType.FLAT);
-		Note F = new Note(Note.F, AccidentalType.NATURAL);
-		Note Fs = new Note(Note.F, AccidentalType.SHARP);
-		Note Fss = new Note(Note.F, AccidentalType.DOUBLE_SHARP);
-		Note Gbb = new Note(Note.G, AccidentalType.DOUBLE_FLAT);
-		Note Gb = new Note(Note.G, AccidentalType.FLAT);
-		Note G = new Note(Note.G, AccidentalType.NATURAL);
-		Note Gs = new Note(Note.G, AccidentalType.SHARP);
-		Note Gss = new Note(Note.G, AccidentalType.DOUBLE_SHARP);
-		Note Abb = new Note(Note.A, AccidentalType.DOUBLE_FLAT);
-		Note Ab = new Note(Note.A, AccidentalType.FLAT);
-		Note A = new Note(Note.A, AccidentalType.NATURAL);
-		Note As = new Note(Note.A, AccidentalType.SHARP);
-		Note Ass = new Note(Note.A, AccidentalType.DOUBLE_SHARP);
-		Note Bbb = new Note(Note.B, AccidentalType.DOUBLE_FLAT);
-		Note Bb = new Note(Note.B, AccidentalType.FLAT);
-		Note B = new Note(Note.B, AccidentalType.NATURAL);
-		Note Bs = new Note(Note.B, AccidentalType.SHARP);
-		Note Bss = new Note(Note.B, AccidentalType.DOUBLE_SHARP);
-		Note cbb = new Note(Note.c, AccidentalType.DOUBLE_FLAT);
-		Note cb = new Note(Note.c, AccidentalType.FLAT);
-		Note c = new Note(Note.c, AccidentalType.NATURAL);
-		Note cs = new Note(Note.c, AccidentalType.SHARP);
-		Note css = new Note(Note.c, AccidentalType.DOUBLE_SHARP);
-		Note dbb = new Note(Note.d, AccidentalType.DOUBLE_FLAT);
-		Note db = new Note(Note.d, AccidentalType.FLAT);
-		Note d = new Note(Note.d, AccidentalType.NATURAL);
-		Note ds = new Note(Note.d, AccidentalType.SHARP);
-		Note dss = new Note(Note.d, AccidentalType.DOUBLE_SHARP);
-		Note ebb = new Note(Note.e, AccidentalType.DOUBLE_FLAT);
-		Note eb = new Note(Note.e, AccidentalType.FLAT);
-		Note e = new Note(Note.e, AccidentalType.NATURAL);
-		Note es = new Note(Note.e, AccidentalType.SHARP);
-	//	Note ess = new Note(Note.e, AccidentalType.DOUBLE_SHARP);
-	//	Note fbb = new Note(Note.f, AccidentalType.DOUBLE_FLAT);
-		Note fb = new Note(Note.f, AccidentalType.FLAT);
-		Note f = new Note(Note.f, AccidentalType.NATURAL);
-		Note fs = new Note(Note.f, AccidentalType.SHARP);
-		Note fss = new Note(Note.f, AccidentalType.DOUBLE_SHARP);
-	//	Note gbb = new Note(Note.g, AccidentalType.DOUBLE_FLAT);
-		Note gb = new Note(Note.g, AccidentalType.FLAT);
-		Note g = new Note(Note.g, AccidentalType.NATURAL);
-		Note gs = new Note(Note.g, AccidentalType.SHARP);
-		Note gss = new Note(Note.g, AccidentalType.DOUBLE_SHARP);
-	//	Note abb = new Note(Note.a, AccidentalType.DOUBLE_FLAT);
-		Note ab = new Note(Note.a, AccidentalType.FLAT);
-		Note a = new Note(Note.a, AccidentalType.NATURAL);
-		Note as = new Note(Note.a, AccidentalType.SHARP);
-		Note ass = new Note(Note.a, AccidentalType.DOUBLE_SHARP);
-	//	Note bbb = new Note(Note.b, AccidentalType.DOUBLE_FLAT);
-		Note bb = new Note(Note.b, AccidentalType.FLAT);
-		Note b = new Note(Note.b, AccidentalType.NATURAL);
-		Note bs = new Note(Note.b, AccidentalType.SHARP);
-	//	Note bss = new Note(Note.b, AccidentalType.DOUBLE_SHARP);
-		Note c2 = new Note(Note.C, AccidentalType.NATURAL, (byte) 2);
+	//	Note Cbb = new Note(Note.C, Accidental.DOUBLE_FLAT);
+		Note Cb = new Note(Note.C, Accidental.FLAT);
+		Note C = new Note(Note.C, Accidental.NATURAL);
+		Note Cs = new Note(Note.C, Accidental.SHARP);
+		Note Css = new Note(Note.C, Accidental.DOUBLE_SHARP);
+		Note Dbb = new Note(Note.D, Accidental.DOUBLE_FLAT);
+		Note Db = new Note(Note.D, Accidental.FLAT);
+		Note D = new Note(Note.D, Accidental.NATURAL);
+		Note Ds = new Note(Note.D, Accidental.SHARP);
+		Note Dss = new Note(Note.D, Accidental.DOUBLE_SHARP);
+		Note Ebb = new Note(Note.E, Accidental.DOUBLE_FLAT);
+		Note Eb = new Note(Note.E, Accidental.FLAT);
+		Note E = new Note(Note.E, Accidental.NATURAL);
+		Note Es = new Note(Note.E, Accidental.SHARP);
+		Note Ess = new Note(Note.E, Accidental.DOUBLE_SHARP);
+		Note Fbb = new Note(Note.F, Accidental.DOUBLE_FLAT);
+		Note Fb = new Note(Note.F, Accidental.FLAT);
+		Note F = new Note(Note.F, Accidental.NATURAL);
+		Note Fs = new Note(Note.F, Accidental.SHARP);
+		Note Fss = new Note(Note.F, Accidental.DOUBLE_SHARP);
+		Note Gbb = new Note(Note.G, Accidental.DOUBLE_FLAT);
+		Note Gb = new Note(Note.G, Accidental.FLAT);
+		Note G = new Note(Note.G, Accidental.NATURAL);
+		Note Gs = new Note(Note.G, Accidental.SHARP);
+		Note Gss = new Note(Note.G, Accidental.DOUBLE_SHARP);
+		Note Abb = new Note(Note.A, Accidental.DOUBLE_FLAT);
+		Note Ab = new Note(Note.A, Accidental.FLAT);
+		Note A = new Note(Note.A, Accidental.NATURAL);
+		Note As = new Note(Note.A, Accidental.SHARP);
+		Note Ass = new Note(Note.A, Accidental.DOUBLE_SHARP);
+		Note Bbb = new Note(Note.B, Accidental.DOUBLE_FLAT);
+		Note Bb = new Note(Note.B, Accidental.FLAT);
+		Note B = new Note(Note.B, Accidental.NATURAL);
+		Note Bs = new Note(Note.B, Accidental.SHARP);
+		Note Bss = new Note(Note.B, Accidental.DOUBLE_SHARP);
+		Note cbb = new Note(Note.c, Accidental.DOUBLE_FLAT);
+		Note cb = new Note(Note.c, Accidental.FLAT);
+		Note c = new Note(Note.c, Accidental.NATURAL);
+		Note cs = new Note(Note.c, Accidental.SHARP);
+		Note css = new Note(Note.c, Accidental.DOUBLE_SHARP);
+		Note dbb = new Note(Note.d, Accidental.DOUBLE_FLAT);
+		Note db = new Note(Note.d, Accidental.FLAT);
+		Note d = new Note(Note.d, Accidental.NATURAL);
+		Note ds = new Note(Note.d, Accidental.SHARP);
+		Note dss = new Note(Note.d, Accidental.DOUBLE_SHARP);
+		Note ebb = new Note(Note.e, Accidental.DOUBLE_FLAT);
+		Note eb = new Note(Note.e, Accidental.FLAT);
+		Note e = new Note(Note.e, Accidental.NATURAL);
+		Note es = new Note(Note.e, Accidental.SHARP);
+	//	Note ess = new Note(Note.e, Accidental.DOUBLE_SHARP);
+	//	Note fbb = new Note(Note.f, Accidental.DOUBLE_FLAT);
+		Note fb = new Note(Note.f, Accidental.FLAT);
+		Note f = new Note(Note.f, Accidental.NATURAL);
+		Note fs = new Note(Note.f, Accidental.SHARP);
+		Note fss = new Note(Note.f, Accidental.DOUBLE_SHARP);
+	//	Note gbb = new Note(Note.g, Accidental.DOUBLE_FLAT);
+		Note gb = new Note(Note.g, Accidental.FLAT);
+		Note g = new Note(Note.g, Accidental.NATURAL);
+		Note gs = new Note(Note.g, Accidental.SHARP);
+		Note gss = new Note(Note.g, Accidental.DOUBLE_SHARP);
+	//	Note abb = new Note(Note.a, Accidental.DOUBLE_FLAT);
+		Note ab = new Note(Note.a, Accidental.FLAT);
+		Note a = new Note(Note.a, Accidental.NATURAL);
+		Note as = new Note(Note.a, Accidental.SHARP);
+		Note ass = new Note(Note.a, Accidental.DOUBLE_SHARP);
+	//	Note bbb = new Note(Note.b, Accidental.DOUBLE_FLAT);
+		Note bb = new Note(Note.b, Accidental.FLAT);
+		Note b = new Note(Note.b, Accidental.NATURAL);
+		Note bs = new Note(Note.b, Accidental.SHARP);
+	//	Note bss = new Note(Note.b, Accidental.DOUBLE_SHARP);
+		Note c2 = new Note(Note.C, Accidental.NATURAL, (byte) 2);
 
 		//minor
 		Interval secondMin = new Interval(Interval.SECOND, Interval.MINOR);
@@ -683,12 +683,12 @@ public class IntervalTests extends TestCase {
 				new KeySignature(Note.C, KeySignature.MINOR));
 		assertEquals(Note.G, G.getStrictHeight());
 		assertEquals(0, G.getOctaveTransposition());
-		assertEquals(AccidentalType.NONE, G.getAccidental());
-		Gs = fifth.calculateSecondNote(new Note(Note.C, AccidentalType.NONE),
+		assertTrue(G.getAccidental().isInTheKey());
+		Gs = fifth.calculateSecondNote(new Note(Note.C, Accidental.NONE),
 				new KeySignature(Note.A, KeySignature.MAJOR));
 		assertEquals(Note.G, Gs.getStrictHeight());
 		assertEquals(0, Gs.getOctaveTransposition());
-		assertEquals(AccidentalType.NONE, Gs.getAccidental());
+		assertTrue(Gs.getAccidental().isInTheKey());
 		
 	}
 	

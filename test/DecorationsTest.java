@@ -1,5 +1,4 @@
 import junit.framework.TestCase;
-import abc.notation.AccidentalType;
 import abc.notation.Decoration;
 import abc.notation.Note;
 import abc.notation.Tune;
@@ -35,11 +34,11 @@ public class DecorationsTest extends TestCase {
 		Note secondNote = (Note)tune.getMusic().elementAt(2);
 		Note thirdNote = (Note)tune.getMusic().elementAt(3);
 		assertTrue(firstNote.hasDecoration(Decoration.DOWNBOW));
-		assertEquals(firstNote.getAccidental(), AccidentalType.FLAT);
+		assertTrue(firstNote.getAccidental().isFlat());
 		assertTrue(secondNote.hasDecoration(Decoration.UPBOW));
-		assertEquals(secondNote.getAccidental(), AccidentalType.NATURAL);
+		assertTrue(secondNote.getAccidental().isNatural());
 		assertTrue(thirdNote.hasDecoration(Decoration.DOWNBOW));
-		assertEquals(thirdNote.getAccidental(), AccidentalType.SHARP);
+		assertTrue(thirdNote.getAccidental().isSharp());
 	}
 
 	protected void tearDown() throws Exception {

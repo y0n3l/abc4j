@@ -1,7 +1,6 @@
 import java.io.StringReader;
 
 import junit.framework.TestCase;
-import abc.notation.MultiNote;
 import abc.notation.Note;
 import abc.notation.Tune;
 import abc.parser.AbcHeadersParser;

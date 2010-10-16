@@ -3,7 +3,6 @@ import java.io.File;
 import junit.framework.TestCase;
 import abc.notation.MultiNote;
 import abc.notation.Note;
-import abc.notation.NoteAbstract;
 import abc.notation.Tune;
 import abc.parser.TuneBook;
 import abc.parser.TuneParser;
@@ -38,8 +37,8 @@ public class TieTest extends TestCase {
 			assertNull(secondNote.getSlurDefinition());
 			assertNotNull(firstNote.getTieDefinition());
 			assertNotNull(secondNote.getTieDefinition());
-			assertEquals(secondNote.getTieDefinition().getStart(), firstNote);
-			assertEquals(firstNote.getTieDefinition().getEnd(), secondNote);
+			assertEquals(secondNote.getTieDefinition().getStart(), firstNote.getReference());
+			assertEquals(firstNote.getTieDefinition().getEnd(), secondNote.getReference());
 			assertEquals(firstNote.getTieDefinition(), secondNote.getTieDefinition());
 		}
 		catch (Exception e ) {
@@ -87,8 +86,8 @@ public class TieTest extends TestCase {
 			assertNull(secondNote.getSlurDefinition());
 			assertNotNull(firstNote.getTieDefinition());
 			assertNotNull(secondNote.getTieDefinition());
-			assertEquals(secondNote.getTieDefinition().getStart(), firstNote);
-			assertEquals(firstNote.getTieDefinition().getEnd(), secondNote);
+			assertEquals(secondNote.getTieDefinition().getStart(), firstNote.getReference());
+			assertEquals(firstNote.getTieDefinition().getEnd(), secondNote.getReference());
 			assertEquals(firstNote.getTieDefinition(), secondNote.getTieDefinition());
 		}
 		catch (Exception e ) {
@@ -106,8 +105,8 @@ public class TieTest extends TestCase {
 		assertTrue(bassNote.isBeginningTie());
 		assertTrue(secondNote.isEndingTie());
 		assertNotNull(bassNote.getTieDefinition());
-		assertEquals(bassNote.getTieDefinition().getStart(), bassNote);
-		assertEquals(bassNote.getTieDefinition().getEnd(), secondNote);
+		assertEquals(bassNote.getTieDefinition().getStart(), bassNote.getReference());
+		assertEquals(bassNote.getTieDefinition().getEnd(), secondNote.getReference());
 		assertEquals(bassNote.getTieDefinition(), secondNote.getTieDefinition());
 	}
 	

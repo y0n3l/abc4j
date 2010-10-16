@@ -1,7 +1,6 @@
 import junit.framework.TestCase;
 import abc.notation.MultiNote;
 import abc.notation.Note;
-import abc.notation.NoteAbstract;
 import abc.notation.Tune;
 import abc.parser.TuneParser;
 

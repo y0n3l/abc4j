@@ -1,7 +1,7 @@
 import java.io.File;
 
 import junit.framework.TestCase;
-import abc.notation.AccidentalType;
+import abc.notation.Accidental;
 import abc.notation.KeySignature;
 import abc.notation.Note;
 import abc.parser.TuneBook;
@@ -29,13 +29,13 @@ G
 			TuneBook tb = new TuneBook(new File(FILE_NAME));
 			KeySignature key = tb.getTune(21).getKey();
 			// Gb {b, b, b, nat, b, b, b}
-			assertEquals(key.getAccidentalFor(Note.C), AccidentalType.FLAT );
-			assertEquals(key.getAccidentalFor(Note.D), AccidentalType.FLAT );
-			assertEquals(key.getAccidentalFor(Note.E), AccidentalType.FLAT );
-			assertEquals(key.getAccidentalFor(Note.F), AccidentalType.NATURAL );
-			assertEquals(key.getAccidentalFor(Note.G), AccidentalType.FLAT );
-			assertEquals(key.getAccidentalFor(Note.A), AccidentalType.FLAT );
-			assertEquals(key.getAccidentalFor(Note.B), AccidentalType.FLAT );
+			assertTrue(key.getAccidentalFor(Note.C).isFlat());
+			assertTrue(key.getAccidentalFor(Note.D).isFlat());
+			assertTrue(key.getAccidentalFor(Note.E).isFlat());
+			assertTrue(key.getAccidentalFor(Note.F).isNatural());
+			assertTrue(key.getAccidentalFor(Note.G).isFlat());
+			assertTrue(key.getAccidentalFor(Note.A).isFlat());
+			assertTrue(key.getAccidentalFor(Note.B).isFlat());
 			assertTrue(key.isFlatDominant());
 		}
 		catch (Exception e ) {
@@ -55,13 +55,13 @@ F
 			TuneBook tb = new TuneBook(new File(FILE_NAME));
 			KeySignature key = tb.getTune(22).getKey();
 			// F# {#, #, #, #, #, #, nat},
-			assertEquals(key.getAccidentalFor(Note.C), AccidentalType.SHARP);
-			assertEquals(key.getAccidentalFor(Note.D), AccidentalType.SHARP );
-			assertEquals(key.getAccidentalFor(Note.E), AccidentalType.SHARP );
-			assertEquals(key.getAccidentalFor(Note.F), AccidentalType.SHARP );
-			assertEquals(key.getAccidentalFor(Note.G), AccidentalType.SHARP );
-			assertEquals(key.getAccidentalFor(Note.A), AccidentalType.SHARP );
-			assertEquals(key.getAccidentalFor(Note.B), AccidentalType.NATURAL );
+			assertTrue(key.getAccidentalFor(Note.C).isSharp());
+			assertTrue(key.getAccidentalFor(Note.D).isSharp());
+			assertTrue(key.getAccidentalFor(Note.E).isSharp());
+			assertTrue(key.getAccidentalFor(Note.F).isSharp());
+			assertTrue(key.getAccidentalFor(Note.G).isSharp());
+			assertTrue(key.getAccidentalFor(Note.A).isSharp());
+			assertTrue(key.getAccidentalFor(Note.B).isNatural());
 			assertTrue(key.isSharpDominant());
 		}
 		catch (Exception e ) {
@@ -81,13 +81,13 @@ C
 			TuneBook tb = new TuneBook(new File(FILE_NAME));
 			KeySignature key = tb.getTune(23).getKey();
 			// Cb {b, b, b, b, b, b, b}
-			assertEquals(key.getAccidentalFor(Note.C), AccidentalType.FLAT);
-			assertEquals(key.getAccidentalFor(Note.D), AccidentalType.FLAT );
-			assertEquals(key.getAccidentalFor(Note.E), AccidentalType.FLAT );
-			assertEquals(key.getAccidentalFor(Note.F), AccidentalType.FLAT );
-			assertEquals(key.getAccidentalFor(Note.G), AccidentalType.FLAT );
-			assertEquals(key.getAccidentalFor(Note.A), AccidentalType.FLAT );
-			assertEquals(key.getAccidentalFor(Note.B), AccidentalType.FLAT );
+			assertTrue(key.getAccidentalFor(Note.C).isFlat());
+			assertTrue(key.getAccidentalFor(Note.D).isFlat());
+			assertTrue(key.getAccidentalFor(Note.E).isFlat());
+			assertTrue(key.getAccidentalFor(Note.F).isFlat());
+			assertTrue(key.getAccidentalFor(Note.G).isFlat());
+			assertTrue(key.getAccidentalFor(Note.A).isFlat());
+			assertTrue(key.getAccidentalFor(Note.B).isFlat());
 			assertTrue(key.isFlatDominant());
 		}
 		catch (Exception e ) {
@@ -107,13 +107,13 @@ C
 			TuneBook tb = new TuneBook(new File(FILE_NAME));
 			KeySignature key = tb.getTune(24).getKey();
 			// C# {#, #, #, #, #, #, #},
-			assertEquals(key.getAccidentalFor(Note.C), AccidentalType.SHARP);
-			assertEquals(key.getAccidentalFor(Note.D), AccidentalType.SHARP );
-			assertEquals(key.getAccidentalFor(Note.E), AccidentalType.SHARP );
-			assertEquals(key.getAccidentalFor(Note.F), AccidentalType.SHARP );
-			assertEquals(key.getAccidentalFor(Note.G), AccidentalType.SHARP );
-			assertEquals(key.getAccidentalFor(Note.A), AccidentalType.SHARP );
-			assertEquals(key.getAccidentalFor(Note.B), AccidentalType.SHARP );
+			assertTrue(key.getAccidentalFor(Note.C).isSharp());
+			assertTrue(key.getAccidentalFor(Note.D).isSharp());
+			assertTrue(key.getAccidentalFor(Note.E).isSharp());
+			assertTrue(key.getAccidentalFor(Note.F).isSharp());
+			assertTrue(key.getAccidentalFor(Note.G).isSharp());
+			assertTrue(key.getAccidentalFor(Note.A).isSharp());
+			assertTrue(key.getAccidentalFor(Note.B).isSharp());
 			assertTrue(key.isSharpDominant());
 		}
 		catch (Exception e ) {
@@ -135,7 +135,7 @@ C
 		assertEquals(Note.B, key.getDegree(7));
 		
 		//mode and accidental have no importance, only key note
-		key = new KeySignature(Note.E, AccidentalType.FLAT, KeySignature.MIXOLYDIAN);
+		key = new KeySignature(Note.E, Accidental.FLAT, KeySignature.MIXOLYDIAN);
 		assertEquals(Note.E, key.getNote());
 		assertEquals(Note.E, key.getDegree(1));
 		assertEquals(Note.F, key.getDegree(2));
@@ -150,63 +150,63 @@ C
 		KeySignature CMaj = new KeySignature(Note.C, KeySignature.MAJOR);
 		KeySignature EMaj = KeySignature.transpose(CMaj, 4);
 		assertEquals(EMaj.getNote(), Note.E);
-		assertEquals(EMaj.getAccidental(), AccidentalType.NATURAL);
-		assertEquals(EMaj.getAccidentalFor(Note.E), AccidentalType.NATURAL);
-		assertEquals(EMaj.getAccidentalFor(Note.F), AccidentalType.SHARP);
-		assertEquals(EMaj.getAccidentalFor(Note.G), AccidentalType.SHARP);
-		assertEquals(EMaj.getAccidentalFor(Note.A), AccidentalType.NATURAL);
-		assertEquals(EMaj.getAccidentalFor(Note.B), AccidentalType.NATURAL);
-		assertEquals(EMaj.getAccidentalFor(Note.C), AccidentalType.SHARP);
-		assertEquals(EMaj.getAccidentalFor(Note.D), AccidentalType.SHARP);
+		assertTrue(EMaj.getAccidental().isNatural());
+		assertTrue(EMaj.getAccidentalFor(Note.E).isNatural());
+		assertTrue(EMaj.getAccidentalFor(Note.F).isSharp());
+		assertTrue(EMaj.getAccidentalFor(Note.G).isSharp());
+		assertTrue(EMaj.getAccidentalFor(Note.A).isNatural());
+		assertTrue(EMaj.getAccidentalFor(Note.B).isNatural());
+		assertTrue(EMaj.getAccidentalFor(Note.C).isSharp());
+		assertTrue(EMaj.getAccidentalFor(Note.D).isSharp());
 		//Eb
 		KeySignature EbMaj = KeySignature.transpose(CMaj, 3);
 		assertEquals(EbMaj.getNote(), Note.E);
-		assertEquals(EbMaj.getAccidental(), AccidentalType.FLAT);
-		assertEquals(EbMaj.getAccidentalFor(Note.E), AccidentalType.FLAT);
-		assertEquals(EbMaj.getAccidentalFor(Note.F), AccidentalType.NATURAL);
-		assertEquals(EbMaj.getAccidentalFor(Note.G), AccidentalType.NATURAL);
-		assertEquals(EbMaj.getAccidentalFor(Note.A), AccidentalType.FLAT);
-		assertEquals(EbMaj.getAccidentalFor(Note.B), AccidentalType.FLAT);
-		assertEquals(EbMaj.getAccidentalFor(Note.C), AccidentalType.NATURAL);
-		assertEquals(EbMaj.getAccidentalFor(Note.D), AccidentalType.NATURAL);
+		assertTrue(EbMaj.getAccidental().isFlat());
+		assertTrue(EbMaj.getAccidentalFor(Note.E).isFlat());
+		assertTrue(EbMaj.getAccidentalFor(Note.F).isNatural());
+		assertTrue(EbMaj.getAccidentalFor(Note.G).isNatural());
+		assertTrue(EbMaj.getAccidentalFor(Note.A).isFlat());
+		assertTrue(EbMaj.getAccidentalFor(Note.B).isFlat());
+		assertTrue(EbMaj.getAccidentalFor(Note.C).isNatural());
+		assertTrue(EbMaj.getAccidentalFor(Note.D).isNatural());
 		//F#Maj
 		KeySignature FsMaj = KeySignature.transpose(EbMaj, -9);
 		assertEquals(FsMaj.getNote(), Note.F);
-		assertEquals(FsMaj.getAccidental(), AccidentalType.SHARP);
+		assertTrue(FsMaj.getAccidental().isSharp());
 		
 		//C _e ^f _a (arabic scale nawa atar)
-		KeySignature CnawaAtar = new KeySignature(Note.C, AccidentalType.NATURAL, KeySignature.MAJOR);
-		CnawaAtar.setAccidental(Note.E, AccidentalType.FLAT);
-		CnawaAtar.setAccidental(Note.F, AccidentalType.SHARP);
-		CnawaAtar.setAccidental(Note.A, AccidentalType.FLAT);
+		KeySignature CnawaAtar = new KeySignature(Note.C, Accidental.NATURAL, KeySignature.MAJOR);
+		CnawaAtar.setAccidental(Note.E, Accidental.FLAT);
+		CnawaAtar.setAccidental(Note.F, Accidental.SHARP);
+		CnawaAtar.setAccidental(Note.A, Accidental.FLAT);
 		KeySignature DnawaAtar = KeySignature.transpose(CnawaAtar, 2);
 		//C D Eb F# G Ab B (C minor harmonic with F#)
 		//becomes
 		//D E F G# A Bb C# (D minor harmonic with G#)
 		assertEquals(DnawaAtar.getNote(), Note.D);
-		assertEquals(DnawaAtar.getAccidental(), AccidentalType.NATURAL);
+		assertTrue(DnawaAtar.getAccidental().isNatural());
 		assertEquals(DnawaAtar.getMode(), KeySignature.MAJOR);
-		assertEquals(DnawaAtar.getAccidentalFor(Note.D), AccidentalType.NATURAL);
-		assertEquals(DnawaAtar.getAccidentalFor(Note.E), AccidentalType.NATURAL);
-		assertEquals(DnawaAtar.getAccidentalFor(Note.F), AccidentalType.NATURAL);
-		assertEquals(DnawaAtar.getAccidentalFor(Note.G), AccidentalType.SHARP);
-		assertEquals(DnawaAtar.getAccidentalFor(Note.A), AccidentalType.NATURAL);
-		assertEquals(DnawaAtar.getAccidentalFor(Note.B), AccidentalType.FLAT);
-		assertEquals(DnawaAtar.getAccidentalFor(Note.C), AccidentalType.SHARP);
+		assertTrue(DnawaAtar.getAccidentalFor(Note.D).isNatural());
+		assertTrue(DnawaAtar.getAccidentalFor(Note.E).isNatural());
+		assertTrue(DnawaAtar.getAccidentalFor(Note.F).isNatural());
+		assertTrue(DnawaAtar.getAccidentalFor(Note.G).isSharp());
+		assertTrue(DnawaAtar.getAccidentalFor(Note.A).isNatural());
+		assertTrue(DnawaAtar.getAccidentalFor(Note.B).isFlat());
+		assertTrue(DnawaAtar.getAccidentalFor(Note.C).isSharp());
 		//C D Eb F# G Ab B (C minor harmonic with F#)
 		//D E F G# A Bb C# (D minor harmonic with G#)
 		//becomes
 		//Bb C Db E F Gb A (Bb minor harmonic with E=)
 		KeySignature BbnawaAtar = KeySignature.transpose(DnawaAtar, -4);
 		assertEquals(BbnawaAtar.getNote(), Note.B);
-		assertEquals(BbnawaAtar.getAccidental(), AccidentalType.FLAT);
-		assertEquals(BbnawaAtar.getAccidentalFor(Note.B), AccidentalType.FLAT);
-		assertEquals(BbnawaAtar.getAccidentalFor(Note.C), AccidentalType.NATURAL);
-		assertEquals(BbnawaAtar.getAccidentalFor(Note.D), AccidentalType.FLAT);
-		assertEquals(BbnawaAtar.getAccidentalFor(Note.E), AccidentalType.NATURAL);
-		assertEquals(BbnawaAtar.getAccidentalFor(Note.F), AccidentalType.NATURAL);
-		assertEquals(BbnawaAtar.getAccidentalFor(Note.G), AccidentalType.FLAT);
-		assertEquals(BbnawaAtar.getAccidentalFor(Note.A), AccidentalType.NATURAL);
+		assertTrue(BbnawaAtar.getAccidental().isFlat());
+		assertTrue(BbnawaAtar.getAccidentalFor(Note.B).isFlat());
+		assertTrue(BbnawaAtar.getAccidentalFor(Note.C).isNatural());
+		assertTrue(BbnawaAtar.getAccidentalFor(Note.D).isFlat());
+		assertTrue(BbnawaAtar.getAccidentalFor(Note.E).isNatural());
+		assertTrue(BbnawaAtar.getAccidentalFor(Note.F).isNatural());
+		assertTrue(BbnawaAtar.getAccidentalFor(Note.G).isFlat());
+		assertTrue(BbnawaAtar.getAccidentalFor(Note.A).isNatural());
 	}
 	
 	protected void tearDown() throws Exception {

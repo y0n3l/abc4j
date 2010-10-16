@@ -1,4 +1,4 @@
-import abc.notation.AccidentalType;
+import abc.notation.Accidental;
 import abc.notation.Chord;
 import abc.notation.Note;
 import junit.framework.TestCase;
@@ -13,14 +13,14 @@ public class ChordTest extends TestCase {
 		Chord chord = new Chord("C");
 		assertTrue("C", chord.isChord());
 		assertEquals(Note.C, chord.getNote().getHeight());
-		assertEquals(AccidentalType.NONE, chord.getNote().getAccidental());
+		assertEquals(Accidental.NONE, chord.getNote().getAccidental());
 		assertNull(chord.getBass());
 		assertEquals("", chord.getQuality());
 		assertFalse(chord.isOptional());
 		
 		chord = new Chord("C#");
 		assertTrue("C#", chord.isChord());
-		assertEquals(AccidentalType.SHARP, chord.getNote().getAccidental());
+		assertTrue(chord.getNote().getAccidental().isSharp());
 		
 		chord = new Chord("C##");
 		assertFalse("C##", chord.isChord());
@@ -54,9 +54,9 @@ public class ChordTest extends TestCase {
 		chord = new Chord("Ab/C");
 		assertTrue("Ab/C", chord.isChord());
 		assertEquals(Note.A, chord.getNote().getHeight());
-		assertEquals(AccidentalType.FLAT, chord.getNote().getAccidental());
+		assertTrue(chord.getNote().getAccidental().isFlat());
 		assertEquals(Note.C, chord.getBass().getHeight());
-		assertEquals(AccidentalType.NONE, chord.getBass().getAccidental());
+		assertTrue(chord.getBass().getAccidental().isInTheKey());
 		assertFalse(chord.isOptional());
 		chord = new Chord("/Eb");
 		assertTrue("/Eb", chord.isChord());
@@ -79,11 +79,11 @@ public class ChordTest extends TestCase {
 		String flat = "\u266D";
 		chord = new Chord("E"+flat);
 		assertTrue("E"+flat, chord.isChord());
-		assertEquals(AccidentalType.FLAT, chord.getNote().getAccidental());
+		assertTrue(chord.getNote().getAccidental().isFlat());
 		String sharp = "\u266F";
 		chord = new Chord("F"+sharp);
 		assertTrue("F"+sharp, chord.isChord());
-		assertEquals(AccidentalType.SHARP, chord.getNote().getAccidental());
+		assertTrue(chord.getNote().getAccidental().isSharp());
 		//We never write natural in the chord name
 		String natural = "\u266E";
 		assertFalse("B"+natural, Chord.isChord("B"+natural));
@@ -92,11 +92,11 @@ public class ChordTest extends TestCase {
 		chord = new Chord(" (EbMaj7/Bb) ");
 		assertTrue("(EbMaj7/Bb)", chord.isChord());
 		assertEquals(Note.E, chord.getNote().getHeight());
-		assertEquals(AccidentalType.FLAT, chord.getNote().getAccidental());
+		assertTrue(chord.getNote().getAccidental().isFlat());
 		assertTrue(chord.isOptional());
 		assertEquals("Maj7", chord.getQuality());
 		assertEquals(Note.B, chord.getBass().getHeight());
-		assertEquals(AccidentalType.FLAT, chord.getBass().getAccidental());
+		assertTrue(chord.getBass().getAccidental().isFlat());
 		assertEquals("(E"+flat+"Maj7/B"+flat+")", chord.getText(true));
 	}
 	
