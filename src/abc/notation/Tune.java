@@ -484,6 +484,9 @@ public class Tune implements Cloneable, Serializable
 					MultiNote transp = (MultiNote) transpose_Note(multi, noneTranspKeyNote,
 							noneTranspKey, lastKeyNote, lastKey);
 					music.setElementAt(transp, i);
+				} else if (element instanceof DecorableElement) {
+					transpose_Chord((DecorableElement) element, noneTranspKeyNote,
+							noneTranspKey, lastKeyNote, lastKey);
 				}
 			}// end for each element in the music
 		}// end while there are more music part
@@ -499,6 +502,7 @@ public class Tune implements Cloneable, Serializable
 			Note lastKeyNote, KeySignature lastKey) {
 		NoteAbstract transp = null;
 		if (original instanceof Note) {
+			float microtonalOffset = ((Note)original).getAccidental().getMicrotonalOffset();
 			Interval interval = new Interval(noneTranspKeyNote, (Note) original,
 					noneTranspKey);
 			// Note transp = Note.transpose(original, semitones, lastKey);
@@ -510,7 +514,10 @@ public class Tune implements Cloneable, Serializable
 			}
 			((Note) transp).setHeight(transpHeight.getHeight());
 			((Note) transp).setOctaveTransposition(transpHeight.getOctaveTransposition());
-			((Note) transp).setAccidental(transpHeight.getAccidental());
+			if (microtonalOffset == 0)
+				((Note) transp).setAccidental(transpHeight.getAccidental());
+			else
+				((Note) transp).setAccidental(transpHeight.getAccidental().getValue()+microtonalOffset);
 		} else if (original instanceof MultiNote) {
 			try {
 				transp = (MultiNote) ((MultiNote) original).clone();
@@ -539,6 +546,25 @@ public class Tune implements Cloneable, Serializable
 //			else if (slur.getEnd() == original)
 //				slur.setEnd(transp);
 //		}
+		transpose_Chord(transp, noneTranspKeyNote, noneTranspKey,
+				lastKeyNote, lastKey);
+		if (transp.hasGracingNotes()) {
+			Note[] graces = transp.getGracingNotes();
+			for (int k = 0; k < graces.length; k++) {
+				graces[k] = (Note) transpose_Note(graces[k], noneTranspKeyNote,
+						noneTranspKey, lastKeyNote, lastKey);
+			}
+		}
+		return transp;
+	}
+	
+	/**
+	 * Subfunction of {@link #transpose(Tune, int)} which transpose
+	 * a Chord
+	 */
+	static private void transpose_Chord(DecorableElement transp,
+			Note noneTranspKeyNote, KeySignature noneTranspKey,
+			Note lastKeyNote, KeySignature lastKey) {
 		Chord chord = transp.getChord();
 		if (chord != null) {
 			if (chord.hasNote())
@@ -548,14 +574,6 @@ public class Tune implements Cloneable, Serializable
 				chord.setBass((Note) transpose_Note(chord.getBass(),
 						noneTranspKeyNote, null, lastKeyNote, null));
 		}
-		if (transp.hasGracingNotes()) {
-			Note[] graces = transp.getGracingNotes();
-			for (int k = 0; k < graces.length; k++) {
-				graces[k] = (Note) transpose_Note(graces[k], noneTranspKeyNote,
-						noneTranspKey, lastKeyNote, lastKey);
-			}
-		}
-		return transp;
 	}
 
 	/**
@@ -657,7 +675,7 @@ public class Tune implements Cloneable, Serializable
   		}*/
   		Tune ret = null;
   		try {
-  			long s = System.currentTimeMillis();
+  			//long s = System.currentTimeMillis();
 			// Write the object out to a byte array
 			FastByteArrayOutputStream fbos = new FastByteArrayOutputStream();
 			ObjectOutputStream out = new ObjectOutputStream(fbos);
@@ -669,8 +687,8 @@ public class Tune implements Cloneable, Serializable
 			// a copy of the object back in.
 			ObjectInputStream in = new ObjectInputStream(fbos.getInputStream());
 			ret = (Tune) in.readObject();
-			long e = System.currentTimeMillis();
-			System.out.println("Tune.clone: "+fbos.getSize()+" en "+((e-s)/1000.0)+"s");
+			//long e = System.currentTimeMillis();
+			//System.out.println("Tune.clone: "+fbos.getSize()+" en "+((e-s)/1000.0)+"s");
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException cnfe) {

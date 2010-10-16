@@ -536,13 +536,13 @@ public class KeySignature extends MusicElement implements Cloneable
 			KeySignature oKey = (KeySignature) o;
 			if ((this.m_keyNote != oKey.m_keyNote)
 					|| (this.keyIndex != oKey.keyIndex)
-					|| (this.m_keyAccidental != oKey.m_keyAccidental)
+					|| !(this.m_keyAccidental.equals(oKey.m_keyAccidental))
 					|| (this.mode != oKey.mode)
 				) {
 				return false;
 			}
 			for (int i = 0; i < accidentals.length; i++) {
-				if (accidentals[i] != oKey.accidentals[i])
+				if (!accidentals[i].equals(oKey.accidentals[i]))
 					return false;
 			}
 			return true;
