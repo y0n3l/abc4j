@@ -126,13 +126,17 @@ public class Tune implements Cloneable, Serializable
   public String getArea()
   { return m_area; }
 
-  /** Sets the list of publications where
-   * this tune can be found.
+  /** Add a publications where this tune can be found.
    * Corresponds to the "B:" abc field.
    * Ex: B:O'Neills
    * @param book The book where this tune comes from. */
-  public void setBook(String book)
-  { m_book = book; }
+  public void addBook(String book)
+  {
+	  if (m_book == null)
+		  m_book = book;
+	  else
+		  m_book += "\n" + book;
+  }
 
   /** Returns the list of publications where this
    * tune can be found.
@@ -142,15 +146,20 @@ public class Tune implements Cloneable, Serializable
   public String getBook()
   { return m_book; }
 
-  /** Sets the composer of this tune.
+  /** Add a composer of this tune.
    * Corresponds to the "C:" abc field.
    * Ex: C:Paddy Fahey
    * @param composer The composer who wrotes this tune.
    * For tunes known as traditional, you can use "traditional"
    * as parameter so that that people don't think the composer
    * has just been ignored. */
-  public void setComposer(String composer)
-  { m_composer = composer; }
+  public void addComposer(String composer)
+  {
+	  if (m_composer == null)
+		  m_composer = composer;
+	  else
+		  m_composer += "\n" + composer;
+  }
 
   /** Returns the composer of this tune.
    * @return The composer of this tune,
@@ -158,12 +167,17 @@ public class Tune implements Cloneable, Serializable
   public String getComposer()
   { return m_composer; }
 
-  /** Sets recordings where this tune appears.
+  /** Add recordings where this tune appears.
    * Corresponds to the "D:" abc field.
    * Ex: D:Gwenojenn
    * @param discography Recordings where this tune appears. */
-  public void setDiscography(String discography)
-  { m_discography = discography; }
+  public void addDiscography(String discography)
+  {
+	  if (m_discography == null)
+		  m_discography = discography;
+	  else
+		  m_discography += "\n" + discography;
+  }
 
   /** Returns recordings where this tune appears.
    * @return recordings where this tune appears,
@@ -177,8 +191,13 @@ public class Tune implements Cloneable, Serializable
   public int getElemskip()
   { return m_elemskip; }
 
-  public void setGroup(String value)
-  { m_group = value; }
+  public void addGroup(String value)
+  {
+	  if (m_group == null)
+		  m_group = value;
+	  else
+		  m_group += "\n" + value;
+  }
 
   public String getGroup()
   { return m_group; }
@@ -225,6 +244,10 @@ public class Tune implements Cloneable, Serializable
 
   /** Adds additional informations about the tune.
    * @param information Additional information about the tune. */
+  //FIXME in v2.0 this is Instruction like I:papersize A4
+  //or I:setbarnb 10.
+  //a new instruction with same keyword replace the lst
+  //instruction having the same keyword
   public void addInformation(String information)
   {
     if (m_information == null)
@@ -240,11 +263,16 @@ public class Tune implements Cloneable, Serializable
   public String getInformation()
   { return m_information; }
   
-  /** Sets lyricist (author of lyrics)
+  /** Adds lyricist (author of lyrics)
    * Corresponds to the "A:" abc field in v2.
    * @param lyricist */
-  public void setLyricist(String lyricist)
-  { m_lyricist = lyricist; }
+  public void addLyricist(String lyricist)
+  {
+	  if (m_lyricist == null)
+		  m_lyricist = lyricist;
+	  else
+		  m_lyricist += "\n" + lyricist;
+  }
   
   /** Returns lyricist (author of lyrics)
    * Corresponds to the "A:" abc field in v2. */

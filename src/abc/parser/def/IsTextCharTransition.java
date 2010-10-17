@@ -29,7 +29,7 @@ public class IsTextCharTransition extends Transition
   'A', 'B', 'C', 'D','E','F','G','H','I','J','K',
       'L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
       'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s',
-      'y','u','v','w','x','y','z'};
+      't','u','v','w','x','y','z'};
 
     public IsTextCharTransition(State state)
     { super(state, chars); }

@@ -42,18 +42,18 @@ class JClef extends JScoreElementAbstract {
 			case Note.B : positionOffset = 1.5;break;
 		}
 		if (clef.isG()) {
-			positionOffset += 2 - clef.getLineNumber();
+			positionOffset += clef.getLineNumber() - 2;
 		}
 		else if (clef.isC()) { //C clef, line 3
 			positionOffset += 3;
-			positionOffset += 3 - clef.getLineNumber();
+			positionOffset += clef.getLineNumber() - 3;
 		}
 		else { //F clef, line 4
 			positionOffset += 2.5 + 3.5;
-			positionOffset += 4 - clef.getLineNumber();
+			positionOffset += clef.getLineNumber() - 4;
 		}
 		//clef octave +8 | -8
-		positionOffset -= clef.getOctaveTransposition()*3.5;
+		positionOffset -= clef.getOctaveTransposition() * 3.5;
 		//note octave
 		positionOffset += note.getOctaveTransposition()*3.5;
 		return positionOffset;

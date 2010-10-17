@@ -107,6 +107,7 @@ public class AbcTokenType implements TokenType
     public static AbcTokenType C_TEMPO = new AbcTokenType("C TEMPO");
     /** The base note token type : from 'A' to 'G' and from 'a' to 'g'. */
     public static AbcTokenType BASE_NOTE = new AbcTokenType("BASE NOTE");
+    public static AbcTokenType CLEF = new AbcTokenType("CLEF");
 
     public static AbcTokenType PART = new AbcTokenType("PART");
     public static AbcTokenType ACCIDENTAL = new AbcTokenType("ACCIDENTAL");

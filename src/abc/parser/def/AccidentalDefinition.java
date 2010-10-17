@@ -19,34 +19,47 @@ import scanner.AutomataDefinition;
 import scanner.State;
 import scanner.Transition;
 import abc.parser.AbcTokenType;
+import abc.parser.AbcVersion;
 
 /** * */
 public class AccidentalDefinition extends AutomataDefinition {
 	
-	public AccidentalDefinition() {
+	public AccidentalDefinition(AbcVersion abcVesion) {
 		State state = new State(AbcTokenType.ACCIDENTAL, true);
 		Transition trans = new Transition(state, '^');
 		getStartingState().addTransition(trans);
-		State state1 = new State(AbcTokenType.ACCIDENTAL, true);
-		trans = new Transition(state1, new char[] { '^', '3' });
-		state.addTransition(trans);
-		State state2 = new State(AbcTokenType.ACCIDENTAL, true);
-		state1.addTransition(new Transition(state2, '/'));
-		State state3 = new State(AbcTokenType.ACCIDENTAL, true);
-		state2.addTransition(new Transition(state3, '2'));
-		state.addTransition(new Transition(state2, '/'));
+		if (abcVesion.equals(AbcVersion.v1_6)) {
+			State state1 = new State(AbcTokenType.ACCIDENTAL, true);
+			trans = new Transition(state1, new char[] { '^' });
+			state.addTransition(trans);
+		} else {
+			State state1 = new State(AbcTokenType.ACCIDENTAL, true);
+			trans = new Transition(state1, new char[] { '^', '3' });
+			state.addTransition(trans);
+			State state2 = new State(AbcTokenType.ACCIDENTAL, true);
+			state1.addTransition(new Transition(state2, '/'));
+			State state3 = new State(AbcTokenType.ACCIDENTAL, true);
+			state2.addTransition(new Transition(state3, '2'));
+			state.addTransition(new Transition(state2, '/'));
+		}
 
 		state = new State(AbcTokenType.ACCIDENTAL, true);
 		trans = new Transition(state, '_');
 		getStartingState().addTransition(trans);
-		state1 = new State(AbcTokenType.ACCIDENTAL, true);
-		trans = new Transition(state1, new char[] { '_', '3' });
-		state.addTransition(trans);
-		state2 = new State(AbcTokenType.ACCIDENTAL, true);
-		state1.addTransition(new Transition(state2, '/'));
-		state3 = new State(AbcTokenType.ACCIDENTAL, true);
-		state2.addTransition(new Transition(state3, '2'));
-		state.addTransition(new Transition(state2, '/'));
+		if (abcVesion.equals(AbcVersion.v1_6)) {
+			State state1 = new State(AbcTokenType.ACCIDENTAL, true);
+			trans = new Transition(state1, new char[] { '_' });
+			state.addTransition(trans);
+		} else {
+			State state1 = new State(AbcTokenType.ACCIDENTAL, true);
+			trans = new Transition(state1, new char[] { '_', '3' });
+			state.addTransition(trans);
+			State state2 = new State(AbcTokenType.ACCIDENTAL, true);
+			state1.addTransition(new Transition(state2, '/'));
+			State state3 = new State(AbcTokenType.ACCIDENTAL, true);
+			state2.addTransition(new Transition(state3, '2'));
+			state.addTransition(new Transition(state2, '/'));
+		}
 
 		state = new State(AbcTokenType.ACCIDENTAL, true);
 		trans = new Transition(state, '=');

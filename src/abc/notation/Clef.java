@@ -22,8 +22,11 @@ public class Clef extends MusicElement implements Cloneable {
 	
 	private static final long serialVersionUID = 548811480906259853L;
 	public static final Clef TREBLE = new Clef("G", 2, 0, 0, 5);
+	public static final Clef SOPRANO = new Clef("C", 1, 0, 0, 5);
+	public static final Clef MEZZOSOPRANO = new Clef("C", 2, 0, 0, 5);
 	public static final Clef ALTO = new Clef("C", 3, 0, 0, 5);
 	public static final Clef TENOR = new Clef("C", 4, 0, 0, 5);
+	public static final Clef BARITONE = new Clef("F", 3, 0, 0, 5);
 	public static final Clef BASS = new Clef("F", 4, 0, 0, 5);
 	
 	/** No clef */
@@ -72,8 +75,157 @@ public class Clef extends MusicElement implements Cloneable {
 	/** Ottava 16mb -2 octave */
 	public static final Clef ottava_15mb = new Clef(null, -2);
 	
+	public static Clef parseClef(String clefText, Clef previousClef) {
+		if ((clefText == null) || (clefText.trim().equals("")))
+			return null;
+		String[] args = clefText.split(" ");
+		
+		String clefName = null;
+		byte lineNumber = -1;
+		byte octaveTransp = -1;
+		byte semitonesTransp = -1;
+		byte staffLines = -1;
+		
+		//looks for "clef=..." or "..."
+		//... = treble, alto, tenor
+		for (int i = 0; i < args.length; i++) {
+			if (args[i].length() > 5)
+				if (args[i].substring(0, 5).equals("clef="))
+					args[i] = args[i].substring(5);
+			String a = args[i];
+			if (a.equals("treble") || a.equals("G")) {
+				clefName = TREBLE.m_clefName;
+				lineNumber = TREBLE.m_lineNumber;
+			} else if (a.equals("bass") || a.equals("F")) {
+				clefName = BASS.m_clefName;
+				lineNumber = BASS.m_lineNumber;
+			} else if (a.equals("bass3") || a.equals("baritone")) {
+				clefName = BARITONE.m_clefName;
+				lineNumber = BARITONE.m_lineNumber;
+			} else if (a.equals("tenor")) {
+				clefName = TENOR.m_clefName;
+				lineNumber = TENOR.m_lineNumber;
+			} else if (a.equals("alto") || a.equals("C")) {
+				clefName = ALTO.m_clefName;
+				lineNumber = ALTO.m_lineNumber;
+			} else if (a.equals("mezzosoprano") || a.equals("mezzo")
+					|| a.equals("alto2")) {
+				clefName = MEZZOSOPRANO.m_clefName;
+				lineNumber = MEZZOSOPRANO.m_lineNumber;
+			} else if (a.equals("soprano") || a.equals("alto1")) {
+				clefName = SOPRANO.m_clefName;
+				lineNumber = SOPRANO.m_lineNumber;
+			} else if (a.equals("perc") || a.equals("P")) {
+				clefName = PERC.m_clefName;
+				lineNumber = PERC.m_lineNumber;
+			} else if (a.equals("none")) {
+				clefName = NONE.m_clefName;
+			} else if (a.startsWith("bass") || a.startsWith("F")) {
+				//more exotic, like bass2, treble1, alto5, why not?
+				clefName = BASS.m_clefName;
+				lineNumber = BASS.m_lineNumber;
+			} else if (a.startsWith("alto") || a.startsWith("C")) {
+				clefName = ALTO.m_clefName;
+				lineNumber = ALTO.m_lineNumber;
+			} else if (a.startsWith("treble") || a.startsWith("G")) {
+				clefName = TREBLE.m_clefName;
+				lineNumber = TREBLE.m_lineNumber;
+			}
+			if (clefName != null) {
+				String digit = a.substring(a.length()-1);
+				try {
+					lineNumber = Byte.parseByte(digit);
+				} catch (Exception ignore) {}
+				args[i] = null;
+				break;//clef is found
+			}
+		}
+		
+		//+8 / -8
+		for (int i = 0; i < args.length; i++) {
+			if (args[i] == null)
+				continue;
+			if (args[i].equals("+8")) {
+				octaveTransp = 1;
+				args[i] = null;
+				break;
+			} else if (args[i].equals("-8")) {
+				octaveTransp = -1;
+				args[i] = null;
+				break;
+			}
+		}
+		
+		//t[ranspose]=x / s[tafflines]=x / m[iddle]=B|C|A,|D,|B
+		for (int i = 0; i < args.length; i++) {
+			if (args[i] == null)
+				continue;
+			if (args[i].startsWith("s=")
+					|| args[i].startsWith("stafflines=")) {
+				try {
+					staffLines = Byte.parseByte(args[i].split("=")[1]);
+					args[i] = null;
+					break;
+				} catch (Exception e) {}
+			} else if (args[i].startsWith("t=")
+					|| args[i].startsWith("transpose=")) {
+				try {
+					semitonesTransp = Byte.parseByte(args[i].split("=")[1]);
+					args[i] = null;
+					break;
+				} catch (Exception e) {}
+			} else if (args[i].startsWith("m=")
+					|| args[i].startsWith("middle=")) {
+				String a = args[i].split("=")[1];
+				//could be use with clef=bass to avoid to ","
+				//for each notes. Need to see how it works
+				//For now, determinate the clef if not set before
+				if (clefName == null) {
+					if (a.equals("B"))
+						clefName = TREBLE.m_clefName;
+					else if (a.equals("C")) {
+						clefName = ALTO.m_clefName;
+						lineNumber = ALTO.m_lineNumber;
+					}
+					else if (a.equals("A,")) {
+						clefName = TENOR.m_clefName;
+						lineNumber = TENOR.m_lineNumber;
+					}
+					else if (a.equals("D,"))
+						clefName = BASS.m_clefName;
+				}
+			}
+		}
+		
+		if (octaveTransp == -1)
+			octaveTransp =(byte)(previousClef!=null?previousClef.getOctaveTransposition():0);
+		if (semitonesTransp == -1)
+			semitonesTransp = (byte)(previousClef!=null?previousClef.getSemitoneTransposition():0);
+		if (clefName == null) {
+			clefName = previousClef!=null?previousClef.getName():"G";
+			lineNumber = (byte)(previousClef!=null?previousClef.getLineNumber():2);
+		}
+		if (lineNumber == -1) {
+			if (previousClef != null)
+				lineNumber = (byte)previousClef.getLineNumber();
+			else if (clefName.equals(G.m_clefName)) lineNumber = G.m_lineNumber;
+			else if (clefName.equals(F.m_clefName)) lineNumber = C.m_lineNumber;
+			else if (clefName.equals(C.m_clefName)) lineNumber = F.m_lineNumber;
+			else if (clefName.equals(PERC.m_clefName)) lineNumber = PERC.m_lineNumber;
+			else {
+				System.err.println("Can't determinate clef's line number, set to 2 (treble default)");
+				lineNumber = G.m_lineNumber;
+			}
+		}
+		if (staffLines == -1)
+			staffLines = (byte)(previousClef!=null?previousClef.getStaffLines():5);
+		
+		return new Clef(clefName, lineNumber, octaveTransp,
+				semitonesTransp, staffLines);
+	}
+	
 	/** The name of the clef: G, C, F, Perc, "" or null */
-	private String clefName = null;
+	private String m_clefName = null;
 	/** Number of the line staff where clef is printed.
 	 * 2 for treble, 3 for alto, 4 for tenor, 4 for bass... */
 	private byte m_lineNumber = -1;
@@ -95,7 +247,7 @@ public class Clef extends MusicElement implements Cloneable {
 	 * @param octaveTranspo Transposition in octave, +1 for *va, -1 for *vb...
 	 */
 	private Clef(String name, int octaveTranspo) {
-		clefName = name;
+		m_clefName = name;
 		m_octaveTransposition = (byte) octaveTranspo;
 	}
 
@@ -109,7 +261,7 @@ public class Clef extends MusicElement implements Cloneable {
 	 */
 	private Clef(String name, int lineNumber, int octaveTranspo,
 			int semitoneTranspo, int staffLines) {
-		clefName = name;
+		m_clefName = name;
 		setLineNumber((byte)lineNumber);
 		setOctaveTransposition((byte) octaveTranspo);
 		m_semitoneTransposition = (byte) semitoneTranspo;
@@ -216,8 +368,8 @@ public class Clef extends MusicElement implements Cloneable {
 	}
 
 	public boolean equals(Clef otherClef) {
-		return ((clefName!=null && clefName.equals(otherClef.getName()))
-			|| ((clefName==null) && (otherClef.clefName == null)))
+		return ((m_clefName!=null && m_clefName.equals(otherClef.getName()))
+			|| ((m_clefName==null) && (otherClef.m_clefName == null)))
 			&& (m_octaveTransposition == otherClef.m_octaveTransposition)
 			&& (m_semitoneTransposition == otherClef.m_semitoneTransposition)
 			&& (getLineNumber() == otherClef.getLineNumber())
@@ -226,7 +378,7 @@ public class Clef extends MusicElement implements Cloneable {
 
 	/** Returns the name of the clef: G, C, F, Perc, "" or null */
 	public String getName() {
-		return clefName;
+		return m_clefName;
 	}
 	
 	/** Returns the transposition in octave, +1 for *va, -1 for *vb... */

@@ -32,6 +32,7 @@ import abc.notation.Accidental;
 import abc.notation.Annotation;
 import abc.notation.BarLine;
 import abc.notation.Chord;
+import abc.notation.Clef;
 import abc.notation.Decoration;
 import abc.notation.Dynamic;
 import abc.notation.Fraction;
@@ -79,12 +80,12 @@ public class AbcParserAbstract
   protected static final Set FIRST_METER_FRACTION = new Set(AbcTokenType.NUMBER);
   protected static final Set FIRST_METER = new Set(FIRST_METER_FRACTION).union(AbcTokenType.C_METER);
 
-  protected Set FIRST_GLOBAL_ACCIDENTAL = new Set(FIRST_ACCIDENTAL);
+  protected static final Set FIRST_GLOBAL_ACCIDENTAL = new Set(AbcTokenType.ACCIDENTAL);
   protected static final Set FIRST_MODE = new Set(AbcTokenType.MODE);
   protected static final Set FIRST_MODE_SPEC = new Set(FIRST_MODE);//.union(AbcTokenType.SPACE);
   protected static final Set FIRST_KEY_ACCIDENTAL = new Set(AbcTokenType.KEY_ACCIDENTAL);
   protected static final Set FIRST_KEYNOTE = new Set(AbcTokenType.BASE_NOTE);
-  protected static final Set FIRST_KEYSPEC = new Set(FIRST_KEYNOTE);
+  protected static final Set FIRST_KEYSPEC = new Set(FIRST_KEYNOTE).union(FIRST_MODE).union(AbcTokenType.CLEF);
   protected static final Set FIRST_KEY = new Set(FIRST_KEYSPEC).union(AbcTokenType.KEY_HP);
 
   protected static final Set FIRST_FIELD_KEY = new Set(AbcTokenType.FIELD_KEY);
@@ -117,68 +118,68 @@ public class AbcParserAbstract
                                                             .union(FIRST_FIELD_TEMPO).union(FIRST_FIELD_TRANSCRNOTES).union(FIRST_COMMENT);
     protected static final Set FIRST_FIELD_TITLE = new Set(AbcTokenType.FIELD_TITLE);
     protected static final Set FIRST_FIELD_NUMBER = new Set(AbcTokenType.FIELD_NUMBER);
-    protected static Set FIRST_ABCHEADER = new Set(FIRST_FIELD_NUMBER);
+    protected static final Set FIRST_ABCHEADER = new Set(FIRST_FIELD_NUMBER);
 
     //==========================================================================
-    protected static Set FIRST_TEXT_CHAR = new Set(AbcTokenType.TEXT);
-    protected static Set FIRST_TEXT = new Set(FIRST_TEXT_CHAR);
-    protected static Set FIRST_LINE_FEED = new Set(AbcTokenType.LINE_FEED);
-    protected static Set FIRST_NO_LINE_BREAK = new Set(AbcTokenType.NO_LINE_BREAK);
-    protected static Set FIRST_LINE_BREAK = new Set(AbcTokenType.LINE_BREAK);
+    protected static final Set FIRST_TEXT_CHAR = new Set(AbcTokenType.TEXT);
+    protected static final Set FIRST_TEXT = new Set(FIRST_TEXT_CHAR);
+    protected static final Set FIRST_LINE_FEED = new Set(AbcTokenType.LINE_FEED);
+    protected static final Set FIRST_NO_LINE_BREAK = new Set(AbcTokenType.NO_LINE_BREAK);
+    protected static final Set FIRST_LINE_BREAK = new Set(AbcTokenType.LINE_BREAK);
 
-    protected static Set FIRST_SPACE = new Set(AbcTokenType.SPACE);
+    protected static final Set FIRST_SPACE = new Set(AbcTokenType.SPACE);
     //protected static Set FIRST_TEX_COMMAND = new Set(AbcTokenType.TEX_COMMAND);
 
-    protected static Set FIRST_USER_DEFINED = new Set(AbcTokenType.USER_DEFINED);
+    protected static final Set FIRST_USER_DEFINED = new Set(AbcTokenType.USER_DEFINED);
 
-    protected static Set FIRST_FIELD_WORDS = new Set(AbcTokenType.FIELD_WORDS);
-    protected static Set FIRST_FIELD_PART = new Set(AbcTokenType.FIELD_PARTS);
-    protected static Set FIRST_TUNE_FIELD = new Set(/*FIRST_FIELD_ELEMSKIP).union(*/FIRST_FIELD_KEY).union(FIRST_FIELD_DEFAULT_LENGTH)
+    protected static final Set FIRST_FIELD_WORDS = new Set(AbcTokenType.FIELD_WORDS);
+    protected static final Set FIRST_FIELD_PART = new Set(AbcTokenType.FIELD_PARTS);
+    protected static final Set FIRST_TUNE_FIELD = new Set(/*FIRST_FIELD_ELEMSKIP).union(*/FIRST_FIELD_KEY).union(FIRST_FIELD_DEFAULT_LENGTH)
         .union(FIRST_FIELD_METER).union(FIRST_FIELD_PART).union(FIRST_FIELD_TEMPO).union(FIRST_FIELD_TITLE).union(FIRST_FIELD_WORDS);
-    protected static Set FIRST_MID_TUNE_FIELD = FIRST_TUNE_FIELD;
-    protected static Set FIRST_END_SLUR = new Set(AbcTokenType.END_SLUR);
-    protected static Set FIRST_BEGIN_SLUR = new Set(AbcTokenType.BEGIN_SLUR);
-    protected static Set FIRST_NTH_REPEAT = new Set(AbcTokenType.NTH_REPEAT);
-    protected static Set FIRST_BARLINE = new Set(AbcTokenType.BARLINE);
+    protected static final Set FIRST_MID_TUNE_FIELD = FIRST_TUNE_FIELD;
+    protected static final Set FIRST_END_SLUR = new Set(AbcTokenType.END_SLUR);
+    protected static final Set FIRST_BEGIN_SLUR = new Set(AbcTokenType.BEGIN_SLUR);
+    protected static final Set FIRST_NTH_REPEAT = new Set(AbcTokenType.NTH_REPEAT);
+    protected static final Set FIRST_BARLINE = new Set(AbcTokenType.BARLINE);
 
-    protected static Set FIRST_CHORD_TYPE = new Set(AbcTokenType.CHORD_TYPE);
+    protected static final Set FIRST_CHORD_TYPE = new Set(AbcTokenType.CHORD_TYPE);
     protected Set FIRST_FORMAL_CHORD = new Set(FIRST_BASE_NOTE);
-    protected static Set FIRST_GUITAR_CHORD = new Set(AbcTokenType.GUITAR_CHORD);
+    protected static final Set FIRST_GUITAR_CHORD = new Set(AbcTokenType.GUITAR_CHORD);
 
-    protected static Set FIRST_ACCIACCATURA = new Set(AbcTokenType.ACCIACCATURA);
-    protected static Set FIRST_GRACE_NOTES = new Set(AbcTokenType.GRACING_BEGIN);
-    protected static Set FIRST_GRACINGS = new Set(AbcTokenType.GRACING);
-    protected static Set FIRST_SYMBOL_BEGIN = new Set(AbcTokenType.SYMBOL_BEGIN);
-    protected static Set FIRST_SYMBOL = new Set(AbcTokenType.SYMBOL);
-    protected static Set FIRST_ANNOTATION_BEGIN = new Set(AbcTokenType.ANNOTATION_BEGIN);
-    protected static Set FIRST_ANNOTATION = new Set(AbcTokenType.ANNOTATION);
-    protected static Set FIRST_TIE = new Set(AbcTokenType.TIE);
-    protected static Set FIRST_BROKEN_RHYTHM = new Set(AbcTokenType.BROKEN_RHYTHM);
-    protected static Set FIRST_REST = new Set(AbcTokenType.REST);
-    protected static Set FIRST_BASE_NOTE = new Set(AbcTokenType.BASE_NOTE);
-    protected static Set FIRST_ACCIDENTAL = new Set(AbcTokenType.ACCIDENTAL);
-    protected static Set FIRST_NOTE_LENGTH = new Set(AbcTokenType.NUMBER).union(AbcTokenType.FRACTION);
-    protected static Set FIRST_OCTAVE = new Set(AbcTokenType.OCTAVE);
-    protected static Set FIRST_PITCH = new Set(FIRST_ACCIDENTAL).union(FIRST_BASE_NOTE);
-    protected static Set FIRST_NOTE_OR_REST = new Set(FIRST_PITCH).union(FIRST_REST);
-    protected static Set FIRST_NOTE = new Set(FIRST_NOTE_OR_REST);
-    protected static Set FIRST_MULTI_NOTE = new Set(AbcTokenType.MULTI_NOTE_BEGIN);
-    protected static Set FIRST_NOTE_STEM =
+    protected static final Set FIRST_ACCIACCATURA = new Set(AbcTokenType.ACCIACCATURA);
+    protected static final Set FIRST_GRACE_NOTES = new Set(AbcTokenType.GRACING_BEGIN);
+    protected static final Set FIRST_GRACINGS = new Set(AbcTokenType.GRACING);
+    protected static final Set FIRST_SYMBOL_BEGIN = new Set(AbcTokenType.SYMBOL_BEGIN);
+    protected static final Set FIRST_SYMBOL = new Set(AbcTokenType.SYMBOL);
+    protected static final Set FIRST_ANNOTATION_BEGIN = new Set(AbcTokenType.ANNOTATION_BEGIN);
+    protected static final Set FIRST_ANNOTATION = new Set(AbcTokenType.ANNOTATION);
+    protected static final Set FIRST_TIE = new Set(AbcTokenType.TIE);
+    protected static final Set FIRST_BROKEN_RHYTHM = new Set(AbcTokenType.BROKEN_RHYTHM);
+    protected static final Set FIRST_REST = new Set(AbcTokenType.REST);
+    protected static final Set FIRST_BASE_NOTE = new Set(AbcTokenType.BASE_NOTE);
+    protected static final Set FIRST_ACCIDENTAL = new Set(AbcTokenType.ACCIDENTAL);
+    protected static final Set FIRST_NOTE_LENGTH = new Set(AbcTokenType.NUMBER).union(AbcTokenType.FRACTION);
+    protected static final Set FIRST_OCTAVE = new Set(AbcTokenType.OCTAVE);
+    protected static final Set FIRST_PITCH = new Set(FIRST_ACCIDENTAL).union(FIRST_BASE_NOTE);
+    protected static final Set FIRST_NOTE_OR_REST = new Set(FIRST_PITCH).union(FIRST_REST);
+    protected static final Set FIRST_NOTE = new Set(FIRST_NOTE_OR_REST);
+    protected static final Set FIRST_MULTI_NOTE = new Set(AbcTokenType.MULTI_NOTE_BEGIN);
+    protected static final Set FIRST_NOTE_STEM =
     	new Set()
     	//.union(FIRST_SYMBOL_BEGIN)
     	//.union(FIRST_GUITAR_CHORD)
     	.union(FIRST_GRACE_NOTES).union(FIRST_GRACINGS)
     	.union(FIRST_NOTE).union(FIRST_MULTI_NOTE);
-    protected static Set FIRST_NOTE_ELEMENT = new Set(FIRST_NOTE_STEM);
+    protected static final Set FIRST_NOTE_ELEMENT = new Set(FIRST_NOTE_STEM);
  
-    protected static Set FIRST_SPACER = new Set(AbcTokenType.SPACER);
+    protected static final Set FIRST_SPACER = new Set(AbcTokenType.SPACER);
 
-    protected static Set FIRST_TUPLET_SPEC = new Set(AbcTokenType.TUPLET_SPEC);
-    protected static Set FIRST_TUPLET_ELEMENT = new Set(FIRST_TUPLET_SPEC);
+    protected static final Set FIRST_TUPLET_SPEC = new Set(AbcTokenType.TUPLET_SPEC);
+    protected static final Set FIRST_TUPLET_ELEMENT = new Set(FIRST_TUPLET_SPEC);
 
-    protected static Set FIRST_LINE_ENDER = new Set(AbcTokenType.COMMENT).union(AbcTokenType.LINE_FEED).union(AbcTokenType.LINE_BREAK)
+    protected static final Set FIRST_LINE_ENDER = new Set(AbcTokenType.COMMENT).union(AbcTokenType.LINE_FEED).union(AbcTokenType.LINE_BREAK)
         .union(AbcTokenType.NO_LINE_BREAK);
-    protected static Set FIRST_ELEMENT =
+    protected static final Set FIRST_ELEMENT =
     	new Set(FIRST_SYMBOL_BEGIN)
     	.union(FIRST_ANNOTATION_BEGIN)
     	.union(FIRST_SPACER)
@@ -190,11 +191,11 @@ public class AbcParserAbstract
         .union(AbcTokenType.END_SLUR)
         .union(AbcTokenType.SPACE)
         /*.union(AbcTokenType.USER_DEFINED)*/;
-    protected Set FIRST_ABC_LINE = new Set(FIRST_ELEMENT).union(FIRST_MID_TUNE_FIELD)/*.union(FIRST_COMMENT).union(FIRST_TEX_COMMAND)*/;
-    protected Set FIRST_ABC_MUSIC = new Set(FIRST_ABC_LINE);
+    protected static Set FIRST_ABC_LINE = new Set(FIRST_ELEMENT).union(FIRST_MID_TUNE_FIELD)/*.union(FIRST_COMMENT).union(FIRST_TEX_COMMAND)*/;
+    protected static final Set FIRST_ABC_MUSIC = new Set(FIRST_ABC_LINE);
 
     //==========================================================================
-    protected static Set FIRST_ABCTUNE = new Set(FIRST_ABCHEADER);
+    protected static final Set FIRST_ABCTUNE = new Set(FIRST_ABCHEADER);
     /** The scanner used for parsing. */
     protected Scanner m_scanner;
     /** */
@@ -215,6 +216,7 @@ public class AbcParserAbstract
     /** Keep track of the last parsed note. Used for instance to value the
      * end slur in case of slur */
     private NoteAbstract lastParsedNote = null;
+    private KeySignature lastParsedKey = new KeySignature(Note.C, KeySignature.MAJOR);
 
     protected NoteAbstract lastNoteFlaggedAsEndOfGroup = null;
 
@@ -411,11 +413,11 @@ public class AbcParserAbstract
           AbcTextField field = parseField(m_tokenType, follow);
           if (field!=null)
             if (field.getType() == AbcTextField.AREA) m_tune.setArea(field.getText());
-            else if (field.getType() == AbcTextField.BOOK) m_tune.setBook(field.getText());
-            else if (field.getType() == AbcTextField.COMPOSER) m_tune.setComposer(field.getText());
-            else if (field.getType() == AbcTextField.DISCOGRAPHY) m_tune.setDiscography(field.getText());
+            else if (field.getType() == AbcTextField.BOOK) m_tune.addBook(field.getText());
+            else if (field.getType() == AbcTextField.COMPOSER) m_tune.addComposer(field.getText());
+            else if (field.getType() == AbcTextField.DISCOGRAPHY) m_tune.addDiscography(field.getText());
             else if (field.getType() == AbcTextField.FILEURL) m_tune.setFileURL(field.getText());
-            else if (field.getType() == AbcTextField.GROUP) m_tune.setGroup(field.getText());
+            else if (field.getType() == AbcTextField.GROUP) m_tune.addGroup(field.getText());
             else if (field.getType() == AbcTextField.HISTORY) m_tune.addHistory(field.getText());
             else if (field.getType() == AbcTextField.INFORMATION) m_tune.addInformation(field.getText());
             else if (field.getType() == AbcTextField.NOTES) m_tune.addNotes(field.getText());
@@ -826,20 +828,41 @@ public class AbcParserAbstract
         return parseKeySpec(follow);
     }
 
-    /** key-spec ::= keynote [mode-spec] *(" " global-accidental) */
+    /** v1.6 key-spec ::= keynote [mode-spec] *(" " global-accidental)<br>
+     * v2 :<br>
+     * key ::= (key-def [1*WSP clef]) / clef / "HP" / "Hp"<br> 
+     * key-def ::= basenote ["#" / "b"] [mode] *(1*WSP global-accidental)
+     * 
+     * clef ::= ( ("clef=" (clef-note / clef-name)) / clef-name) clef-line ["+8" / "-8"] [1*WSP clef-middle]<br> 
+     * clef-note ::= "G" / "C" / "F" / "P"<br> 
+     * clef-name ::= "treble" / "alto" / "tenor" / "baritone" / "bass" / "mezzo" / "soprano" / "perc" / "none" ; Maybe also Doh1-4, Fa1-4<br>
+     * clef-line ::= "1" / "2" / "3" / "4" / "5"<br> 
+     * cleff-middle ::= "middle=" basenote [octave]
+     */
     private KeySignature parseKeySpec(Set follow)
     {
-        Set current = new Set().union(AbcTokenType.SPACE)
+        Set current = new Set()
+        	.union(AbcTokenType.SPACE)
         	.union(FIRST_MODE_SPEC)
         	.union(AbcTokenType.SPACE)
-        	.union(FIRST_GLOBAL_ACCIDENTAL);
+        	.union(FIRST_GLOBAL_ACCIDENTAL)
+        	.union(AbcTokenType.CLEF);
         KeySignature key = null;
         Note note = null;
         byte modeSpec = KeySignature.MAJOR;
+        boolean modeSpecFound = false;
         //Dphr ^g works, D phr ^g works too
         //but if D ^g 2 spaces are accepted and there is only one
         boolean foundaspace = false;
+        Clef clef = null;
 
+        if (m_tokenType.equals(AbcTokenType.CLEF)) {
+        	String clefText = accept(AbcTokenType.CLEF, current, follow, true);
+        	while (m_tokenType.equals(AbcTokenType.CLEF))
+        		clefText += accept(AbcTokenType.CLEF, current, follow, true);
+        	current.remove(AbcTokenType.CLEF);
+        	clef = Clef.parseClef(clefText, lastParsedKey.getClef());
+        }
         note = parseKeyNote(current.createUnion(follow));
         if (m_tokenType.equals(AbcTokenType.SPACE)) {
         	accept(AbcTokenType.SPACE, current, follow, true);
@@ -849,10 +872,12 @@ public class AbcParserAbstract
         {
           current = new Set(AbcTokenType.SPACE).union(FIRST_GLOBAL_ACCIDENTAL);
           modeSpec = parseModeSpec(current.createUnion(follow));
+          modeSpecFound = true;
         }
         if (note!=null/* && modeSpec!=KeySignature.OTHER*/)
           key = new KeySignature(note.getHeight(), note.getAccidental(), modeSpec);
 
+        Vector globalAccidentals = new Vector(2, 2);
         while(m_tokenType.equals(AbcTokenType.SPACE) || foundaspace)
         {
           foundaspace = false;
@@ -860,9 +885,43 @@ public class AbcParserAbstract
           if (FIRST_GLOBAL_ACCIDENTAL.contains(m_tokenType))
           {
             Object[] ga = parseGlobalAccidental(current.createUnion(follow));
-            if (ga!=null && key!=null)
+            if (ga!=null && key!=null) {
               key.setAccidental(((Byte)ga[0]).byteValue(), (Accidental)ga[1]);
+              globalAccidentals.add(ga);
+            }
           }
+        }
+        if (m_tokenType.equals(AbcTokenType.CLEF)) {
+        	String clefText = accept(AbcTokenType.CLEF, current, follow, true);
+        	while (m_tokenType.equals(AbcTokenType.CLEF))
+        		clefText += accept(AbcTokenType.CLEF, current, follow, true);
+        	current.remove(AbcTokenType.CLEF);
+        	//don't understand why, but "Cphr bass" token CLEF starts at "phr..."
+        	//so mode has not been set (no token MODE SPEC)
+        	if (!modeSpecFound && (clefText.length() >= 3)) {
+        		String maybeMode = clefText.substring(0, 3);
+        		byte modeSpec2 = KeySignature.convertToModeType(maybeMode);
+        		if (modeSpec2 != KeySignature.OTHER) {
+        			clefText = clefText.substring(3);
+        			key = new KeySignature(key.getNote(), key.getAccidental(), modeSpec2);
+        			Iterator it = globalAccidentals.iterator();
+        			while (it.hasNext()) {
+        				Object[] ga = (Object[]) it.next();
+        	            key.setAccidental(((Byte)ga[0]).byteValue(), (Accidental)ga[1]);
+        			}
+        		}
+        	}
+        	clef = Clef.parseClef(clefText, lastParsedKey.getClef());
+        }
+        if (clef != null) {
+        	if (key == null) {
+        		try {
+        			key = (KeySignature)(lastParsedKey.clone());
+        		} catch (Exception never) {
+					System.err.println(never.getMessage());
+				}
+        	}
+        	key.setClef(clef);
         }
         return key;
     }
@@ -942,6 +1001,7 @@ public class AbcParserAbstract
         lastParsedNote =null;
         m_defaultNoteLength = Note.EIGHTH;
         m_timeSignature = null;
+        lastParsedKey = new KeySignature(Note.C, KeySignature.MAJOR);;
       Set current= new Set().union(FIRST_COMMENT).union(FIRST_FIELD_TITLE).union(FIRST_OTHER_FIELDS).union(FIRST_FIELD_KEY);
 
       Integer number = parseFieldNumber(current.createUnion(follow));
@@ -1098,6 +1158,7 @@ public class AbcParserAbstract
       {
         KeySignature key = parseFieldKey(follow);
         if (key!=null) m_music.addElement(key);
+        lastParsedKey = key;
       }
       else
       if (FIRST_FIELD_DEFAULT_LENGTH.contains(m_tokenType))
