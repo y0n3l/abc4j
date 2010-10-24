@@ -32,7 +32,7 @@ import abc.notation.Decoration;
 import abc.notation.MusicElement;
 import abc.notation.Tune;
 import abc.ui.fonts.MusicalFont;
-import abc.ui.scoretemplates.HorizontalAlign;
+import abc.ui.scoretemplates.HorizontalPosition;
 import abc.ui.scoretemplates.ScoreAttribute;
 import abc.ui.scoretemplates.ScoreElements;
 
@@ -294,8 +294,8 @@ abstract class JScoreElementAbstract implements JScoreElement {
 				Annotation annot = (Annotation) it.next();
 				JAnnotation jannot = new JAnnotation(getMetrics(),
 					annot.getText());
-				jannot.setAttachedTo(this);
 				jannot.setBase(getBase());
+				jannot.setAttachedTo(this);
 				jannot.render(gfx);
 			}
 		}
@@ -326,11 +326,11 @@ abstract class JScoreElementAbstract implements JScoreElement {
 			byte[] pos = getTemplate().getPosition(ScoreElements.TEXT_CHORDS);
 			if (pos != null) {
 				switch (pos[1]) {
-				case HorizontalAlign.RIGHT:
+				case HorizontalPosition.RIGHT:
 					x -= dimension.getWidth(); break;
-				case HorizontalAlign.CENTER:
+				case HorizontalPosition.CENTER:
 					x -= dimension.getWidth()/2; break;
-				case HorizontalAlign.LEFT:
+				case HorizontalPosition.LEFT:
 				default:
 					break;
 				}

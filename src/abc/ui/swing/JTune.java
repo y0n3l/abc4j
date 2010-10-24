@@ -56,10 +56,10 @@ import abc.notation.Tuplet;
 import abc.notation.TwoNotesLink;
 import abc.notation.Tune.Music;
 import abc.notation.Words;
-import abc.ui.scoretemplates.HorizontalAlign;
+import abc.ui.scoretemplates.HorizontalPosition;
 import abc.ui.scoretemplates.ScoreAttribute;
 import abc.ui.scoretemplates.ScoreElements;
-import abc.ui.scoretemplates.VerticalAlign;
+import abc.ui.scoretemplates.VerticalPosition;
 
 /**
  * This class role is to render properly a tune using Java 2D.
@@ -412,14 +412,14 @@ public class JTune extends JScoreElementAbstract {
 			while (itHeaders.hasNext()) {
 				JText oneText = (JText) itHeaders.next();
 				//only headers
-				if (oneText.getVerticalAlignment()
-						!= VerticalAlign.TOP)
+				if (oneText.getVerticalPosition()
+						!= VerticalPosition.TOP)
 					continue;
-				byte align = oneText.getHorizontalAlignment();
+				byte align = oneText.getHorizontalPosition();
 				//double textWidth = oneText.getWidth();
-				if (align == HorizontalAlign.CENTER)
+				if (align == HorizontalPosition.CENTER)
 					y = Math.max(yLeft, Math.max(yCenter, yRight));
-				else if (align == HorizontalAlign.RIGHT)
+				else if (align == HorizontalPosition.RIGHT)
 					y = Math.max(yRight, yCenter);
 				else //LEFT || LEFT_TAB
 					y = Math.max(yLeft, yCenter);
@@ -428,9 +428,9 @@ public class JTune extends JScoreElementAbstract {
 				//X later (see renderTitles)
 				//for centered and right texts
 				cursor.setLocation(getBase().getX(), y);
-				if (align == HorizontalAlign.CENTER)
+				if (align == HorizontalPosition.CENTER)
 					yCenter = y;
-				else if (align == HorizontalAlign.RIGHT)
+				else if (align == HorizontalPosition.RIGHT)
 					yRight = y;
 				else //LEFT || LEFT_TAB
 					yLeft = y;
@@ -638,7 +638,7 @@ public class JTune extends JScoreElementAbstract {
 			double height = 0;
 			while (it.hasNext()) {
 				JText jtext = (JText) it.next();
-				if (jtext.getVerticalAlignment() != VerticalAlign.BOTTOM)
+				if (jtext.getVerticalPosition() != VerticalPosition.BOTTOM)
 					continue;
 				height = jtext.getHeight();//*1.2;
 				cursor.setLocation(cursor.getX(), cursor.getY()+height);
@@ -917,14 +917,14 @@ public class JTune extends JScoreElementAbstract {
 				System.err.println("base is null for "+text);
 				continue;
 			}
-			short align = text.getHorizontalAlignment();
-			double textWidth = text.getWidth();
+			short align = text.getHorizontalPosition();
+			//double textWidth = text.getWidth();
 			double y = text.getBase().getY();
-			if (align == HorizontalAlign.CENTER) {
-				text.setBase(new Point2D.Double(getWidth()/2 - textWidth/2, y));
-			} else if (align == HorizontalAlign.RIGHT) {
-				text.setBase(new Point2D.Double(getWidth() - textWidth, y));
-			} else if (align == HorizontalAlign.LEFT_TAB) {
+			if (align == HorizontalPosition.CENTER) {
+				text.setBase(new Point2D.Double(getWidth()/2, y));
+			} else if (align == HorizontalPosition.RIGHT) {
+				text.setBase(new Point2D.Double(getWidth(), y));
+			} else if (align == HorizontalPosition.LEFT_TAB) {
 				text.setBase(new Point2D.Double(getBase().getX()
 					+ getTemplate().getAttributeSize(ScoreAttribute.FIRST_STAFF_LEFT_MARGIN)
 					+ 30, y));

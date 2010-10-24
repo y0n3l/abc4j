@@ -157,8 +157,8 @@ public class JScoreComponent extends JComponent
      * <pre>
      * myJScoreCompo.getTemplate().setPosition(
      * 		{@link abc.ui.scoretemplates.ScoreElements#TEXT_TITLE},
-     * 		{@link abc.ui.scoretemplates.VerticalAlign#TOP},
-     * 		{@link abc.ui.scoretemplates.HorizontalAlign#CENTER});
+     * 		{@link abc.ui.scoretemplates.VerticalPosition#TOP},
+     * 		{@link abc.ui.scoretemplates.HorizontalPosition#CENTER});
      * </pre>
      * @see DefaultScoreTemplate
      */

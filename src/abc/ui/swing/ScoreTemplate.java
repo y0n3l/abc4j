@@ -32,11 +32,11 @@ import java.io.Serializable;
 
 import abc.ui.fonts.MusicalFont;
 import abc.ui.scoretemplates.AttributeNotDefinedException;
-import abc.ui.scoretemplates.HorizontalAlign;
+import abc.ui.scoretemplates.HorizontalPosition;
 import abc.ui.scoretemplates.ScoreAttribute;
 import abc.ui.scoretemplates.SizeUnit;
 import abc.ui.scoretemplates.ScoreElements;
-import abc.ui.scoretemplates.VerticalAlign;
+import abc.ui.scoretemplates.VerticalPosition;
 
 /**
  * Like a stylesheet, a score template determinates texts (title, composer,
@@ -45,8 +45,8 @@ import abc.ui.scoretemplates.VerticalAlign;
  * <ul>
  * <li>Fields are denoted by {@link ScoreElements} constants such as
  * {@link ScoreElements#TEXT_TITLE}, {@link ScoreElements#TEXT_COMPOSER}.
- * <li>positions are denoted by a couple of byte from {@link VerticalAlign} and
- * {@link HorizontalAlign} constants.
+ * <li>positions are denoted by a couple of byte from {@link VerticalPosition} and
+ * {@link HorizontalPosition} constants.
  * <li>font size can be expressed in percent of the default text size or in
  * fixed pt. See {@link #setTextSize(byte, float, byte)}
  * <li>font style is denoted by constants from Font class : {@link Font#PLAIN},
@@ -135,8 +135,8 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 
 	private class Position implements Cloneable, Serializable {
 		private static final long serialVersionUID = -395979710910173640L;
-		byte m_horizontal = HorizontalAlign.LEFT;
-		byte m_vertical = VerticalAlign.TOP;
+		byte m_horizontal = HorizontalPosition.LEFT;
+		byte m_vertical = VerticalPosition.TOP;
 		private Position(byte v, byte h) {
 			m_vertical = v;
 			m_horizontal = h;
@@ -153,7 +153,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 			if (s.indexOf(';') != -1) {
 				String[] s2 = s.split(";");
 				if (s2.length == 2) {
-					m_vertical = VerticalAlign.toVerticalAlign(s2[0]);
+					m_vertical = VerticalPosition.toVerticalAlign(s2[0]);
 					m_horizontal = HorizontalAlign.toHorizontalAlign(s2[1]);
 				}
 			}
@@ -177,8 +177,8 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 			return m_vertical*1000 + m_horizontal;
 		}
 		public String toString() {
-			return "Position["+VerticalAlign.toString(m_vertical)
-				+";"+HorizontalAlign.toString(m_horizontal)+"]";
+			return "Position["+VerticalPosition.toString(m_vertical)
+				+";"+HorizontalPosition.toString(m_horizontal)+"]";
 		}
 	}
 
@@ -425,9 +425,9 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * Returns the list of visible fields at the given position
 	 * 
 	 * @param vert
-	 *            one of {@link VerticalAlign} constants
+	 *            one of {@link VerticalPosition} constants
 	 * @param horiz
-	 *            one of {@link HorizontalAlign} constants
+	 *            one of {@link HorizontalPosition} constants
 	 * @return array of {@link ScoreElements} constants
 	 */
 	public byte[] getFieldsAtPosition(byte vert, byte horiz) {
@@ -461,7 +461,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * @return array of {@link ScoreElements} constants
 	 */
 	public byte[] getFooterFields() {
-		return getSectionFields(VerticalAlign.BOTTOM);
+		return getSectionFields(VerticalPosition.BOTTOM);
 	}
 
 	/**
@@ -483,7 +483,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * @return array of {@link ScoreElements} constants
 	 */
 	public byte[] getHeaderFields() {
-		return getSectionFields(VerticalAlign.TOP);
+		return getSectionFields(VerticalPosition.TOP);
 	}
 
 	protected ScoreMetrics getMetrics() {
@@ -509,7 +509,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * 
 	 * @param field
 	 *            one of {@link ScoreElements} constants
-	 * @return an array of 2 bytes : [VerticalAlign.xxx, HorizontalAlign.xxx]
+	 * @return an array of 2 bytes : [VerticalPosition.xxx, HorizontalAlign.xxx]
 	 *         <TT>null</TT> if position has not been defined
 	 */
 	public byte[] getPosition(byte field) {
@@ -534,17 +534,17 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * </ul>
 	 * 
 	 * @param verticalSection
-	 *            {@link VerticalAlign#TOP}, {@link VerticalAlign#BOTTOM}
+	 *            {@link VerticalPosition#TOP}, {@link VerticalPosition#BOTTOM}
 	 * @return array of {@link ScoreElements} constants
 	 */
 	private byte[] getSectionFields(byte verticalSection) {
 		byte[] center = getFieldsAtPosition(verticalSection,
-				HorizontalAlign.CENTER);
+				HorizontalPosition.CENTER);
 		byte[] right = getFieldsAtPosition(verticalSection,
-				HorizontalAlign.RIGHT);
-		byte[] left = getFieldsAtPosition(verticalSection, HorizontalAlign.LEFT);
+				HorizontalPosition.RIGHT);
+		byte[] left = getFieldsAtPosition(verticalSection, HorizontalPosition.LEFT);
 		byte[] leftTab = getFieldsAtPosition(verticalSection,
-				HorizontalAlign.LEFT_TAB);
+				HorizontalPosition.LEFT_TAB);
 		byte[] ret = new byte[center.length + right.length + left.length
 				+ leftTab.length];
 		int idx = 0;
@@ -833,9 +833,9 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * @param field
 	 *            one of {@link ScoreElements} constants
 	 * @param vert
-	 *            one of {@link VerticalAlign} constants
+	 *            one of {@link VerticalPosition} constants
 	 * @param horiz
-	 *            one of {@link HorizontalAlign} constants
+	 *            one of {@link HorizontalPosition} constants
 	 */
 	public void setPosition(byte field, byte vert, byte horiz) {
 		setPosition(new byte[] {field}, vert, horiz);
@@ -847,9 +847,9 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 * @param fields
 	 *            array of {@link ScoreElements} constants
 	 * @param vert
-	 *            one of {@link VerticalAlign} constants
+	 *            one of {@link VerticalPosition} constants
 	 * @param horiz
-	 *            one of {@link HorizontalAlign} constants
+	 *            one of {@link HorizontalPosition} constants
 	 */
 	public void setPosition(byte[] fields, byte vert, byte horiz) {
 		for (int i = 0; i < fields.length; i++) {

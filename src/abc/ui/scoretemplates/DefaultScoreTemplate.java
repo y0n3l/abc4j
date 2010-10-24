@@ -110,35 +110,35 @@ public class DefaultScoreTemplate extends ScoreTemplate implements Cloneable {
 		setPosition(
 			new byte[] { ScoreElements.TEXT_TITLE,
 						 ScoreElements.TEXT_SUBTITLE },
-			VerticalAlign.TOP,
-			HorizontalAlign.CENTER
+			VerticalPosition.TOP,
+			HorizontalPosition.CENTER
 		);
 		setPosition(
 			new byte[] { ScoreElements.TEXT_COMPOSER,
 						 ScoreElements.TEXT_ORIGIN },
-			VerticalAlign.TOP,
-			HorizontalAlign.RIGHT
+			VerticalPosition.TOP,
+			HorizontalPosition.RIGHT
 		);
 		setPosition(
 			new byte[] { ScoreElements.TEXT_LYRICIST,
 						 ScoreElements.TEXT_RHYTHM,
 						 ScoreElements.TEXT_GROUP,
 						 ScoreElements.TEXT_PARTS_ORDER },
-			VerticalAlign.TOP,
-			HorizontalAlign.LEFT
+			VerticalPosition.TOP,
+			HorizontalPosition.LEFT
 		);
 		
 		setPosition(
 			new byte[] { ScoreElements.TEXT_CHORDS,
 						 ScoreElements.TEMPO,
 						 ScoreElements.PART_LABEL },
-			VerticalAlign.ABOVE_STAFF,
-			HorizontalAlign.LEFT
+			VerticalPosition.ABOVE_STAFF,
+			HorizontalPosition.LEFT
 		);
 		
 		setPosition(FOOTNOTES,
-			VerticalAlign.BOTTOM,
-			HorizontalAlign.LEFT
+			VerticalPosition.BOTTOM,
+			HorizontalPosition.LEFT
 		);
 	}
 	

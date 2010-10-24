@@ -7,7 +7,7 @@ package abc.ui.scoretemplates;
  * @author Administrateur
  *
  */
-public abstract class VerticalAlign {
+public abstract class VerticalPosition {
 
 	public static final byte TOP = 1;
 	public static final byte BOTTOM = 2;

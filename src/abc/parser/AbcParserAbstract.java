@@ -898,11 +898,15 @@ public class AbcParserAbstract
         	current.remove(AbcTokenType.CLEF);
         	//don't understand why, but "Cphr bass" token CLEF starts at "phr..."
         	//so mode has not been set (no token MODE SPEC)
-        	if (!modeSpecFound && (clefText.length() >= 3)) {
-        		String maybeMode = clefText.substring(0, 3);
+        	//Em "m" is in clef token
+        	if (!modeSpecFound
+        			&& ((clefText.length() == 1) || (clefText.length() >= 3))) {
+        		String maybeMode = clefText.length()==1
+        			?clefText //maybe it's "m" of minor
+        			:clefText.substring(0, 3);
         		byte modeSpec2 = KeySignature.convertToModeType(maybeMode);
         		if (modeSpec2 != KeySignature.OTHER) {
-        			clefText = clefText.substring(3);
+        			clefText = clefText.substring(maybeMode.length());
         			key = new KeySignature(key.getNote(), key.getAccidental(), modeSpec2);
         			Iterator it = globalAccidentals.iterator();
         			while (it.hasNext()) {

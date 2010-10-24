@@ -31,9 +31,10 @@ import java.util.Map;
 import abc.notation.Accidental;
 import abc.notation.Chord;
 import abc.notation.MusicElement;
-import abc.ui.scoretemplates.HorizontalAlign;
+import abc.ui.scoretemplates.HorizontalPosition;
 import abc.ui.scoretemplates.ScoreElements;
-import abc.ui.scoretemplates.VerticalAlign;
+import abc.ui.scoretemplates.TextJustification;
+import abc.ui.scoretemplates.TextVerticalAlign;
 
 /**
  * TODO doc
@@ -66,24 +67,50 @@ public class JText extends JScoreElementAbstract {
 		setText(text);
 	}
 	
+	protected JScoreElementAbstract getAttachedElement() {
+		return m_scoreElement;
+	}
+	
 	protected void setAttachedTo(JScoreElementAbstract scoreEl) {
 		m_scoreElement = scoreEl;
+		onAttachmentChanged();
+	}
+	
+	/**
+	 * Override this method if you want to modify some
+	 * properties depending on the attached score element
+	 */
+	protected void onAttachmentChanged() {
+		
 	}
 	
 	protected void setText(String text) {
-		this.m_text = text;
+		this.m_text = text.replaceAll("\\\\n", "\n")
+						.replaceAll(";", "\n");
 		this.m_text_lines = m_text!=null?m_text.split("\n")
 										:new String[0];
 		this.nb_lines = m_text_lines.length;		
+	}
+	
+	public byte getTextJustification() {
+		switch (getHorizontalPosition()) {
+		case HorizontalPosition.CENTER: return TextJustification.CENTER;
+		case HorizontalPosition.RIGHT: return TextJustification.RIGHT;
+		default: return TextJustification.LEFT;
+		}
+	}
+	
+	public byte getTextVerticalAlign() {
+		return TextVerticalAlign.BASELINE;
 	}
 
 	/**
 	 * Returns the horizontal alignment
 	 * 
 	 * @see ScoreTemplate#getPosition(byte)
-	 * @return one of {@link abc.ui.scoretemplates.HorizontalAlign} constants
+	 * @return one of {@link abc.ui.scoretemplates.HorizontalPosition} constants
 	 */
-	public byte getHorizontalAlignment() {
+	public byte getHorizontalPosition() {
 		return getTemplate().getPosition(m_textField)[1];
 	}
 
@@ -91,16 +118,28 @@ public class JText extends JScoreElementAbstract {
 	 * Returns the vertical alignment
 	 * 
 	 * @see ScoreTemplate#getPosition(byte)
-	 * @return one of {@link abc.ui.scoretemplates.VerticalAlign} constants
+	 * @return one of {@link abc.ui.scoretemplates.VerticalPosition} constants
 	 */
-	public byte getVerticalAlignment() {
+	public byte getVerticalPosition() {
 		return getTemplate().getPosition(m_textField)[0];
 	}
 	
 	public Rectangle2D getBoundingBox() {
 		Dimension dim = getDimension();
-		return new Rectangle2D.Double(getBase().getX(),
-				getBase().getY()-dim.getHeight(),
+		double x = getBase().getX();
+		switch(getTextJustification()) {
+		case TextJustification.CENTER: x -= dim.getWidth()/2; break;
+		case TextJustification.RIGHT: x -= dim.getWidth(); break;
+		}
+		double y = getBase().getY();
+		double o = getOneLineHeight();
+		switch(getTextVerticalAlign()) {
+		case TextVerticalAlign.BASELINE: y -= o; break;
+		case TextVerticalAlign.BOTTOM: y -= dim.getHeight(); break;
+		case TextVerticalAlign.MIDDLE: y -= dim.getHeight()/2; break;
+		case TextVerticalAlign.TOP: //unchanged
+		}
+		return new Rectangle2D.Double(x, y,
 				dim.getWidth(),
 				dim.getHeight());
 	}
@@ -246,6 +285,7 @@ public class JText extends JScoreElementAbstract {
 			if (begin != -1) {
 				as.addAttributes(font.getAttributes(), begin, text.length());
 			}
+			//end of flat/sharp replacement
 
 			Map attrib = getTemplate().getTextAttributes(m_textField);
 			if (attrib != null) {
@@ -255,53 +295,25 @@ public class JText extends JScoreElementAbstract {
 					as.addAttribute(ta, attrib.get(ta));
 				}
 			}
-			//end of flat/sharp replacement
+			if (getTextJustification() == TextJustification.JUSTIFIED) {
+				as.addAttribute(TextAttribute.JUSTIFICATION, TextAttribute.JUSTIFICATION_FULL);
+			}
 			
 			double x = getBase().getX();
 			double y = getBase().getY();
+			Rectangle2D box = getBoundingBox();
 			
-			if ((m_scoreElement != null) && (this instanceof JAnnotation)) {
-				Rectangle2D box = m_scoreElement.getBoundingBox();
-				box = box.createUnion(
-						new Rectangle2D.Double(box.getMinX(), m_scoreElement.getStaffLine().get5thLineY(),
-										box.getWidth(), m_scoreElement.getStaffLine().getHeight()));
-				switch(getVerticalAlignment()) {
-				case VerticalAlign.UNDER_STAFF:
-				case VerticalAlign.BOTTOM:
-					y = box.getMaxY() + line_height;
-					break;
-				case VerticalAlign.MIDDLE:
-					//y = m_scoreElement.getBase().getY()+line_height/2;
-					y = box.getCenterY() + line_height/2;
-					if (m_scoreElement instanceof JNoteElementAbstract)
-						y = ((JNoteElementAbstract) m_scoreElement)
-								.getNotePosition().getY()
-							+ line_height/4;
-					break;
-				case VerticalAlign.ABOVE_STAFF:
-				case VerticalAlign.TOP:
-				default:
-					y = box.getMinY();
-					break;
-				}
-				switch(getHorizontalAlignment()) {
-				case HorizontalAlign.LEFT:
-					x = box.getMinX() - getWidth()
-						- getMetrics().getNoteWidth()/2;
-					break;
-				case HorizontalAlign.RIGHT:
-					x = box.getMaxX()
-						+ getMetrics().getNoteWidth()/2;
-					break;
-				case HorizontalAlign.CENTER:
-				default:
-					x = box.getCenterX() - getWidth() / 2;
-				}
+			switch(getTextJustification()) {
+			case TextJustification.CENTER:
+				x -= box.getWidth()/2; break;
+			case TextJustification.RIGHT:
+				x -= box.getWidth(); break;
 			}
+			y = box.getMinY() + line_height;
 			
 			g2.drawString(as.getIterator(),
 					(float) x,
-					(float) (y-leading - (nb_lines-1-line_count)*line_height));
+					(float) (y-leading + line_count*line_height));
 		}
 		
 		g2.setFont(previousFont);

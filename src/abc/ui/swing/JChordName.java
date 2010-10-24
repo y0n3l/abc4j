@@ -18,6 +18,7 @@ package abc.ui.swing;
 import abc.notation.Chord;
 import abc.notation.MusicElement;
 import abc.ui.scoretemplates.ScoreElements;
+import abc.ui.scoretemplates.TextJustification;
 
 class JChordName extends JText {
 
@@ -29,6 +30,10 @@ class JChordName extends JText {
 	
 	public MusicElement getMusicElement() {
 		return m_chord;
+	}
+	
+	public byte getTextJustification() {
+		return TextJustification.LEFT;
 	}
 	
 }

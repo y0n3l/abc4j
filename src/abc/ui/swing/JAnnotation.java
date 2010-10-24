@@ -15,15 +15,23 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.ui.swing;
 
-import abc.ui.scoretemplates.HorizontalAlign;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+
+import abc.notation.BarLine;
+import abc.ui.scoretemplates.HorizontalPosition;
 import abc.ui.scoretemplates.ScoreElements;
-import abc.ui.scoretemplates.VerticalAlign;
+import abc.ui.scoretemplates.TextJustification;
+import abc.ui.scoretemplates.TextVerticalAlign;
+import abc.ui.scoretemplates.VerticalPosition;
 
 /** TODO doc */
 public class JAnnotation extends JText {
 
-	private byte hAlign = HorizontalAlign.CENTER;
-	private byte vAlign = VerticalAlign.TOP;
+	private byte hPosition = HorizontalPosition.CENTER;
+	private byte vPosition = VerticalPosition.TOP;
+	private byte tJustify = TextJustification.CENTER;
+	private byte tVAlign = TextVerticalAlign.BASELINE;
 	
 	/** Constructor
 	 * @param mtrx The score metrics needed
@@ -41,36 +49,132 @@ public class JAnnotation extends JText {
 		char c = s.charAt(0);
 		switch(c) {
 		case '<':
-			vAlign = VerticalAlign.MIDDLE;
-			hAlign = HorizontalAlign.LEFT;
+			vPosition = VerticalPosition.MIDDLE;
+			hPosition = HorizontalPosition.LEFT;
+			tJustify = TextJustification.RIGHT;
+			tVAlign = TextVerticalAlign.MIDDLE;
 			setText(newText);
 			break;
 		case '>':
-			vAlign = VerticalAlign.MIDDLE;
-			hAlign = HorizontalAlign.RIGHT;
+			vPosition = VerticalPosition.MIDDLE;
+			hPosition = HorizontalPosition.RIGHT;
+			tJustify = TextJustification.LEFT;
+			tVAlign = TextVerticalAlign.MIDDLE;
 			setText(newText);
 			break;
 		case '_':
-			vAlign = VerticalAlign.UNDER_STAFF;
-			hAlign = HorizontalAlign.CENTER;
+			vPosition = VerticalPosition.UNDER_STAFF;
+			hPosition = HorizontalPosition.CENTER;
+			tJustify = TextJustification.CENTER;
+			tVAlign = TextVerticalAlign.TOP;
 			setText(newText);
 			break;
 		case '^':
 		case '@':
 			setText(newText);
 		default:
-			vAlign = VerticalAlign.ABOVE_STAFF;
-			hAlign = HorizontalAlign.CENTER;
+			vPosition = VerticalPosition.ABOVE_STAFF;
+			hPosition = HorizontalPosition.CENTER;
+			tJustify = TextJustification.CENTER;
+			tVAlign = TextVerticalAlign.BOTTOM;
 			break;
 		}
 	}
-
-	public byte getHorizontalAlignment() {
-		return hAlign;
+	
+	public byte getTextJustification() {
+		return tJustify;
+	}
+	
+	public byte getTextVerticalAlign() {
+		return tVAlign;
 	}
 
-	public byte getVerticalAlignment() {
-		return vAlign;
+	public byte getHorizontalPosition() {
+		return hPosition;
+	}
+
+	public byte getVerticalPosition() {
+		return vPosition;
+	}
+	
+	protected void onAttachmentChanged() {
+		JScoreElementAbstract element = getAttachedElement();
+		if (element == null)
+			return;
+		
+		if (element instanceof JBar) {
+			BarLine bar = (BarLine)element.getMusicElement();
+			if ((vPosition == VerticalPosition.ABOVE_STAFF)
+					|| (vPosition == VerticalPosition.BOTTOM)
+					|| (vPosition == VerticalPosition.TOP)
+					|| (vPosition == VerticalPosition.UNDER_STAFF)) {
+				switch(bar.getType()) {
+				case BarLine.BEGIN:
+				case BarLine.REPEAT_OPEN:
+					hPosition = HorizontalPosition.LEFT;
+					tJustify = TextJustification.LEFT;
+					break;
+				case BarLine.DOUBLE:
+				case BarLine.END:
+				case BarLine.REPEAT_CLOSE:
+					hPosition = HorizontalPosition.RIGHT;
+					tJustify = TextJustification.RIGHT;
+					break;
+				}
+			}
+		}
+		
+		//
+		//Sets the base position according to the attached
+		//element and text position/justification
+		//
+		
+		double x = -1;//getBase().getX();
+		double y = -1;//getBase().getY();
+		Rectangle2D box = element.getBoundingBox();
+		box = box.createUnion(
+				new Rectangle2D.Double(box.getMinX(), element.getStaffLine().get5thLineY(),
+								box.getWidth(), element.getStaffLine().getHeight()));
+		//we have a box width=width of element, height=staff height
+		switch(getVerticalPosition()) {
+		case VerticalPosition.UNDER_STAFF:
+		case VerticalPosition.BOTTOM:
+			y = box.getMaxY();
+			break;
+		case VerticalPosition.MIDDLE:
+			y = box.getCenterY();
+			if (element instanceof JNoteElementAbstract)
+				y = ((JNoteElementAbstract) element)
+						.getNotePosition().getY()
+					- getMetrics().getNoteHeight()*.75;
+			break;
+		case VerticalPosition.ABOVE_STAFF:
+		case VerticalPosition.TOP:
+		default:
+			y = box.getMinY();
+			break;
+		}
+		switch(getHorizontalPosition()) {
+		case HorizontalPosition.LEFT:
+			x = box.getMinX();
+			if (tJustify == TextJustification.RIGHT) {
+				x = box.getMinX() //- getWidth()
+					- getMetrics().getNoteWidth()/2;
+			}
+			break;
+		case HorizontalPosition.RIGHT:
+			x = box.getMaxX();
+			if (tJustify == TextJustification.LEFT) {
+				x = box.getMaxX()
+					+ getMetrics().getNoteWidth()/2;
+			}
+			break;
+		case HorizontalPosition.CENTER:
+		default:
+			x = box.getCenterX();
+		}
+		//getBase().setLocation(x, y);
+		setBase(new Point2D.Double(x, y));
 	}
 
 }
