@@ -1,13 +1,12 @@
 import junit.framework.TestCase;
-import abc.notation.AccidentalType;
+import abc.notation.Decoration;
 import abc.notation.Note;
-import abc.notation.NoteAbstract;
 import abc.notation.Tune;
 import abc.parser.TuneParser;
 
-public class GracingsTest extends TestCase {
+public class DecorationsTest extends TestCase {
 
-	public GracingsTest(String name) {
+	public DecorationsTest(String name) {
 		super(name);
 	}
 
@@ -21,9 +20,11 @@ public class GracingsTest extends TestCase {
 		Note firstNote = (Note)tune.getMusic().elementAt(1);
 		Note secondNote = (Note)tune.getMusic().elementAt(2);
 		Note thirdNote = (Note)tune.getMusic().elementAt(3);
-		assertTrue(firstNote.getBow()==NoteAbstract.DOWN);
-		assertTrue(secondNote.getBow()==NoteAbstract.UP);
-		assertTrue(thirdNote.getBow()==NoteAbstract.NONE);
+		assertTrue(firstNote.hasDecoration(Decoration.DOWNBOW));
+		assertTrue(secondNote.hasDecoration(Decoration.UPBOW));
+		assertFalse(thirdNote.hasDecorations());
+		assertFalse(thirdNote.hasDecoration(Decoration.UPBOW));
+		assertFalse(thirdNote.hasDecoration(Decoration.DOWNBOW));
 	}
 	
 	public void test2(){
@@ -32,12 +33,12 @@ public class GracingsTest extends TestCase {
 		Note firstNote = (Note)tune.getMusic().elementAt(1);
 		Note secondNote = (Note)tune.getMusic().elementAt(2);
 		Note thirdNote = (Note)tune.getMusic().elementAt(3);
-		assertEquals(firstNote.getBow(), NoteAbstract.DOWN);
-		assertEquals(firstNote.getAccidental(), AccidentalType.FLAT);
-		assertEquals(secondNote.getBow(), NoteAbstract.UP);
-		assertEquals(secondNote.getAccidental(), AccidentalType.NATURAL);
-		assertEquals(thirdNote.getBow(), NoteAbstract.DOWN);
-		assertEquals(thirdNote.getAccidental(), AccidentalType.SHARP);
+		assertTrue(firstNote.hasDecoration(Decoration.DOWNBOW));
+		assertTrue(firstNote.getAccidental().isFlat());
+		assertTrue(secondNote.hasDecoration(Decoration.UPBOW));
+		assertTrue(secondNote.getAccidental().isNatural());
+		assertTrue(thirdNote.hasDecoration(Decoration.DOWNBOW));
+		assertTrue(thirdNote.getAccidental().isSharp());
 	}
 
 	protected void tearDown() throws Exception {
