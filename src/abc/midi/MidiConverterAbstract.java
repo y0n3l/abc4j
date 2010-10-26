@@ -123,12 +123,12 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
     				//====================================================================== REPEAT BAR LINE
   				if (staff.elementAt(i) instanceof abc.notation.RepeatBarLine) {
   					RepeatBarLine bar = (RepeatBarLine)staff.elementAt(i);
-  					if (repeatNumber<bar.getRepeatNumber() && lastRepeatOpen!=-1) {
+  					if (repeatNumber<bar.getRepeatNumbers()[0] && lastRepeatOpen!=-1) {
   						repeatNumber++;
   						i=lastRepeatOpen;
   					}
   					else
-					if (repeatNumber>bar.getRepeatNumber())
+					if (repeatNumber>bar.getRepeatNumbers()[0])
 						inWrongEnding = true;
 					else
 						inWrongEnding = false;

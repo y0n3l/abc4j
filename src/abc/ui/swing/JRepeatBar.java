@@ -48,7 +48,12 @@ class JRepeatBar extends JBar{
 		double x = super.getWidth();// metrics.getNoteWidth();
 		double staffHeight = metrics.getStaffCharBounds().getHeight();
 		double staffWidth = metrics.getStaffCharBounds().getWidth();
-		char[] ch = DIGITS[((RepeatBarLine)m_barLine).getRepeatNumber()-1];
+		String chars = "";
+		byte[] numbers = ((RepeatBarLine)m_barLine).getRepeatNumbers();
+		for (int i = 0; i < numbers.length; i++) {
+			chars += String.copyValueOf(DIGITS[numbers[i]-1]);
+		}
+		char[] ch = chars.toCharArray();
 		double topY = getStaffLine().getTopY();
 		Point2D base = getBase();
 		//ensure that there is enough space!
@@ -70,6 +75,8 @@ class JRepeatBar extends JBar{
 				(int)(base.getX()+x-1+staffWidth),
 				(int)topY);
 		context.setColor(previousColor);
+		
+		//renderDebugBoundingBox(context);
 		return super.render(context);
 	}
 }

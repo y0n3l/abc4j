@@ -1337,8 +1337,11 @@ public class AbcParserAbstract
       else
       if (FIRST_NTH_REPEAT.contains(m_tokenType))
       {
-        byte repeatNumber = convertToRepeatBarLine(accept(AbcTokenType.NTH_REPEAT, null, follow));
-        m_music.addElement(new RepeatBarLine(repeatNumber));
+        byte[] repeatNumbers = convertToRepeatBarLine(accept(AbcTokenType.NTH_REPEAT, null, follow));
+        if (repeatNumbers.length > 0)
+        	m_music.addElement(new RepeatBarLine(repeatNumbers));
+        else
+        	m_music.addElement(new BarLine());
       }
       else
       if (m_tokenType.equals(AbcTokenType.BEGIN_SLUR))
@@ -2147,13 +2150,38 @@ public class AbcParserAbstract
         ((TuneParserListenerInterface)m_listeners.elementAt(i)).invalidCharacter(evt);
     }
 
-    protected static byte convertToRepeatBarLine(String barLine)
+    protected static byte[] convertToRepeatBarLine(String barLine)
     {
-      if (barLine.equals("[1")) return 1;
-      else if (barLine.equals("[2")) return 2;
-      else if (barLine.equals("|1")) return 1;
-      else if (barLine.equals(":|2")) return 2;
-      else return -1;
+    	if (barLine.startsWith("[") || barLine.startsWith("|")
+    			|| barLine.startsWith(":|")) {
+    		Vector v = new Vector();
+    		byte lastNum = 0;
+    		for (int i = 0; i < barLine.length(); i++) {
+				try {
+					byte num = Byte.parseByte(barLine.charAt(i)+"");
+					if (num < lastNum)
+						return new byte[0]; //mal formed [1,5,3
+					else
+						v.add(new Byte(num));
+					lastNum = num;
+				} catch (Exception e) {
+					char c = barLine.charAt(i);
+					if (c != '[' && c != '|' && c != ':' && c != ',' && c != '-')
+						return new byte[0];
+				}
+			}
+    		byte[] ret = new byte[v.size()];
+    		for (int i = 0; i < ret.length; i++) {
+    			ret[i] = ((Byte)v.elementAt(i)).byteValue();
+			}
+    		return ret;
+    	} else
+    		return new byte[0];
+//      if (barLine.equals("[1")) return new byte[] {1};
+//      else if (barLine.equals("[2")) return new byte[] {2};
+//      else if (barLine.equals("|1")) return new byte[] {1};
+//      else if (barLine.equals(":|2")) return new byte[] {2};
+//      else return new byte[0];
     }
 
     protected static byte convertBrokenRhythm(String brokenRhythm)

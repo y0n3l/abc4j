@@ -411,10 +411,10 @@ public class Abc2xml {
 						currentMeasureEl.appendChild(barLineNode);
 					}
 					Element endingEl = doc.createElement("ending");
-					endingEl.setAttribute(NUMBER_ATTRIBUTE, Integer.toString(repeatBarLine.getRepeatNumber()));
+					endingEl.setAttribute(NUMBER_ATTRIBUTE, Integer.toString(repeatBarLine.getRepeatNumbers()[0]));
 					endingEl.setAttribute(TYPE_ATTRIBUTE, "start");
 					barLineNode.appendChild(endingEl);
-					voltaRunning = repeatBarLine.getRepeatNumber();
+					voltaRunning = repeatBarLine.getRepeatNumbers()[0];
 				}
 				if (barline.getType() == BarLine.REPEAT_CLOSE) { // Close
 																	// barline

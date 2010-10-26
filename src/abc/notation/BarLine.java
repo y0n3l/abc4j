@@ -92,9 +92,12 @@ public class BarLine extends DecorableElement implements Cloneable
 			barlineTypes = new byte[] { BarLine.REPEAT_CLOSE };
 		} else if (barLine.equals("|:")) {
 			barlineTypes = new byte[] { BarLine.REPEAT_OPEN };
-		} else if (barLine.equals(".|") || barLine.equals(".|.")) {
+		} else if (barLine.equals(".|")
+				|| barLine.equals(".|.")
+				|| barLine.equals(":")) {
 			barlineTypes = new byte[] { BarLine.DOTTED };
-		} else if (barLine.equals("[|]")) {
+		} else if (barLine.equals("[|]")
+				|| barLine.equals("[]")) {
 			barlineTypes = new byte[] { BarLine.INVISIBLE };
 		}
 		return barlineTypes;

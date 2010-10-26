@@ -16,41 +16,70 @@
 package abc.notation;
 
 /** A special bar line that enables you to repeat part of music from a tune. */
-public class RepeatBarLine extends BarLine implements Cloneable
-{
+public class RepeatBarLine extends BarLine implements Cloneable {
 
-  private static final long serialVersionUID = 6130499407941371335L;
-  
-  private byte m_repeatNumber=0;
+	private static final long serialVersionUID = 6130499407941371335L;
 
-  /** Creates a new repeat bar line.
-   * @param repeatsNumber The number of times the repeat should occur. */
-  public RepeatBarLine(byte repeatsNumber)
-  {
-    super((repeatsNumber==1)?BarLine.SIMPLE:BarLine.REPEAT_CLOSE);
-    m_repeatNumber = repeatsNumber;
-  }
+	private static boolean containsOne(byte[] byteArray) {
+		if (byteArray != null) {
+			for (int i = 0; i < byteArray.length; i++) {
+				if (byteArray[i] == 1)
+					return true;
+			}
+		}
+		return false;
+	}
 
-  /** Returns the number of times the repeat should occur.
-   * @return the number of times the repeat should occur. */
-  public byte getRepeatNumber()
-  { return m_repeatNumber; }
+	private byte[] m_repeatNumbers = null;
 
-  /** Returns a string representation of this repeat barline.
-   * @return A string representation of this repeat barline. */
-  public String toString()
-  {
-    if (m_repeatNumber==1)
-      return "|1";
-    else
-    if (m_repeatNumber==2)
-      return ":|2";
-    else
-      return "?";
-  }
+	/**
+	 * Creates a new repeat bar line.
+	 * 
+	 * @param repeatsNumber
+	 *            The number of times the repeat should occur.
+	 */
+	public RepeatBarLine(byte[] repeatNumbers) {
+		super(containsOne(repeatNumbers) ? BarLine.SIMPLE
+				: BarLine.REPEAT_CLOSE);
+		m_repeatNumbers = repeatNumbers;
+	}
 
-  public Object clone() throws CloneNotSupportedException {
-	  return super.clone();
-  }
+	/**
+	 * Returns the numbers of times the repeat should occur.
+	 * 
+	 * @return the numbers of times the repeat should occur.
+	 */
+	public byte[] getRepeatNumbers() {
+		return m_repeatNumbers;
+	}
+
+	/**
+	 * Returns true if this repeat is the first (and maybe 1st and 3th and so
+	 * on...). Return false if this repeat is not the first (e.g. 2nd and 3th)
+	 * 
+	 * A first repeat has a simple bar line, not first has a end repeat bar line
+	 * (:|)
+	 */
+	public boolean isFirstRepeat() {
+		return containsOne(m_repeatNumbers);
+	}
+
+	/**
+	 * Returns a string representation of this repeat barline.
+	 * 
+	 * @return A string representation of this repeat barline.
+	 */
+	public String toString() {
+		String ret = isFirstRepeat() ? "|" : ":|";
+		for (int i = 0; i < m_repeatNumbers.length; i++) {
+			if (i > 0)
+				ret += ",";
+			ret += m_repeatNumbers[i];
+		}
+		return ret;
+	}
+
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
 }
-

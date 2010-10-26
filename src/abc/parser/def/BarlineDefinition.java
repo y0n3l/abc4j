@@ -59,7 +59,8 @@ public class BarlineDefinition extends AutomataDefinition
         trans = new Transition(state5, '|');
         state4.addTransition(trans);
 
-        //ABC v2 dotted bar .| or .|.
+        //TODO |:: ::|
+        //ABC v2 dotted bar .| or .|. or :
         if (abcVersion.equals(AbcVersion.v2_0)) {
 	        State state6 = new State(AbcTokenType.UNKNOWN, false);
 	        getStartingState().addTransition(new Transition(state6,'.'));
@@ -75,6 +76,9 @@ public class BarlineDefinition extends AutomataDefinition
 	        state9.addTransition(new Transition(stateA, '.'));
 	        state8.addTransition(trans);
 
+	        State stateB = new State(AbcTokenType.BARLINE, true);
+	        getStartingState().addTransition(new Transition(stateB, ':'));
+	        
         }
     }
 }

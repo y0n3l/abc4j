@@ -25,9 +25,9 @@ public class ClefTextDefinition extends AutomataDefinition {
 
 	public ClefTextDefinition() {
 		// starts with one of these words
-		String[] wordsSTART = { "clef=", "treble", "alto", "tenor", "bass", "baritone",
-				"mezzo", "soprano", "+8", "-8", "s=", "staffline", "m=", "middle",
-				"t=", "transpose", "perc", "none" };
+		//String[] wordsSTART = { "clef=", "treble", "alto", "tenor", "bass", "baritone",
+		//		"mezzo", "soprano", "+8", "-8", "s=", "staffline", "m=", "middle",
+		//		"t=", "transpose", "perc", "none" };
 		char[] chars0 = { 'a', 'b', 'c', 'm', 'n', 'p', 's', 't', '+', '-' };
 		char[] chars1 = { 'a', 'e', 'i', 'l', 'o', 'r', 't', '8', '=' };
 		char[] chars2 = { 'a', 'e', 'd', 'n', 'p', 'r', 's', 't', 'z', ' ',
