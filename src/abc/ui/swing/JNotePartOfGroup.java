@@ -19,7 +19,6 @@ package abc.ui.swing;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -94,7 +93,7 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 			}
 		}
 
-		setStemUpBeginPosition(new Point2D.Double(noteX + glyphDimension.getWidth(), stemYBegin));
+		setStemUpBeginPosition(new Point2D.Double(noteX + glyphDimension.getWidth() + 1, stemYBegin));
 		setStemDownBeginPosition(new Point2D.Double(noteX, stemYBegin));
 
 		notePosition = new Point2D.Double(displayPosition.getX(), displayPosition.getY());
@@ -159,18 +158,22 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 				setColor(context, ScoreElements.GRACENOTE);
 			else
 				setColor(context, ScoreElements.NOTE);
-			Stroke defaultS = context.getStroke();
-			context.setStroke(getMetrics().getStemStroke());
-			context.drawLine((int)getStemBeginPosition().getX(), (int)getStemBeginPosition().getY(),
-					(int)getStemBeginPosition().getX(), stemYEnd);
-			context.setStroke(defaultS);
+		//	Stroke defaultS = context.getStroke();
+		//	context.setStroke(getMetrics().getStemStroke());
+		//	context.drawLine((int)getStemBeginPosition().getX()+1, (int)getStemBeginPosition().getY(),
+		//			(int)getStemBeginPosition().getX()+1, stemYEnd);
+		//	context.setStroke(defaultS);
+			context.fillRect((int)getStemBeginPosition().getX(),
+					Math.min((int)getStemBeginPosition().getY(),stemYEnd),
+					1,
+					(int)Math.abs(stemYEnd - getStemBeginPosition().getY()));
 			context.setColor(previousColor);
 		}
 		
 		/* * /java.awt.Color previousColor = context.getColor();
 		context.setColor(java.awt.Color.RED);
-		context.drawLine((int)getStemBegin().getX(), (int)getStemBegin().getY(),
-				(int)getStemBegin().getX(), (int)getStemBegin().getY());
+		context.drawLine((int)getStemBeginPosition().getX(), (int)getStemBeginPosition().getY(),
+				(int)getStemBeginPosition().getX(), (int)getStemBeginPosition().getY());
 				//(int)getNotePosition().getX(), (int)getNotePosition().getY());
 		context.setColor(java.awt.Color.GREEN);
 		Point2D m_base = getBase();

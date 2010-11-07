@@ -60,6 +60,7 @@ public class JScoreComponent extends JComponent
 
 	/** The dimensions of this score. */
 	private Dimension m_dimension = null;
+	
 	/** The place where all spacing dimensions are expressed. */
 	private ScoreTemplate m_template = null;
 	/** The buffer where the score image is put before rendition in the swing component. */
@@ -120,7 +121,7 @@ public class JScoreComponent extends JComponent
 
 	/** Draws the current tune score into the given graphic context.
 	 * @param g Graphic context. */
-	protected void drawIn(Graphics2D g){
+	public void drawIn(Graphics2D g){
 		if(m_jTune!=null) {
 			m_jTune.render(g);
 		}
@@ -191,6 +192,13 @@ public class JScoreComponent extends JComponent
  		}
 		repaint();
 	}
+	
+	public Dimension getDimension() {
+		if (m_jTune!=null) {
+			setTune(m_jTune.getTune());
+		}
+		return m_dimension;
+	}
 
 	/** Writes the currently set tune score to a PNG output stream.
 	 * @param os The PNG output stream
@@ -201,7 +209,7 @@ public class JScoreComponent extends JComponent
  		}
 		BufferedImage bufferedImage = new BufferedImage((int)m_dimension.getWidth(), (int)m_dimension.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		Graphics2D bufferedImageGfx = (Graphics2D)bufferedImage.createGraphics();
-		bufferedImageGfx.setColor(Color.WHITE);
+		bufferedImageGfx.setColor(getBackground());//Color.WHITE);
 		bufferedImageGfx.fillRect(0, 0, (int)bufferedImage.getWidth(), (int)bufferedImage.getHeight());
 		drawIn(bufferedImageGfx);
 		ImageIO.write(bufferedImage, "png", os);

@@ -455,7 +455,10 @@ class JGroupOfNotes extends JScoreElementAbstract
 					if (!nextNoteIsShorterOrEquals)
 						noteLinkEnd = (int)(m_jNotes[i].getStemBeginPosition().getX()+getMetrics().getNoteWidth()/1.2);
 				if (noteLinkEnd!=-1)
-					context.drawLine((int)m_jNotes[i].getStemBeginPosition().getX(), noteLinkY, noteLinkEnd, noteLinkY);
+					context.drawLine((int)m_jNotes[i].getStemBeginPosition().getX(),
+							noteLinkY,
+							noteLinkEnd,
+							noteLinkY);
 			}
 //			restore defaut stroke.
 			context.setStroke(defaultStroke);

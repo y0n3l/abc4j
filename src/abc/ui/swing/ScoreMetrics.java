@@ -121,8 +121,8 @@ public class ScoreMetrics {
 		Rectangle2D bounds = getBounds(
 				new char[] {getMusicalFont().getNoteWithoutStem(Note.QUARTER)},
 				notationContext);
-		return new Dimension((int)bounds.getHeight(),
-				(int)bounds.getWidth());
+		return new Dimension((int)(bounds.getHeight()),
+				(int)(bounds.getWidth()));
 	}
 
 	/* *** graceNotes support *** */
