@@ -30,6 +30,13 @@ public class PartLabel extends MusicPresentationElement implements Cloneable {
 		return m_label;
 	}
 	
+	public boolean equals(Object o) {
+		if (!(o instanceof PartLabel))
+			return false;
+		else
+			return getLabel() == ((PartLabel)o).getLabel();
+	}
+	
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}

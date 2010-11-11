@@ -907,6 +907,8 @@ public class AbcParserAbstract
         		byte modeSpec2 = KeySignature.convertToModeType(maybeMode);
         		if (modeSpec2 != KeySignature.OTHER) {
         			clefText = clefText.substring(maybeMode.length());
+        			//Amin _b =c, ok we have Amin but _b and ^c are in clefText
+        			//hard to parse again the global accidentals!
         			key = new KeySignature(key.getNote(), key.getAccidental(), modeSpec2);
         			Iterator it = globalAccidentals.iterator();
         			while (it.hasNext()) {

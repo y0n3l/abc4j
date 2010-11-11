@@ -267,7 +267,7 @@ public class NoteAbstract extends DecorableElement implements Cloneable
     if (staccato)					string2Return = string2Return.concat(".");
     if (m_decorations!=null)	string2Return = string2Return.concat("{"+m_decorations.toString()+"}");
     //string2Return = string2Return.concat(notes.toString());
-    return string2Return+"@"+hashCode();
+    return string2Return;
   }
 
 	public Object clone() throws CloneNotSupportedException {

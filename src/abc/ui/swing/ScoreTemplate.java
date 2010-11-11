@@ -521,6 +521,9 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 				return new byte[] { p.m_vertical, p.m_horizontal };
 			}
 		}
+		if (field != ScoreElements._DEFAULT) {
+			return getPosition(ScoreElements._DEFAULT);
+		}
 		return null;
 	}
 

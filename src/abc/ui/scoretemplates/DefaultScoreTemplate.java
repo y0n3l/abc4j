@@ -140,6 +140,11 @@ public class DefaultScoreTemplate extends ScoreTemplate implements Cloneable {
 			VerticalPosition.BOTTOM,
 			HorizontalPosition.LEFT
 		);
+		
+		setPosition(ScoreElements._DEFAULT,
+				VerticalPosition.BOTTOM,
+				HorizontalPosition.LEFT
+		);
 	}
 	
 	private void texts() {

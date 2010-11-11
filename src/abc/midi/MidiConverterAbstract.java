@@ -15,6 +15,8 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.midi;
 
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.sound.midi.Instrument;
@@ -25,6 +27,7 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.ShortMessage;
+import javax.sound.midi.Synthesizer;
 import javax.sound.midi.Track;
 
 import abc.notation.Accidental;
@@ -51,8 +54,15 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   	public Sequence toMidiSequence(Tune tune) {
   		Sequence sequence = null;
   		try {
-  			if (instrument==null)
-  	  			setInstrument(MidiSystem.getSynthesizer().getAvailableInstruments()[0]);
+  			if (instrument==null) {
+  				Synthesizer synth = MidiSystem.getSynthesizer();
+  				synth.open();
+  				try {
+  					setInstrument(synth.getAvailableInstruments()[0]);
+  				} finally {
+  					synth.close();
+  				}
+  			}
   			// Sequence in ticks per quarter note : PPQ = Pulse Per Quarter Note
   			// Resolution is expressed in ticks per beat.
   			// Last parameter "1" is the number of tracks.
@@ -70,7 +80,8 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   			int i = 0;// StaffItem iterator
   			KeySignature tuneKey = null;
   			KeySignature currentKey = null;
-
+  			Hashtable partsKey = new Hashtable();
+  			
 			long elapsedTime = 0;
 			Note[] graceNotes = null;
 			Tune.Music staff = tune.getMusic();
@@ -79,7 +90,21 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 					//==================================================================== TEMPO
 					if (staff.elementAt(i) instanceof abc.notation.Tempo) {
 						addTempoEventsFor(track, elapsedTime, getMidiMessagesFor((Tempo)staff.elementAt(i)));//, trackLengthInTicks));
-				}
+					}
+					else
+					if (staff.elementAt(i) instanceof abc.notation.PartLabel) {
+						//Imagine... part A in Gmaj, B in Amin
+						//in tune you have K:G, P:A, ... P:B, K:Am
+						//if you have part order ABA, when you return to A
+						//you stay in Amin. This stores the tuneKey when a
+						//new part appear, and restitute it when part is played again
+						abc.notation.PartLabel pl = (abc.notation.PartLabel) staff.elementAt(i);
+						if (partsKey.get(pl.getLabel()+"") == null) {
+							partsKey.put(pl.getLabel()+"", tuneKey);
+						} else {
+							tuneKey = (KeySignature) partsKey.get(pl.getLabel()+"");
+						}
+					}
 					else
 						//==================================================================== KEY SIGNATURE
 					if (staff.elementAt(i) instanceof abc.notation.KeySignature) {
@@ -99,28 +124,32 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 							// currently not used
 							// future use: playing rolls, slides, etc.
 						}
+						long graceNotesDuration = 0;
 						if (note.hasGracingNotes()) {
 							graceNotes = note.getGracingNotes();
 							for (int j=0;j<graceNotes.length;j++) {
-								noteDuration = getNoteLengthInTicks(graceNotes[j], staff);
+								noteDuration = getNoteLengthInTicks(graceNotes[j], staff)/2;
+								graceNotesDuration += noteDuration;
 								playNote(graceNotes[j], i, currentKey, elapsedTime, noteDuration, track);
 								elapsedTime+=noteDuration;
 							}
 						}
 						//The note duration if the note isn't part of a tuplet.
-						noteDuration = getNoteLengthInTicks(note, staff);
+						noteDuration = getNoteLengthInTicks(note, staff) - graceNotesDuration;
+						if (noteDuration <= 0) //in case of too much grace notes
+							noteDuration = getNoteLengthInTicks(note, staff);
 						playNote(note, i, currentKey, elapsedTime, noteDuration, track);
 						elapsedTime+=noteDuration;
 					}
 					else
-						//==================================================================== MULTI NOTE
-						if ((staff.elementAt(i) instanceof abc.notation.MultiNote)) {
-							MultiNote multiNote = (MultiNote)staff.elementAt(i);
-							playMultiNote(multiNote, i, currentKey, elapsedTime, track, staff);
-							elapsedTime+=getNoteLengthInTicks(multiNote, staff);
-						}
-				}
-    				//====================================================================== REPEAT BAR LINE
+					//==================================================================== MULTI NOTE
+					if ((staff.elementAt(i) instanceof abc.notation.MultiNote)) {
+						MultiNote multiNote = (MultiNote)staff.elementAt(i);
+						playMultiNote(multiNote, i, currentKey, elapsedTime, track, staff);
+						elapsedTime+=getNoteLengthInTicks(multiNote, staff);
+					}
+				} //endif (!inWrongEnding)
+    			//====================================================================== REPEAT BAR LINE
   				if (staff.elementAt(i) instanceof abc.notation.RepeatBarLine) {
   					RepeatBarLine bar = (RepeatBarLine)staff.elementAt(i);
   					if (repeatNumber<bar.getRepeatNumbers()[0] && lastRepeatOpen!=-1) {
@@ -152,8 +181,9 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 					}
 				}
   				//Whatever kind of bar line it is
-  				if (staff.elementAt(i) instanceof abc.notation.BarLine)
+  				if (staff.elementAt(i) instanceof abc.notation.BarLine) {
 					currentKey = new KeySignature(tuneKey.getAccidentals());
+				}
   				i++;
   			}
   		}
@@ -249,8 +279,9 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 
   private static void updateKey(KeySignature key, Note note)
   {
-    if (!note.getAccidental().isInTheKey())
-      key.setAccidental(note.toRootOctaveHeigth(), note.getAccidental());
+    if (!note.getAccidental().isInTheKey()) {
+      key.setAccidental(note.getStrictHeight(), note.getAccidental());
+    }
   }
 
   /**
@@ -268,7 +299,7 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 	  return track.ticks();
   }
 
-  /** */
+  /** TODO rename to getNoteOnMessageFor (One->On)*/
   public abstract MidiMessage[] getNoteOneMessageFor(Note note, KeySignature key) throws InvalidMidiDataException;
 
   /** */
@@ -318,21 +349,10 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   public static byte getMidiNoteNumber (Note note, KeySignature key)
   {
     byte heigth = note.getStrictHeight();
-    Accidental accidental = new Accidental(note.getAccidental().getNearestOccidentalValue());
+    Accidental accidental = new Accidental(note.getAccidental(key).getNearestOccidentalValue());
     byte midiNoteNumber = (byte)(heigth+(69-Note.A));
     midiNoteNumber = (byte)(midiNoteNumber + note.getOctaveTransposition()*12);
-    if (accidental.isInTheKey())
-    {
-      byte absoluteAccidental = (byte) Accidental.NATURAL.getValue();
-      byte heightOnOneOctave = (byte)(heigth % 12);
-      absoluteAccidental = (byte)
-      (key.getAccidentalFor(heightOnOneOctave).getNearestOccidentalValue());
-      midiNoteNumber += absoluteAccidental; //-1 flat, 0 natural, +1 sharp
-    }
-    else
-    {
-    	midiNoteNumber += (byte) accidental.getValue(); //-2 dbl flat, -1 flat, 0 natural...
-    }
+   	midiNoteNumber += (byte) accidental.getValue(); //-2 dbl flat, -1 flat, 0 natural...
     return midiNoteNumber;
   }
 }

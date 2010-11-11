@@ -89,6 +89,9 @@ public class JTune extends JScoreElementAbstract {
 	 * tune
 	 */
 	private boolean m_isOutdated = true;
+
+	/** Current position in Music in {@link #compute()} */
+	private int m_index = -1;
 	
 	/**
 	 * Hashmap that associates <DEL>ScoreElement</DEL> <B>MusicElement</B> instances (key) and JScoreElement instances(value).
@@ -470,8 +473,8 @@ public class JTune extends JScoreElementAbstract {
 		currentTime = null;
 		currentStaffLineInitialized = false;
 		currentStaffLine = null;
-		for (int i=0; i<m_music.size(); i++) {
-			MusicElement s = (MusicElement)m_music.elementAt(i);
+		for (m_index = 0; m_index < m_music.size(); m_index++) {
+			MusicElement s = (MusicElement)m_music.elementAt(m_index);
 			//System.out.println(s.toString() + " " + s.getReference().toString());
 			// ==== Notes>quarter, rests, notes without slur,tuplet ====
 			if (
@@ -1538,14 +1541,29 @@ public class JTune extends JScoreElementAbstract {
 		//TODO add space for lyrics, high and low notes
 		
 		cursor.setLocation(cursor.getX(), cursor.getY()+getMetrics().getStaffCharBounds().getHeight());
+		
+		boolean hasKeyChange = false, hasTimeChange = false, hasClefChange = false;
+		for (int i = m_index; i < m_music.size(); i++) {
+			MusicElement s = (MusicElement)m_music.elementAt(i);
+			if (s instanceof KeySignature) hasKeyChange = true;
+			else if (s instanceof TimeSignature) hasTimeChange = true;
+			else if (s instanceof Clef) hasClefChange = true;
+			else if ((s instanceof PartLabel)
+				|| (s instanceof Tempo)) continue;
+			else break;//barline, note...
+		}
+		double width = 0;
+		
 		//Vector initElements = new Vector();
 		currentClef = currentKey!=null ? currentKey.getClef() : Clef.G;
-		JClef jclef = new JClef(cursor, currentClef, getMetrics());
-		sl.addElement(jclef);
-		//initElements.addElement(clef);
-		double width = jclef.getWidth();
-		cursor.setLocation(cursor.getX()+width, cursor.getY());
-		if (currentKey!=null) {
+		if (!hasClefChange) {
+			JClef jclef = new JClef(cursor, currentClef, getMetrics());
+			sl.addElement(jclef);
+			//initElements.addElement(clef);
+			width = jclef.getWidth();
+			cursor.setLocation(cursor.getX()+width, cursor.getY());
+		}
+		if ((currentKey!=null) && !hasKeyChange) {
 			JKeySignature sk = new JKeySignature(currentKey, previousKey, cursor, getMetrics());
 			try {
 				previousKey = (KeySignature) currentKey.clone();
@@ -1558,7 +1576,7 @@ public class JTune extends JScoreElementAbstract {
 			int cursorNewLocationX = (int)(cursor.getX() + width + getMetrics().getNotesSpacing());
 			cursor.setLocation(cursorNewLocationX, cursor.getY());
 		}
-		if (currentTime!=null && m_staffLines.size()==0) {
+		if ((currentTime!=null) && (m_staffLines.size()==0) && !hasTimeChange) {
 			try {
 				JTimeSignature sig = new JTimeSignature(currentTime, cursor, getMetrics());
 				sl.addElement(sig);

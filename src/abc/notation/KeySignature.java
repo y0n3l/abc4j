@@ -325,8 +325,10 @@ public class KeySignature extends MusicElement implements Cloneable
 
       if (accidental.isNotDefined())
     	  accidentals[index] = Accidental.NATURAL;
-      else if (accidental.isDoubleFlat() || accidental.isDoubleSharp())
-          throw new IllegalArgumentException("Accidental can't be DOUBLE_SHARP or DOUBLE_FLAT");
+      //accept it, because in midi, the key is changed when there
+      //is an accidental in a bar, using this method
+      //else if (accidental.isDoubleFlat() || accidental.isDoubleSharp())
+      //    throw new IllegalArgumentException("Accidental can't be DOUBLE_SHARP or DOUBLE_FLAT");
       else
     	  accidentals[index] = accidental;
     }
