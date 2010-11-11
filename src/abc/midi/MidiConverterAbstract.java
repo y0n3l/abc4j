@@ -16,7 +16,6 @@
 package abc.midi;
 
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.Vector;
 
 import javax.sound.midi.Instrument;
@@ -32,6 +31,8 @@ import javax.sound.midi.Track;
 
 import abc.notation.Accidental;
 import abc.notation.BarLine;
+import abc.notation.Decoration;
+import abc.notation.Interval;
 import abc.notation.KeySignature;
 import abc.notation.MultiNote;
 import abc.notation.Note;
@@ -120,17 +121,101 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 
 						Note note = (Note)staff.elementAt(i);
 						long noteDuration;
-						if (note.hasGeneralGracing()) {
+						boolean fermata = false;
+						Vector decorationNotes = new Vector();
+						if (note.hasGeneralGracing() || note.hasDecorations()) {
+							Decoration[] d = note.getDecorations();
+							for (int j = 0; j < d.length; j++) {
+								switch (d[j].getType()) {
+								case Decoration.FERMATA:
+								case Decoration.FERMATA_INVERTED:
+									fermata = true; break;
+								case Decoration.LOWERMORDENT:
+								case Decoration.UPPERMORDENT:
+								case Decoration.DOUBLE_LOWER_MORDANT:
+								case Decoration.DOUBLE_UPPER_MORDANT:
+								case Decoration.TRILL:
+								case Decoration.TURN: //GRUPETTO_UP
+								case Decoration.TURN_INVERTED: //GRUPETTO_DOWN
+								case Decoration.TURNX:
+								case Decoration.TURNX_INVERTED:
+									Note n = new Note(note.getHeight());
+									n.setAccidental(note.getAccidental(currentKey));
+									Note o = new Interval(Interval.SECOND, Interval.MAJOR,
+												Interval.UPWARD)
+											.calculateSecondNote(n);
+									Note m = new Interval(Interval.SECOND, Interval.MAJOR,
+											Interval.DOWNWARD)
+										.calculateSecondNote(n);
+									//TODO ornament templates: regular, musette, balkan...
+									//n.setStrictDuration(Note.SIXTEENTH);
+									//o.setDuration((short)(Note.EIGHTH+Note.SIXTEENTH));
+									o.setAccidental(Accidental.NONE);
+									m.setAccidental(Accidental.NONE);
+									n.setStrictDuration(Note.THIRTY_SECOND);
+									m.setStrictDuration(Note.THIRTY_SECOND);
+									o.setStrictDuration(Note.THIRTY_SECOND);
+									switch (d[j].getType()) {
+									case Decoration.DOUBLE_LOWER_MORDANT:
+										decorationNotes.add(n);
+										decorationNotes.add(m);
+									case Decoration.LOWERMORDENT:
+										decorationNotes.add(n);
+										decorationNotes.add(m);
+										break;
+									case Decoration.DOUBLE_UPPER_MORDANT:
+									case Decoration.TRILL:
+										decorationNotes.add(n);
+										decorationNotes.add(o);
+									case Decoration.UPPERMORDENT:
+										decorationNotes.add(n);
+										decorationNotes.add(o);
+										break;
+									case Decoration.TURNX_INVERTED:
+									case Decoration.TURN:
+										decorationNotes.add(o);
+										decorationNotes.add(n);
+										decorationNotes.add(m);
+										break;
+									case Decoration.TURNX:
+									case Decoration.TURN_INVERTED:
+										decorationNotes.add(m);
+										decorationNotes.add(n);
+										decorationNotes.add(o);
+									}
+									break;
+								}
+							}
 							// currently not used
 							// future use: playing rolls, slides, etc.
 						}
 						long graceNotesDuration = 0;
-						if (note.hasGracingNotes()) {
+						if (note.hasGracingNotes() || (decorationNotes.size() > 0)) {
 							graceNotes = note.getGracingNotes();
-							for (int j=0;j<graceNotes.length;j++) {
-								noteDuration = getNoteLengthInTicks(graceNotes[j], staff)/2;
+							//gracing are eighth note for graphical rendition
+							//and because that's it in the parser
+							//adapt duration to note length
+							int divisor = 1;
+							if (note.getStrictDuration() >= Note.HALF)
+								divisor = 1; //grace is an eighth
+							else if (note.getStrictDuration() >= Note.QUARTER)
+								divisor = 2; //16th
+							else if (note.getStrictDuration() >= Note.EIGHTH)
+								divisor = 4; //32nd
+							else
+								divisor = 8; //64th
+							if (note.hasGracingNotes()) {
+								for (int j=0;j<graceNotes.length;j++) {
+									noteDuration = getNoteLengthInTicks(graceNotes[j], staff)/divisor;
+									graceNotesDuration += noteDuration;
+									playNote(graceNotes[j], i, currentKey, elapsedTime, noteDuration, track);
+									elapsedTime+=noteDuration;
+								}
+							}
+							for (int j=0;j<decorationNotes.size();j++) {
+								noteDuration = getNoteLengthInTicks((Note)decorationNotes.elementAt(j), staff);
 								graceNotesDuration += noteDuration;
-								playNote(graceNotes[j], i, currentKey, elapsedTime, noteDuration, track);
+								playNote((Note)decorationNotes.elementAt(j), i, currentKey, elapsedTime, noteDuration, track);
 								elapsedTime+=noteDuration;
 							}
 						}
@@ -138,6 +223,7 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 						noteDuration = getNoteLengthInTicks(note, staff) - graceNotesDuration;
 						if (noteDuration <= 0) //in case of too much grace notes
 							noteDuration = getNoteLengthInTicks(note, staff);
+						if (fermata) noteDuration *= 2;
 						playNote(note, i, currentKey, elapsedTime, noteDuration, track);
 						elapsedTime+=noteDuration;
 					}

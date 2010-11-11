@@ -1543,14 +1543,16 @@ public class JTune extends JScoreElementAbstract {
 		cursor.setLocation(cursor.getX(), cursor.getY()+getMetrics().getStaffCharBounds().getHeight());
 		
 		boolean hasKeyChange = false, hasTimeChange = false, hasClefChange = false;
-		for (int i = m_index; i < m_music.size(); i++) {
-			MusicElement s = (MusicElement)m_music.elementAt(i);
-			if (s instanceof KeySignature) hasKeyChange = true;
-			else if (s instanceof TimeSignature) hasTimeChange = true;
-			else if (s instanceof Clef) hasClefChange = true;
-			else if ((s instanceof PartLabel)
-				|| (s instanceof Tempo)) continue;
-			else break;//barline, note...
+		if (m_staffLines.size() > 0) {
+			for (int i = m_index; i < m_music.size(); i++) {
+				MusicElement s = (MusicElement)m_music.elementAt(i);
+				if (s instanceof KeySignature) hasKeyChange = true;
+				else if (s instanceof TimeSignature) hasTimeChange = true;
+				else if (s instanceof Clef) hasClefChange = true;
+				else if ((s instanceof PartLabel)
+					|| (s instanceof Tempo)) continue;
+				else break;//barline, note...
+			}
 		}
 		double width = 0;
 		
