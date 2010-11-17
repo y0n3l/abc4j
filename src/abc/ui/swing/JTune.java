@@ -59,6 +59,7 @@ import abc.notation.Words;
 import abc.ui.scoretemplates.HorizontalPosition;
 import abc.ui.scoretemplates.ScoreAttribute;
 import abc.ui.scoretemplates.ScoreElements;
+import abc.ui.scoretemplates.TextJustification;
 import abc.ui.scoretemplates.VerticalPosition;
 
 /**
@@ -721,6 +722,12 @@ public class JTune extends JScoreElementAbstract {
 				cursorNewLocationX += getMetrics().getNotesSpacing()
 					+ getEngraver().getNoteSpacing(element);
 			}
+		}
+		//if a PartLabel is the first element on the line (no notes)
+		//justify it to the right, not to override first note/chord
+		if ((element instanceof JPartLabel)
+				&& !currentStaffLine.hasNotes()) {
+			((JPartLabel)element).setTextJustification(TextJustification.RIGHT);
 		}
 
 		//Position the cursor for next element

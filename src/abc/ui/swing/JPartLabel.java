@@ -23,6 +23,7 @@ import java.awt.geom.Rectangle2D;
 
 import abc.notation.PartLabel;
 import abc.ui.scoretemplates.ScoreElements;
+import abc.ui.scoretemplates.TextJustification;
 
 public class JPartLabel extends JText {
 	
@@ -32,6 +33,7 @@ public class JPartLabel extends JText {
 	protected JPartLabel(ScoreMetrics mtrx, Point2D base, PartLabel partLabel) {
 		super(mtrx, String.valueOf(partLabel.getLabel()),
 				ScoreElements.PART_LABEL);
+		setTextJustification(TextJustification.CENTER);
 	}
 
 	/** Returns the height of this score element.
@@ -55,10 +57,14 @@ public class JPartLabel extends JText {
 	
 	public Rectangle2D getBoundingBox() {
 		double framesize = getFrameSize();
-		double x = getBase().getX() - framesize/2 + framesize/6;
+		double x = getBase().getX() + framesize/6;
+		if (getTextJustification() == TextJustification.RIGHT)
+			x -= framesize;
+		else
+			x -= framesize/2;
 		double y = getBase().getY()
 				- getMetrics().getStaffCharBounds().getHeight()
-				- getMetrics().getNoteHeight()
+				- getMetrics().getNoteHeight()*2
 				- framesize;
 		return new Rectangle2D.Double(x, y, framesize, framesize);
 	}
@@ -75,7 +81,7 @@ public class JPartLabel extends JText {
 		g2.setFont(getTemplate().getTextFont(ScoreElements.PART_LABEL));
 		float descent = g2.getFont().getLineMetrics(getText(), g2.getFontRenderContext())
 			.getDescent();
-		g2.drawString(getText(), (int)(getBase().getX()-labelSize/2+getFrameSize()/6),
+		g2.drawString(getText(), (int)(bb.getCenterX() - labelSize/2),
 				(int)(bb.getY() + bb.getHeight() - descent));
 		g2.setFont(previousFont);
 		g2.draw(bb);

@@ -50,6 +50,10 @@ public class JText extends JScoreElementAbstract {
 	private String[] m_text_lines = null;
 	
 	private JScoreElementAbstract m_scoreElement = null;
+	
+	private byte m_verticalAlign = TextVerticalAlign.BASELINE;
+	
+	private byte m_textJustification = -1;
 
 	/**
 	 * Constructor
@@ -93,15 +97,28 @@ public class JText extends JScoreElementAbstract {
 	}
 	
 	public byte getTextJustification() {
-		switch (getHorizontalPosition()) {
-		case HorizontalPosition.CENTER: return TextJustification.CENTER;
-		case HorizontalPosition.RIGHT: return TextJustification.RIGHT;
-		default: return TextJustification.LEFT;
+		if (m_textJustification == -1) {
+			switch (getHorizontalPosition()) {
+			case HorizontalPosition.CENTER:
+				m_textJustification = TextJustification.CENTER; break;
+			case HorizontalPosition.RIGHT:
+				m_textJustification = TextJustification.RIGHT; break;
+			default:
+				m_textJustification = TextJustification.LEFT;
+			}
 		}
+		return m_textJustification;
+	}
+	
+	public void setTextJustification(byte b) {
+		m_textJustification = b;
 	}
 	
 	public byte getTextVerticalAlign() {
-		return TextVerticalAlign.BASELINE;
+		return m_verticalAlign;
+	}
+	public void setTextVerticalAlign(byte b) {
+		m_verticalAlign = b;
 	}
 
 	/**

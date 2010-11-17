@@ -51,6 +51,7 @@ class JStaffLine extends JScoreElementAbstract {
 	protected void setTopY(double d) {
 		topY = d;
 	}
+	
 	/**
 	 * Returns the top Y of the staff line, including the space
 	 * above the staff, e.g. for chord line
@@ -98,6 +99,21 @@ class JStaffLine extends JScoreElementAbstract {
 	public boolean hasLyrics() {
 		if (m_lyrics.size() > 0) return true;
 		else return false;
+	}
+	
+	/**
+	 * Returns true if this staff line has note(s).
+	 * Returns false if it only contains clef, key, time sig., tempo, barlines...
+	 * @return
+	 */
+	public boolean hasNotes() {
+		for (Iterator it = m_staffElements.iterator(); it.hasNext();) {
+			JScoreElement element = (JScoreElement) it.next();
+			if ((element instanceof JNoteElementAbstract)
+					|| (element instanceof JGroupOfNotes))
+				return true;
+		}
+		return false;
 	}
 
 	public int getLyricsLineCount() {
