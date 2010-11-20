@@ -93,7 +93,7 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 			}
 		}
 
-		setStemUpBeginPosition(new Point2D.Double(noteX + glyphDimension.getWidth() + 1, stemYBegin));
+		setStemUpBeginPosition(new Point2D.Double(noteX + Math.ceil(glyphDimension.getWidth()), stemYBegin));
 		setStemDownBeginPosition(new Point2D.Double(noteX, stemYBegin));
 
 		notePosition = new Point2D.Double(displayPosition.getX(), displayPosition.getY());
@@ -163,7 +163,7 @@ class JNotePartOfGroup extends JNote implements JGroupableNote {
 		//	context.drawLine((int)getStemBeginPosition().getX()+1, (int)getStemBeginPosition().getY(),
 		//			(int)getStemBeginPosition().getX()+1, stemYEnd);
 		//	context.setStroke(defaultS);
-			context.fillRect((int)getStemBeginPosition().getX(),
+			context.fillRect((int)Math.ceil(getStemBeginPosition().getX()),
 					Math.min((int)getStemBeginPosition().getY(),stemYEnd),
 					1,
 					(int)Math.abs(stemYEnd - getStemBeginPosition().getY()));

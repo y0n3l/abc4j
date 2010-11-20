@@ -697,6 +697,7 @@ public class JTune extends JScoreElementAbstract {
 			if ((lastElement instanceof JPartLabel)
 					&& !(element instanceof JBar)
 					&& !(element instanceof JKeySignature)
+					&& !(element instanceof JTempo)
 					&& !(element instanceof JTimeSignature)) {
 				cursor.setLocation(cursor.getX()+getMetrics().getNotesSpacing(), cursor.getY());
 				//element.setBase(cursor);
