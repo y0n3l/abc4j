@@ -22,7 +22,6 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.Vector;
@@ -61,7 +60,7 @@ public class Tune implements Cloneable, Serializable
   /** the multi parts definition of this tune if composed of several parts.
    * If this tune is a one-part tune, this attribtue is <TT>null</TT> */
   private MultiPartsDefinition m_multiPartsDef = null;
-  private Hashtable m_parts = null;
+  private TreeMap m_parts = null;
 
   /** Creates a new empty tune. */
   public Tune() {
@@ -92,7 +91,7 @@ public class Tune implements Cloneable, Serializable
 	  this.m_notes = tune.m_notes;
 	  this.m_origin = tune.m_origin;
 	  if (tune.m_parts != null) {
-		  this.m_parts = new Hashtable();
+		  this.m_parts = new TreeMap();
 		for (Iterator itK = tune.m_parts.keySet().iterator(); itK.hasNext();) {
 			Character key = (Character) itK.next();
 			Part value = (Part) tune.m_parts.get(key);
@@ -338,7 +337,7 @@ public class Tune implements Cloneable, Serializable
 	  // empty or blank character because the blank character is
 	  // used as flag for the default part.
 	  Part part = new Part(this, partLabel);
-	  if (m_parts==null) m_parts = new Hashtable();
+	  if (m_parts==null) m_parts = new TreeMap();
 	  m_parts.put(new Character(partLabel), part);
 	  return part;
   }
@@ -614,11 +613,21 @@ public class Tune implements Cloneable, Serializable
 		if (m_multiPartsDef == null)
 			return (m_defaultPart.getMusic());
 		else {
-			Vector alreadyAddedParts = new Vector();
+			//Vector alreadyAddedParts = new Vector();
 			Music globalScore = new Music();
 			Music defaultScore = m_defaultPart.getMusic();
 			for (int i = 0; i < defaultScore.size(); i++)
 				globalScore.addElement((MusicElement) defaultScore.elementAt(i));
+			Iterator it = m_parts.keySet().iterator();
+			while (it.hasNext()) {
+				Part part = (Part) m_parts.get(it.next());
+				char label = part.getLabel();
+				globalScore.addElement(new PartLabel(label));
+				Music score = part.getMusic();
+				for (int j = 0; j < score.size(); j++)
+					globalScore.addElement((MusicElement) score.elementAt(j));
+			}
+			/*
 			Part[] parts = m_multiPartsDef.toPartsArray();
 			for (int i = 0; i < parts.length; i++) {
 				char label = parts[i].getLabel();
@@ -630,7 +639,7 @@ public class Tune implements Cloneable, Serializable
 				for (int j = 0; j < score.size(); j++)
 					globalScore.addElement((MusicElement) score.elementAt(j));
 				alreadyAddedParts.add(new Character(label));
-			}
+			}*/
 			return globalScore;
 		}
 	}
