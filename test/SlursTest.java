@@ -1,8 +1,8 @@
 import java.io.File;
 
 import junit.framework.TestCase;
+import abc.notation.Music;
 import abc.notation.Note;
-import abc.notation.Tune.Music;
 import abc.parser.TuneBook;
 
 public class SlursTest extends TestCase {
@@ -70,20 +70,22 @@ public class SlursTest extends TestCase {
 	private void checkSlursInScore(Music score) {
 		Note firstNote = null;
 		Note lastNote = null;
-		for (int i=0; i<score.size(); i++)
-			if (score.elementAt(i) instanceof Note) {
-				Note note = ((Note)score.elementAt(i));
+		for (int i=0; i<score.getVoice(1).size(); i++)
+			if (score.getVoice(1).elementAt(i) instanceof Note) {
+				Note note = ((Note)score.getVoice(1).elementAt(i));
 				if (firstNote==null)
 					firstNote = note;
 				lastNote = note;
 				assertTrue(note.isPartOfSlur());
 			}
-		assertNotNull(firstNote.getSlurDefinition());
+		assertNotNull(firstNote.getSlurDefinitions().firstElement());
 		assertFalse(firstNote.isTied());
 		assertFalse(lastNote.isTied());
 		assertTrue(firstNote.isBeginingSlur());
 		assertTrue(lastNote.isEndingSlur());
-		assertEquals(firstNote.getSlurDefinition(), lastNote.getSlurDefinition());
+		assertEquals(
+				firstNote.getSlurDefinitions().firstElement(),
+				lastNote.getSlurDefinitions().firstElement());
 		
 	}
 	

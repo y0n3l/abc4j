@@ -17,9 +17,9 @@ public class DecorationsTest extends TestCase {
 	public void test1(){
 		String tuneAsString = "X:1\nT:test\nK:c\nvAuBC\n";
 		Tune tune = new TuneParser().parse(tuneAsString);
-		Note firstNote = (Note)tune.getMusic().elementAt(1);
-		Note secondNote = (Note)tune.getMusic().elementAt(2);
-		Note thirdNote = (Note)tune.getMusic().elementAt(3);
+		Note firstNote = (Note)tune.getMusic().getVoice(1).elementAt(1);
+		Note secondNote = (Note)tune.getMusic().getVoice(1).elementAt(2);
+		Note thirdNote = (Note)tune.getMusic().getVoice(1).elementAt(3);
 		assertTrue(firstNote.hasDecoration(Decoration.DOWNBOW));
 		assertTrue(secondNote.hasDecoration(Decoration.UPBOW));
 		assertFalse(thirdNote.hasDecorations());
@@ -30,9 +30,9 @@ public class DecorationsTest extends TestCase {
 	public void test2(){
 		String tuneAsString = "X:1\nT:test\nK:c\nv_Au=Bv^c\n";
 		Tune tune = new TuneParser().parse(tuneAsString);
-		Note firstNote = (Note)tune.getMusic().elementAt(1);
-		Note secondNote = (Note)tune.getMusic().elementAt(2);
-		Note thirdNote = (Note)tune.getMusic().elementAt(3);
+		Note firstNote = (Note)tune.getMusic().getVoice(1).elementAt(1);
+		Note secondNote = (Note)tune.getMusic().getVoice(1).elementAt(2);
+		Note thirdNote = (Note)tune.getMusic().getVoice(1).elementAt(3);
 		assertTrue(firstNote.hasDecoration(Decoration.DOWNBOW));
 		assertTrue(firstNote.getAccidental().isFlat());
 		assertTrue(secondNote.hasDecoration(Decoration.UPBOW));

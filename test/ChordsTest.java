@@ -13,7 +13,7 @@ public class ChordsTest extends TestCase {
 	public void test1(){
 		String tuneAsString = "X:1\nT:test\nK:c\n[e^fa]\n";
 		Tune tune = new TuneParser().parse(tuneAsString);
-		MultiNote firstNote = (MultiNote)tune.getMusic().elementAt(1);
+		MultiNote firstNote = (MultiNote)tune.getMusic().getVoice(1).elementAt(1);
 		//Note secondNote = (Note)tune.getMusic().elementAt(2);
 		//Note thirdNote = (Note)tune.getMusic().elementAt(3);
 		assertTrue(firstNote.hasUniqueStrictDuration());
@@ -25,7 +25,7 @@ public class ChordsTest extends TestCase {
 	public void test2(){
 		String tuneAsString = "X:1\nT:test\nK:c\n[e4^fa]\n";
 		Tune tune = new TuneParser().parse(tuneAsString);
-		MultiNote firstNote = (MultiNote)tune.getMusic().elementAt(1);
+		MultiNote firstNote = (MultiNote)tune.getMusic().getVoice(1).elementAt(1);
 		//Note secondNote = (Note)tune.getMusic().elementAt(2);
 		//Note thirdNote = (Note)tune.getMusic().elementAt(3);
 		assertFalse(firstNote.hasUniqueStrictDuration());
@@ -38,7 +38,7 @@ public class ChordsTest extends TestCase {
 	public void test3(){
 		String tuneAsString = "X:1\nT:test\nK:c\n[e4^fa]\n";
 		Tune tune = new TuneParser().parse(tuneAsString);
-		MultiNote firstNote = (MultiNote)tune.getMusic().elementAt(1);
+		MultiNote firstNote = (MultiNote)tune.getMusic().getVoice(1).elementAt(1);
 		//Note secondNote = (Note)tune.getMusic().elementAt(2);
 		//Note thirdNote = (Note)tune.getMusic().elementAt(3);
 		assertFalse(firstNote.hasUniqueStrictDuration());
