@@ -25,11 +25,13 @@ import abc.notation.Accidental;
 import abc.notation.BarLine;
 import abc.notation.KeySignature;
 import abc.notation.MultiNote;
+import abc.notation.Music;
 import abc.notation.Note;
 import abc.notation.RepeatBarLine;
 import abc.notation.Tempo;
 import abc.notation.Tune;
 import abc.notation.Tuplet;
+import abc.notation.Voice;
 import abc.parser.PositionableMultiNote;
 import abc.parser.PositionableNote;
 
@@ -61,7 +63,8 @@ public abstract class OldMidiConverterAbstract implements MidiConverterInterface
       KeySignature currentKey = null;
 
       long elapsedTime = 0;
-      Tune.Music staff = tune.getMusic();
+      Music music = tune.getMusic();
+      Voice staff = music.getVoice((byte) 1);
       while (i < staff.size())
       {
         if (!inWrongEnding)

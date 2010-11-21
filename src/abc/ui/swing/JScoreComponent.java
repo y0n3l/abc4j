@@ -80,6 +80,8 @@ public class JScoreComponent extends JComponent
 	/** Default constructor. */
 	public JScoreComponent() {
 		m_dimension = new Dimension(1,1);
+		setForeground(Color.black);
+		setBackground(Color.white);
 		initGfx();
 	}
 

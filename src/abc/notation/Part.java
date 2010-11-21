@@ -16,62 +16,61 @@
 package abc.notation;
 
 import java.io.Serializable;
-import java.util.Iterator;
 
-/** <TT>Part</TT> objects are used to define parts in tunes. */
+/** <TT>Part</TT> objects are used to define parts in tunes.
+ * A part contains a {@link Music},
+ * which can contains multiple voices. */
 public class Part implements Cloneable, Serializable {
-	
-  private static final long serialVersionUID = 7633083530672682502L;
-  private char m_label;
-  //private Tune m_tune = null;
-  private Tune.Music m_music = null;
 
-  Part (Tune tune, char labelValue) {
-    //m_tune = tune;
-    m_label = labelValue;
-    m_music = tune.createMusic();
-  }
-  
-  /** Sets the label that identifies this part.
-   * @param labelValue The label that identifies this part. */
-  public void setLabel(char labelValue)
-  { m_label = labelValue; }
+	private static final long serialVersionUID = 7633083530672682502L;
 
-  /** Returns the label that identifies this part.
-   * @return The label that identifies this part. */
-  public char getLabel()
-  { return m_label; }
+	private char m_label;
+
+	// private Tune m_tune = null;
+	private Music m_music = null;
+
+	Part(Tune tune, char labelValue) {
+		// m_tune = tune;
+		m_label = labelValue;
+		m_music = new Music();
+		m_music.setPartLabel(m_label);
+	}
+
+	/**
+	 * Sets the label that identifies this part.
+	 * 
+	 * @param labelValue
+	 *            The label that identifies this part.
+	 */
+	public void setLabel(char labelValue) {
+		m_label = labelValue;
+	}
+
+	/**
+	 * Returns the label that identifies this part.
+	 * 
+	 * @return The label that identifies this part.
+	 */
+	public char getLabel() {
+		return m_label;
+	}
 
 	/**
 	 * Returns the music to this part.
 	 * 
 	 * @return The music associated to this part.
 	 */
-	public Tune.Music getMusic() {
-		for (Iterator it = m_music.iterator(); it.hasNext();) {
-			MusicElement element = (MusicElement) it.next();
-			element.getReference().setPart(getLabel());
-			if (element instanceof MultiNote) {
-				MultiNote multi = (MultiNote) element;
-				Note[] notes = multi.toArray();
-				if (notes != null) {
-					for (int i = 0; i < notes.length; i++) {
-						notes[i].getReference().setPart(getLabel());
-						notes[i].getReference().setX(element.getReference().getX());
-					}
-				}
-			}
-		}
+	public Music getMusic() {
 		return m_music;
 	}
 
-  void setMusic(Tune.Music score)
-  {m_music = score;}
-  	
-  	public Object clone() throws CloneNotSupportedException {
-  		//return new Part(this);
-  		Object o = super.clone();
-  		((Part)o).m_music = (Tune.Music)m_music.clone();
-  		return o;
-  	}
+	void setMusic(Music score) {
+		m_music = score;
+	}
+
+	public Object clone() throws CloneNotSupportedException {
+		Object o = super.clone();
+		((Part) o).m_music = (Music) m_music.clone();
+		return o;
+	}
 }

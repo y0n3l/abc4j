@@ -187,7 +187,8 @@ public class TunePlayer implements MetaEventListener
 		}
 		else
 			if (meta.getType()==MidiMessageType.NOTE_INDEX_MARKER) {
-				notifyNotePlayedChanged((NoteAbstract)m_tune.getMusic().elementAt(NoteIndexMessage.getIndex(meta.getData())));
+				//FIXME notifyNotePlayedChange, use MusicReference? what is NoteIndexMessage.getIndex
+				//notifyNotePlayedChanged((NoteAbstract)m_tune.getMusic().elementAt(NoteIndexMessage.getIndex(meta.getData())));
 			}
 			else
 				if (MetaMessageWA.isNotationMarker(meta)) {

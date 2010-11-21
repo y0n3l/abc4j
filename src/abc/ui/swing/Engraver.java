@@ -9,10 +9,10 @@ import java.util.Iterator;
 import java.util.TreeSet;
 
 import abc.notation.MultiNote;
+import abc.notation.Music;
 import abc.notation.Note;
 import abc.notation.NoteAbstract;
 import abc.notation.Tune;
-import abc.notation.Tune.Music;
 
 /**
  * @author Sylvain Machefert
@@ -66,7 +66,7 @@ public class Engraver implements Serializable {
 			m_variation = oldVariation;
 			
 			Music music = tune.getMusic();
-			Note shortestNote = music.getShortestNote();
+			Note shortestNote = music.getShortestNoteInAllVoices();
 			int shortestDuration = Note.SIXTEENTH;
 			if (shortestNote != null)
 				shortestDuration = shortestNote.getDuration();

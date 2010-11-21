@@ -21,7 +21,7 @@ import javax.sound.midi.MidiEvent;
 import abc.notation.KeySignature;
 import abc.notation.Note;
 import abc.notation.MultiNote;
-import abc.notation.Tune.Music;
+import abc.notation.Music;
 
 /** A basic midi converter that just plays melody, ignores ornaments and chords. */
 public class BasicPositionableMidiConverter extends BasicMidiConverter

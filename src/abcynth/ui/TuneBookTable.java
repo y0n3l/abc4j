@@ -27,6 +27,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
 
+import abc.notation.KeySignature;
 import abc.notation.Tune;
 import abc.parser.TuneBook;
 import abc.parser.TuneBookListenerInterface;
@@ -394,8 +395,9 @@ public class TuneBookTable extends JTable// implements TuneBookListenerInterface
 
     public Object getValueFor(Tune tune)
     {
-      if (tune.getKey()!=null)
-        return tune.getKey().toLitteralNotation();
+    	KeySignature ks = tune.getMusic().getKey();
+      if (ks!=null)
+        return ks.toLitteralNotation();
       else
         return null;
     }

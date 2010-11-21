@@ -35,8 +35,11 @@ import java.util.Vector;
 
 import abc.notation.BarLine;
 import abc.notation.Clef;
+import abc.notation.EndOfStaffLine;
 import abc.notation.KeySignature;
 import abc.notation.MultiNote;
+import abc.notation.Music;
+import abc.notation.MusicElement;
 import abc.notation.MusicElementReference;
 import abc.notation.Note;
 import abc.notation.NoteAbstract;
@@ -44,8 +47,6 @@ import abc.notation.NotesSeparator;
 import abc.notation.Part;
 import abc.notation.PartLabel;
 import abc.notation.RepeatBarLine;
-import abc.notation.MusicElement;
-import abc.notation.EndOfStaffLine;
 import abc.notation.SlurDefinition;
 import abc.notation.Spacer;
 import abc.notation.Tempo;
@@ -54,7 +55,7 @@ import abc.notation.TimeSignature;
 import abc.notation.Tune;
 import abc.notation.Tuplet;
 import abc.notation.TwoNotesLink;
-import abc.notation.Tune.Music;
+import abc.notation.Voice;
 import abc.notation.Words;
 import abc.ui.scoretemplates.HorizontalPosition;
 import abc.ui.scoretemplates.ScoreAttribute;
@@ -68,7 +69,7 @@ import abc.ui.scoretemplates.VerticalPosition;
  */
 public class JTune extends JScoreElementAbstract {
 
-	private static int DEBUG = 0;
+	//private static int DEBUG = 0;
 	
 	private final static short START = 0;
 	private final static short CONTROL = 1;
@@ -125,6 +126,7 @@ public class JTune extends JScoreElementAbstract {
 	private Clef currentClef = null;
 	private TimeSignature previousTime = null;
 	private TimeSignature currentTime = null;
+	private byte m_currentVoice = 1;
 	private Point2D cursor = null;
 
 	protected JTune(Tune tune, Point2D base, ScoreTemplate st) {
@@ -474,8 +476,13 @@ public class JTune extends JScoreElementAbstract {
 		currentTime = null;
 		currentStaffLineInitialized = false;
 		currentStaffLine = null;
-		for (m_index = 0; m_index < m_music.size(); m_index++) {
-			MusicElement s = (MusicElement)m_music.elementAt(m_index);
+		Iterator itVoices = m_music.getVoices().iterator();
+		while (itVoices.hasNext()) {
+			Voice voice = (Voice) itVoices.next();
+			m_currentVoice = voice.getVoiceNumber();
+			int size = 0;
+		for (m_index = 0, size=voice.size(); m_index < size; m_index++) {
+			MusicElement s = (MusicElement)voice.elementAt(m_index);
 			//System.out.println(s.toString() + " " + s.getReference().toString());
 			// ==== Notes>quarter, rests, notes without slur,tuplet ====
 			if (
@@ -619,7 +626,8 @@ public class JTune extends JScoreElementAbstract {
 			if ((s instanceof Tempo)/* && (s != m_tune.getGeneralTempo())*/) {
 				appendToScore(new JTempo(getMetrics(), cursor, (Tempo)s));
 			}
-		}// Enf of score elements iteration.
+		}//end each element in voice
+		}//end each voice in music
 
 		if (lessThanQuarter.size()!=0) {
 			appendToScore(lessThanQuarter);
@@ -1173,8 +1181,9 @@ public class JTune extends JScoreElementAbstract {
 			(NoteAbstract) elmtStart.getMusicElement();
 		NoteAbstract endNote =// (NoteAbstract) m_music.getElementByReference(slurDef.getEnd());
 			(NoteAbstract) elmtEnd.getMusicElement();
+		byte voiceNo = startNote.getReference().getVoice();
 		//under in
-		peakNote[UNDER_IN] = m_music.getLowestNoteBewteen(startNote, endNote);
+		peakNote[UNDER_IN] = m_music.getVoice(voiceNo).getLowestNoteBewteen(startNote, endNote);
 		peakNoteGlyph[UNDER_IN] = (JNoteElementAbstract) getRenditionObjectFor(peakNote[UNDER_IN]);
 		
 		//under out of stems
@@ -1193,7 +1202,7 @@ public class JTune extends JScoreElementAbstract {
 		peakNote[UNDER_OUT] = (NoteAbstract) peakNoteGlyph[UNDER_OUT].getMusicElement();
 
 		//above in
-		peakNote[ABOVE_IN] = m_music.getHighestNoteBewteen(startNote, endNote);
+		peakNote[ABOVE_IN] = m_music.getVoice(voiceNo).getHighestNoteBewteen(startNote, endNote);
 		peakNoteGlyph[ABOVE_IN] = (JNoteElementAbstract)getRenditionObjectFor(peakNote[ABOVE_IN]);
 
 		//above out of stems (e.g. tuplet)
@@ -1500,7 +1509,7 @@ public class JTune extends JScoreElementAbstract {
 	private Collection getNoteGlyphesBetween(NoteAbstract start, NoteAbstract end) {
 		Collection jnotes = new Vector();
 		try {
-			Collection notes = m_music.getNotesBetween(start, end);
+			Collection notes = m_music.getVoice(start.getReference().getVoice()).getNotesBetween(start, end);
 			for (Iterator it = notes.iterator(); it.hasNext();) {
 				NoteAbstract n = (NoteAbstract) it.next();
 				jnotes.add((JNoteElementAbstract) getRenditionObjectFor(n));
@@ -1538,9 +1547,9 @@ public class JTune extends JScoreElementAbstract {
 		sl.setTopY(cursor.getY());
 		
 		//add space if tune has chord, part label or tempo
-		Music music = m_tune.getMusicForGraphicalRendition();
-		if (music.hasChordNames() || music.hasPartLabel()
-				|| music.hasTempo()) {
+		//Music music = m_tune.getMusicForGraphicalRendition();
+		if (m_music.getVoice(m_currentVoice).hasChordNames() || m_music.hasPartLabel()
+				|| m_music.hasTempo()) {
 			cursor.setLocation(
 				cursor.getX(),
 				cursor.getY() + getTemplate().getAttributeSize(
@@ -1552,8 +1561,9 @@ public class JTune extends JScoreElementAbstract {
 		
 		boolean hasKeyChange = false, hasTimeChange = false, hasClefChange = false;
 		if (m_staffLines.size() > 0) {
-			for (int i = m_index; i < m_music.size(); i++) {
-				MusicElement s = (MusicElement)m_music.elementAt(i);
+			Voice voice = m_music.getVoice(m_currentVoice);
+			for (int i = m_index; i < voice.size(); i++) {
+				MusicElement s = (MusicElement)voice.elementAt(i);
 				if (s instanceof KeySignature) hasKeyChange = true;
 				else if (s instanceof TimeSignature) hasTimeChange = true;
 				else if (s instanceof Clef) hasClefChange = true;

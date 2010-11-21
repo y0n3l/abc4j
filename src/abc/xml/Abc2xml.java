@@ -41,14 +41,14 @@ import abc.notation.BarLine;
 import abc.notation.EndOfStaffLine;
 import abc.notation.KeySignature;
 import abc.notation.MultiNote;
-import abc.notation.MusicElement;
+import abc.notation.Music;
 import abc.notation.Note;
 import abc.notation.NotesSeparator;
 import abc.notation.RepeatBarLine;
 import abc.notation.TimeSignature;
 import abc.notation.Tune;
 import abc.notation.Tuplet;
-import abc.notation.Tune.Music;
+import abc.notation.Voice;
 
 public class Abc2xml {
 
@@ -351,10 +351,13 @@ public class Abc2xml {
 		// TimeSignature time = null;
 		int voltaRunning = 0;
 		currentMeasureEl.setAttribute(NUMBER_ATTRIBUTE, new Integer(measureNb).toString());
-		for (int i = 0; i < music.size(); i++) {
-			MusicElement current = (MusicElement) music.elementAt(i);
-			if (music.elementAt(i) instanceof Note) {
-				Note note = (Note) music.elementAt(i);
+		Iterator it = music.getVoices().iterator();
+		while (it.hasNext()) {
+			Voice voice = (Voice) it.next();
+		for (int i = 0; i < voice.size(); i++) {
+			//MusicElement current = (MusicElement) music.elementAt(i);
+			if (voice.elementAt(i) instanceof Note) {
+				Note note = (Note) voice.elementAt(i);
 				Element noteElement = convert(doc, note);
 				if (note.getStrictDuration() < Note.QUARTER) {
 					if (lastShorterThanQuarterNote == null) {
@@ -378,20 +381,20 @@ public class Abc2xml {
 				}
 				currentMeasureEl.appendChild(noteElement);
 				addedMusicElement++;
-			} else if (music.elementAt(i) instanceof MultiNote) {
-				Node[] nodes = convert(doc, (MultiNote) music.elementAt(i));
+			} else if (voice.elementAt(i) instanceof MultiNote) {
+				Node[] nodes = convert(doc, (MultiNote) voice.elementAt(i));
 				for (int j = 0; j < nodes.length; j++)
 					currentMeasureEl.appendChild(nodes[j]);
 				addedMusicElement++;
-			} else if (music.elementAt(i) instanceof TimeSignature) {
+			} else if (voice.elementAt(i) instanceof TimeSignature) {
 				// time = (TimeSignature)music.elementAt(i);
-				appendTo(currentMeasureEl, (TimeSignature) music.elementAt(i), doc);
-			} else if (music.elementAt(i) instanceof KeySignature) {
+				appendTo(currentMeasureEl, (TimeSignature) voice.elementAt(i), doc);
+			} else if (voice.elementAt(i) instanceof KeySignature) {
 				// key = (KeySignature)music.elementAt(i);
-				appendTo(currentMeasureEl, (KeySignature) music.elementAt(i), doc);
-			} else if (music.elementAt(i) instanceof BarLine) {
+				appendTo(currentMeasureEl, (KeySignature) voice.elementAt(i), doc);
+			} else if (voice.elementAt(i) instanceof BarLine) {
 
-				BarLine barline = ((BarLine) music.elementAt(i));
+				BarLine barline = ((BarLine) voice.elementAt(i));
 				Element barLineNode = null;
 				if (voltaRunning > 1) { // end of volta > 2 on the first bar
 										// line we find
@@ -466,11 +469,11 @@ public class Abc2xml {
 					}
 					addedMusicElement = 0;
 				}
-			} else if (music.elementAt(i) instanceof EndOfStaffLine) {
+			} else if (voice.elementAt(i) instanceof EndOfStaffLine) {
 				Element printEl = doc.createElement("print");
 				printEl.setAttribute("new-system", "yes");
 				currentMeasureEl.appendChild(printEl);
-			}  if (music.elementAt(i) instanceof NotesSeparator){
+			}  if (voice.elementAt(i) instanceof NotesSeparator){
 				//Node lastBeam=;
 				if (lastShorterThanQuarterNote != null ) {
 					Element beamNode;
@@ -487,7 +490,8 @@ public class Abc2xml {
 			}
 			
 
-		}
+		}//end each element in voice
+		}//end each voice in music
 	}
 
 	protected Node convert(Document doc, KeySignature signature) {

@@ -16,6 +16,7 @@
 package abc.midi;
 
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.sound.midi.Instrument;
@@ -35,11 +36,12 @@ import abc.notation.Decoration;
 import abc.notation.Interval;
 import abc.notation.KeySignature;
 import abc.notation.MultiNote;
+import abc.notation.Music;
 import abc.notation.Note;
 import abc.notation.RepeatBarLine;
 import abc.notation.Tempo;
 import abc.notation.Tune;
-import abc.notation.Tune.Music;
+import abc.notation.Voice;
 
 /** MidiConverter class defines various static methods to convert abc related stuff
  * to midi : notes, tunes etc... */
@@ -78,28 +80,31 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   			int lastRepeatOpen = -1;
   			int repeatNumber = 1;
   			boolean inWrongEnding = false;
-  			int i = 0;// StaffItem iterator
   			KeySignature tuneKey = null;
   			KeySignature currentKey = null;
   			Hashtable partsKey = new Hashtable();
   			
 			long elapsedTime = 0;
 			Note[] graceNotes = null;
-			Tune.Music staff = tune.getMusic();
-			while (i < staff.size()) {
+			Music staff = tune.getMusic();
+			Iterator it = staff.getVoices().iterator();
+			while (it.hasNext()) {
+				Voice voice = (Voice) it.next();
+				int i = 0;// StaffItem iterator
+	  		while (i < voice.size()) {
 				if (!inWrongEnding) {
 					//==================================================================== TEMPO
-					if (staff.elementAt(i) instanceof abc.notation.Tempo) {
-						addTempoEventsFor(track, elapsedTime, getMidiMessagesFor((Tempo)staff.elementAt(i)));//, trackLengthInTicks));
+					if (voice.elementAt(i) instanceof abc.notation.Tempo) {
+						addTempoEventsFor(track, elapsedTime, getMidiMessagesFor((Tempo)voice.elementAt(i)));//, trackLengthInTicks));
 					}
 					else
-					if (staff.elementAt(i) instanceof abc.notation.PartLabel) {
+					if (voice.elementAt(i) instanceof abc.notation.PartLabel) {
 						//Imagine... part A in Gmaj, B in Amin
 						//in tune you have K:G, P:A, ... P:B, K:Am
 						//if you have part order ABA, when you return to A
 						//you stay in Amin. This stores the tuneKey when a
 						//new part appear, and restitute it when part is played again
-						abc.notation.PartLabel pl = (abc.notation.PartLabel) staff.elementAt(i);
+						abc.notation.PartLabel pl = (abc.notation.PartLabel) voice.elementAt(i);
 						if (partsKey.get(pl.getLabel()+"") == null) {
 							partsKey.put(pl.getLabel()+"", tuneKey);
 						} else {
@@ -108,18 +113,18 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 					}
 					else
 						//==================================================================== KEY SIGNATURE
-					if (staff.elementAt(i) instanceof abc.notation.KeySignature) {
-							tuneKey = (KeySignature)(staff.elementAt(i));
+					if (voice.elementAt(i) instanceof abc.notation.KeySignature) {
+							tuneKey = (KeySignature)(voice.elementAt(i));
 							currentKey = new KeySignature(tuneKey.getAccidentals());
 					}
 					else
 					//==================================================================== NOTE
 					// Notes ending ties should be ignored. Already taken into
 					// account in getNoteLengthInTicks(Note)
-					if (staff.elementAt(i) instanceof abc.notation.Note
-						&& !((abc.notation.Note)staff.elementAt(i)).isEndingTie()) {
+					if (voice.elementAt(i) instanceof abc.notation.Note
+						&& !((abc.notation.Note)voice.elementAt(i)).isEndingTie()) {
 
-						Note note = (Note)staff.elementAt(i);
+						Note note = (Note)voice.elementAt(i);
 						long noteDuration;
 						boolean fermata = false;
 						Vector decorationNotes = new Vector();
@@ -229,15 +234,15 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 					}
 					else
 					//==================================================================== MULTI NOTE
-					if ((staff.elementAt(i) instanceof abc.notation.MultiNote)) {
-						MultiNote multiNote = (MultiNote)staff.elementAt(i);
+					if ((voice.elementAt(i) instanceof abc.notation.MultiNote)) {
+						MultiNote multiNote = (MultiNote)voice.elementAt(i);
 						playMultiNote(multiNote, i, currentKey, elapsedTime, track, staff);
 						elapsedTime+=getNoteLengthInTicks(multiNote, staff);
 					}
 				} //endif (!inWrongEnding)
     			//====================================================================== REPEAT BAR LINE
-  				if (staff.elementAt(i) instanceof abc.notation.RepeatBarLine) {
-  					RepeatBarLine bar = (RepeatBarLine)staff.elementAt(i);
+  				if (voice.elementAt(i) instanceof abc.notation.RepeatBarLine) {
+  					RepeatBarLine bar = (RepeatBarLine)voice.elementAt(i);
   					if (repeatNumber<bar.getRepeatNumbers()[0] && lastRepeatOpen!=-1) {
   						repeatNumber++;
   						i=lastRepeatOpen;
@@ -250,9 +255,9 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   				}
   				else
 				//====================================================================== BAR LINE OPEN / CLOSE
-				if (staff.elementAt(i) instanceof abc.notation.BarLine) {
+				if (voice.elementAt(i) instanceof abc.notation.BarLine) {
 					//currentKey = new KeySignature(tuneKey.getAccidentals());
-					switch ( ((BarLine)(staff.elementAt(i))).getType()) {
+					switch ( ((BarLine)(voice.elementAt(i))).getType()) {
 						case BarLine.SIMPLE : break;
 						case BarLine.REPEAT_OPEN : lastRepeatOpen=i; repeatNumber=1; break;
 						case BarLine.REPEAT_CLOSE :
@@ -267,11 +272,12 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 					}
 				}
   				//Whatever kind of bar line it is
-  				if (staff.elementAt(i) instanceof abc.notation.BarLine) {
+  				if (voice.elementAt(i) instanceof abc.notation.BarLine) {
 					currentKey = new KeySignature(tuneKey.getAccidentals());
 				}
   				i++;
-  			}
+  			}//end while each element in voice
+			}//end while each voice in music
   		}
   		catch (InvalidMidiDataException e) {
   			e.printStackTrace();

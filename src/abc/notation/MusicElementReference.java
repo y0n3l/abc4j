@@ -34,23 +34,30 @@ public class MusicElementReference implements Serializable, Cloneable {
 	private static final long serialVersionUID = 2819815880924977717L;
 
 	private char part = ' ';
+	
+	private byte voice = 1;
 
 	private short x = -1;
 
 	private byte y = -1;
 
 	protected MusicElementReference() {
-		this(' ', (short)-1, (byte)-1);
+		this(' ', (byte)1, (short)-1, (byte)-1);
 	}
 	
-	public MusicElementReference(char p, short _x, byte _y) {
+	public MusicElementReference(char p, byte _voice, short _x, byte _y) {
 		part = p;
+		voice = _voice;
 		x = _x;
 		y = _y;
 	}
 
 	public char getPart() {
 		return part;
+	}
+	
+	public byte getVoice() {
+		return voice;
 	}
 
 	public short getX() {
@@ -64,6 +71,10 @@ public class MusicElementReference implements Serializable, Cloneable {
 	protected void setPart(char p) {
 		this.part = p;
 	}
+	
+	protected void setVoice(byte _v) {
+		this.voice = _v;
+	}
 
 	protected void setX(short _x) {
 		this.x = _x;
@@ -74,13 +85,14 @@ public class MusicElementReference implements Serializable, Cloneable {
 	}
 
 	public Object clone() {
-		return new MusicElementReference(part, x, y);
+		return new MusicElementReference(part, voice, x, y);
 	}
 	
 	public boolean equals(Object o) {
 		if (o instanceof MusicElementReference) {
 			MusicElementReference msr = (MusicElementReference) o;
 			return msr.getPart()==getPart()
+				&& msr.getVoice()==getVoice()
 				&& msr.getX()==getX()
 				&& msr.getY()==getY();
 		} else {
@@ -89,6 +101,6 @@ public class MusicElementReference implements Serializable, Cloneable {
 	}
 	
 	public String toString() {
-		return "["+part+";"+x+";"+y+"]";
+		return "[P:"+part+";V:"+voice+";"+x+";"+y+"]";
 	}
 }

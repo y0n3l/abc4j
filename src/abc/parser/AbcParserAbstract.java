@@ -35,19 +35,20 @@ import abc.notation.Chord;
 import abc.notation.Clef;
 import abc.notation.Decoration;
 import abc.notation.Dynamic;
+import abc.notation.EndOfStaffLine;
 import abc.notation.Fraction;
 import abc.notation.GracingType;
 import abc.notation.KeySignature;
 import abc.notation.MultiPartsDefinition;
+import abc.notation.Music;
+import abc.notation.MusicPresentationElement;
 import abc.notation.Note;
 import abc.notation.NoteAbstract;
 import abc.notation.NotesSeparator;
-import abc.notation.SlurDefinition;
 import abc.notation.RepeatBarLine;
 import abc.notation.RepeatedPart;
 import abc.notation.RepeatedPartAbstract;
-import abc.notation.MusicPresentationElement;
-import abc.notation.EndOfStaffLine;
+import abc.notation.SlurDefinition;
 import abc.notation.Spacer;
 import abc.notation.SymbolElement;
 import abc.notation.Tempo;
@@ -228,10 +229,12 @@ public class AbcParserAbstract
 
     private TimeSignature m_timeSignature = null;
     /** The music of the current tune. */
-    private Tune.Music m_music = null;
+    private Music m_music = null;
     /** The tune resulting of the last parsing. */
     protected Tune m_tune = null;
 
+    private byte currentVoice = 1;
+    
 	protected AbcVersion m_abcVersion = null;
 	
    /** Constructs a new tune parser. */
@@ -385,7 +388,7 @@ public class AbcParserAbstract
           TimeSignature meter = parseFieldMeter(follow);
           if (meter!=null)
           {
-            m_music.addElement(meter);
+            m_music.addElement(currentVoice, meter);
             m_defaultNoteLength = meter.getDefaultNoteLength();
             m_timeSignature = meter;
           }
@@ -400,7 +403,7 @@ public class AbcParserAbstract
         if (m_tokenType.equals(AbcTokenType.FIELD_TEMPO))
         {
           Tempo tempo = parseFieldTempo(follow);
-          if (tempo!=null) m_music.addElement(tempo);
+          if (tempo!=null) m_music.addElement(currentVoice, tempo);
         }
         else
         if (m_tokenType.equals(AbcTokenType.COMMENT))
@@ -1040,7 +1043,7 @@ public class AbcParserAbstract
       current.remove(FIRST_FIELD_KEY);
       //current = current.createUnion(FIRST_ABC_MUSIC);
       KeySignature key = parseFieldKey(current.createUnion(follow));
-      if (key!=null) m_music.addElement(key);
+      if (key!=null) m_music.addElement(currentVoice, key);
       return m_tune;
     }
 
@@ -1130,9 +1133,9 @@ public class AbcParserAbstract
         while (FIRST_ELEMENT.contains(m_tokenType));
         current.remove(FIRST_ELEMENT);
         current.remove(FIRST_LINE_ENDER);
-        Object lineEnder = parseLineEnder(current.createUnion(follow));
+        MusicPresentationElement  lineEnder = parseLineEnder(current.createUnion(follow));
         if (lineEnder!=null)
-        	m_music.addElement(lineEnder);
+        	m_music.addElement(currentVoice, lineEnder);
       }
       else
         if (FIRST_MID_TUNE_FIELD.contains(m_tokenType))
@@ -1163,7 +1166,7 @@ public class AbcParserAbstract
       if (FIRST_FIELD_KEY.contains(m_tokenType))
       {
         KeySignature key = parseFieldKey(follow);
-        if (key!=null) m_music.addElement(key);
+        if (key!=null) m_music.addElement(currentVoice, key);
         lastParsedKey = key;
       }
       else
@@ -1179,7 +1182,7 @@ public class AbcParserAbstract
         TimeSignature meter = parseFieldMeter(follow);
         if (meter!=null)
         {
-          m_music.addElement(meter);
+          m_music.addElement(currentVoice, meter);
           m_defaultNoteLength = meter.getDefaultNoteLength();
           m_timeSignature = meter;
         }
@@ -1198,13 +1201,13 @@ public class AbcParserAbstract
       if (FIRST_FIELD_TEMPO.contains(m_tokenType))
       {
         Tempo tempo = parseFieldTempo(follow);
-        if (tempo!=null) m_music.addElement(tempo);
+        if (tempo!=null) m_music.addElement(currentVoice, tempo);
       }
       else
       if (FIRST_FIELD_WORDS.contains(m_tokenType)) {
         AbcTextField text = parseField(AbcTokenType.FIELD_WORDS, follow);
         if (text!=null)
-        	m_music.addElement(new Words(text.getText()));
+        	m_music.addElement(currentVoice, new Words(text.getText()));
       }
       else
         parseField(AbcTokenType.FIELD_TITLE, follow);
@@ -1262,7 +1265,7 @@ public class AbcParserAbstract
       		  spacer.setAnnotations(annotations);
       	  if (chord != null)
       		  spacer.setChord(chord);
-      	  m_music.addElement(spacer);
+      	  m_music.addElement(currentVoice, spacer);
       }
       else
       //Set current = new Set();
@@ -1290,7 +1293,7 @@ public class AbcParserAbstract
 	        	note.setAnnotations(annotations);
 	        if (chord != null)
 	        	note.setChord(chord);
-	        m_music.addElement(note);
+	        m_music.addElement(currentVoice, note);
         }
       }
       else
@@ -1317,7 +1320,7 @@ public class AbcParserAbstract
                 if (chord != null)
                 	note.setChord(chord);
         	}
-        	m_music.addElement(note);
+        	m_music.addElement(currentVoice, note);
         }
       }
       else
@@ -1333,7 +1336,7 @@ public class AbcParserAbstract
                 if (annotations.size() > 0)
                 	barline.setAnnotations(annotations);
         	}
-          m_music.addElement(barline);
+          m_music.addElement(currentVoice, barline);
         }
       }
       else
@@ -1341,9 +1344,9 @@ public class AbcParserAbstract
       {
         byte[] repeatNumbers = convertToRepeatBarLine(accept(AbcTokenType.NTH_REPEAT, null, follow));
         if (repeatNumbers.length > 0)
-        	m_music.addElement(new RepeatBarLine(repeatNumbers));
+        	m_music.addElement(currentVoice, new RepeatBarLine(repeatNumbers));
         else
-        	m_music.addElement(new BarLine());
+        	m_music.addElement(currentVoice, new BarLine());
       }
       else
       if (m_tokenType.equals(AbcTokenType.BEGIN_SLUR))
@@ -1377,9 +1380,9 @@ public class AbcParserAbstract
       else
     	  if (m_tokenType.equals(AbcTokenType.SPACE)) {
     		  accept(AbcTokenType.SPACE, null, follow);
-    		  NoteAbstract lastScoreNote = m_music.getLastNote();
+    		  NoteAbstract lastScoreNote = m_music.getVoice(currentVoice).getLastNote();
     		  if (lastScoreNote!=null && !lastScoreNote.equals(lastNoteFlaggedAsEndOfGroup))
-    			  m_music.addElement(new NotesSeparator());
+    			  m_music.addElement(currentVoice, new NotesSeparator());
     			  //m_score.getLastNote().setIsLastOfGroup(true);
     		  //System.out.println(this.getClass().getName() + " end of group marker");
     	  }
