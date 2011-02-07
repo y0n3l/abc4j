@@ -13,28 +13,28 @@
 //
 // You should have received a copy of the GNU Lesser General Public License
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
-package abc.parser;
+package abc.instructions;
 
-public class AbcVersion {
-	
-	public static final AbcVersion v1_6 = new AbcVersion(1.6f);
-	public static final AbcVersion v2_0 = new AbcVersion(2f);
-	
-	private float m_version = 0f;
-	
-	private AbcVersion(float version) {
-		m_version = version;
-	}
-	
-	public boolean isGreaterOrEqual(AbcVersion av) {
-		return m_version >= av.m_version;
-	}
-	
-	public boolean equals(Object o) {
-		if (o instanceof AbcVersion) {
-			return ((AbcVersion) o).m_version == m_version;
-		} else
-			return super.equals(o);
+import abc.notation.SymbolElement;
+
+/**
+ * A user-defined symbol is an association between a symbol
+ * (~, letter) and a {@link abc.notation.SymbolElement}
+ * (decoration, dynamic...)
+ */
+public class UserDefinedPlaySymbol extends UserDefinedSymbol implements Cloneable {
+
+	private static final long serialVersionUID = -1390989857941609678L;
+
+	/**
+	 * @param symbol
+	 * @param element
+	 */
+	public UserDefinedPlaySymbol(char symbol, SymbolElement element) {
+		super(symbol, element);
 	}
 
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
 }

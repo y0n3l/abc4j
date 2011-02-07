@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
  * Complex chords can be entered, and sometimes it's not a chord!
  * So before gettings chord properties, check {@link #isChord()}.
  */
-public class Chord extends MusicPresentationElement implements Cloneable {
+public class Chord extends Annotation implements Cloneable {
 	
 	//TODO getFrettedFingerings(EADGBE, DADGAD...)
 	//TODO getNotes - generate a MultiNote
@@ -97,6 +97,7 @@ public class Chord extends MusicPresentationElement implements Cloneable {
 	private boolean m_isOptional = false;
 	
 	public Chord(String chordName) {
+		super(chordName);
 		m_chordName = chordName;
 		m_isChord = isChord(m_chordName);
 		if (m_isChord) {

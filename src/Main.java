@@ -19,7 +19,8 @@ import java.io.File;
 import javax.swing.JFrame;
 
 import abc.notation.Tune;
-import abc.parser.TuneBook;
+import abc.notation.TuneBook;
+import abc.parser.TuneBookParser;
 import abc.ui.swing.JScoreComponent;
 
 //import jm.music.data.*;
@@ -135,7 +136,7 @@ public class Main  {
 	
 	public static void main (String[] arg) {
 		try {
-		TuneBook tb = new TuneBook(new File("D:/Perso/abc/Book4.abc"));
+		TuneBook tb = new TuneBookParser().parse(new File("D:/Perso/abc/Book4.abc"));
 		Tune tune = tb.getTune(7); 
 		JScoreComponent scoreUI =new JScoreComponent();
 		scoreUI.setTune(tune);

@@ -31,6 +31,9 @@ public class TimeSignature extends Fraction implements Cloneable {
 
 	/** The 6/8 time signature constant. */
 	public static final TimeSignature SIGNATURE_6_8 = new TimeSignature(6, 8);
+	
+	/** The "none" time signature, no numbers to display */
+	public static final TimeSignature SIGNATURE_NONE = new TimeSignature(-1, -1);
 
 	private int[] m_sumOfNumerators = null;
 
@@ -99,6 +102,11 @@ public class TimeSignature extends Fraction implements Cloneable {
 		// a time signature is compound if the top number can be divised by 3.
 		// http://www.musictheory.halifax.ns.ca/14tsmc.html
 		return (getNumerator() % 3 == 0);
+	}
+	
+	public boolean isNone() {
+		return (getNumerator() == -1)
+			&& (getDenominator() == -1);
 	}
 
 	public int getNumberOfDefaultNotesPerBeat(short defaultLength) {

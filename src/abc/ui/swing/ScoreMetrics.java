@@ -102,14 +102,19 @@ public class ScoreMetrics {
 		String key = String.valueOf(notationContext)
 			+ "-" + String.valueOf(glyph)
 			+ "-" + getMusicalFont().getName();
-		if (bounds.get(key) == null) {
-			FontRenderContext frc = g2.getFontRenderContext();
-			bounds.put(key, new TextLayout(
-					String.valueOf(glyph),//new Character(glyph[0]).toString(),
-					getNotationFontForContext(notationContext),
-					frc).getBounds());
+		try {
+			if (bounds.get(key) == null) {
+				FontRenderContext frc = g2.getFontRenderContext();
+				bounds.put(key, new TextLayout(
+						String.valueOf(glyph),//new Character(glyph[0]).toString(),
+						getNotationFontForContext(notationContext),
+						frc).getBounds());
+			}
+			return (Rectangle2D) (bounds.get(key));
+		} catch (RuntimeException e) {
+			System.err.println(e.getMessage() + " key="+key);
+			throw e;
 		}
-		return (Rectangle2D) (bounds.get(key));
 	}
 	
 	/**

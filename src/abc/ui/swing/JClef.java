@@ -53,7 +53,9 @@ class JClef extends JScoreElementAbstract {
 			positionOffset += clef.getLineNumber() - 4;
 		}
 		//clef octave +8 | -8
-		positionOffset -= clef.getOctaveTransposition() * 3.5;
+		positionOffset -= (clef.getOctaveTransposition()
+				+ (clef.getInvisibleOctaveTransposition())
+				) * 3.5;
 		//note octave
 		positionOffset += note.getOctaveTransposition()*3.5;
 		return positionOffset;
@@ -74,7 +76,7 @@ class JClef extends JScoreElementAbstract {
 		//}*/
 	}
 	
-	protected Clef m_clef = Clef.G;
+	protected Clef m_clef = Clef.TREBLE();
 	
 	public JClef(Point2D base, Clef clef, ScoreMetrics c) {
 		super(c);
@@ -83,7 +85,7 @@ class JClef extends JScoreElementAbstract {
 	}
 	
 	public double getWidth() {
-		if (m_clef.equals(Clef.NONE))
+		if (m_clef.isNone())
 			return 0;
 		return getMetrics().getBounds(
 				getMusicalFont().getClef(m_clef)
@@ -104,7 +106,7 @@ class JClef extends JScoreElementAbstract {
 		/*char[] chars2 = {ScoreMetrics.STAFF_SIX_LINES};
 		context.drawChars(chars2, 0, chars2.length, 
 				(int)m_base.getX(), (int)(m_base.getY()));*/
-		if (!m_clef.equals(Clef.NONE)) {
+		if (!m_clef.isNone()) {
 			Color previousColor = context.getColor();
 			setColor(context, ScoreElements.CLEF);
 			char[] chars = {getMusicalFont().getClef(m_clef)};

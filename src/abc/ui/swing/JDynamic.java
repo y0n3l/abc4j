@@ -21,6 +21,7 @@ import java.awt.geom.Rectangle2D;
 
 import abc.notation.Dynamic;
 import abc.notation.MusicElement;
+import abc.ui.fonts.MissingGlyphException;
 import abc.ui.scoretemplates.ScoreAttribute;
 import abc.ui.scoretemplates.ScoreElements;
 
@@ -78,15 +79,19 @@ public class JDynamic extends JScoreElementAbstract {
 
 	public double render(Graphics2D g2) {
 		super.render(g2);
-		if (m_dynamic.getType() != Dynamic.UNKNOWN) {
-			Color previousColor = g2.getColor();
-			setColor(g2, ScoreElements.DYNAMIC);
-			char[] chars = { getMusicalFont().getDynamic(m_dynamic.getType()) };
-			g2.drawChars(chars, 0, chars.length, (int) m_x, (int) m_y);
-			g2.setColor(previousColor);
+		try {
+			if (m_dynamic.getType() != Dynamic.UNKNOWN) {
+				Color previousColor = g2.getColor();
+				setColor(g2, ScoreElements.DYNAMIC);
+				char[] chars = { getMusicalFont().getDynamic(m_dynamic.getType()) };
+				g2.drawChars(chars, 0, chars.length, (int) m_x, (int) m_y);
+				g2.setColor(previousColor);
+			}
+			//renderDebugBoundingBox(g2);
+			return getWidth();
+		} catch (MissingGlyphException mge) {
+			return 0;
 		}
-		//renderDebugBoundingBox(g2);
-		return getWidth();
 	}
 
 	protected void setAttachedTo(JScoreElementAbstract scoreEl) {

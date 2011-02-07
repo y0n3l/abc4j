@@ -63,6 +63,14 @@ public class Dynamic extends SymbolElement implements Cloneable {
 	public static byte convertToType(String str)
 	{
 		byte type = UNKNOWN;
+		if (str.length() > 2) {
+			char s = str.charAt(0);
+			char e = str.charAt(str.length() - 1);
+			if (((s == '!') && (e == '!'))
+					|| ((s == '+') && (e == '+'))) {
+				str = str.substring(1, str.length() - 1);
+			}
+		}
 		if (str.equals("pppp")) type = PPPP;
 		else if (str.equals("ppp")) type = PPP;
 		else if (str.equals("pp")) type = PP;

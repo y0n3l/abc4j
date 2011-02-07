@@ -26,7 +26,8 @@ import java.io.InputStreamReader;
 import javax.swing.JApplet;
 import javax.swing.JButton;
 
-import abc.parser.TuneBook;
+import abc.parser.AbcTuneBook;
+import abc.parser.TuneBookParser;
 
 /** A simple user interface to display abc files content and play
  * tunes. */
@@ -59,7 +60,8 @@ public class PlayerApplet extends JApplet
       if (is!=null)
       {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        m_app.getTuneBookEditor().setTuneBook(new TuneBook(reader));
+        AbcTuneBook atb = new TuneBookParser().parse(reader);
+        m_app.getTuneBookEditor().setTuneBook(atb);
       }
     }
     catch (Exception e)

@@ -35,19 +35,19 @@ public class Voice extends Vector implements Cloneable, Serializable {
 
 	private byte m_instrument = 0;
 	
-	private char m_partLabel = ' ';
+	private String m_partLabel = " ";
 
-	private byte m_voiceNumber = 1;
+	private String m_voiceName = "1";
 
 	private byte m_volume = 64;
 	
-	public Voice(byte voiceNumber) {
-		this(voiceNumber, (short) 1);
+	public Voice(String voiceName) {
+		this(voiceName, (short) 1);
 	}
 
-	public Voice(byte voiceNumber, short firstBarNo) {
+	public Voice(String voiceName, short firstBarNo) {
 		super();
-		m_voiceNumber = voiceNumber;
+		m_voiceName = voiceName;
 		setFirstBarNumber(firstBarNo);
 		m_bars.put(new Short((short) m_firstBarNumber), new Bar(
 				(short) m_firstBarNumber, 0));
@@ -74,14 +74,14 @@ public class Voice extends Vector implements Cloneable, Serializable {
 			}
 			short x = (short) size();
 			me.getReference().setPart(m_partLabel);
-			me.getReference().setVoice(m_voiceNumber);
+			me.getReference().setVoice(m_voiceName);
 			me.getReference().setX(x);
 			if (me instanceof MultiNote) {
 				Note[] notes = ((MultiNote) me).toArray();
 				if (notes != null) {
 					for (int i = 0; i < notes.length; i++) {
 						notes[i].getReference().setPart(m_partLabel);
-						notes[i].getReference().setVoice(m_voiceNumber);
+						notes[i].getReference().setVoice(m_voiceName);
 						notes[i].getReference().setX(x);
 						//setY is defined in MultiNote constructor
 					}
@@ -364,8 +364,8 @@ public class Voice extends Vector implements Cloneable, Serializable {
 	}
 
 	/** Return voice number V:1 returns 1 */
-	public byte getVoiceNumber() {
-		return m_voiceNumber;
+	public String getVoiceName() {
+		return m_voiceName;
 	}
 
 	/** %%MIDI volume(?) xx */
@@ -438,7 +438,7 @@ public class Voice extends Vector implements Cloneable, Serializable {
 		this.m_instrument = instrument;
 	}
 
-	protected void setPartLabel(char c) {
+	protected void setPartLabel(String c) {
 		m_partLabel = c;
 	}
 
@@ -448,7 +448,7 @@ public class Voice extends Vector implements Cloneable, Serializable {
 	}
 
 	public String toString() {
-		return "V:"+getVoiceNumber();
+		return "V:"+getVoiceName();
 	}
 
 	// TODO hasLyrics...

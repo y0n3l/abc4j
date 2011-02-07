@@ -73,9 +73,12 @@ public final class PropertyManager {
 
   public String getProperty(String key) {
 	String val = null;
-	val = (String)appProps.getProperty(key);
-	if (val == null) {
-		val = defaultProps.getProperty(key);
+	if (key != null) {
+		if (appProps != null)
+			val = (String)appProps.getProperty(key);
+		if (val == null) {
+			val = defaultProps.getProperty(key);
+		}
 	}
 	return (val);
 

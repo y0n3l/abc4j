@@ -32,6 +32,38 @@ public class RepeatBarLine extends BarLine implements Cloneable {
 
 	private byte[] m_repeatNumbers = null;
 
+	private String m_repeatText = "";
+
+	/**
+	 * Creates a new repeat bar line.
+	 * 
+	 * @param repeatsNumber
+	 *            The number of times the repeat should occur.
+	 * @param barline
+	 *            barline type {@link BarLine#SIMPLE} or
+	 *            {@link BarLine#REPEAT_CLOSE}
+	 */
+	public RepeatBarLine(byte barline, byte[] repeatNumbers) {
+		super(barline);
+		m_repeatNumbers = repeatNumbers;
+	}
+
+	/**
+	 * Creates a new repeat bar line.
+	 * 
+	 * @param barline
+	 *            barline type {@link BarLine#SIMPLE} or
+	 *            {@link BarLine#REPEAT_CLOSE}
+	 * @param nthRepeatText
+	 *            text of the repeat, there is no numbers
+	 */
+	public RepeatBarLine(byte barline, String nthRepeatText) {
+		super(barline);
+		;
+		m_repeatNumbers = new byte[0];
+		m_repeatText = nthRepeatText;
+	}
+
 	/**
 	 * Creates a new repeat bar line.
 	 * 
@@ -39,9 +71,22 @@ public class RepeatBarLine extends BarLine implements Cloneable {
 	 *            The number of times the repeat should occur.
 	 */
 	public RepeatBarLine(byte[] repeatNumbers) {
-		super(containsOne(repeatNumbers) ? BarLine.SIMPLE
-				: BarLine.REPEAT_CLOSE);
-		m_repeatNumbers = repeatNumbers;
+		this((containsOne(repeatNumbers) ? BarLine.SIMPLE
+				: BarLine.REPEAT_CLOSE), repeatNumbers);
+	}
+
+	/**
+	 * Creates a new repeat bar line.
+	 * 
+	 * @param nthRepeatText
+	 *            text of the repeat, there is no numbers
+	 */
+	public RepeatBarLine(String nthRepeatText) {
+		this(BarLine.SIMPLE, nthRepeatText);
+	}
+
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 	/**
@@ -51,6 +96,11 @@ public class RepeatBarLine extends BarLine implements Cloneable {
 	 */
 	public byte[] getRepeatNumbers() {
 		return m_repeatNumbers;
+	}
+	
+	/** Returns the text associated to this repeat bar line */
+	public String getRepeatText() {
+		return m_repeatText;
 	}
 
 	/**
@@ -77,9 +127,5 @@ public class RepeatBarLine extends BarLine implements Cloneable {
 			ret += m_repeatNumbers[i];
 		}
 		return ret;
-	}
-
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
 	}
 }

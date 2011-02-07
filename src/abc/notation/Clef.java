@@ -21,59 +21,85 @@ package abc.notation;
 public class Clef extends MusicElement implements Cloneable {
 	
 	private static final long serialVersionUID = 548811480906259853L;
-	public static final Clef TREBLE = new Clef("G", 2, 0, 0, 5);
-	public static final Clef SOPRANO = new Clef("C", 1, 0, 0, 5);
-	public static final Clef MEZZOSOPRANO = new Clef("C", 2, 0, 0, 5);
-	public static final Clef ALTO = new Clef("C", 3, 0, 0, 5);
-	public static final Clef TENOR = new Clef("C", 4, 0, 0, 5);
-	public static final Clef BARITONE = new Clef("F", 3, 0, 0, 5);
-	public static final Clef BASS = new Clef("F", 4, 0, 0, 5);
+	/** Treble clef : G clef on 2nd staff line */
+	private static final Clef TREBLE = TREBLE();
+	public static Clef TREBLE() {
+		return new Clef("G", 2, 0, 0, 5);
+	}
+	/** French violin clef : G clef on 1st staff line */
+	private static final Clef FRENCH_VIOLIN = FRENCH_VIOLIN();
+	public static Clef FRENCH_VIOLIN() {
+		return new Clef("G", 1, 0, 0, 5);
+	}
+	/** Soprano clef : C clef on 1st staff line */
+	private static final Clef SOPRANO = SOPRANO();
+	public static Clef SOPRANO() {
+		return new Clef("C", 1, 0, 0, 5);
+	}
+	/** Mezzosoprano clef : C clef on 2nd staff line */
+	private static final Clef MEZZOSOPRANO = MEZZOSOPRANO();
+	public static Clef MEZZOSOPRANO() {
+		return new Clef("C", 2, 0, 0, 5);
+	}
+	/** Alto clef : C clef on 3rd staff line */
+	private static final Clef ALTO = ALTO();
+	public static Clef ALTO() {
+		return new Clef("C", 3, 0, 0, 5);
+	}
+	/** Tenor clef : C clef on 4th staff line */
+	private static final Clef TENOR = TENOR();
+	public static Clef TENOR() {
+		return new Clef("C", 4, 0, 0, 5);
+	}
+	/** Baritone clef : F clef on 3rd staff line */
+	private static final Clef BARITONE = BARITONE();
+	public static Clef BARITONE() {
+		return new Clef("F", 3, 0, 0, 5);
+	}
+	/** Bass clef : F clef on 4th staff line */
+	private static final Clef BASS = BASS();
+	public static Clef BASS() {
+		return new Clef("F", 4, 0, 0, 5);
+	}
 	
 	/** No clef */
-	public static final Clef NONE = new Clef("", 2, 0, 0, 5);
-	/** The standard F (bass) clef */
-	public static final Clef F = BASS;
-	/** The standard G (treble) clef */
-	public static final Clef G = TREBLE;
-	/** The standard C (alto) clef */
-	public static final Clef C = ALTO;
-	/** the drum clef <TT>||</TT> */
-	public static final Clef PERC = new Clef("Perc", 3, 0, 0, 1);
-	/** G clef one octave up */
-	public static final Clef G_8va = new Clef("G", 1);
-	/** G clef two octaves up */
-	public static final Clef G_15va = new Clef("G", 2);
-	/** G clef one octave down */
-	public static final Clef G_8vb = new Clef("G", -1);
-	/** G clef two octaves up */
-	public static final Clef G_15vb = new Clef("G", -2);
-	/** F clef one octave up */
-	public static final Clef F_8va = new Clef("F", 1);
-	/** F clef two octaves up */
-	public static final Clef F_15va = new Clef("F", 2);
-	/** F clef one octave down */
-	public static final Clef F_8vb = new Clef("F", -1);
-	/** F clef two octaves down */
-	public static final Clef F_15vb = new Clef("F", -2);
-	/** C clef one octave up */
-	public static final Clef C_8va = new Clef("C", 1);
-	/** C clef two octaves up */
-	public static final Clef C_15va = new Clef("C", 2);
-	/** C clef one octave down */
-	public static final Clef C_8vb = new Clef("C", -1);
-	/** C clef two octaves down */
-	public static final Clef C_15vb = new Clef("C", -2);
+	private static final Clef NONE = NONE();
+	public static Clef NONE() {
+		return new Clef("", 2, 0, 0, 5);
+	}
 	
-	//TODO G first line, F third line, various C...
+	/** The standard F (bass) clef on 4th staff line */
+	private static final Clef F = BASS;
+	/** The standard G (treble) clef on 2nd staff line */
+	private static final Clef G = TREBLE;
+	/** The standard C (alto) clef on 3rd staff line */
+	private static final Clef C = ALTO;
+	/** the drum clef <TT>||</TT> */
+	private static final Clef PERC = PERC();
+	public static Clef PERC() {
+		return new Clef("Perc", 3, 0, 0, 1);
+	}
 
 	/** Ottava 8va +1 octave */
-	public static final Clef ottava_8va = new Clef(null, 1);
+	private static final Clef ottava_8va = ottava_8va();
+	public static Clef ottava_8va() {
+		return new Clef(null, 1);
+	}
 	/** Ottava 16ma +2 octave */
-	public static final Clef ottava_15ma = new Clef(null, 2);
+	private static final Clef ottava_15ma = ottava_15ma();
+	public static Clef ottava_15ma() {
+		return new Clef(null, 2);
+	}
 	/** Ottava 8vb -1 octave */
-	public static final Clef ottava_8vb = new Clef(null, -1);
+	private static final Clef ottava_8vb = ottava_8vb();
+	public static Clef ottava_8vb() {
+		return new Clef(null, -1);
+	}
 	/** Ottava 16mb -2 octave */
-	public static final Clef ottava_15mb = new Clef(null, -2);
+	private static final Clef ottava_15mb = ottava_15mb();
+	public static Clef ottava_15mb() {
+		return new Clef(null, -2);
+	}
 	
 	public static Clef parseClef(String clefText, Clef previousClef) {
 		if ((clefText == null) || (clefText.trim().equals("")))
@@ -224,6 +250,41 @@ public class Clef extends MusicElement implements Cloneable {
 				semitonesTransp, staffLines);
 	}
 	
+	public static Clef convertFromNameOrNote(String name, String note) {
+		if ((note != null) && (note.length() > 0)) {
+			Clef ret = TREBLE();
+			char cNote = note.charAt(0);
+			switch (cNote) {
+				case 'G': ret = TREBLE(); break;
+				case 'F': ret = BASS(); break;
+				case 'C': ret = ALTO(); break;
+				case 'P': ret = PERC(); break;
+			}
+			if (note.length() >= 2) {
+				byte transp = 0;
+				if (note.endsWith(",,")) transp = -2;
+				else if (note.endsWith(",")) transp = -1;
+				else if (note.endsWith("''")) transp = 2;
+				else if (note.endsWith("'")) transp = 1;
+				ret.setOctaveTransposition(transp);
+			}
+			return ret;
+		}
+		if (name != null) {
+			name = name.toLowerCase();
+			if (name.equals("treble")) return TREBLE();
+			else if (name.equals("bass")) return BASS();
+			else if (name.equals("alto")) return ALTO();
+			else if (name.equals("tenor")) return TENOR();
+			else if (name.equals("baritone")) return BARITONE();
+			else if (name.equals("mezzo")) return MEZZOSOPRANO();
+			else if (name.equals("soprano")) return SOPRANO();
+			else if (name.equals("perc")) return PERC();
+			else if (name.equals("none")) return NONE();
+		}
+		return TREBLE();
+	}
+	
 	/** The name of the clef: G, C, F, Perc, "" or null */
 	private String m_clefName = null;
 	/** Number of the line staff where clef is printed.
@@ -231,6 +292,17 @@ public class Clef extends MusicElement implements Cloneable {
 	private byte m_lineNumber = -1;
 	/** Transposition in octave, +1 for *va, -1 for *vb... */
 	private byte m_octaveTransposition = 0;
+	/**
+	 * Invisible octave transpotion imposed by middle note.<br>
+	 * this octave transposition is not printed as 8va under or above clef.
+	 * 
+	 * e.g. in bass clef, middle note is <TT>D,</TT> if clef
+	 * "middle" argument is <TT>d</TT> (using {@link #setMiddleNote(Note)},
+	 * a <TT>d</TT> note will be placed on 3rd staff line, not far far
+	 * above the staff.
+	 * 
+	 */
+	private byte m_invisibleOctaveTransp = 0;
 	/** Transposition in semitones, doesn't affect
 	 * printed output, only audio rendition. */
 	private byte m_semitoneTransposition = 0;
@@ -277,15 +349,16 @@ public class Clef extends MusicElement implements Cloneable {
 		if (m_referenceNote == null) {
 			if (getName() != null) {
 				byte octav = 0;
-				if (getName().equals(G.getName()))
+				if (isG())
 					m_referenceNote = new Note(Note.G);
-				else if (getName().equals(F.getName())) {
+				else if (isF()) {
 					m_referenceNote = new Note(Note.F);
 					octav = -1;
 				}
 				else //C and Perc
 					m_referenceNote = new Note(Note.C);
-				m_referenceNote.setOctaveTransposition((byte)(octav + getOctaveTransposition()));
+				m_referenceNote.setOctaveTransposition((byte)
+						(octav + getOctaveTransposition()));
 			}
 		}
 		return m_referenceNote;
@@ -337,7 +410,14 @@ public class Clef extends MusicElement implements Cloneable {
 	 * Generally, notes lower or equal will have stems up, and notes
 	 * higher will have stems down.
 	 * <BR>
-	 * Returns <TT>B</TT> for treble clef, <TT>D,</TT> for bass clef...
+	 * Returns :
+	 * <ul><li><TT>B</TT> for treble clef
+	 * <li><TT>C</TT> for alto clef...
+	 * <li><TT>A,</TT> for tenor clef...
+	 * <li><TT>D,</TT> for bass clef...
+	 * <li><TT>B</TT> for "none" clef...
+	 * </ul>
+	 * result may change depending on {@link #getLineNumber()}
 	 */
 	public Note getMiddleNote() {
 		if (m_middleNote == null) {
@@ -346,6 +426,9 @@ public class Clef extends MusicElement implements Cloneable {
 				if (m_lineNumber == 3 || isPerc()) {
 					try {
 						m_middleNote = (Note) ref.clone();
+						m_middleNote.setOctaveTransposition((byte)
+							(m_middleNote.getOctaveTransposition()
+									+ m_invisibleOctaveTransp));
 					} catch (CloneNotSupportedException never) {
 						never.printStackTrace();
 					}
@@ -361,10 +444,64 @@ public class Clef extends MusicElement implements Cloneable {
 					}
 					m_middleNote = interval.calculateSecondNote(ref);
 					m_middleNote.setAccidental(new Accidental());//Accidental.NONE);
+					m_middleNote.setOctaveTransposition((byte)
+							(m_middleNote.getOctaveTransposition()
+									+ m_invisibleOctaveTransp));
 				}
 			}
 		}
 		return m_middleNote;
+	}
+	
+	/**
+	 * Sets the middle note (for an "internal" octave
+	 * transposition, if Note n is compatible with predefined
+	 * middle note.
+	 * 
+	 * e.g. middle note for bass is <TT>D,</TT> accepts <TT>D</TT> or <TT>d</TT>
+	 * but will reject all other notes
+	 * @param n
+	 */
+	public void setMiddleNote(Note n) {
+		//same note has middle, maybe with octave
+		byte strictHeight = n.getStrictHeight();
+		boolean set = false;
+		if (strictHeight == getMiddleNote().getStrictHeight()) {
+			set = true;
+		} else {
+			//some accepted cases
+			Clef[] toCompare = null;
+			if (isG()) {
+				toCompare = new Clef[] { TREBLE, FRENCH_VIOLIN };
+			} else if (isF()) {
+				toCompare = new Clef[] { BASS, BARITONE };
+			} else if (isC()) {
+				toCompare = new Clef[] { SOPRANO, MEZZOSOPRANO, ALTO, TENOR };
+			}
+			if (toCompare != null) {
+				for (int i = 0; i < toCompare.length; i++) {
+					if (strictHeight == toCompare[i].getMiddleNote().getStrictHeight()) {
+						m_lineNumber = (byte) toCompare[i].getLineNumber();
+						set = true;
+						break;
+					}
+				}
+			}
+			//Accept any note as middle
+			if (isPerc()) {
+				set = true;
+			}
+		}
+		if (set) {
+			//if linenumber has changed, recompute middle note
+			reset();
+			//compute invisible octave transposition
+			m_invisibleOctaveTransp =
+				(byte)(n.getOctaveTransposition()
+					- getMiddleNote().getOctaveTransposition());
+			m_middleNote = n;
+			reset();
+		}
 	}
 
 	public boolean equals(Clef otherClef) {
@@ -384,6 +521,18 @@ public class Clef extends MusicElement implements Cloneable {
 	/** Returns the transposition in octave, +1 for *va, -1 for *vb... */
 	public int getOctaveTransposition() {
 		return m_octaveTransposition;
+	}
+	/**
+	 * Returns invisible octave transpotion imposed by middle note.<br>
+	 * this octave transposition is not printed as 8va under or above clef.
+	 * 
+	 * e.g. in bass clef, middle note is <TT>D,</TT> if clef
+	 * "middle" argument is <TT>d</TT> (using {@link #setMiddleNote(Note)},
+	 * a <TT>d</TT> note will be placed on 3rd staff line, not far far
+	 * above the staff.
+	 */
+	public int getInvisibleOctaveTransposition() {
+		return m_invisibleOctaveTransp;
 	}
 
 	/** Returns the transposition in octave, +1 for *va, -1 for *vb... */
@@ -411,11 +560,13 @@ public class Clef extends MusicElement implements Cloneable {
 	 * 2 for treble, 3 for alto, 4 for tenor, 4 for bass... */
 	public int getLineNumber() {
 		if ((m_lineNumber == -1) && (getName() != null)) {
-			if (getName().equals(G.getName()))
+			if (isG())
 				m_lineNumber = 2;
-			else if (getName().equals(F.getName()))
+			else if (isF())
 				m_lineNumber = 4;
-			else if (getName().equals(C.getName()))
+			else if (isC())
+				m_lineNumber = 3;
+			else if (isPerc())
 				m_lineNumber = 3;
 		}
 		return m_lineNumber;
@@ -463,6 +614,9 @@ public class Clef extends MusicElement implements Cloneable {
 	}
 	public boolean isPerc() {
 		return PERC.getName().equals(getName());
+	}
+	public boolean isNone() {
+		return NONE.getName().equals(getName());
 	}
 
 	public String toString() {

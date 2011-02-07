@@ -52,7 +52,6 @@ public class Accidental implements Cloneable, Serializable
 	 */
 	public static Accidental convertToAccidental(String accidental) throws IllegalArgumentException
 	{
-		// TODO double and half flat and sharp
 		if (accidental==null) return NONE;
 		else if (accidental.equals("^")
 			|| accidental.equals("#")

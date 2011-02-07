@@ -18,7 +18,7 @@ package abc.midi;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaMessage;
 
-import scanner.PositionableInCharStream;
+import abc.parser.PositionableInCharStream;
 
 /** A midi meta event to flag a positionable object in a midi stream. */
 public class NotationMarkerMessage extends MetaMessage
@@ -29,10 +29,10 @@ public class NotationMarkerMessage extends MetaMessage
   {
     //FF 7F <len> <id> <data>  Sequencer-Specific Meta-event
     //m_pos = pos;
-    int offsetBegin = pos.getPosition().getCharactersOffset();
+    int offsetBegin = pos.getCharStreamPosition().getStartIndex();
     //int offsetEnd = pos.getEndPosition().getCharactersOffset()-1;
     // replaced by when migrating ot getSize() in positionableInStream:
-    int offsetEnd = offsetBegin+pos.getLength()-1;
+    int offsetEnd = pos.getCharStreamPosition().getEndIndex()-1;
 
 
     byte[] buffer = new byte[6];

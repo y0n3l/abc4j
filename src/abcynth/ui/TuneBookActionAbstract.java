@@ -17,22 +17,22 @@ package abcynth.ui;
 
 import javax.swing.AbstractAction;
 
-import abc.parser.TuneBook;
+import abc.parser.AbcTuneBook;
 
 public abstract class TuneBookActionAbstract extends AbstractAction
 {
-  private TuneBook m_tuneBook = null;
+  private AbcTuneBook m_tuneBook = null;
 
-  public TuneBookActionAbstract(TuneBook tuneBook)
+  public TuneBookActionAbstract(AbcTuneBook tuneBook)
   { m_tuneBook = tuneBook; }
 
   public TuneBookActionAbstract()
   { }
 
-  public TuneBook getTuneBook()
+  public AbcTuneBook getTuneBook()
   { return m_tuneBook; }
 
-  public void setTuneBook(TuneBook t)
+  public void setTuneBook(AbcTuneBook t)
   { m_tuneBook = t; }
 
 }

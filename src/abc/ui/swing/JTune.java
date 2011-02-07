@@ -37,6 +37,7 @@ import abc.notation.BarLine;
 import abc.notation.Clef;
 import abc.notation.EndOfStaffLine;
 import abc.notation.KeySignature;
+import abc.notation.MeasureRepeat;
 import abc.notation.MultiNote;
 import abc.notation.Music;
 import abc.notation.MusicElement;
@@ -126,7 +127,7 @@ public class JTune extends JScoreElementAbstract {
 	private Clef currentClef = null;
 	private TimeSignature previousTime = null;
 	private TimeSignature currentTime = null;
-	private byte m_currentVoice = 1;
+	private String m_currentVoice = "1";
 	private Point2D cursor = null;
 
 	protected JTune(Tune tune, Point2D base, ScoreTemplate st) {
@@ -315,7 +316,7 @@ public class JTune extends JScoreElementAbstract {
 				//but A B A C D will display (because 2 A)
 				boolean hasDouble = false;
 				for (int i = 0; i < parts.length; i++) {
-					char c = parts[i].getLabel();
+					char c = parts[i].getIdentifier();
 					if (txt.indexOf(c) != -1)
 						hasDouble = true;
 					if (txt.length() > 0)
@@ -479,7 +480,7 @@ public class JTune extends JScoreElementAbstract {
 		Iterator itVoices = m_music.getVoices().iterator();
 		while (itVoices.hasNext()) {
 			Voice voice = (Voice) itVoices.next();
-			m_currentVoice = voice.getVoiceNumber();
+			m_currentVoice = voice.getVoiceName();
 			int size = 0;
 		for (m_index = 0, size=voice.size(); m_index < size; m_index++) {
 			MusicElement s = (MusicElement)voice.elementAt(m_index);
@@ -626,6 +627,11 @@ public class JTune extends JScoreElementAbstract {
 			if ((s instanceof Tempo)/* && (s != m_tune.getGeneralTempo())*/) {
 				appendToScore(new JTempo(getMetrics(), cursor, (Tempo)s));
 			}
+			else
+			// ==== MeasureRepeat ====
+			if (s instanceof MeasureRepeat) {
+				appendToScore(new JMeasureRepeat(getMetrics(), cursor, (MeasureRepeat)s));
+			}
 		}//end each element in voice
 		}//end each voice in music
 
@@ -736,7 +742,8 @@ public class JTune extends JScoreElementAbstract {
 		//justify it to the right, not to override first note/chord
 		if ((element instanceof JPartLabel)
 				&& !currentStaffLine.hasNotes()) {
-			((JPartLabel)element).setTextJustification(TextJustification.RIGHT);
+			if (((JPartLabel)element).getText().length() == 1)
+				((JPartLabel)element).setTextJustification(TextJustification.RIGHT);
 		}
 
 		//Position the cursor for next element
@@ -1181,7 +1188,7 @@ public class JTune extends JScoreElementAbstract {
 			(NoteAbstract) elmtStart.getMusicElement();
 		NoteAbstract endNote =// (NoteAbstract) m_music.getElementByReference(slurDef.getEnd());
 			(NoteAbstract) elmtEnd.getMusicElement();
-		byte voiceNo = startNote.getReference().getVoice();
+		String voiceNo = startNote.getReference().getVoice();
 		//under in
 		peakNote[UNDER_IN] = m_music.getVoice(voiceNo).getLowestNoteBewteen(startNote, endNote);
 		peakNoteGlyph[UNDER_IN] = (JNoteElementAbstract) getRenditionObjectFor(peakNote[UNDER_IN]);
@@ -1575,7 +1582,7 @@ public class JTune extends JScoreElementAbstract {
 		double width = 0;
 		
 		//Vector initElements = new Vector();
-		currentClef = currentKey!=null ? currentKey.getClef() : Clef.G;
+		currentClef = currentKey!=null ? currentKey.getClef() : Clef.TREBLE();
 		if (!hasClefChange) {
 			JClef jclef = new JClef(cursor, currentClef, getMetrics());
 			sl.addElement(jclef);

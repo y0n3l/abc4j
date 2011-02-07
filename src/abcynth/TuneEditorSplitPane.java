@@ -18,7 +18,6 @@ package abcynth;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.util.EventObject;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -29,9 +28,11 @@ import javax.swing.JTextArea;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import scanner.PositionableInCharStream;
 import abc.notation.Tune;
+import abc.parser.AbcNode;
+import abc.parser.PositionableInCharStream;
 import abc.parser.TuneParserAdapter;
+import abc.ui.scoretemplates.ScoreAttribute;
 import abc.ui.swing.TuneEditorPane;
 import abc.ui.swing.JScoreComponent;
 import abcynth.ui.ErrorsList;
@@ -64,11 +65,12 @@ public class TuneEditorSplitPane extends JSplitPane// implements TuneParserListe
     m_tunePane = new TuneEditorPane();
     m_errorsList = new ErrorsList(m_tunePane.getParser());
     m_score = new JScoreComponent();
-    m_score.setJustified(true);
+    m_score.getTemplate().setAttribute(ScoreAttribute.JUSTIFY,
+			new Boolean(true));
     m_score.getScoreMetrics().setNotationFontSize(SCORE_SIZE);
     m_score.refresh();
     m_tunePane.getParser().addListener(new TuneParserAdapter(){
-    	public void tuneEnd(Tune tune){
+    	public void tuneEnd(Tune tune, AbcNode abcRoot){
     		m_score.setTune(tune);
     	}
     });
@@ -112,7 +114,7 @@ public class TuneEditorSplitPane extends JSplitPane// implements TuneParserListe
               //System.out.println(e);
               selectedIndex = m_tokensList.getSelectionModel().getLeadSelectionIndex();
               ParsingEventsList.ParsingEventsTableModel model = (ParsingEventsList.ParsingEventsTableModel)m_tokensList.getModel();
-              EventObject evt = model.getEvent(selectedIndex);
+              //AbcNode evt = model.getEvent(selectedIndex);
               //viewColumnNumber = selectedIndex.convertColumnIndexToView(TuneBookTable.REFERENCE_NUMBER_COLUMN);
               //if (m_tokensList.getValueAt(selectedIndex, viewColumnNumber)!=null)
               if (selectedIndex!=-1 && selectedIndex<model.getSize())
@@ -122,8 +124,8 @@ public class TuneEditorSplitPane extends JSplitPane// implements TuneParserListe
                 PositionableInCharStream pos = (PositionableInCharStream)((ParsingEventsList.ParsingEventsTableModel)m_tokensList.getModel()).getEvent(selectedIndex);
                 try
                 {
-                  m_tunePane.setCaretPosition(pos.getPosition().getCharactersOffset());
-                  m_tunePane.moveCaretPosition(pos.getPosition().getCharactersOffset()+pos.getLength());
+                  m_tunePane.setCaretPosition(pos.getCharStreamPosition().getStartIndex());
+                  m_tunePane.moveCaretPosition(pos.getCharStreamPosition().getEndIndex());
                   m_tunePane.getCaret().setSelectionVisible(true);
                   m_tunePane.repaint();
                 }

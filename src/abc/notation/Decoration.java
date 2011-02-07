@@ -252,6 +252,14 @@ public class Decoration extends SymbolElement implements Cloneable
 	public static byte convertToType(String str)
 	{
 		byte type = UNKNOWN;
+		if (str.length() > 2) {
+			char s = str.charAt(0);
+			char e = str.charAt(str.length() - 1);
+			if (((s == '!') && (e == '!'))
+					|| ((s == '+') && (e == '+'))) {
+				str = str.substring(1, str.length() - 1);
+			}
+		}
 		if (str.equals(".")) type = STACCATO;
 		else if (str.equals("~")) type = ROLL;
 		else if (str.equals("u")) type = UPBOW;

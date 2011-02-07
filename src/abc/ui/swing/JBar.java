@@ -77,13 +77,16 @@ class JBar extends JScoreElementAbstract {
 	public double getWidth() {
 		double width = 0;
 		switch (m_barLine.getType()) {
-		case BarLine.BEGIN_AND_END_REPEAT:
+		case BarLine.CLOSE_AND_OPEN_REPEAT:
 			width = m_thickBarWidth + 2 * (m_doubleBarSpacing + m_thinBarWidth - 1
 					+ m_barDotsSpacing + Math.ceil(m_dotsRadius) - 1);
 			break;
+		case BarLine.DOUBLE_REPEAT_OPEN:
+		case BarLine.DOUBLE_REPEAT_CLOSE:
+			width = m_barDotsSpacing + Math.ceil(m_dotsRadius) - 1;
 		case BarLine.REPEAT_OPEN:
 		case BarLine.REPEAT_CLOSE:
-			width = m_thickBarWidth + m_doubleBarSpacing + m_thinBarWidth - 1
+			width += m_thickBarWidth + m_doubleBarSpacing + m_thinBarWidth - 1
 					+ m_barDotsSpacing + Math.ceil(m_dotsRadius) - 1;
 			break;
 		case BarLine.BEGIN:
@@ -92,6 +95,9 @@ class JBar extends JScoreElementAbstract {
 			break;
 		case BarLine.DOUBLE:
 			width = m_doubleBarSpacing + 2 * m_thinBarWidth - 2;
+			break;
+		case BarLine.TRIPLE:
+			width = 2 * m_thinBarWidth + 2 * m_doubleBarSpacing + m_thickBarWidth -2;
 			break;
 		case BarLine.SIMPLE:
 		case BarLine.INVISIBLE:
@@ -124,7 +130,7 @@ class JBar extends JScoreElementAbstract {
 		setColor(context, ScoreElements.BAR_LINES);
 		double x = getBase().getX();
 		switch (m_barLine.getType()) {
-		case BarLine.BEGIN_AND_END_REPEAT:
+		case BarLine.CLOSE_AND_OPEN_REPEAT:
 			renderDots(context, x);
 			x += m_dotsRadius + m_barDotsSpacing;
 			renderThinLine(context, x);
@@ -147,6 +153,24 @@ class JBar extends JScoreElementAbstract {
 			renderThickLine(context, x + m_dotsRadius + m_barDotsSpacing
 					+ m_thinBarWidth + m_doubleBarSpacing);
 			break;
+		case BarLine.DOUBLE_REPEAT_OPEN:
+			renderThickLine(context, x);
+			x += m_thickBarWidth + m_doubleBarSpacing;
+			renderThinLine(context, x);
+			x += m_thinBarWidth + m_barDotsSpacing;
+			renderDots(context, x);
+			x += m_barDotsSpacing + Math.ceil(m_dotsRadius);
+			renderDots(context, x);
+			break;
+		case BarLine.DOUBLE_REPEAT_CLOSE:
+			renderDots(context, x);
+			x += m_barDotsSpacing + Math.ceil(m_dotsRadius);
+			renderDots(context, x);
+			x += m_barDotsSpacing + Math.ceil(m_dotsRadius);
+			renderThinLine(context, x);
+			x += m_thinBarWidth + m_doubleBarSpacing;
+			renderThickLine(context, x);
+			break;
 		case BarLine.BEGIN:
 			renderThickLine(context, x);
 			renderThinLine(context, x + m_thickBarWidth + m_doubleBarSpacing);
@@ -158,6 +182,11 @@ class JBar extends JScoreElementAbstract {
 		case BarLine.DOUBLE:
 			renderThinLine(context, x);
 			renderThinLine(context, x + m_doubleBarSpacing);
+			break;
+		case BarLine.TRIPLE:
+			renderThinLine(context, x);
+			renderThickLine(context, x + m_thinBarWidth + m_doubleBarSpacing);
+			renderThinLine(context, x + m_thinBarWidth + 2 * m_doubleBarSpacing + m_thickBarWidth);
 			break;
 		case BarLine.INVISIBLE: break;
 		case BarLine.DOTTED:
@@ -172,6 +201,7 @@ class JBar extends JScoreElementAbstract {
 		renderDecorations(context);
 		renderDynamic(context);
 		renderAnnotations(context);
+		renderChordName(context); //why not?
 		//renderDebugBoundingBoxOuter(context);
 		return getWidth();
 	}

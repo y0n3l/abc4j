@@ -133,29 +133,35 @@ public class SonoraFont extends MusicalFontAbstract implements MusicalFont, Seri
 	public char getClef(Clef clef) throws MissingGlyphException {
 		if (clef.isG()) {
 			switch(clef.getOctaveTransposition()) {
-			case 0: return '\uF026'; //G
 			case 1: return '\uF0A0'; //G 8va
 			case -1: return '\uF056'; //G 8vb
+			case 0:
+			default:
+				return '\uF026'; //G
 			}
 		}
 		else if (clef.isF()) {
 			switch(clef.getOctaveTransposition()) {
-			case 0: return '\uF03F'; //F
 			case 1: return '\uF10E'; //F 8va
 			case -1: return '\uF074'; //F 8vb
+			case 0:
+			default:
+				return '\uF03F'; //F
 			}
 		}
 		else if (clef.isC()) {
 			switch(clef.getOctaveTransposition()) {
-			case 0: return '\uF042'; //C
+			case 0:
+			default:
+				return '\uF042'; //C
 			}
 		}
 		else if (clef.isPerc()) return '\uF03A';
-		else if (clef.equals(Clef.ottava_8va)) return '\uF0C3';
-		else if (clef.equals(Clef.ottava_8vb)) return '\uF0D7';
-		else if (clef.equals(Clef.ottava_15ma)) return '\uF0DB';
-		else if (clef.equals(Clef.ottava_15mb)) return '\uF100';
-		else if (clef.equals(Clef.NONE)) return ' ';
+		else if (clef.equals(Clef.ottava_8va())) return '\uF0C3';
+		else if (clef.equals(Clef.ottava_8vb())) return '\uF0D7';
+		else if (clef.equals(Clef.ottava_15ma())) return '\uF0DB';
+		else if (clef.equals(Clef.ottava_15mb())) return '\uF100';
+		else if (clef.isNone()) return ' ';
 		throw new MissingGlyphException(clef, this);
 	}
 	
@@ -368,6 +374,10 @@ public class SonoraFont extends MusicalFontAbstract implements MusicalFont, Seri
 		//whole, breve and long have no stem
 		default: return UNKNWON_NOTE;
 		}
+	}
+	
+	public char getTextualDot() {
+		return '\uF02E';
 	}
 	
 	public char getTimeSignatureAbbreviated(TimeSignature ts)

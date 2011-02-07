@@ -24,18 +24,35 @@ public class Part implements Cloneable, Serializable {
 
 	private static final long serialVersionUID = 7633083530672682502L;
 
-	private char m_label;
+	private String m_label;
 
 	// private Tune m_tune = null;
 	private Music m_music = null;
 
-	Part(Tune tune, char labelValue) {
+	Part(Tune tune, String labelValue) {
 		// m_tune = tune;
-		m_label = labelValue;
 		m_music = new Music();
-		m_music.setPartLabel(m_label);
+		setLabel(labelValue);
+	}
+	Part(Tune tune, char labelValue) {
+		this(tune, labelValue+"");
 	}
 
+	/**
+	 * Sets the label which first char identifies this part.
+	 * 
+	 * @param labelValue
+	 *            The label that identifies this part.
+	 * @throws IllegalArgumentException if label is 0-length
+	 */
+	public void setLabel(String labelValue)
+			throws IllegalArgumentException {
+		if ((labelValue == null) || (labelValue.length() == 0))
+			throw new IllegalArgumentException("Part's label can't be null or empty!");
+		m_label = labelValue;
+		m_music.setPartLabel(m_label);
+	}
+	
 	/**
 	 * Sets the label that identifies this part.
 	 * 
@@ -43,16 +60,22 @@ public class Part implements Cloneable, Serializable {
 	 *            The label that identifies this part.
 	 */
 	public void setLabel(char labelValue) {
-		m_label = labelValue;
+		setLabel(labelValue + "");
 	}
 
 	/**
-	 * Returns the label that identifies this part.
-	 * 
-	 * @return The label that identifies this part.
+	 * Returns the label that of this part.
 	 */
-	public char getLabel() {
+	public String getLabel() {
 		return m_label;
+	}
+	
+	/**
+	 * Returns the identifies of this part, which is the first
+	 * char of its label
+	 */
+	public char getIdentifier() {
+		return m_label.charAt(0);
 	}
 
 	/**

@@ -15,15 +15,15 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abcynth.ui;
 
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.AbstractListModel;
 import javax.swing.JList;
 
-import scanner.InvalidCharacterEvent;
-import scanner.TokenEvent;
 import abc.notation.Tune;
-import abc.parser.InvalidTokenEvent;
+import abc.parser.AbcNode;
+import abc.parser.AbcParseError;
 import abc.parser.TuneParser;
 import abc.parser.TuneParserListenerInterface;
 
@@ -72,49 +72,28 @@ public class ErrorsList extends JList implements TuneParserListenerInterface
     m_parser.addListener(this);
   }
 
-  public void invalidToken(InvalidTokenEvent evt)
-  {
-    try
-    {
-    String message = "Expecting "
-        + evt.getExpectedTokenType().toString()
-        +  " at line "  + evt.getPosition().getLine()
-        + ", column " + evt.getPosition().getColumn();
-    if (evt.getToken()!=null)
-    {
-      message = message.concat(" instead of " + evt.getToken().getType());
-      ((ErrorsListModel)getModel()).addError(new Error(message, evt.getToken().getPosition().getCharactersOffset(),
-          evt.getToken().getPosition().getCharactersOffset()+evt.getToken().getValue().length()));
-    }
-    else
-      ((ErrorsListModel)getModel()).addError(new Error(message, evt.getPosition().getCharactersOffset(),
-          evt.getPosition().getCharactersOffset()+1));
-    }
-    catch (NullPointerException e)
-    {
-      e.printStackTrace();
-    }
-  }
-
   public void tuneBegin()
   {
     ((ErrorsListModel)getModel()).removeAllErrors();
   }
+  
+  public void noTune() {}
 
-  public void tuneEnd(Tune tune)
-  {
-    //m_errorsList.setSelectedIndex(-1);
-  }
-
-  public void validToken(TokenEvent evt)
-  { }
-
-  public void invalidCharacter(InvalidCharacterEvent evt)
-  {
-    String message = "Invalid character '" + evt.getCharacter() + "' "
-        +  "at line " + evt.getPosition().getLine() + ", column " + evt.getPosition().getColumn();
-    ((ErrorsListModel)getModel()).addError(new Error(message, evt.getPosition().getCharactersOffset(), evt.getPosition().getCharactersOffset()+1));
-  }
+  public void tuneEnd(Tune tune, AbcNode abcRoot) {
+	  if (abcRoot != null) {
+		Iterator it = abcRoot.getErrors().iterator();
+		while (it.hasNext()) {
+			AbcParseError ape = (AbcParseError) it.next();
+			String message = ape.getErrorMessage() + " at line "
+					+ ape.getCharStreamPosition().getLine() + ", column "
+					+ ape.getCharStreamPosition().getColumn();
+			((ErrorsListModel) getModel()).addError(new Error(message, ape
+					.getCharStreamPosition().getStartIndex(), ape
+					.getCharStreamPosition().getEndIndex()));
+		}
+		// m_errorsList.setSelectedIndex(-1);
+	  }
+	}
 
   private static class ErrorsListModel extends AbstractListModel
   {

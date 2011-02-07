@@ -18,7 +18,9 @@ package abc.ui.swing;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import abc.notation.Annotation;
 import abc.notation.BarLine;
+import abc.notation.MusicElement;
 import abc.ui.scoretemplates.HorizontalPosition;
 import abc.ui.scoretemplates.ScoreElements;
 import abc.ui.scoretemplates.TextJustification;
@@ -32,13 +34,19 @@ public class JAnnotation extends JText {
 	private byte vPosition = VerticalPosition.TOP;
 	private byte tJustify = TextJustification.CENTER;
 	private byte tVAlign = TextVerticalAlign.BASELINE;
+	private Annotation m_annotation = null;
 	
 	/** Constructor
 	 * @param mtrx The score metrics needed
 	 */
-	protected JAnnotation(ScoreMetrics mtrx, String text) {
-		super(mtrx, text, ScoreElements.TEXT_ANNOTATIONS);
+	protected JAnnotation(ScoreMetrics mtrx, Annotation annotation) {
+		super(mtrx, annotation.getText(), ScoreElements.TEXT_ANNOTATIONS);
+		m_annotation = annotation;
 		setTextPosition();
+	}
+	
+	public MusicElement getMusicElement() {
+		return m_annotation;
 	}
 	
 	private void setTextPosition() {
@@ -111,12 +119,16 @@ public class JAnnotation extends JText {
 				switch(bar.getType()) {
 				case BarLine.BEGIN:
 				case BarLine.REPEAT_OPEN:
+				case BarLine.DOUBLE_REPEAT_OPEN:
 					hPosition = HorizontalPosition.LEFT;
 					tJustify = TextJustification.LEFT;
 					break;
 				case BarLine.DOUBLE:
+				case BarLine.TRIPLE:
 				case BarLine.END:
+				case BarLine.CLOSE_AND_OPEN_REPEAT:
 				case BarLine.REPEAT_CLOSE:
+				case BarLine.DOUBLE_REPEAT_CLOSE:
 					hPosition = HorizontalPosition.RIGHT;
 					tJustify = TextJustification.RIGHT;
 					break;

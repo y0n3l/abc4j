@@ -130,6 +130,8 @@ public class Note extends NoteAbstract implements Cloneable
   public static final short DOTTED_SIXTY_FOURTH	= (short)(LENGTH_RESOLUTION * 1.5);
   /** The <TT>SIXTY_FOURTH</TT> length type. */
   public static final short SIXTY_FOURTH	= LENGTH_RESOLUTION;      // quadruple croche
+  /** The <TT>HUNDRED TWENTY-EIGHTH</TT> rare length. */
+  public static final short HUNDRED_TWENTY_EIGHTH = LENGTH_RESOLUTION / 2;
   
 	/**
 	 * Create a Note from a given midi like height see {@link #getMidiLikeHeight()}
@@ -534,8 +536,8 @@ public class Note extends NoteAbstract implements Cloneable
   public byte getHeigth ()
   { return getHeight(); }
 
-  /** Returns this note height. This height <DEL>doesn't take in account</DEL>
-   * <B>takes into account</B> octave transposition. This height is not the height
+  /** Returns this note height. This height 
+   * takes into account octave transposition. This height is not the height
    * of the note itself (like how it would be played using midi for instance) but
    * the height of its representation on a score.
    * For instance 2 notes written C and C# would have the same value returned
@@ -812,9 +814,12 @@ public class Note extends NoteAbstract implements Cloneable
   {
     int totalLength=0;
     if (hasGracingNotes()) {
-		Note[] notes = getGracingNotes();
+		NoteAbstract[] notes = getGracingNotes();
 		for (int i=0; i<notes.length; i++) {
-			totalLength+=notes[i].getStrictDuration();
+			if (notes[i] instanceof Note)
+				totalLength+=((Note)notes[i]).getStrictDuration();
+			else
+				totalLength+=((MultiNote)notes[i]).getLongestNote().getStrictDuration();
 		}
 	}
     return totalLength;
@@ -975,6 +980,9 @@ public class Note extends NoteAbstract implements Cloneable
     else if (note.equals("x")) return Note.REST;
     else return -1;
   }
+  
+  public static short convertToNoteLengthStrict(Fraction fraction) throws IllegalArgumentException
+  { return convertToNoteLengthStrict(fraction.getNumerator(), fraction.getDenominator()); }
 
   public static short convertToNoteLengthStrict(int num, int denom) throws IllegalArgumentException
   {
@@ -996,32 +1004,26 @@ public class Note extends NoteAbstract implements Cloneable
 
   public String toString()
   {
-    String string2Return = super.toString();
-    if (strictHeight == REST) 	string2Return = string2Return.concat("z"); else
-    if (strictHeight == C) 	string2Return = string2Return.concat("C"); else
-    if (strictHeight == D) 	string2Return = string2Return.concat("D"); else
-    if (strictHeight == E) 	string2Return = string2Return.concat("E"); else
-    if (strictHeight == F) 	string2Return = string2Return.concat("F"); else
-    if (strictHeight == G) 	string2Return = string2Return.concat("G"); else
-    if (strictHeight == A) 	string2Return = string2Return.concat("A"); else
-    if (strictHeight == B) 	string2Return = string2Return.concat("B"); /*else
-    if (strictHeight == c) 	string2Return = string2Return.concat("c"); else
-    if (strictHeight == d) 	string2Return = string2Return.concat("d"); else
-    if (strictHeight == e) 	string2Return = string2Return.concat("e"); else
-    if (strictHeight == f) 	string2Return = string2Return.concat("f"); else
-    if (strictHeight == g) 	string2Return = string2Return.concat("g"); else
-    if (strictHeight == a) 	string2Return = string2Return.concat("a"); else
-    if (strictHeight == b) 	string2Return = string2Return.concat("b");*/
-    string2Return += m_accidental.toString();
+    StringBuffer sb = new StringBuffer(super.toString());
+    if (strictHeight == REST) sb.append("z");
+    else if (strictHeight == C) sb.append("C");
+    else if (strictHeight == D) sb.append("D");
+    else if (strictHeight == E) sb.append("E");
+    else if (strictHeight == F) sb.append("F");
+    else if (strictHeight == G) sb.append("G");
+    else if (strictHeight == A) sb.append("A");
+    else if (strictHeight == B) sb.append("B");
+    sb.append(m_accidental.toString());
     if (octaveTransposition >= 1) {
     	for (int i = 1; i <= octaveTransposition; i++)
-    		string2Return = string2Return.concat("'");
+    		sb.append("'");
     } else if (octaveTransposition <= -1) {
     	for (int i = -1; i >= octaveTransposition; i--)
-        	string2Return = string2Return.concat(",");
+    		sb.append(",");
     }
-    //string2Return = string2Return.concat(relativeLength.toString());
-    return string2Return;
+    if (isTied())
+    	sb.append("-");
+    return sb.toString();
   }
 
 	/**
@@ -1038,7 +1040,9 @@ public class Note extends NoteAbstract implements Cloneable
 				|| (noteDuration == WHOLE) || (noteDuration == HALF)
 				|| (noteDuration == QUARTER) || (noteDuration == EIGHTH)
 				|| (noteDuration == SIXTEENTH)
-				|| (noteDuration == THIRTY_SECOND) || (noteDuration == SIXTY_FOURTH));
+				|| (noteDuration == THIRTY_SECOND)
+				|| (noteDuration == SIXTY_FOURTH)
+				|| (noteDuration == HUNDRED_TWENTY_EIGHTH));
 	}
 
   	/** Compute a duration that takes strict duration as a reference plus
@@ -1050,10 +1054,12 @@ public class Note extends NoteAbstract implements Cloneable
   	    	//ignore the strict duration of the note. => more simple
   	    	//but may need to ne improved.
   	    	Tuplet tuplet = getTuplet();
-  	    	int notesNb = tuplet.getNumberOfNotes();
+  	    	int notesNb = tuplet.getTupletNumber();
   	    	float totalTupletDuration = tuplet.getTotalDuration();
+  	    	float tupletDefaultLength = tuplet.getDefaultNoteLength();
+  	    	double rapport = duration/tupletDefaultLength;
   	    	//The correction for the note duration because that's a tuplet.
-  	    	duration = (short)(totalTupletDuration / notesNb);
+  	    	duration = (short)((totalTupletDuration / notesNb) * rapport);
   	    }
   	    else {
   	  		int dotsNb = countDots();

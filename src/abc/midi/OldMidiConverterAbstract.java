@@ -32,8 +32,6 @@ import abc.notation.Tempo;
 import abc.notation.Tune;
 import abc.notation.Tuplet;
 import abc.notation.Voice;
-import abc.parser.PositionableMultiNote;
-import abc.parser.PositionableNote;
 
 /** MidiConverter class defines various static methods to convert abc related stuff
  * to midi : notes, tunes etc... */
@@ -64,7 +62,7 @@ public abstract class OldMidiConverterAbstract implements MidiConverterInterface
 
       long elapsedTime = 0;
       Music music = tune.getMusic();
-      Voice staff = music.getVoice((byte) 1);
+      Voice staff = music.getVoice("1");
       while (i < staff.size())
       {
         if (!inWrongEnding)
@@ -93,7 +91,7 @@ public abstract class OldMidiConverterAbstract implements MidiConverterInterface
           //==================================================================== NOTE
           if (staff.elementAt(i) instanceof abc.notation.Note)
           {
-            PositionableNote note = (PositionableNote)staff.elementAt(i);
+            Note note = (Note)staff.elementAt(i);
             if (!note.isRest())
             {
               MidiEvent[] array = {new MidiEvent(new NoteIndexMessage(i), trackLengthInTicks)};
@@ -108,7 +106,7 @@ public abstract class OldMidiConverterAbstract implements MidiConverterInterface
           //==================================================================== MULTI NOTE
           if ((staff.elementAt(i) instanceof abc.notation.MultiNote))
           {
-            PositionableMultiNote multiNote = (PositionableMultiNote)staff.elementAt(i);
+            MultiNote multiNote = (MultiNote)staff.elementAt(i);
             trackLengthInTicks = addEventsToTrack(track, getMidiEventsFor(multiNote, currentKey, trackLengthInTicks));
             Vector notes = multiNote.getNotesAsVector();
             for (int j=0; j<notes.size(); j++)

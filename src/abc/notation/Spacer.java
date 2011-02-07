@@ -20,8 +20,18 @@ public class Spacer extends DecorableElement implements Cloneable {
 
 	private static final long serialVersionUID = 2710245368984769854L;
 
+	private float m_space = 1f;
+	
 	public Spacer() {
-		
+		this(1f);
+	}
+	
+	public Spacer(float spaceRatio) {
+		m_space = spaceRatio;
+	}
+	
+	public float getSpaceRatio() {
+		return m_space;
 	}
 	
 	public Object clone() throws CloneNotSupportedException {

@@ -42,7 +42,8 @@ class JSpacer extends JScoreElementAbstract {
 	}
 	
 	public double getWidth() {
-		return getMetrics().getNoteWidth();
+		return getMetrics().getNoteWidth()
+			* m_spacer.getSpaceRatio();
 	}
 	
 	public MusicElement getMusicElement() {

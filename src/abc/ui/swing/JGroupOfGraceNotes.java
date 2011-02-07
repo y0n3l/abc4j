@@ -39,8 +39,12 @@ class JGroupOfGraceNotes extends JGroupOfNotes implements JGraceElement {
 
 		JGraceNotePartOfGroup graceNote = null;
 		for (int i=0; i<notes.length; i++) {
-			graceNote = new JGraceNotePartOfGroup((Note)m_notes[i], clef, base, metrics);
-			m_jNotes[i] = graceNote;
+			if (m_notes[i] instanceof Note) {
+				graceNote = new JGraceNotePartOfGroup((Note)m_notes[i], clef, base, metrics);
+				m_jNotes[i] = graceNote;
+			} else {
+				//TODO MultiGraceNote
+			}
 		}
 
 		slashStart = new Point2D.Double(0,0);

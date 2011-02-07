@@ -37,8 +37,15 @@ public class BarLine extends DecorableElement implements Cloneable
   /** Simple thin dotted bar line. Ex .| (in ABC v2 format) */
   public static final byte DOTTED = 8;
   /** end and begin repeat. Ex ::, :|: */
+  public static final byte CLOSE_AND_OPEN_REPEAT = 9;
   public static final byte BEGIN_AND_END_REPEAT = 9;
-  
+  /** Triple thin + thick + thin, don't know if really exists
+   * but found in some ABC files */
+  public static final byte TRIPLE = 10;
+  /** Double repeat open <TT>|::</TT> */
+  public static final byte DOUBLE_REPEAT_OPEN = 11;
+  /** Double repeat close <TT>::|</TT> */
+  public static final byte DOUBLE_REPEAT_CLOSE = 12;
   
   /** The type of this bar line. */
   private byte m_type = SIMPLE;
@@ -74,31 +81,51 @@ public class BarLine extends DecorableElement implements Cloneable
 	 *         is returned if no type matches the string.
 	 */
 	public static byte[] convertToBarLine(String barLine) {
-		byte[] barlineTypes = null;
-		if (barLine.equals("::")) {
-			barlineTypes = new byte[2];
-			barlineTypes[0] = BarLine.REPEAT_CLOSE;
-			barlineTypes[1] = BarLine.REPEAT_OPEN;
-			//barlineTypes[0] = BarLine.BEGIN_AND_END_REPEAT;
+		byte[] barlineTypes = new byte[] { SIMPLE };
+		if (barLine.equals("::")
+				|| barLine.equals(":|:")
+				|| barLine.equals(":||:")) {
+			//barlineTypes = new byte[2];
+			//barlineTypes[0] = BarLine.REPEAT_CLOSE;
+			//barlineTypes[1] = BarLine.REPEAT_OPEN;
+			barlineTypes = new byte[] { CLOSE_AND_OPEN_REPEAT };
 		} else if (barLine.equals("|")) {
-			barlineTypes = new byte[] { BarLine.SIMPLE };
+			barlineTypes = new byte[] { SIMPLE };
 		} else if (barLine.equals("||")) {
-			barlineTypes = new byte[] { BarLine.DOUBLE };
-		} else if (barLine.equals("[|")) {
-			barlineTypes = new byte[] { BarLine.BEGIN };
-		} else if (barLine.equals("|]")) {
-			barlineTypes = new byte[] { BarLine.END };
-		} else if (barLine.equals(":|")) {
-			barlineTypes = new byte[] { BarLine.REPEAT_CLOSE };
-		} else if (barLine.equals("|:")) {
-			barlineTypes = new byte[] { BarLine.REPEAT_OPEN };
+			barlineTypes = new byte[] { DOUBLE };
+		} else if (barLine.equals("[|")
+				|| barLine.equals("[||")) {
+			barlineTypes = new byte[] { BEGIN };
+		} else if (barLine.equals("|]")
+				|| barLine.equals("||]")) {
+			barlineTypes = new byte[] { END };
+		} else if (barLine.equals(":|")
+				|| barLine.equals(":||")
+				|| barLine.equals(":|]")
+				|| barLine.startsWith(":::")) {
+			barlineTypes = new byte[] { REPEAT_CLOSE };
+		} else if (barLine.equals("|:")
+				|| barLine.equals("||:")
+				|| barLine.equals("[|:")
+				|| barLine.endsWith(":::")) {
+			barlineTypes = new byte[] { REPEAT_OPEN };
+		} else if (barLine.equals("|::")
+				|| barLine.equals("[::")) {
+			barlineTypes = new byte[] { DOUBLE_REPEAT_OPEN };
+		} else if (barLine.equals("::|")
+				|| barLine.equals("::]")) {
+			barlineTypes = new byte[] { DOUBLE_REPEAT_CLOSE };
 		} else if (barLine.equals(".|")
 				|| barLine.equals(".|.")
 				|| barLine.equals(":")) {
-			barlineTypes = new byte[] { BarLine.DOTTED };
+			barlineTypes = new byte[] { DOTTED };
 		} else if (barLine.equals("[|]")
 				|| barLine.equals("[]")) {
-			barlineTypes = new byte[] { BarLine.INVISIBLE };
+			barlineTypes = new byte[] { INVISIBLE };
+		} else if (barLine.equals("|]|")
+				|| barLine.equals("|||")
+				|| barLine.equals("|[|")) {
+			barlineTypes = new byte[] { TRIPLE };
 		}
 		return barlineTypes;
 	}
@@ -119,7 +146,10 @@ public class BarLine extends DecorableElement implements Cloneable
 	  case DOUBLE: return "||";
 	  case INVISIBLE: return "[|]";
 	  case DOTTED: return ".|";
-	  case BEGIN_AND_END_REPEAT: return "::";
+	  case CLOSE_AND_OPEN_REPEAT: return "::";
+	  case TRIPLE: return "|||";
+	  case DOUBLE_REPEAT_OPEN: return "|::";
+	  case DOUBLE_REPEAT_CLOSE: return "::|";
 	  default: return null;
 	  }
   }

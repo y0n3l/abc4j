@@ -38,6 +38,7 @@ import abc.notation.KeySignature;
 import abc.notation.MultiNote;
 import abc.notation.Music;
 import abc.notation.Note;
+import abc.notation.NoteAbstract;
 import abc.notation.RepeatBarLine;
 import abc.notation.Tempo;
 import abc.notation.Tune;
@@ -85,8 +86,8 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   			Hashtable partsKey = new Hashtable();
   			
 			long elapsedTime = 0;
-			Note[] graceNotes = null;
-			Music staff = tune.getMusic();
+			NoteAbstract[] graceNotes = null;
+			Music staff = tune.getMusicForAudioRendition();
 			Iterator it = staff.getVoices().iterator();
 			while (it.hasNext()) {
 				Voice voice = (Voice) it.next();
@@ -98,7 +99,7 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 						addTempoEventsFor(track, elapsedTime, getMidiMessagesFor((Tempo)voice.elementAt(i)));//, trackLengthInTicks));
 					}
 					else
-					if (voice.elementAt(i) instanceof abc.notation.PartLabel) {
+					/*if (voice.elementAt(i) instanceof abc.notation.PartLabel) {
 						//Imagine... part A in Gmaj, B in Amin
 						//in tune you have K:G, P:A, ... P:B, K:Am
 						//if you have part order ABA, when you return to A
@@ -111,7 +112,7 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 							tuneKey = (KeySignature) partsKey.get(pl.getLabel()+"");
 						}
 					}
-					else
+					else*/
 						//==================================================================== KEY SIGNATURE
 					if (voice.elementAt(i) instanceof abc.notation.KeySignature) {
 							tuneKey = (KeySignature)(voice.elementAt(i));
@@ -213,7 +214,10 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 								for (int j=0;j<graceNotes.length;j++) {
 									noteDuration = getNoteLengthInTicks(graceNotes[j], staff)/divisor;
 									graceNotesDuration += noteDuration;
-									playNote(graceNotes[j], i, currentKey, elapsedTime, noteDuration, track);
+									if (graceNotes[j] instanceof Note)
+										playNote((Note)graceNotes[j], i, currentKey, elapsedTime, noteDuration, track);
+									else
+										playMultiNote((MultiNote)graceNotes[j], i, currentKey, /*elapsedTime,*/ noteDuration, track, staff);
 									elapsedTime+=noteDuration;
 								}
 							}
@@ -400,6 +404,12 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   /** Returns the corresponding midi events for a tempo change. */
   public abstract MidiMessage[] getMidiMessagesFor(Tempo tempo) throws InvalidMidiDataException;
 
+  	protected static long getNoteLengthInTicks(NoteAbstract note, Music staff) {
+  		if (note instanceof Note)
+  			return getNoteLengthInTicks((Note)note, staff);
+  		else
+  			return getNoteLengthInTicks((MultiNote)note, staff);
+  	}
   	/** Returns the length of the note in ticks, thanks to the sequence
   	 * resolution and the default note length. */
   	protected static long getNoteLengthInTicks(Note note, Music staff) {

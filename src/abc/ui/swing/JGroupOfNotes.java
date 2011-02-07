@@ -84,7 +84,7 @@ class JGroupOfNotes extends JScoreElementAbstract
 			}
 		//m_jNotes[i]=n;
 		if (notes[0].getTuplet()!=null) {
-			nUpletSize = notes[0].getTuplet().getNumberOfNotes();
+			nUpletSize = notes[0].getTuplet().getTupletNumber();//.getNumberOfNotes();
 			SlurDefinition slurDef = new SlurDefinition();
 			slurDef.setStart(notes[0].getReference());
 			slurDef.setEnd(notes[notes.length-1].getReference());
@@ -391,24 +391,30 @@ class JGroupOfNotes extends JScoreElementAbstract
 			setColor(context, ScoreElements.NOTE);
 		Stroke defaultStroke = context.getStroke();
 		int factor = isStemUp?1:-1; //invert direction for noteLinkY
+		short[] longerRhythms = new short[] { Note.EIGHTH, Note.SIXTEENTH,
+				Note.THIRTY_SECOND, Note.SIXTY_FOURTH,
+				Note.HUNDRED_TWENTY_EIGHTH };
 		for (int i=0; i<m_jNotes.length; i++) {
 			JGroupableNote n = m_jNotes[i];
 			((JScoreElementAbstract)n).render(context);
 			BasicStroke notesLinkStroke =
 				getMetrics().getNotesLinkStrokeForContext(getNotationContext());
 			context.setStroke(notesLinkStroke);
-			short[] longerRhythms = null;
+			//short[] longerRhythms = null;
 			short noteStrictDuration =
 				(m_notes[i] instanceof MultiNote)
 					?((MultiNote) m_notes[i]).getShortestNote().getStrictDuration()
 					:((Note) m_notes[i]).getStrictDuration();
+			byte maxLR = 0;
 			switch (noteStrictDuration) {
-				case Note.EIGHTH: longerRhythms = new short[] { Note.EIGHTH }; break;
-				case Note.SIXTEENTH: longerRhythms = new short[] { Note.EIGHTH, Note.SIXTEENTH }; break;
-				case Note.THIRTY_SECOND: longerRhythms = new short[] { Note.EIGHTH, Note.SIXTEENTH, Note.THIRTY_SECOND }; break;
-				case Note.SIXTY_FOURTH: longerRhythms = new short[] { Note.EIGHTH, Note.SIXTEENTH, Note.THIRTY_SECOND, Note.SIXTY_FOURTH }; break;
+				case Note.EIGHTH: maxLR = 1; break;
+				case Note.SIXTEENTH: maxLR = 2; break;
+				case Note.THIRTY_SECOND: maxLR = 3; break;
+				case Note.SIXTY_FOURTH: maxLR = 4; break;
+				case Note.HUNDRED_TWENTY_EIGHTH: maxLR = 5; break;
+				//default: maxLR = 0; break;
 			}
-			for (int j=0; j<longerRhythms.length; j++) {
+			for (int j=0; j<maxLR; j++) {
 				//decide where the end of the rhythm is.
 				int noteLinkY = -1;
 				if (longerRhythms[j]==Note.EIGHTH)

@@ -56,7 +56,7 @@ import javax.swing.KeyStroke;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
-import scanner.PositionableInCharStream;
+//import scanner.PositionableInCharStream;
 import abc.midi.BasicMidiConverter;
 import abc.midi.MidiConverterAbstract;
 import abc.midi.PlayerStateChangeEvent;
@@ -67,7 +67,9 @@ import abc.notation.MusicElement;
 import abc.notation.NoteAbstract;
 import abc.notation.SlurDefinition;
 import abc.notation.Tune;
-import abc.parser.TuneBook;
+import abc.parser.AbcTuneBook;
+import abc.parser.PositionableInCharStream;
+import abc.parser.TuneBookParser;
 import abc.util.PropertyManager;
 import abc.ui.swing.Engraver;
 import abc.ui.swing.JScoreElement;
@@ -84,7 +86,7 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
   private static final long serialVersionUID = -8475230184183870538L;
   private File m_file = null;
   private File lastDirectory = null;
-  private TuneBook m_tuneBook = null;
+  private AbcTuneBook m_tuneBook = null;
   private TuneBookEditorPanel m_tuneBookEditorPanel = null;
   private TunePlayer m_player = null;
   private CircularBuffer m_lastOpenedFiles = null;
@@ -312,13 +314,13 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
     		MusicElement elmnt = null;
     		Tune tune = m_tuneBookEditorPanel.getTuneEditSplitPane().getTuneEditorPane().getTune();
     		if (tune!=null) {
-    			elmnt = tune.getMusic().getElementAt(e.getDot());
+    			elmnt = tune.getMusic().getElementAtStreamPosition(e.getDot());
     		}
     		m_tuneBookEditorPanel.getTuneEditSplitPane().getScore().setSelectedItem(elmnt);
     	}
     });
 
-    setTuneBook(new TuneBook());
+    setTuneBook(new AbcTuneBook());
     addMouseListenerToHeaderInTable();
     //m_tuneBookEditorPanel.getTuneBookTable().set
 
@@ -333,7 +335,9 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
     try
     {
       m_file = file;
-      TuneBook tuneBook = new TuneBook(file, m_logFrame);
+      TuneBookParser tbp = new TuneBookParser();
+      tbp.addListener(m_logFrame);
+      AbcTuneBook tuneBook = tbp.parse(file);
       setTuneBook(tuneBook);
       setTitle("ABCynth - " + file.getAbsolutePath() + " (" + m_tuneBook.size() + " tunes)");
     }
@@ -343,7 +347,7 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
     }
   }
 
-  public void setTuneBook(TuneBook tunebook)
+  public void setTuneBook(AbcTuneBook tunebook)
   {
     m_tuneBook = tunebook;
     m_tuneBookEditorPanel.setTuneBook(m_tuneBook);
@@ -695,8 +699,8 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
   {
     if(m_player.getTune().equals(m_tuneBookEditorPanel.getTuneEditArea().getTune()))
     {
-      int begin = ((PositionableInCharStream)note).getPosition().getCharactersOffset();
-      int end = begin + ((PositionableInCharStream)note).getLength();
+      int begin = note.getCharStreamPosition().getStartIndex();
+      int end = note.getCharStreamPosition().getEndIndex();
        try
        {
          m_tuneBookEditorPanel.getTuneEditArea().setCaretPosition(begin);
@@ -842,7 +846,7 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
 
     public void actionPerformed(ActionEvent e)
     {
-      setTuneBook(new TuneBook());
+      setTuneBook(new AbcTuneBook());
       setTitle("ABCynth");
     }
   }
@@ -996,8 +1000,8 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
           m_tuneBook.putTune(newNotation);
         }
         System.out.println("Saving changes for " + getTuneBook());
-        getTuneBook().save();
-        setTitle("ABCynth - " + m_tuneBook.getFile().getAbsolutePath() + "\\" + m_tuneBook.getFile().getName() + " (" + m_tuneBook.size() + " tunes)");
+        getTuneBook().saveTo(m_file);
+        setTitle("ABCynth - " + m_file.getPath()/* + "\\" + m_file.getName()*/ + " (" + m_tuneBook.size() + " tunes)");
       }
       catch (Exception ex)
       { ex.printStackTrace(); }

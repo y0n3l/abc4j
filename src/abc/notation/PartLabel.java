@@ -20,13 +20,13 @@ public class PartLabel extends MusicPresentationElement implements Cloneable {
 
 	private static final long serialVersionUID = -4712754516181803338L;
 	
-	private char m_label = ' ';
+	private String m_label = " ";
 	
-	protected PartLabel(char label) {
+	protected PartLabel(String label) {
 		this.m_label = label;
 	}
 	
-	public char getLabel() {
+	public String getLabel() {
 		return m_label;
 	}
 	
@@ -34,7 +34,7 @@ public class PartLabel extends MusicPresentationElement implements Cloneable {
 		if (!(o instanceof PartLabel))
 			return false;
 		else
-			return getLabel() == ((PartLabel)o).getLabel();
+			return getLabel().equals(((PartLabel)o).getLabel());
 	}
 	
 	public Object clone() throws CloneNotSupportedException {

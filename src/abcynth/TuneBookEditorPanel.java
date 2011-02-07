@@ -27,7 +27,9 @@ import javax.swing.event.ListSelectionListener;
 
 import abc.midi.TunePlayer;
 import abc.notation.Tune;
-import abc.parser.TuneBook;
+import abc.parser.AbcTune;
+import abc.parser.AbcTuneBook;
+import abc.parser.TuneParser;
 import abc.ui.swing.TuneEditorPane;
 import abcynth.ui.TuneBookTable;
 
@@ -157,7 +159,7 @@ public class TuneBookEditorPanel extends JSplitPane
   public TuneEditorSplitPane getTuneEditSplitPane()
   { return m_tuneEditPane; }
 
-  public void setTuneBook(TuneBook tuneBook)
+  public void setTuneBook(AbcTuneBook tuneBook)
   { m_tuneBookTable.setTuneBook(tuneBook); }
 
   public void onTuneSelectedChange(int newSelectedTuneReferenceNumber)
@@ -169,7 +171,8 @@ public class TuneBookEditorPanel extends JSplitPane
       {
         // update changes in notation in the tune book.
         String newNotation = m_tuneEditPane.getTuneEditorPane().getDocument().getText(0, m_tuneEditPane.getTuneEditorPane().getDocument().getLength());
-        Tune newTune = m_tuneBookTable.getTuneBook().putTune(newNotation);
+        Tune newTune = new TuneParser().parse(newNotation);
+        m_tuneBookTable.getTuneBook().putTune(newTune);
         if (newTune.getReferenceNumber()!=newSelectedTuneReferenceNumber)
           System.out.println("Changing reference number from " + m_selectedTuneIndex + " to " + newTune.getReferenceNumber());
         else
@@ -177,7 +180,9 @@ public class TuneBookEditorPanel extends JSplitPane
       }
       // put the notation of the new selected tune in the editor area.
       m_tuneEditPane.getTuneEditorPane().getDocument().removeDocumentListener(m_documentListener);
-      m_tuneEditPane.getTuneEditorPane().setText(m_tuneBookTable.getTuneBook().getTuneNotation(newSelectedTuneReferenceNumber));
+      m_tuneEditPane.getTuneEditorPane().setText(
+          ((AbcTune) (m_tuneBookTable.getTuneBook().getTune(newSelectedTuneReferenceNumber)))
+    		  .getAbcString());
       //m_scorePanel.setTune(m_tuneBookTable.getTuneBook().getTune(newSelectedTuneReferenceNumber));
       //String tuneheader = m_tuneBookTable.getTuneBook().getTuneHeader(newSelectedTuneReferenceNumber);
       /*if (tuneheader!=null)

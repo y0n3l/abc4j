@@ -313,7 +313,8 @@ class JNote extends JNoteElementAbstract {
 	}
 
 	protected void calcDotsPosition() {
-		if (note.countDots()!=0) {
+		if ((note.countDots() != 0)
+				&& !note.isRestInvisible()) {
 			dotsPosition = new Point2D[note.countDots()];
 			Dimension glyphDimension = getMetrics().getGlyphDimension(getNotationContext());
 			//!isOnStaffLine() => the dot is between the lines

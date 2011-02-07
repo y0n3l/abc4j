@@ -29,6 +29,7 @@ import abc.notation.Decoration;
 import abc.notation.GracingType;
 import abc.notation.Note;
 import abc.notation.NoteAbstract;
+import abc.ui.fonts.MissingGlyphException;
 import abc.ui.scoretemplates.ScoreAttribute;
 import abc.ui.scoretemplates.ScoreElements;
 import abc.ui.swing.JScoreElement.JStemmableElement;
@@ -81,10 +82,14 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 
 		// add JGraceNotes
 		if (noteValue.hasGracingNotes()) {
-			Note[] graceNotes = noteValue.getGracingNotes();
+			NoteAbstract[] graceNotes = noteValue.getGracingNotes();
 			if (graceNotes.length == 1) {
-				m_jGracenotes = new JGraceNote(graceNotes[0], clef, base, getMetrics());
-				base.setLocation(base.getX()+m_jGracenotes.getWidth(),base.getY());
+				if (graceNotes[0] instanceof Note) {
+					m_jGracenotes = new JGraceNote((Note)graceNotes[0], clef, base, getMetrics());
+					base.setLocation(base.getX()+m_jGracenotes.getWidth(),base.getY());
+				} else {
+					//TODO JGraceMultiNote
+				}
 			} else if (graceNotes.length>1) {
 				m_jGracenotes = new JGroupOfGraceNotes(getMetrics(), base, graceNotes, clef, null);
 				//base.setLocation(base.getX()+m_jGracenotes.getWidth(),base.getY());
@@ -107,29 +112,37 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 		if (noteValue.hasDecorations()) {
 			Decoration[] decorations = noteValue.getDecorations();
 			for (int i=0; i<decorations.length;i++) {
-				if ((decorations[i].getType() == Decoration.ROLL)
-						&& noteValue.hasGeneralGracing()) {
-					addDecoration(
-						new JDecoration(
-							new Decoration(Decoration.GENERAL_GRACING),
-							getMetrics()
-						));
-				} else {
-					addDecoration(
-						new JDecoration(
-							decorations[i], getMetrics()));
+				try {
+					if ((decorations[i].getType() == Decoration.ROLL)
+							&& noteValue.hasGeneralGracing()) {
+						addDecoration(
+							new JDecoration(
+								new Decoration(Decoration.GENERAL_GRACING),
+								getMetrics()
+							));
+					} else {
+						addDecoration(
+							new JDecoration(
+								decorations[i], getMetrics()));
+					}
+				} catch (MissingGlyphException mge) {
+					//continue;
 				}
 			}
 		}
 		
 		if (noteValue.hasDynamic()) {
-			m_jDynamic = new JDynamic(noteValue.getDynamic(), getMetrics());
+			try {
+				m_jDynamic = new JDynamic(noteValue.getDynamic(), getMetrics());
+			} catch (MissingGlyphException mge) {
+				//ignore
+			}
 		}
 	}
 	
 	protected Clef getClef() {
 		if (m_clef == null)
-			m_clef = Clef.G;
+			m_clef = Clef.TREBLE();
 		return m_clef;
 	}
 	

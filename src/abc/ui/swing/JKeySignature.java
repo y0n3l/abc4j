@@ -66,14 +66,21 @@ class JKeySignature extends JScoreElementAbstract {
 		double baseY = m_base.getY() - noteHeight/2;
 		
 		Clef clef = key.getClef();
-		
-		//TODO key accidentals depending on the clef
-		//octave offset = 3.5
+		if (previous_key != null) {
+			if (!previous_key.getClef().equals(key.getClef())) {
+				double clefWidth = new JClef(getBase(), key.getClef(), getMetrics()).getWidth();
+				m_width += clefWidth;
+				baseX += clefWidth;
+			}
+		}
+
 		double octaveOffset = 0;
 		if (clef.isC())
 			octaveOffset = 3.5;
 		else if (clef.isF())
 			octaveOffset = 3.5*2;
+		//key accidentals depending on the clef octave offset = 3.5
+		octaveOffset -= clef.getOctaveTransposition()*3.5;
 		//Calculate vertical position for # and b
 		double FsharpY = baseY - (JClef.getOffset(new Note(Note.f), clef)-octaveOffset) * noteHeight;
 		double CsharpY = baseY - (JClef.getOffset(new Note(Note.c), clef)-octaveOffset) * noteHeight;
@@ -165,6 +172,13 @@ class JKeySignature extends JScoreElementAbstract {
 
 	public double render(Graphics2D context){
 		super.render(context);
+		if (previous_key != null) {
+			if (!previous_key.getClef().equals(key.getClef())) {
+				JClef jc = new JClef(getBase(), key.getClef(), getMetrics());
+				jc.setStaffLine(getStaffLine());
+				jc.render(context);
+			}
+		}
 		Color previousColor = context.getColor();
 		setColor(context, ScoreElements.KEY_SIGNATURE);
 		for (int i = 0, j = chars.size(); i < j; i++) {

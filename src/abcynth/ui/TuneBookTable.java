@@ -29,7 +29,7 @@ import javax.swing.table.TableColumn;
 
 import abc.notation.KeySignature;
 import abc.notation.Tune;
-import abc.parser.TuneBook;
+import abc.parser.AbcTuneBook;
 import abc.parser.TuneBookListenerInterface;
 import abc.parser.TuneChangeEvent;
 
@@ -59,7 +59,7 @@ public class TuneBookTable extends JTable// implements TuneBookListenerInterface
   public static final int SOURCE_COLUMN = 9;
 
   private Vector m_tunes = null;
-  private Vector m_columns = null;
+  //private Vector m_columns = null;
   private PopupMenu m_popMenu = null;
   private TuneBookTableModel m_model = null;
 
@@ -78,8 +78,8 @@ public class TuneBookTable extends JTable// implements TuneBookListenerInterface
   private class TuneBookTableModel extends AbstractTableModel implements TuneBookListenerInterface
   {
     private static final long serialVersionUID = -8633051016071310665L;
-	private TuneBook m_bookModel = null;
-    public TuneBookTableModel(TuneBook tuneBook)
+	private AbcTuneBook m_bookModel = null;
+    public TuneBookTableModel(AbcTuneBook tuneBook)
     {
       this();
       setTuneBook(tuneBook);
@@ -88,7 +88,7 @@ public class TuneBookTable extends JTable// implements TuneBookListenerInterface
     public TuneBookTableModel()
     { m_tunes = new Vector(); }
 
-    public void setTuneBook(TuneBook tuneBook)
+    public void setTuneBook(AbcTuneBook tuneBook)
     {
       if (m_bookModel!=null)
         m_bookModel.removeListener(this);
@@ -260,7 +260,7 @@ public class TuneBookTable extends JTable// implements TuneBookListenerInterface
 
   /** Sets the tunebook to be displayed in this table.
    * @param book The tunebook to be displayed in this table. */
-  public void setTuneBook(TuneBook book)
+  public void setTuneBook(AbcTuneBook book)
   {
     //System.out.println(getClass().getName() + "setTuneBook(" + book + ")");
     //if (m_book!=null)
@@ -282,7 +282,7 @@ public class TuneBookTable extends JTable// implements TuneBookListenerInterface
   }
 
   /** */
-  public TuneBook getTuneBook()
+  public AbcTuneBook getTuneBook()
   { return m_model.m_bookModel; }
 
   public Tune getSelectedTune()

@@ -21,6 +21,8 @@ import java.util.Iterator;
 import abc.notation.KeySignature;
 import abc.notation.Music;
 import abc.notation.MusicElement;
+import abc.notation.PartLabel;
+import abc.notation.Voice;
 
 /**
  * Utility class to prepare a {@link abc.notation.Tune.Music} object
@@ -29,11 +31,91 @@ import abc.notation.MusicElement;
 public class BeforeAudioRendition {
 
 	public static Music transformAll(Music source) {
-		Music dest = transformDecorations(source);
+		Music dest = correctPartsKeys(source);
+		//dest = transformDecorations(dest);
+		dest = applyAccidentals(dest);
 		dest = applyDynamics(dest);
-		dest = transformRepeatsAndBreaks(dest);
 		dest = generateBassAndChords(dest);
+		dest = transformRepeatsAndBreaks(dest);
 		return dest;
+	}
+	
+	/**
+	 * Be sure each part has it's proper key signature.
+	 * 
+	 * Imagine... you have
+	 * <code>K:Bb
+	 * P:A
+	 * ...
+	 * P:B
+	 * ...
+	 * P:C
+	 * K:G
+	 * ...</code>
+	 * in a <tt>ABCA</tt> structure, the last part A will have
+	 * the G key of part C.
+	 * 
+	 * This method corrects this, the key was Bb before the
+	 * first part A, so before the second part A we add a Bb
+	 * key.
+	 * @param music
+	 * @return
+	 */
+	public static Music correctPartsKeys(Music music) {
+		//we may have key/clef changes
+		//repeat operation for each voice. Key is for all voices
+		//but clef can change from one voice to another
+		Iterator it = music.getVoices().iterator();
+		while (it.hasNext()) {
+			Voice voice = (Voice) it.next();
+			if (voice.hasObject(KeySignature.class)
+					&& voice.hasObject(PartLabel.class)) {
+				Hashtable partsKey = new Hashtable();
+				KeySignature tuneKey = null;
+				int size = voice.size();
+				int i = 0;
+				while (i < size) {
+					MusicElement me = (MusicElement) voice.elementAt(i);
+					if (me instanceof KeySignature) {
+						tuneKey = (KeySignature) me;
+					} else if (me instanceof PartLabel) {
+						PartLabel pl = (PartLabel) me;
+						if ((tuneKey != null) && (partsKey.get(pl.getLabel()+"") == null)) {
+							//first time we see this part, store the key
+							partsKey.put(pl.getLabel()+"", tuneKey);
+						} else {//not the first time we see this part
+							//add the key
+							tuneKey = (KeySignature) partsKey.get(pl.getLabel() + "");
+							if (i < (size - 1)) {
+								if (!(voice.elementAt(i+1) instanceof KeySignature)) {
+									//if next element is a key, no need to insert one
+									//just before, next while step it'll be defined as
+									//tuneKey
+									voice.insertElementAt(tuneKey, i+1);
+									i++;
+									size++;
+								}
+							}
+						}
+					}
+					i++;
+				}//end for each element of voice
+			}//end voice has key(s) and part(s)
+		}//end for each voice of music
+		//else nothing to do
+		return music;
+	}
+	
+	/**
+	 * Propagate key accidentals to notes. And non-key
+	 * accidental to the same note of a bar.
+	 * 
+	 * TODO use the rule ??? to apply or not to octaves
+	 * @param music
+	 * @return
+	 */
+	public static Music applyAccidentals(Music music) {
+		return music;
 	}
 	
 	/**

@@ -17,15 +17,19 @@ package abcynth.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.io.IOException;
 
 public class SaveAction extends TuneBookActionAbstract
 {
 
   private static final long serialVersionUID = -6714276449739610799L;
+  
+  private File m_file = null;
 
-  public SaveAction()
+  public SaveAction(File file)
   {
+	  m_file = file;
     putValue(NAME, "Save");
     putValue(SHORT_DESCRIPTION, "Saves tunebook updates");
     putValue(MNEMONIC_KEY, new Integer(KeyEvent.VK_S));
@@ -34,7 +38,7 @@ public class SaveAction extends TuneBookActionAbstract
   public void actionPerformed(ActionEvent e)
   {
     try
-    { getTuneBook().save(); }
+    { getTuneBook().saveTo(m_file); }
     catch(IOException ex)
     { ex.printStackTrace(); }
   }

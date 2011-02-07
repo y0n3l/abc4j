@@ -107,7 +107,7 @@ public class KeySignature extends MusicElement implements Cloneable
     private byte mode = OTHER;
     private Accidental[] accidentals = accidentalsRules[0];
     private byte keyIndex = 0;
-    private Clef m_clef = Clef.TREBLE;
+    private Clef m_clef = Clef.TREBLE();
 
     /** Creates a new signature with the specified parameters.
      * @param keyNoteType The note of the mode. Possible values are
@@ -360,7 +360,7 @@ public class KeySignature extends MusicElement implements Cloneable
      */
     public Clef getClef() {
     	if (m_clef == null)
-    		m_clef = Clef.G;
+    		m_clef = Clef.TREBLE();
     	return m_clef;
     }
     
@@ -540,6 +540,7 @@ public class KeySignature extends MusicElement implements Cloneable
 					|| (this.keyIndex != oKey.keyIndex)
 					|| !(this.m_keyAccidental.equals(oKey.m_keyAccidental))
 					|| (this.mode != oKey.mode)
+					|| !this.m_clef.equals(oKey.m_clef)
 				) {
 				return false;
 			}

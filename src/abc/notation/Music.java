@@ -16,11 +16,14 @@
 package abc.notation;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.TreeMap;
+import java.util.Vector;
 
-import scanner.PositionableInCharStream;
+import abc.parser.CharStreamPosition;
+import abc.parser.PositionableInCharStream;
 
 /**
  * A Music is a collection of {@link abc.notation.Voice}s
@@ -39,18 +42,18 @@ public class Music implements Cloneable, Serializable {
 
 	private short m_firstBarNumber = 1;
 	
-	private TreeMap m_voices = new TreeMap();
+	private Vector m_voices = new Vector(2, 1);
 	
-	private char m_partLabel = ' ';
-	
-	protected void setPartLabel(char c) {
-		m_partLabel = c;
-	}
+	private String m_partLabel = " ";
+
+	/** Collection of Instruction object (Xcommand, user defined symbols),
+	 * transmitted from the Tune object in {@link Tune#newMusic()} */
+	private ArrayList m_instructions = null;
 
 	public Music() {
 		this((short) 1);
 	}
-
+	
 	public Music(short firstBarNo) {
 		super();
 		m_firstBarNumber = firstBarNo;
@@ -58,11 +61,28 @@ public class Music implements Cloneable, Serializable {
 				(short) m_firstBarNumber, 0));
 	}
 	
+	protected void setPartLabel(String c) {
+		m_partLabel = c;
+		Iterator it = m_voices.iterator();
+		while (it.hasNext()) {
+			Voice v = (Voice) it.next();
+			v.setPartLabel(m_partLabel);
+		}
+	}
+	
+	protected void setGlobalInstructions(ArrayList al) {
+		m_instructions = al;
+	}
+	
+	public ArrayList getGlobalInstructions() {
+		return m_instructions;
+	}
+
 	/**
-	 * Returns a Map of <code>Byte(voiceNumber) => Voice</code>
+	 * Returns a Collection of {@link Voice}.
 	 */
 	public Collection getVoices() {
-		return m_voices.values();
+		return m_voices;
 	}
 	
 	/**
@@ -72,8 +92,8 @@ public class Music implements Cloneable, Serializable {
 	public void append(Music music) {
 		//if appending a music from a part
 		//add a PartLabel to all voices
-		if (music.m_partLabel != ' ') {
-			Iterator it = m_voices.values().iterator();
+		if (!music.m_partLabel.equals(" ")) {
+			Iterator it = m_voices.iterator();
 			while (it.hasNext()) {
 				((Voice)it.next()).addElement(new PartLabel(music.m_partLabel));
 			}
@@ -81,7 +101,15 @@ public class Music implements Cloneable, Serializable {
 		Iterator it = music.getVoices().iterator();
 		while (it.hasNext()) {
 			Voice v = (Voice) it.next();
-			getVoice(v.getVoiceNumber()).addAll(v);
+			getVoice(v.getVoiceName()).addAll(v);
+		}
+	}
+	
+	public Voice getFirstVoice() {
+		if (m_voices.size() > 0) {
+			return (Voice) m_voices.firstElement();
+		} else {
+			return getVoice("1");
 		}
 	}
 	
@@ -89,26 +117,29 @@ public class Music implements Cloneable, Serializable {
 	 * Returns the asked voice, create it if needed.
 	 * @param voiceNumber
 	 */
-	public Voice getVoice(int voiceNumber) {
-		Byte B = new Byte((byte)voiceNumber);
-		if (m_voices.get(B) == null) {
-			Voice v = new Voice((byte)voiceNumber, m_firstBarNumber);
-			v.setPartLabel(m_partLabel);
-			m_voices.put(B, v);
+	public Voice getVoice(String voiceName) {
+		Iterator it = m_voices.iterator();
+		while (it.hasNext()) {
+			Voice v = (Voice) it.next();
+			if (v.getVoiceName().equals(voiceName))
+				return v;
 		}
-		return (Voice) m_voices.get(B);
+		Voice v = new Voice(voiceName, m_firstBarNumber);
+		v.setPartLabel(m_partLabel);
+		m_voices.add(v);
+		return v;
 	}
 
 	/** For compatibility, return iterator on first voice
-	 * @deprecated use {@link #getVoice(byte)}.iterator() 
+	 * @deprecated use {@link #getVoice(String)}.iterator() 
 	 */
 	public Iterator iterator() {
-		return getVoice((byte)1).iterator();
+		return getFirstVoice().iterator();
 	}
 	
-	/** @deprecated use {@link #getVoice(byte)} */
+	/** @deprecated use {@link #getVoice(String)} */
 	public void addElement(MusicElement element) {
-		getVoice((byte)1).addElement(element);
+		getFirstVoice().addElement(element);
 	}
 
 	/**
@@ -116,11 +147,11 @@ public class Music implements Cloneable, Serializable {
 	 * 
 	 * This is just a shorten way to call
 	 * <code>myMusic.getVoice(voiceNumber).addElement(element)</code>
-	 * @param voiceNumber
+	 * @param voiceName
 	 * @param element
 	 */
-	public void addElement(byte voiceNumber, MusicElement element) {
-		getVoice(voiceNumber).addElement(element);
+	public void addElement(String voiceName, MusicElement element) {
+		getVoice(voiceName).addElement(element);
 	}
 	
 	/**
@@ -130,7 +161,7 @@ public class Music implements Cloneable, Serializable {
 	 * @param element
 	 */
 	public void addToAllVoices(MusicElement element) {
-		Iterator it = m_voices.values().iterator();
+		Iterator it = m_voices.iterator();
 		while (it.hasNext()) {
 			Voice v = (Voice) it.next();
 			v.addElement(element);
@@ -144,7 +175,7 @@ public class Music implements Cloneable, Serializable {
 	 * @param bar
 	 */
 	public boolean barIsEmptyForAllVoices(Bar bar) {
-		Iterator it = m_voices.values().iterator();
+		Iterator it = m_voices.iterator();
 		while (it.hasNext()) {
 			Voice v = (Voice) it.next();
 			if (!v.barIsEmpty(bar))
@@ -156,7 +187,8 @@ public class Music implements Cloneable, Serializable {
 	public Object clone() throws CloneNotSupportedException {
 		Object o = super.clone();
 		((Music) o).m_bars = (TreeMap) m_bars.clone();
-		((Music) o).m_voices = (TreeMap) m_voices.clone();
+		((Music) o).m_voices = (Vector) m_voices.clone();
+		((Music) o).m_instructions = (ArrayList) m_instructions.clone();
 		return o;
 	}
 
@@ -183,7 +215,8 @@ public class Music implements Cloneable, Serializable {
 	 * than in Music object
 	 */
 	public MusicElement getElementAtStreamPosition(int offset) {
-		Iterator it = m_voices.values().iterator();
+		Iterator it = m_voices.iterator();
+		CharStreamPosition pos;
 		while (it.hasNext()) {
 			Voice v = (Voice) it.next();
 			int size = v.size();
@@ -191,19 +224,26 @@ public class Music implements Cloneable, Serializable {
 			for (int i = 0; i < size; i++) {
 				current = (MusicElement) v.elementAt(i);
 				if (current instanceof PositionableInCharStream) {
-					PositionableInCharStream pos = (PositionableInCharStream) current;
-					if (pos.getPosition().getCharactersOffset() <= offset
-							&& (pos.getPosition().getCharactersOffset() + pos
-								.getLength()) >= offset)
-						return current;
+					pos = ((PositionableInCharStream) current)
+						.getCharStreamPosition();
+					if (pos != null) {
+						if ((pos.getStartIndex() <= offset)
+								&& (pos.getEndIndex() >= offset))
+							return current;
+					}
 				}
 			}
 		}
 		return null;
 	}
 	
-	private boolean voiceExists(byte voiceNumber) {
-		return m_voices.get(new Byte(voiceNumber)) != null;
+	private boolean voiceExists(String voiceName) {
+		for (Iterator it = m_voices.iterator(); it.hasNext();) {
+			Voice v = (Voice) it.next();
+			if (v.getVoiceName().equals(voiceName))
+				return true;
+		}
+		return false;
 	}
 
 	/**
@@ -240,11 +280,11 @@ public class Music implements Cloneable, Serializable {
 	 *             Thrown if one of the music elements hasn't been found in the
 	 *             music or if the <TT>elmtEnd</TT> param is located before
 	 *             the <TT>elmntBegin</TT> param in the music.
-	 * @deprecated use {@link #getVoice(byte)}.{@link Voice#getHighestNoteBewteen(MusicElement, MusicElement) getHighest...}
+	 * @deprecated use {@link #getVoice(String)}.{@link Voice#getHighestNoteBewteen(MusicElement, MusicElement) getHighest...}
 	 */
 	public NoteAbstract getHighestNoteBewteen(MusicElement elmtBegin,
 			MusicElement elmtEnd) throws IllegalArgumentException {
-		return getVoice((byte)1).getHighestNoteBewteen(elmtBegin, elmtEnd);
+		return getFirstVoice().getHighestNoteBewteen(elmtBegin, elmtEnd);
 	}
 
 	/**
@@ -253,7 +293,7 @@ public class Music implements Cloneable, Serializable {
 	 * @return The key signature of this tune.
 	 */
 	public KeySignature getKey() {
-		return getVoice((byte)1).getKey();
+		return getFirstVoice().getKey();
 	}
 
 	/**
@@ -261,10 +301,10 @@ public class Music implements Cloneable, Serializable {
 	 * 
 	 * @return The last note that has been added to this score. <TT>null</TT>
 	 *         if no note in this score.
-	 * @deprecated use {@link #getVoice(byte)}.getLastNote()
+	 * @deprecated use {@link #getVoice(String)}.getLastNote()
 	 */
 	public NoteAbstract getLastNote() {
-		return getVoice((byte)1).getLastNote();
+		return getFirstVoice().getLastNote();
 	}
 
 	/**
@@ -276,11 +316,11 @@ public class Music implements Cloneable, Serializable {
 	 *         if found. <TT>null</TT> if no note has been found between the
 	 *         two music elements.
 	 * @throws IllegalArgumentException
-	 * @deprecated use {@link #getVoice(byte)}.{@link Voice#getLowestNoteBewteen(MusicElement, MusicElement) getLowest...}
+	 * @deprecated use {@link #getVoice(String)}.{@link Voice#getLowestNoteBewteen(MusicElement, MusicElement) getLowest...}
 	 */
 	public NoteAbstract getLowestNoteBewteen(MusicElement elmtBegin,
 			MusicElement elmtEnd) throws IllegalArgumentException {
-		return getVoice((byte)1).getLowestNoteBewteen(elmtBegin, elmtEnd);
+		return getFirstVoice().getLowestNoteBewteen(elmtBegin, elmtEnd);
 	}
 
 	/**
@@ -290,11 +330,11 @@ public class Music implements Cloneable, Serializable {
 	 * @param elmtEnd
 	 * @return a Collection of NoteAbstract (Note or MultiNote)
 	 * @throws IllegalArgumentException
-	 * @deprecated use {@link #getVoice(byte)}.{@link Voice#getNotesBetween(MusicElement, MusicElement) getNotesBetween...}
+	 * @deprecated use {@link #getVoice(String)}.{@link Voice#getNotesBetween(MusicElement, MusicElement) getNotesBetween...}
 	 */
 	public Collection getNotesBetween(MusicElement elmtBegin,
 			MusicElement elmtEnd) throws IllegalArgumentException {
-		return getVoice((byte)1).getNotesBetween(elmtBegin, elmtEnd);
+		return getFirstVoice().getNotesBetween(elmtBegin, elmtEnd);
 	}
 
 	/**
@@ -302,7 +342,7 @@ public class Music implements Cloneable, Serializable {
 	 */
 	public Note getShortestNoteInAllVoices() throws IllegalArgumentException {
 		Note shortestNote = null;
-		Iterator it = m_voices.values().iterator();
+		Iterator it = m_voices.iterator();
 		while (it.hasNext()) {
 			Voice v = (Voice) it.next();
 			Note shortInVoice = v.getShortestNote();
@@ -319,14 +359,14 @@ public class Music implements Cloneable, Serializable {
 	/**
 	 * Returns <TT>true</TT> if this tune music has chord names, <TT>false</TT>
 	 * otherwise.
-	 * @deprecated use {@link #getVoice(byte)}.hasChordNames()
+	 * @deprecated use {@link #getVoice(String)}.hasChordNames()
 	 */
 	public boolean hasChordNames() {
-		return getVoice((byte)1).hasChordNames();
+		return getFirstVoice().hasChordNames();
 	}
 
 	private boolean hasObject(Class musicElementClass) {
-		Iterator it = m_voices.values().iterator();
+		Iterator it = m_voices.iterator();
 		while (it.hasNext()) {
 			Voice v = (Voice) it.next();
 			if (v.hasObject(musicElementClass))
@@ -351,9 +391,9 @@ public class Music implements Cloneable, Serializable {
 		return hasObject(Tempo.class);
 	}
 
-	/** @deprecated use {@link #getVoice(byte)}.indexOf() */
+	/** @deprecated use {@link #getVoice(String)}.indexOf() */
 	public int indexOf(MusicElement elmnt) {
-		return getVoice((byte)1).indexOf(elmnt);
+		return getFirstVoice().indexOf(elmnt);
 	}
 
 }

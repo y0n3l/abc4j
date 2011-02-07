@@ -132,6 +132,12 @@ public interface MusicalFont extends Cloneable, Serializable {
 	public char getStemWithoutNoteUpChar(short strictDuration);
 	
 	/**
+	 * Returns a dot (which can be the same as staccato
+	 * to display in Nth-Repeat <TT>[1,3</TT> after each numbr
+	 */
+	public char getTextualDot();
+	
+	/**
 	 * Returns the digits for the numerator or the denominator of time signature
 	 */
 	public char[] getTimeSignatureDigits(int number);

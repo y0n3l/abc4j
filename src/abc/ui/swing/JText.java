@@ -165,7 +165,7 @@ public class JText extends JScoreElementAbstract {
 		return new Dimension((int) getWidth(), (int) getHeight());
 	}
 	
-	private double getOneLineHeight() {
+	protected double getOneLineHeight() {
 		return (double) getMetrics().getTextFontHeight(m_textField);
 	}
 
@@ -279,6 +279,8 @@ public class JText extends JScoreElementAbstract {
 				.replaceAll("\\(#\\)", sharp+"")
 				.replaceAll("\\(##\\)", double_sharp+"")
 				.replaceAll("\\(\\=\\)", natural+"");
+			if (text.length() == 0)
+				continue;
 			
 			AttributedString as = new AttributedString(text);
 			as.addAttributes(font.getAttributes(), 0, text.length());

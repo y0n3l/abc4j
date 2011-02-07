@@ -29,7 +29,7 @@ package abc.notation;
  * 
  * An element can have multiple annotations
  */
-public class Annotation extends MusicElement implements Cloneable {
+public class Annotation extends MusicPresentationElement implements Cloneable {
 	
 	private static final long serialVersionUID = -5229829009603741539L;
 	

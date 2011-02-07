@@ -15,15 +15,17 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abcynth;
 
+import java.util.Iterator;
+
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import scanner.InvalidCharacterEvent;
-import scanner.TokenEvent;
 import abc.notation.Tune;
 import abc.parser.AbcFileParserListenerInterface;
-import abc.parser.InvalidTokenEvent;
+import abc.parser.AbcNode;
+import abc.parser.AbcParseError;
+import abc.parser.CharStreamPosition;
 
 
 /** */
@@ -45,22 +47,21 @@ public class LogFrame extends JFrame implements AbcFileParserListenerInterface
 
   public void tuneBegin() {
   }
-
-  public void invalidToken(InvalidTokenEvent event)
-  {
-    m_errorsArea.append("Invalid token " + event.getToken().getValue() + " at " + event.getPosition().toString() + "\n");
+  
+  public void noTune() {
   }
 
-  public void validToken(TokenEvent event)
-  {}
-
-  public void invalidCharacter(InvalidCharacterEvent event)
-  {
-    m_errorsArea.append("Invalid character " + event.getCharacter() + " at " + event.getPosition().toString()+ "\n");
+  public void tuneEnd(Tune tune, AbcNode abcRoot)
+  { 
+	  if (abcRoot != null) {
+		  Iterator it = abcRoot.getErrors().iterator();
+		  while (it.hasNext()) {
+			  AbcParseError ape = (AbcParseError) it.next();
+			  CharStreamPosition csp = ape.getCharStreamPosition();
+			  m_errorsArea.append(ape.getErrorMessage() + " at line " + csp.getLine()+", column "+ csp.getColumn()+"\n");
+		  }
+	  }
   }
-
-  public void tuneEnd(Tune tune)
-  { }
 
   public void fileBegin()
   {

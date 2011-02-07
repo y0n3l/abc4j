@@ -15,7 +15,6 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.notation;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -64,7 +63,7 @@ public abstract class DecorableElement extends MusicElement implements
 	 * @return The annotationss for this element. <TT>null</TT> if it has not.
 	 * @see #hasAnnotations()
 	 */
-	public Collection getAnnotations() {
+	public Vector getAnnotations() {
 		return m_annotations;
 	}
 
@@ -173,7 +172,7 @@ public abstract class DecorableElement extends MusicElement implements
 		}
 	}
 	
-	protected void addAnnotation(Annotation ann) {
+	public void addAnnotation(Annotation ann) {
 		if (m_annotations == null) {
 			m_annotations = new Vector(2, 2);
 		}

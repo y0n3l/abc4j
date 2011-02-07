@@ -58,6 +58,13 @@ abstract class JScoreElementAbstract implements JScoreElement {
 	/** vector of JDecoration instances for this element. */
 	protected Vector m_jDecorations = null;
 	
+	/** used in {@link #renderAnnotations(Graphics2D)}
+	 * and {@link #getScoreElementAt(Point)} */
+	private Vector m_jAnnotations = null;
+	/** used in {@link #renderChordName(Graphics2D)}
+	 * and {@link #getScoreElementAt(Point)} */
+	private JChordName m_jChordName = null;
+	
 	/** Dynamic for this element */
 	protected JDynamic m_jDynamic = null;
 	
@@ -150,8 +157,31 @@ abstract class JScoreElementAbstract implements JScoreElement {
 			return null;
 		if (getBoundingBox().contains(location))
 			return this;
-		else
-			return null;
+		else {
+			if (m_jAnnotations != null) {
+				for (Iterator it = m_jAnnotations.iterator(); it.hasNext();) {
+					JAnnotation ja = (JAnnotation) it.next();
+					if (ja.getBoundingBox().contains(location))
+						return ja;
+				}
+			}
+			if (m_jChordName != null) {
+				if (m_jChordName.getBoundingBox().contains(location))
+					return m_jChordName;
+			}
+			if (m_jDecorations != null) {
+				for (Iterator it = m_jDecorations.iterator(); it.hasNext();) {
+					JDecoration jd = (JDecoration) it.next();
+					if (jd.getBoundingBox().contains(location))
+						return jd;
+				}
+			}
+			if (m_jDynamic != null) {
+				if (m_jDynamic.getBoundingBox().contains(location))
+					return m_jDynamic;
+			}
+		}
+		return null;
 	}
 
 	/** Return the base of this element.
@@ -286,17 +316,19 @@ abstract class JScoreElementAbstract implements JScoreElement {
 	protected void renderAnnotations(Graphics2D gfx) {
 		MusicElement me = getMusicElement();
 		Collection annots = null;
+		m_jAnnotations = null;
 		if (me instanceof DecorableElement)
 			annots = ((DecorableElement) me).getAnnotations();
 		if (annots != null) {
+			m_jAnnotations = new Vector(annots.size());
 			Iterator it = annots.iterator();
 			while (it.hasNext()) {
 				Annotation annot = (Annotation) it.next();
-				JAnnotation jannot = new JAnnotation(getMetrics(),
-					annot.getText());
+				JAnnotation jannot = new JAnnotation(getMetrics(), annot);
 				jannot.setBase(getBase());
 				jannot.setAttachedTo(this);
 				jannot.render(gfx);
+				m_jAnnotations.add(jannot);
 			}
 		}
 	}
@@ -304,6 +336,7 @@ abstract class JScoreElementAbstract implements JScoreElement {
 	protected void renderChordName(Graphics2D gfx) {
 		MusicElement me = getMusicElement();
 		Chord chord = null;
+		m_jChordName = null;
 		if (me instanceof DecorableElement)
 			chord = ((DecorableElement) me).getChord();
 		if (chord != null) {
@@ -312,11 +345,12 @@ abstract class JScoreElementAbstract implements JScoreElement {
 				displayPos = ((JNote) this).getDisplayPosition();
 			else if (this instanceof JChord)
 				displayPos = ((JChord) this).getHighestNote().getDisplayPosition();
-			else if (this instanceof JSpacer)
+			else/* if ((this instanceof JSpacer)
+					|| (this instanceof JBar))*/
 				displayPos = getBase();
 
-			JChordName chordName = new JChordName(getMetrics(), chord);
-			Dimension dimension = chordName.getDimension();
+			m_jChordName = new JChordName(getMetrics(), chord);
+			Dimension dimension = m_jChordName.getDimension();
 			double y = getStaffLine().getBase().getY()/* not yet defined*/
 				//- (displayPosition.getY()%m_metrics.getStaffLinesSpacing())
 				- getMetrics().getStaffCharBounds().getHeight()
@@ -334,8 +368,8 @@ abstract class JScoreElementAbstract implements JScoreElement {
 				default:
 					break;
 				}
-				chordName.setBase(new Point2D.Double(x, y));
-				chordName.render(gfx);	
+				m_jChordName.setBase(new Point2D.Double(x, y));
+				m_jChordName.render(gfx);	
 			}
 		}
 	}

@@ -1,0 +1,164 @@
+<HTML>
+<BODY>
+This package contains classes for parsing tunes and tunebooks in abc notation.
+It needs <TT>abc.notation</TT> packages and <A HREF="http://www.parboiled.org" TARGET="_blank">parboiled for Java</A> library to work.
+The purpose of classes from this package is to extract from the abc notation all the necessary information needed 
+to represent the music with objects belonging to the <TT>abc.notation</TT>.<BR/>
+<BR/>
+<h3>abc4j propose several parsers</h3>
+<UL>
+	<LI>{@link abc.parser.TuneParser TuneParser} : This class is usefull when you 
+		want to parse only one tune : you get the {@link abc.notation.Tune Tune} result in a 
+		synchronous manner.<br />
+		If the input data is a tune book (header + several tunes), it parses the first tune.
+	</LI>
+	<LI>{@link abc.parser.AsynchronousTuneParser AsynchronousTuneParser} : This class is 
+		produces the same result as TuneParser but asynchronously.
+	</LI>
+	<LI>{@link abc.parser.TuneBookParser TuneBookParser} : This class is usefull when you 
+		want to parse a book which may contain common headers and several tunes :
+		you get the {@link abc.notation.TuneBook TuneBook} result in a synchronous manner.
+	</LI>
+</UL>
+
+<h3>How parsing works?</h3>
+There are 2 steps of parsing :
+<h4>step #1 - From ABC string to node structure</h4>
+parboiled analyse the source with a grammar, and produces a node structure.
+This node structure is converted into AbcNode structure.
+At root node, you have all informations for a Tune or a TuneBook. Step #2 will use
+the AbcNode structure.<br />
+For example, for this simple ABC file:
+<PRE>X:1
+T:sample
+Q:1/4=120
+M:4/4
+K:Cm
+C2_E</PRE>
+you get the following node structure:
+(using AbcParserAbstract.debugPrint(AbcNode))
+<PRE>AbcFile = 'X:1\nT:sample\nQ:1/4=120\nM:4/4\nK:Cm\nC2_E'
+  AbcTuneBookHeader = ''
+  AbcTune = 'X:1\nT:sample\nQ:1/4=120\nM:4/4\nK:Cm\nC2_E'
+    AbcHeader = 'X:1\nT:sample\nQ:1/4=120\nM:4/4\nK:Cm\n'
+      FieldNumber = 'X:1\n'
+        X: = 'X:'
+        DIGITS = '1'
+        HeaderEol = '\n'
+      TitleFields = 'T:sample\n'
+        FieldTitle = 'T:sample\n'
+          T: = 'T:'
+          TexText = 'sample'
+      FieldTempo = 'Q:1/4=120\n'
+        Q: = 'Q:'
+        Tempo = '1/4=120'
+          NoteLengthStrict = '1/4'
+          = = '='
+          DIGITS = '120'
+        HeaderEol = '\n'
+      FieldMeter = 'M:4/4\n'
+        M: = 'M:'
+        TimeSignature = '4/4'
+          MeterNum = '4/4'
+        HeaderEol = '\n'
+      FieldKey = 'K:Cm\n'
+        K: = 'K:'
+        Key = 'Cm'
+          KeyDef = 'Cm'
+            BaseNote = 'C'
+            Mode = 'm'
+              Minor = 'm'
+        HeaderEol = '\n'
+    AbcMusic = 'C2_E'
+      AbcLine = 'C2_E'
+        Element = 'C2'
+          Stem = 'C2'
+            Note = 'C2'
+              Pitch = 'C'
+                BaseNote = 'C'
+              NoteLength = '2'
+        Element = '_E'
+          Stem = '_E'
+            Note = '_E'
+              Pitch = '_E'
+                Accidental = '_'
+                BaseNote = 'E'
+              NoteLength = ''
+        AbcEol = ''</PRE>
+If you want to quickly retrieve informations in ABC file, you can stop 
+at this step, and pick out the nodes you need, e.g. 
+<TT>myAbcRootNode.getChildsInAllGeneration("FieldTitle/TexText")</TT> will 
+return all TexText node which are child of a FieldTitle node... in
+other words, all values of these nodes are the titles and subtitles of 
+the ABC tune.
+	
+<h4>Step #2 - Node structure to abc.notation.*</h4>
+The AbcParserAbstract converts the node structure into Tune, Parts, Voices, Music, Notes,
+Barlines, KeySignature...<br />
+This step is mostly complete, some missing abc.notation.* objects are ignored, such as
+Voice, meta-command, userdefined symbols, lyrics..., it'll be easy to catch them.<br />
+e.g. When abc.notation.* will handle lyrics, it'll be easy to convert lyrics node to abc.notation.* classes.
+In the grammar then node structure, lyrics are already prepared as syllable, syllable-break, hold, skip-note, next-bar...
+
+<h3>To catch parser events, you have some listeners:</h3>
+<UL>
+	<LI>{@link abc.parser.TuneParserListenerInterface TuneParserListenerInterface} which tell
+		you when <U>one</U> tune begins parsing (tuneBegin()), ends parsing (tuneEnd()),
+		or no tune was found (noTune()).
+	</LI>
+	<LI>The {@link abc.parser.TuneBookParserListenerInterface TuneBookParserListenerInterface}
+		has same methods called for each tune (tuneBegin(), noTune(), and tuneEnd()),
+		and adds methods for the whole tune book (tuneBookBegin(), emptyTuneBook(), tuneBookEnd()).
+	</LI>
+</UL>
+tuneEnd() and tuneBookEnd() have 2 parameters :
+<ul>
+	<li>the resulting object Tune or TuneBook</li>
+	<li>The parsing tree resulting from parboiled syntax analysis. From this tree you
+		get for each node the type of "token", the value, and if any the errors
+		({@link abc.parser.AbcParseError AbcParseError} objects).
+	</li>
+</ul>
+<HR/>
+Some specific points should be pointed out during the translation from abc music notation to
+abc.notation.* music notation :
+<OL>
+<LI><B>Several different ways to express music using abc can lead to the same music.</B><BR/>
+For instance, the two following tunes :
+<PRE>
+X:1
+T:dots example
+L:1/8
+K:D
+d3d
+
+X:2
+T:dots example
+L:1/4
+K:D
+d&gt;d
+</PRE>
+describe the same melody : a dotted quarter note followed by eighth note. The consequence of this is that their 
+representation in <TT>Note</TT> objects will be the same : the first note is a <TT>Note</TT> instance 
+whose strict duration is <TT>Note.QUARTER</TT> and its <TT>countDots()</TT> will return 1.<BR/>
+The second note is a <TT>Note.EIGHTH</TT> without any dot.<BR/><BR/>
+</LI>
+<LI><B>Some abc note lengths may be impossible to translate into standard music notation.</B><BR/>
+For instance, let's consider the following tune :
+<PRE>
+X:1
+T:impossible duration
+L:1/8
+K:D
+d5
+</PRE>
+In such tune, the first note has a duration equals to 5 x eighth note. Such duration cannot be expressed
+in standard music notation with one single note : a quarter note is 4 times a eighth note, and a dotted
+quarter is 6 times a eighth note.<BR/>
+For now, the resulting note will be an instance of the <TT>Note</TT> class but with an "exotic" duration.
+One possible alternative would be to decompose this duration into several notes, but for now, the 
+translation sticks to the approach "one abc note -&gt; one <TT>Note</TT> instance".
+</LI>
+</OL>
+</BODY>
+</HTML>

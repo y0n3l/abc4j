@@ -29,8 +29,6 @@ import abc.notation.MultiNote;
 import abc.notation.Note;
 import abc.notation.Tempo;
 import abc.notation.Tuplet;
-import abc.parser.PositionableMultiNote;
-import abc.parser.PositionableNote;
 
 /** A basic midi converter that just plays melody, ignores ornaments and chords. */
 public class OldBasicMidiConverter extends OldMidiConverterAbstract
@@ -76,7 +74,7 @@ public class OldBasicMidiConverter extends OldMidiConverterAbstract
         myNoteOn.setMessage(ShortMessage.NOTE_ON, getMidiNoteNumber(note, key), 50);
         events[3*j] = new MidiEvent(myNoteOn,elapsedTime);
 
-        events[3*j+1] = new MidiEvent(new NotationMarkerMessage((PositionableNote)note), elapsedTime);
+        events[3*j+1] = new MidiEvent(new NotationMarkerMessage((Note)note), elapsedTime);
 
         ShortMessage myNoteOff = new ShortMessage();
         myNoteOff.setMessage(ShortMessage.NOTE_OFF , getMidiNoteNumber(note, key), 50);
@@ -125,7 +123,7 @@ public class OldBasicMidiConverter extends OldMidiConverterAbstract
       }
     }
 
-    events[notesVector.size()] = new MidiEvent(new NotationMarkerMessage((PositionableMultiNote)notes), elapsedTime);
+    events[notesVector.size()] = new MidiEvent(new NotationMarkerMessage((MultiNote)notes), elapsedTime);
 
     for (int j=0; j<notesVector.size(); j++)
     {

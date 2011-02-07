@@ -16,17 +16,20 @@
 package abc.notation;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Vector;
 
 /** A class to define tuplets. */
-public class Tuplet implements Cloneable, Serializable
+public class Tuplet extends MusicElement implements Cloneable, Serializable
 {
   private static final long serialVersionUID = -800634088496917971L;
   
   /** Notes composing the tuplet. */
-  private Vector m_notes = null;
+  private Vector m_notes = new Vector(4, 2);
   private short m_totalRelativeLength = -1;
   private short m_totalDuration = -1;
+  private short m_tupletNumber = -1;
+  private short m_defaultNoteLength = -1;
 
   /** Creates a new tuplet composed of the specified notes. The total length
    * of this tuplet will be equals to the totalRelativeLength * defaultLength.
@@ -34,14 +37,31 @@ public class Tuplet implements Cloneable, Serializable
    * encapsulated inside a <TT>Vector</TT>.
    * @param totalRelativeLength The total relative length of this tuplet
    * multiplied by the default relative length gives the total absolute length
+   * of this tuplet.
+   * @deprecated
+   */
+  public Tuplet(Vector notes, short totalRelativeLength, short defaultNoteLength) {
+  	this((short)notes.size(), notes, totalRelativeLength, defaultNoteLength);
+  }
+
+  /** Creates a new tuplet composed of the specified notes. The total length
+   * of this tuplet will be equals to the totalRelativeLength * defaultLength.
+   * @param tupletNumber The <TT>number</TT> that will be displayed
+   * on the tuplet. A 3-uplet of 16th can have only 2 notes : one 8th and one 16th
+   * @param notes The <TT>NoteAbstract</TT> obejcts composing this tuplet,
+   * encapsulated inside a <TT>Vector</TT>.
+   * @param totalRelativeLength The total relative length of this tuplet
+   * multiplied by the default relative length gives the total absolute length
    * of this tuplet. */
-  public Tuplet (Vector notes, short totalRelativeLength, short defaultNoteLength)
+  public Tuplet(int tupletNumber, Collection notes, short totalRelativeLength, short defaultNoteLength)
   {
-    m_notes = notes;
+	m_tupletNumber = (short)tupletNumber;
+    m_notes.addAll(notes);
     m_totalRelativeLength = totalRelativeLength;
-    m_totalDuration = (short)(m_totalRelativeLength * defaultNoteLength);
+    m_defaultNoteLength = defaultNoteLength;
+    m_totalDuration = (short)(m_totalRelativeLength * m_defaultNoteLength);
     for (int i=0; i<notes.size(); i++) {
-      ((NoteAbstract)notes.elementAt(i)).setTuplet(this);
+      ((NoteAbstract)m_notes.elementAt(i)).setTuplet(this);
     }
   }
 
@@ -61,8 +81,21 @@ public class Tuplet implements Cloneable, Serializable
 	  return m_totalDuration;
   }
   
+  /** Default note length is the length of all notes
+   * of the tuplet if tupletNumber==numberOfNotes
+   * and each note has the same duration.
+   * @return
+   */
+  public short getDefaultNoteLength() {
+	  return m_defaultNoteLength;
+  }
+  
   public int getNumberOfNotes() {
 	  return m_notes.size();
+  }
+  
+  public int getTupletNumber() {
+	  return m_tupletNumber;
   }
 
   /** Returns a new vector containing all notes of this multi note.

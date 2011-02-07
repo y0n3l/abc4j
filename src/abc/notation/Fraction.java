@@ -59,14 +59,28 @@ public class Fraction extends MusicElement implements Cloneable, Serializable
 
   public int getDenominator()
   { return denominator; }
+  
+  public boolean equalsOne() {
+	  return numerator == denominator;
+  }
 
   /** Returns the float value represented by this fraction
    * @return The fload value represented by this fraction. */
   public float floatValue()
   { return (numerator/denominator); }
 
-  /** Multiplies this fraction by the specified fraction and returns
-   * the result as a float. This fraction remains unchanged.
+  /** Change this fraction, multiplies it by the specified
+   * fraction.
+   * @param fraction
+   */
+  public void multiplyBy(Fraction fraction) {
+	  numerator *= fraction.getNumerator();
+	  denominator *= fraction.getDenominator();
+  }
+  
+  /** Returns the float result of the multiplication of
+   * this fraction by the specified fraction.
+   * This fraction remains unchanged.
    * @param fraction A Fraction.
    * @return The result of the multiplication of this fraction by the specified
    * one. */

@@ -21,6 +21,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.Vector;
@@ -33,38 +34,43 @@ public class Tune implements Cloneable, Serializable
 {
   private static final long serialVersionUID = 5621598596188277056L;
   
+  private TuneInfos m_tuneInfos = null;
 //    Field name                     header this elsewhere Used by Examples and notes
-  private String m_lyricist = null;       //yes							  A: author of lyrics (v2)
-  private String m_area = null;           //yes                           A:Donegal, A:Bampton (v1.6)
-  private String m_book = null;           //yes         yes       archive B:O'Neills
-  private String m_composer = null;       //yes                           C:Trad.
-  private String m_discography = null;    //yes                   archive D:Chieftans IV
+  //private String m_lyricist = null;       //yes							  A: author of lyrics (v2)
+  //private String m_area = null;           //yes                           A:Donegal, A:Bampton (v1.6)
+  //private String m_book = null;           //yes         yes       archive B:O'Neills
+  //private String m_composer = null;       //yes                           C:Trad.
+  //private String m_discography = null;    //yes                   archive D:Chieftans IV
   //private String m_fileName = null;       //            yes               see index.tex
-  private String m_group = null;          //yes         yes       archive G:flute
-  private String m_history = null;        //yes         yes       archive H:This this said to ...
-  private String m_information = null;    //yes         yes       playabc
+  //private String m_group = null;          //yes         yes       archive G:flute
+  //private String m_history = null;        //yes         yes       archive H:This this said to ...
+  //private String m_information = null;    //yes         yes       playabc
   //private KeySignature m_key = null;    //yes         yes       playabc
-  private String m_notes = null;          //yes                           N:see also O'Neills - 234
-  private String m_origin = null;         //yes         yes       index   O:I, O:Irish, O:English
-  private String m_rhythm = null;         //yes         yes       index   R:R, R:reel
-  private String m_source = null;         //yes                           S:collected in Brittany
+  //private String m_notes = null;          //yes                           N:see also O'Neills - 234
+  //private String m_origin = null;         //yes         yes       index   O:I, O:Irish, O:English
+  //private String m_rhythm = null;         //yes         yes       index   R:R, R:reel
+  //private String m_source = null;         //yes                           S:collected in Brittany
   private int m_referenceNumber = -1;    //first                         X:1, X:2
-  private String m_transcriptionNotes = null;//yes                         Z:from photocopy, Z:Transcriber <email> <website>...
+  //private String m_transcriptionNotes = null;//yes                         Z:from photocopy, Z:Transcriber <email> <website>...
   private int m_elemskip = 0;            //yes    yes                    see Line Breaking
-  private String m_fileurl = null;		//yes                           F:http://www.url.com/thisfile.abc
-  private Vector m_titles;              //second yes                    T:Paddy O'Rafferty
+  //private String m_fileurl = null;		//yes                           F:http://www.url.com/thisfile.abc
+  //private Vector m_titles;              //second yes                    T:Paddy O'Rafferty
+  //private String m_words = null;
   //private AbcMultiPartsDefinition abcMultiPartsDefinition = null;  //yes    yes                    P:ABAC, P:A, P:B
   //private AbcScore m_abcScore = null;
   private Part m_defaultPart = null;
   /** the multi parts definition of this tune if composed of several parts.
    * If this tune is a one-part tune, this attribtue is <TT>null</TT> */
   private MultiPartsDefinition m_multiPartsDef = null;
-  private TreeMap m_parts = null;
+  private ArrayList m_parts = null;
+  /** Collection of Instruction object (Xcommand, user defined symbols) */
+  private ArrayList m_instructions = null;
 
   /** Creates a new empty tune. */
   public Tune() {
     super();
-    m_titles = new Vector(2, 2);
+    m_tuneInfos = new TuneInfos();
+    //m_titles = new Vector(2, 2);
     m_defaultPart = new Part(this, ' ');
   }
   
@@ -72,14 +78,15 @@ public class Tune implements Cloneable, Serializable
    * @param tune The tune to be copied in depth. */
   public Tune(Tune tune) {
 	  try {
-	  this.m_area = tune.m_area;
+		this.m_tuneInfos = (TuneInfos)tune.m_tuneInfos.clone();
+	  /*this.m_area = tune.m_area;
 	  this.m_book = tune.m_book;
-	  this.m_composer = tune.m_composer;
+	  this.m_composer = tune.m_composer;*/
 	  if (tune.m_defaultPart != null)
 		  this.m_defaultPart = (Part)tune.m_defaultPart.clone();
-	  this.m_discography = tune.m_discography;
+	  //this.m_discography = tune.m_discography;
 	  this.m_elemskip = tune.m_elemskip;
-	  this.m_fileurl = tune.m_fileurl;
+	  /*this.m_fileurl = tune.m_fileurl;
 	  this.m_group = tune.m_group;
 	  this.m_history = tune.m_history;
 	  this.m_information = tune.m_information;
@@ -88,27 +95,32 @@ public class Tune implements Cloneable, Serializable
 	  this.m_lyricist = tune.m_lyricist;
 	  //m_multiPartsDef after m_parts
 	  this.m_notes = tune.m_notes;
-	  this.m_origin = tune.m_origin;
+	  this.m_origin = tune.m_origin;*/
 	  if (tune.m_parts != null) {
-		  this.m_parts = new TreeMap();
-		for (Iterator itK = tune.m_parts.keySet().iterator(); itK.hasNext();) {
-			Character key = (Character) itK.next();
-			Part value = (Part) tune.m_parts.get(key);
-			this.m_parts.put(new Character(key.charValue()), value.clone());
+		  this.m_parts = new ArrayList();
+		for (Iterator it = tune.m_parts.iterator(); it.hasNext();) {
+			Part value = (Part) it.next();
+			this.m_parts.add(value.clone());
 		}
-		//this.m_parts = (Hashtable)tune.m_parts.clone();
 	  }
 	  if (tune.m_multiPartsDef != null)
 		  this.m_multiPartsDef = (MultiPartsDefinition)tune.m_multiPartsDef.clone(this);
 	  this.m_referenceNumber = tune.m_referenceNumber;
-	  this.m_rhythm = tune.m_rhythm;
+	  /*this.m_rhythm = tune.m_rhythm;
 	  this.m_source = tune.m_source;
 	  if (tune.m_titles != null)
 		  this.m_titles = (Vector)tune.m_titles.clone();
 	  this.m_transcriptionNotes = tune.m_transcriptionNotes;
+	  this.m_words = tune.m_words;*/
 	  } catch (CloneNotSupportedException never) {
 		  never.printStackTrace();
 	  }
+  }
+  
+  /** Returns the TuneInfos object which contains all textuals
+   * informations about the tune (composer, origin, sources...) */
+  public TuneInfos getTuneInfos() {
+	  return m_tuneInfos;
   }
 
   /** Sets the geographic area where this tune comes from.
@@ -116,25 +128,20 @@ public class Tune implements Cloneable, Serializable
    * Ex: A:Donegal, A:Bampton
    * @param area The area where this tune comes from. */
   public void setArea(String area)
-  {m_area = area; }
+  { m_tuneInfos.set(TuneInfos.AREA, area); }
 
   /** Returns the area where this tune comes from.
    * @return The area where this tune comes from.
    * <TT>null</TT> if the area hasn't been specified. */
   public String getArea()
-  { return m_area; }
+  { return m_tuneInfos.get(TuneInfos.AREA); }
 
   /** Add a publications where this tune can be found.
    * Corresponds to the "B:" abc field.
    * Ex: B:O'Neills
    * @param book The book where this tune comes from. */
   public void addBook(String book)
-  {
-	  if (m_book == null)
-		  m_book = book;
-	  else
-		  m_book += "\n" + book;
-  }
+  { m_tuneInfos.add(TuneInfos.BOOK, book); }
 
   /** Returns the list of publications where this
    * tune can be found.
@@ -142,7 +149,7 @@ public class Tune implements Cloneable, Serializable
    * this tune can be found,
    * <TT>null</TT> if the book hasn't been specified. */
   public String getBook()
-  { return m_book; }
+  { return m_tuneInfos.get(TuneInfos.BOOK); }
 
   /** Add a composer of this tune.
    * Corresponds to the "C:" abc field.
@@ -152,36 +159,26 @@ public class Tune implements Cloneable, Serializable
    * as parameter so that that people don't think the composer
    * has just been ignored. */
   public void addComposer(String composer)
-  {
-	  if (m_composer == null)
-		  m_composer = composer;
-	  else
-		  m_composer += "\n" + composer;
-  }
+  { m_tuneInfos.add(TuneInfos.COMPOSER, composer); }
 
   /** Returns the composer of this tune.
    * @return The composer of this tune,
    * <TT>null</TT> if the composer hasn't been specified. */
   public String getComposer()
-  { return m_composer; }
+  { return m_tuneInfos.get(TuneInfos.COMPOSER); }//m_composer; }
 
   /** Add recordings where this tune appears.
    * Corresponds to the "D:" abc field.
    * Ex: D:Gwenojenn
    * @param discography Recordings where this tune appears. */
   public void addDiscography(String discography)
-  {
-	  if (m_discography == null)
-		  m_discography = discography;
-	  else
-		  m_discography += "\n" + discography;
-  }
+  { m_tuneInfos.add(TuneInfos.DISCOGRAPHY, discography); }
 
   /** Returns recordings where this tune appears.
    * @return recordings where this tune appears,
    * <TT>null</TT> if the discography hasn't been specified. */
   public String getDiscography()
-  { return m_discography; }
+  { return m_tuneInfos.get(TuneInfos.DISCOGRAPHY); }
 
   public void setElemskip(int value)
   { m_elemskip = value; }
@@ -189,16 +186,11 @@ public class Tune implements Cloneable, Serializable
   public int getElemskip()
   { return m_elemskip; }
 
-  public void addGroup(String value)
-  {
-	  if (m_group == null)
-		  m_group = value;
-	  else
-		  m_group += "\n" + value;
-  }
+  public void addGroup(String group)
+  { m_tuneInfos.add(TuneInfos.GROUP, group); }
 
   public String getGroup()
-  { return m_group; }
+  { return m_tuneInfos.get(TuneInfos.GROUP); }
 
   /** Adds historical information about the tune.
    * Corresponds to the "H:" abc field.
@@ -206,19 +198,14 @@ public class Tune implements Cloneable, Serializable
    * @param history Historical information about
    * the tune to be added. */
   public void addHistory(String history)
-  {
-    if (m_history == null)
-      m_history = history;
-    else
-      m_history += "\n" + history;
-  }
+  { m_tuneInfos.add(TuneInfos.HISTORY, history); }
 
   /** Returns historical information about the tune.
    * @return Historical information about the tune,
    * <TT>null</TT> if no historical information about
    * the tune is provided. */
   public String getHistory()
-  { return m_history; }
+  { return m_tuneInfos.get(TuneInfos.HISTORY); }
 
   /** Returns the key signature of this tune.
    * @return The key signature of this tune. */
@@ -240,54 +227,39 @@ public class Tune implements Cloneable, Serializable
   //a new instruction with same keyword replace the lst
   //instruction having the same keyword
   public void addInformation(String information)
-  {
-    if (m_information == null)
-    	m_information = information;
-      else
-    	m_information += "\n" + information;
-  }
+  { m_tuneInfos.add(TuneInfos.INFORMATIONS, information); }
 
   /** Returns additional information about the tune.
    * @return Additional information about the tune,
    * <TT>null</TT> if no additional information about
    * the tune is provided. */
   public String getInformation()
-  { return m_information; }
+  { return m_tuneInfos.get(TuneInfos.INFORMATIONS); }
   
   /** Adds lyricist (author of lyrics)
    * Corresponds to the "A:" abc field in v2.
    * @param lyricist */
   public void addLyricist(String lyricist)
-  {
-	  if (m_lyricist == null)
-		  m_lyricist = lyricist;
-	  else
-		  m_lyricist += "\n" + lyricist;
-  }
+  { m_tuneInfos.add(TuneInfos.LYRICIST, lyricist); }
   
   /** Returns lyricist (author of lyrics)
    * Corresponds to the "A:" abc field in v2. */
   public String getLyricist()
-  { return m_lyricist; }
+  { return m_tuneInfos.get(TuneInfos.LYRICIST); }
 
   /** Adds notes concerning the transcription of this tune.
    * Corresponds to the "N:" abc field.
    * Ex: N:see also O'Neills - 234
    * @param notes Notes concerning the transcription of this tune. */
   public void addNotes(String notes)
-  {
-	  if (m_notes == null)
-		  m_notes = notes;
-	  else
-		  m_notes += "\n" + notes;
-  }
+  { m_tuneInfos.add(TuneInfos.NOTES, notes); }
 
   /** Returns notes concerning the transcription of this tune.
    * @return Notes concerning the transcription of this tune,
    * <TT>null</TT> if no transcription notes about
    * the tune is provided. */
   public String getNotes()
-  { return m_notes; }
+  { return m_tuneInfos.get(TuneInfos.NOTES); }
 
   /** Sets the origin of this tune.
    * Corresponds to the "O:" abc field.
@@ -297,40 +269,54 @@ public class Tune implements Cloneable, Serializable
    * is probably better.
    * @see #addSource(java.lang.String)*/
   public void setOrigin(String origin)
-  { m_origin = origin; }
+  { m_tuneInfos.set(TuneInfos.ORIGIN, origin); }
 
   /** Returns the origin of this tune.
    * @return The origin of this tune.
    * <TT>null</TT> if no origin about
    * the tune is provided. */
   public String getOrigin()
-  { return m_origin; }
+  { return m_tuneInfos.get(TuneInfos.ORIGIN); }
 
   /** Returns the part of the tune identified by the given label.
    * @param partLabel A part label.
    * @return The part of the tune identified by the given label, <TT>null</TT>
    * if no part with the specified label exists in this tune. */
-  public Part getPart(char partLabel)
+  public Part getPart(String partLabel)
   {
     if (m_parts!=null)
     {
-      Part p = (Part)m_parts.get(new Character(partLabel));
-      return p;
+    	Iterator it = m_parts.iterator();
+    	while (it.hasNext()) {
+    		Part p = (Part) it.next();
+    		//if (p.getLabel().equals(partLabel)
+    		//	|| p.getLabel().equals(""+partLabel.charAt(0))) {
+    		if (p.getLabel().charAt(0) == partLabel.charAt(0)) {
+    			if (partLabel.length() > 1) {
+    				p.setLabel(partLabel);
+    			}
+    			return p;
+    		}
+    	}
+    	return null;
     }
     else
       return null;
   }
 
-  /** Creates a new part in this tune and returns it.
+  /** Creates a new part in this tune if doesn't exist and returns it.
    * @param partLabel The label defining this new tune part.
    * @return The new part properly labeled. */
-  public Part createPart(char partLabel) {
+  public Part createPart(String partLabel) {
+	  Part part;
+	  if ((part = getPart(partLabel)) != null)
+		  return part;
 	  // check should be requiered to see if the label is not 
 	  // empty or blank character because the blank character is
 	  // used as flag for the default part.
-	  Part part = new Part(this, partLabel);
-	  if (m_parts==null) m_parts = new TreeMap();
-	  m_parts.put(new Character(partLabel), part);
+	  part = new Part(this, partLabel);
+	  if (m_parts==null) m_parts = new ArrayList();
+	  m_parts.add(part);
 	  return part;
   }
 
@@ -352,7 +338,7 @@ public class Tune implements Cloneable, Serializable
    * @param rhythm Type of rhythm of this tune.
    * @see #getRhythm() */
   public void setRhythm(String rhythm)
-  { m_rhythm = rhythm; }
+  { m_tuneInfos.set(TuneInfos.RHYTHM, rhythm); }
 
   /** Returns the rhythm of this tune.
    * @return The rhythm of this tune,
@@ -360,7 +346,7 @@ public class Tune implements Cloneable, Serializable
    * the tune is provided.
    * @see #setRhythm(java.lang.String)*/
   public String getRhythm()
-  {return m_rhythm; }
+  {return m_tuneInfos.get(TuneInfos.RHYTHM); }
 
   /** Adds a source of this tune.
    * Corresponds to the "S:" abc field.
@@ -368,44 +354,30 @@ public class Tune implements Cloneable, Serializable
    * @param source The source of this tune (place where
    * it has been collected for ex). */
   public void addSource(String source)
-  {
-	  if (m_source == null)
-		  m_source = source;
-	  else
-		  m_source += "\n" + source;
-  }
+  { m_tuneInfos.add(TuneInfos.SOURCE, source); }
 
   /** Returns the source of this tune.
    * @return The source of this tune. <TT>null</TT> if no source is provided. */
   public String getSource()
-  { return m_source; }
-
+  { return m_tuneInfos.get(TuneInfos.SOURCE); }
+  
   /** Adds a title to this tune.
    * Corresponds to the "T:" abc field.
    * Ex: T:Dansaone
    * @param title A title for this tune. */
   public void addTitle(String title)
-  { m_titles.addElement(title); }
+  { m_tuneInfos.add(TuneInfos.TITLE, title); }
 
   /** Removes one the titles of this tune.
    * @param title The title to be removed of this tune. */
   public void removeTitle(String title)
-  { m_titles.removeElement(title); }
+  { m_tuneInfos.remove(TuneInfos.TITLE, title); }
 
   /** Returns the titles of this tune.
    * @return An array containing the titles of this tune. If this tune has no
    * title, <TT>null</TT> is returned. */
   public String[] getTitles()
-  {
-    String[] titles = null;
-    if (m_titles.size()!=0)
-    {
-      titles = new String[m_titles.size()];
-      for (int i=0; i<m_titles.size(); i++)
-        titles[i]=(String)m_titles.elementAt(i);
-    }
-    return titles;
-  }
+  { return m_tuneInfos.getAsStringArray(TuneInfos.TITLE); }
 
   /** Sets the reference number of this tune.
    * @param id The reference number of this tune. */
@@ -425,24 +397,30 @@ public class Tune implements Cloneable, Serializable
    * and other contact information such as phone numbers or postal
    * addresses may be included. */
   public void addTranscriptionNotes(String transciptionNotes)
-  {
-    if (m_transcriptionNotes == null)
-      m_transcriptionNotes = transciptionNotes;
-    else
-      m_transcriptionNotes += "\n" + transciptionNotes;
-  }
+  { m_tuneInfos.add(TuneInfos.TRANSCRIPTION, transciptionNotes); }
+  
+  /** Adds the words of this tune.
+   * Corresponds to the "W:" abc field. */
+  public void addWords(String words)
+  { m_tuneInfos.add(TuneInfos.WORDS, words); }
+  
+  /** Returns the words of this tune.
+   * Corresponds to the "W:" abc field. */
+  public String getWords() {
+	  return m_tuneInfos.get(TuneInfos.WORDS); }
 
   /** Returns transcription notes of this tune.
    * @return Transcription notes of this tune. */
   public String getTranscriptionNotes()
-  { return m_transcriptionNotes; }
+  { return m_tuneInfos.get(TuneInfos.TRANSCRIPTION); }
   
   /** Sets the url of the file */
   public void setFileURL(String fileurl)
-  { m_fileurl = fileurl; }
+  { m_tuneInfos.set(TuneInfos.FILEURL, fileurl); }
+  
   /** Returns the URL of the file */
   public String getFileURL()
-  { return m_fileurl; }
+  { return m_tuneInfos.get(TuneInfos.FILEURL); }
   
 	static public Tune transpose(Tune t, int semitones) {
 		Tune ret = (Tune) t.clone();
@@ -455,12 +433,12 @@ public class Tune implements Cloneable, Serializable
 			Vector alreadyAddedParts = new Vector();
 			Part[] parts = ret.m_multiPartsDef.toPartsArray();
 			for (int i = 0; i < parts.length; i++) {
-				char label = parts[i].getLabel();
+				String label = parts[i].getLabel();
 				// already added, skip it!
-				if (alreadyAddedParts.contains(new Character(label)))
+				if (alreadyAddedParts.contains(label))
 					continue;
 				musics.add(parts[i].getMusic());
-				alreadyAddedParts.add(new Character(label));
+				alreadyAddedParts.add(label);
 			}
 		}
 
@@ -571,9 +549,9 @@ public class Tune implements Cloneable, Serializable
 		transpose_Chord(transp, noneTranspKeyNote, noneTranspKey,
 				lastKeyNote, lastKey);
 		if (transp.hasGracingNotes()) {
-			Note[] graces = transp.getGracingNotes();
+			NoteAbstract[] graces = transp.getGracingNotes();
 			for (int k = 0; k < graces.length; k++) {
-				graces[k] = (Note) transpose_Note(graces[k], noneTranspKeyNote,
+				graces[k] = (NoteAbstract) transpose_Note(graces[k], noneTranspKeyNote,
 						noneTranspKey, lastKeyNote, lastKey);
 			}
 		}
@@ -597,6 +575,19 @@ public class Tune implements Cloneable, Serializable
 						noneTranspKeyNote, null, lastKeyNote, null));
 		}
 	}
+	
+	/**
+	 * Create a {@link Music} object and transmit some informations
+	 * to it:
+	 * <ul><li>instructions
+	 * <li>what else? let's see in the future
+	 * </ul>
+	 */
+	private Music newMusic() {
+		Music ret = new Music();
+		ret.setGlobalInstructions(getInstructions());
+		return ret;
+	}
 
 	/**
 	 * Return the music for graphical rendition, i.e. if structure is ABBA, and
@@ -605,15 +596,15 @@ public class Tune implements Cloneable, Serializable
 	 * ok for audio/midi rendition, but not good for graphical score rendition.
 	 */
 	public Music getMusicForGraphicalRendition() {
-		if (m_multiPartsDef == null)
+		if ((m_multiPartsDef == null) && (m_parts == null))
 			return (m_defaultPart.getMusic());
 		else {
 			//Vector alreadyAddedParts = new Vector();
-			Music globalScore = new Music();
+			Music globalScore = newMusic();
 			globalScore.append(m_defaultPart.getMusic());
-			Iterator it = m_parts.keySet().iterator();
+			Iterator it = m_parts.iterator();
 			while (it.hasNext()) {
-				Part part = (Part) m_parts.get(it.next());
+				Part part = (Part) it.next();
 				globalScore.append(part.getMusic());
 			}
 			return globalScore;
@@ -664,10 +655,16 @@ public class Tune implements Cloneable, Serializable
 	 *         generated so that the tune looks like a "single-part" one.
 	 */
 	public Music getMusic() {
-		if (m_multiPartsDef == null)
-			return (m_defaultPart.getMusic());
+		if (m_multiPartsDef == null) {
+			if (m_parts == null) //no part at all
+				return (m_defaultPart.getMusic());
+			else //ah, they are some parts, but no part order
+				//return the same thing than graphical rendition
+				//parts in alphabetic order
+				return getMusicForGraphicalRendition();
+		}
 		else {
-			Music globalScore = new Music();
+			Music globalScore = newMusic();
 			globalScore.append(m_defaultPart.getMusic());
 			Part[] parts = m_multiPartsDef.toPartsArray();
 			for (int i = 0; i < parts.length; i++) {
@@ -678,7 +675,7 @@ public class Tune implements Cloneable, Serializable
 	}
   
 	public Tempo getGeneralTempo() {
-		Voice voice = getMusic().getVoice((byte) 1);
+		Voice voice = getMusic().getVoice("1");
 		for (int i = 0; i < voice.size(); i++) {
 			if (voice.elementAt(i) instanceof Tempo) // got it!
 				return (Tempo) voice.elementAt(i);
@@ -695,13 +692,26 @@ public class Tune implements Cloneable, Serializable
 	 * @return A string representation of this tune.
 	 */
 	public String toString() {
-		String string2return = "";
-		if (m_titles.size() != 0)
-			string2return = m_titles + "(" + m_referenceNumber + ")@"
-					+ hashCode();
+		String title = m_tuneInfos.get(TuneInfos.TITLE);
+		if (title != null)
+			title = title.replace('\n', ';');
 		else
-			string2return = "(" + m_referenceNumber + ")@" + hashCode();
-		return string2return;
+			title = "";
+		return title + "(" + m_referenceNumber + ")@" + hashCode();
+	}
+	
+	/** Returns a collection of Instruction object
+	 * (Xcommand, user defined symbols) */
+	public ArrayList getInstructions() {
+		if (m_instructions == null)
+			m_instructions = new ArrayList();
+		return m_instructions;
+	}
+	
+	/** Add an Instruction to the tune (Xcommand, user defined symbols) */
+	public void addInstruction(Instruction i) {
+		if (i != null)
+			getInstructions().add(i);
 	}
   
 	/**

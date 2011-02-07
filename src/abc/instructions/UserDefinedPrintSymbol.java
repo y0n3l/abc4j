@@ -13,15 +13,28 @@
 //
 // You should have received a copy of the GNU Lesser General Public License
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
-package abc.parser;
+package abc.instructions;
 
-import java.util.EventListener;
+import abc.notation.SymbolElement;
 
-/** This is the interface that should be implemented by any object that wants
- * to listens to changes occured in a tunebook. */
-public interface TuneBookListenerInterface extends EventListener
-{
-  /** Invoked when a change occured in the tunebook.
-   * @param e An event describing the change that occured in the tunebook. */
-  public void tuneChanged(TuneChangeEvent e);
+/**
+ * A user-defined symbol is an association between a symbol
+ * (~, letter) and a {@link abc.notation.SymbolElement}
+ * (decoration, dynamic...)
+ */
+public class UserDefinedPrintSymbol extends UserDefinedSymbol implements Cloneable {
+
+	private static final long serialVersionUID = -1390989857941609678L;
+
+	/**
+	 * @param symbol
+	 * @param element
+	 */
+	public UserDefinedPrintSymbol(char symbol, SymbolElement element) {
+		super(symbol, element);
+	}
+
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
 }

@@ -31,15 +31,21 @@ public class JPartLabel extends JText {
 	 * @param mtrx The score metrics needed
 	 */
 	protected JPartLabel(ScoreMetrics mtrx, Point2D base, PartLabel partLabel) {
-		super(mtrx, String.valueOf(partLabel.getLabel()),
+		super(mtrx, partLabel.getLabel(),
 				ScoreElements.PART_LABEL);
-		setTextJustification(TextJustification.CENTER);
+		if (getText().length() == 1)
+			setTextJustification(TextJustification.CENTER);
+		else
+			setTextJustification(TextJustification.LEFT);
 	}
 
-	/** Returns the height of this score element.
-	 * @return The height of this score element. */
 	public double getHeight() {
-		return getFrameSize();
+		return getMWidth();
+	}
+	
+	private double getMWidth() {
+		return 4 + (double)getMetrics().getTextFontWidth(
+			ScoreElements.PART_LABEL, "M");	
 	}
 
 	/**
@@ -50,23 +56,35 @@ public class JPartLabel extends JText {
 		return 0;
 	}
 	
-	/** Draw always a square frame around the label, get the largest glyph "M" */
+	/** If label is one char, draw always a square frame
+	 * around the label, get the largest glyph "M" */
 	private double getFrameSize() {
-		return 4 + (double)getMetrics().getTextFontWidth(ScoreElements.PART_LABEL, "M");
+		return 4 + (double)getMetrics().getTextFontWidth(
+				ScoreElements.PART_LABEL,
+				getText().length()==1
+					?"M"
+					:getText());
 	}
 	
 	public Rectangle2D getBoundingBox() {
 		double framesize = getFrameSize();
-		double x = getBase().getX() + framesize/6;
-		if (getTextJustification() == TextJustification.RIGHT)
-			x -= framesize;
-		else
-			x -= framesize/2;
+		double mWidth = getMWidth();
+		double x = getBase().getX() + getMWidth()/6;
+		switch(getTextJustification()) {
+		case TextJustification.RIGHT:
+			x -= framesize; break;
+		case TextJustification.CENTER:
+			x -= framesize/2; break;
+		case TextJustification.LEFT:
+		default:
+			x -= getMWidth()/2; break;
+		}
+		double height = getHeight();
 		double y = getBase().getY()
 				- getMetrics().getStaffCharBounds().getHeight()
 				- getMetrics().getNoteHeight()*2
-				- framesize;
-		return new Rectangle2D.Double(x, y, framesize, framesize);
+				- height;
+		return new Rectangle2D.Double(x, y, framesize, height);
 	}
 	
 	/* (non-Javadoc)

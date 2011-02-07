@@ -718,7 +718,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	}
 
 	public void removeListener(ScoreTemplateChangeListener stcl) {
-		m_listeners.remove(stcl);
+		getListeners().remove(stcl);
 	}
 
 	/**

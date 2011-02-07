@@ -16,6 +16,8 @@
 
 package abc.notation;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Vector;
 
 /** This is the abstract class to define notes or multi notes. */
@@ -24,7 +26,7 @@ public class NoteAbstract extends DecorableElement implements Cloneable
 
   private static final long serialVersionUID = 7275657390476103339L;
   
-  private Note[] m_gracingNotes = null;
+  private NoteAbstract[] m_gracingNotes = null;
   private boolean generalGracing		= false;
   private boolean staccato			= false;
   private byte m_gracingType = GracingType.APPOGGIATURA;
@@ -49,7 +51,7 @@ public class NoteAbstract extends DecorableElement implements Cloneable
    * @return The gracing notes to be played with this note. <TT>null</TT> if
    * this note has no gracing notes.
    * @see #hasGracingNotes() */
-  public Note[] getGracingNotes()
+  public NoteAbstract[] getGracingNotes()
   { return m_gracingNotes; }
   
   /**
@@ -60,8 +62,18 @@ public class NoteAbstract extends DecorableElement implements Cloneable
   public byte getGracingType() {
 	  return m_gracingType;
   }
+  
+  public void setGracingNotes(Collection collec) {
+	  Iterator it = collec.iterator();
+	  while (it.hasNext()) {
+		  NoteAbstract na = (NoteAbstract) it.next();
+		  if (na == null) it.remove();
+	  }
+	  m_gracingNotes = new NoteAbstract[collec.size()];
+	  m_gracingNotes = (NoteAbstract[]) collec.toArray(m_gracingNotes);
+  }
 
-  public void setGracingNotes(Note[] notes)
+  public void setGracingNotes(NoteAbstract[] notes)
   { m_gracingNotes=notes;}
   
   public void setGracingType(byte b) {
@@ -255,20 +267,37 @@ public class NoteAbstract extends DecorableElement implements Cloneable
 
 
 
-  /** Returns a String representation of this Object.
-   * @return a String representation of this Object. */
-  public String toString()
-  {
-    String string2Return = "";
-    if (m_chord!=null) 				string2Return = string2Return.concat("\""+m_chord.getText()+"\"");
-    if (generalGracing)
-      string2Return = string2Return.concat("~");
-    if (m_gracingNotes!=null)	string2Return = string2Return.concat("{"+m_gracingNotes.toString()+"}");
-    if (staccato)					string2Return = string2Return.concat(".");
-    if (m_decorations!=null)	string2Return = string2Return.concat("{"+m_decorations.toString()+"}");
-    //string2Return = string2Return.concat(notes.toString());
-    return string2Return;
-  }
+  /**
+	 * Returns a String representation of this Object.
+	 * 
+	 * @return a String representation of this Object.
+	 */
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		if (m_chord != null)
+			sb.append("\"" + m_chord.getText() + "\"");
+		if (generalGracing)
+			sb.append("~");
+		if ((m_gracingNotes != null)
+				&& (m_gracingNotes.length > 0)) {
+			sb.append("{");
+			for (int i = 0; i < m_gracingNotes.length; i++) {
+				sb.append(m_gracingNotes[i].toString());
+			}
+			sb.append("}");
+		}
+		if (staccato)
+			sb.append(".");
+		if ((m_decorations != null)
+				&& (m_decorations.length > 0)) {
+			sb.append("!");
+			for (int i = 0; i < m_decorations.length; i++) {
+				sb.append(m_decorations[i].toString());
+			}
+			sb.append("!");
+		}
+		return sb.toString();
+	}
 
 	public Object clone() throws CloneNotSupportedException {
 		Object o = super.clone();
@@ -280,7 +309,7 @@ public class NoteAbstract extends DecorableElement implements Cloneable
 		if (m_decorations != null)
 		clone.m_decorations = (Decoration[]) m_decorations.clone();
 		if (m_gracingNotes != null)
-		clone.m_gracingNotes = (Note[]) m_gracingNotes.clone();
+		clone.m_gracingNotes = (NoteAbstract[]) m_gracingNotes.clone();
 		//do not clone tuplet
 		//if (m_tuplet != null)
 		//clone.m_tuplet = (Tuplet) m_tuplet.clone();

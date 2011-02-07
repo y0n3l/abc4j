@@ -21,4 +21,6 @@ public interface GracingType {
 	
 	public static final byte ACCIACCATURA = 1;
 	
+	public static final byte AFTER_NOTE = 2;
+	
 }
