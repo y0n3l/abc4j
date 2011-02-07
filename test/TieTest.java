@@ -5,7 +5,8 @@ import abc.notation.MultiNote;
 import abc.notation.Music;
 import abc.notation.Note;
 import abc.notation.Tune;
-import abc.parser.TuneBook;
+import abc.notation.TuneBook;
+import abc.parser.TuneBookParser;
 import abc.parser.TuneParser;
 
 public class TieTest extends TestCase {
@@ -25,11 +26,11 @@ public class TieTest extends TestCase {
 	 */
 	public void test1(){
 		try {
-			TuneBook tb = new TuneBook(new File(FILE_NAME));
+			TuneBook tb = new TuneBookParser().parse(new File(FILE_NAME));
 			//checkSlursInScore(tb.getTune(25).getMusic());
 			Music score = tb.getTune(25).getMusic(); 
-			Note firstNote = (Note)score.getVoice(1).elementAt(1);
-			Note secondNote = (Note)score.getVoice(1).elementAt(2);
+			Note firstNote = (Note)score.getFirstVoice().elementAt(1);
+			Note secondNote = (Note)score.getFirstVoice().elementAt(2);
 			assertTrue(firstNote.isTied());
 			assertTrue(secondNote.isTied());
 			assertFalse(firstNote.isPartOfSlur());
@@ -52,10 +53,10 @@ public class TieTest extends TestCase {
 	 */
 	public void test2(){
 		try {
-			TuneBook tb = new TuneBook(new File(FILE_NAME));
+			TuneBook tb = new TuneBookParser().parse(new File(FILE_NAME));
 			Music score = tb.getTune(28).getMusic();
-			Note firstNote = (Note)score.getVoice(1).elementAt(1);
-			Note secondNote = (Note)score.getVoice(1).elementAt(3);
+			Note firstNote = (Note)score.getFirstVoice().elementAt(1);
+			Note secondNote = (Note)score.getFirstVoice().elementAt(3);
 			assertTrue(firstNote.isTied());
 			assertFalse(secondNote.isTied());
 			assertFalse(firstNote.isPartOfSlur());
@@ -75,10 +76,10 @@ public class TieTest extends TestCase {
 	 */
 	public void test3(){
 		try {
-			TuneBook tb = new TuneBook(new File(FILE_NAME));
+			TuneBook tb = new TuneBookParser().parse(new File(FILE_NAME));
 			Music score = tb.getTune(30).getMusic();
-			Note firstNote = (Note)score.getVoice(1).elementAt(1);
-			Note secondNote = (Note)score.getVoice(1).elementAt(3);
+			Note firstNote = (Note)score.getFirstVoice().elementAt(1);
+			Note secondNote = (Note)score.getFirstVoice().elementAt(3);
 			assertTrue(firstNote.isTied());
 			assertTrue(secondNote.isTied());
 			assertFalse(firstNote.isPartOfSlur());
@@ -97,10 +98,10 @@ public class TieTest extends TestCase {
 	}
 	
 	public void test4(){
-		String tuneAsString = "X:1\nT:test\nK:c\n[A-a]A\n";
+		String tuneAsString = "X:1\nT:test\nK:C\n[A-a]A\n";
 		Tune tune = new TuneParser().parse(tuneAsString);
-		MultiNote firstNote = (MultiNote)tune.getMusic().getVoice(1).elementAt(1);
-		Note secondNote = (Note)tune.getMusic().getVoice(1).elementAt(2);
+		MultiNote firstNote = (MultiNote)tune.getMusic().getFirstVoice().elementAt(1);
+		Note secondNote = (Note)tune.getMusic().getFirstVoice().elementAt(2);
 		assertFalse(firstNote.isBeginingSlur());
 		Note bassNote = firstNote.getLowestNote();
 		assertTrue(bassNote.isBeginningTie());
@@ -112,19 +113,19 @@ public class TieTest extends TestCase {
 	}
 	
 	public void test5(){
-		String tuneAsString = "X:1\nT:test\nK:c\n[A-a][Aa]\n";
+		String tuneAsString = "X:1\nT:test\nK:C\n[A-a][Aa]\n";
 		Tune tune = new TuneParser().parse(tuneAsString);
-		MultiNote firstMNote = (MultiNote)tune.getMusic().getVoice(1).elementAt(1);
-		MultiNote secondMNote = (MultiNote)tune.getMusic().getVoice(1).elementAt(2);
+		MultiNote firstMNote = (MultiNote)tune.getMusic().getFirstVoice().elementAt(1);
+		MultiNote secondMNote = (MultiNote)tune.getMusic().getFirstVoice().elementAt(2);
 		assertTrue(firstMNote.getLowestNote().isBeginningTie());
 		assertTrue(secondMNote.getLowestNote().isEndingTie());
 	}
 	
 	public void test6(){
-		String tuneAsString = "X:1\nT:test\nK:c\n[A-a-][Aa]\n";
+		String tuneAsString = "X:1\nT:test\nK:C\n[A-a-][Aa]\n";
 		Tune tune = new TuneParser().parse(tuneAsString);
-		MultiNote firstMNote = (MultiNote)tune.getMusic().getVoice(1).elementAt(1);
-		MultiNote secondMNote = (MultiNote)tune.getMusic().getVoice(1).elementAt(2);
+		MultiNote firstMNote = (MultiNote)tune.getMusic().getFirstVoice().elementAt(1);
+		MultiNote secondMNote = (MultiNote)tune.getMusic().getFirstVoice().elementAt(2);
 		assertTrue(firstMNote.getLowestNote().isBeginningTie());
 		assertTrue(secondMNote.getLowestNote().isEndingTie());
 		assertTrue(firstMNote.getHighestNote().isBeginningTie());
@@ -132,10 +133,10 @@ public class TieTest extends TestCase {
 	}
 	
 	public void test7(){
-		String tuneAsString = "X:1\nT:test\nK:c\nA-[Aa]\n";
+		String tuneAsString = "X:1\nT:test\nK:C\nA-[Aa]\n";
 		Tune tune = new TuneParser().parse(tuneAsString);
-		Note firstNote = (Note)tune.getMusic().getVoice(1).elementAt(1);
-		MultiNote secondMNote = (MultiNote)tune.getMusic().getVoice(1).elementAt(2);
+		Note firstNote = (Note)tune.getMusic().getFirstVoice().elementAt(1);
+		MultiNote secondMNote = (MultiNote)tune.getMusic().getFirstVoice().elementAt(2);
 		assertTrue(firstNote.isBeginningTie());
 		assertTrue(secondMNote.getLowestNote().isEndingTie());
 		assertEquals(firstNote.getTieDefinition(), secondMNote.getLowestNote().getTieDefinition());
@@ -144,9 +145,9 @@ public class TieTest extends TestCase {
 	public void test8(){
 		String tuneAsString = "X:0\nT:test\nK:C\na[A-a-][A2a2]\n";
 		Tune tune = new TuneParser().parse(tuneAsString);
-		Note firstNote = (Note)tune.getMusic().getVoice(1).elementAt(1);
-		MultiNote secondMNote = (MultiNote)tune.getMusic().getVoice(1).elementAt(2);
-		MultiNote thirdMNote = (MultiNote)tune.getMusic().getVoice(1).elementAt(3);
+		Note firstNote = (Note)tune.getMusic().getFirstVoice().elementAt(1);
+		MultiNote secondMNote = (MultiNote)tune.getMusic().getFirstVoice().elementAt(2);
+		MultiNote thirdMNote = (MultiNote)tune.getMusic().getFirstVoice().elementAt(3);
 		assertTrue(secondMNote.getLowestNote().isBeginningTie());
 		assertTrue(secondMNote.getHighestNote().isBeginningTie());
 		assertTrue(thirdMNote.getLowestNote().isEndingTie());

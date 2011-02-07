@@ -1,9 +1,11 @@
+import java.io.IOException;
 import java.io.StringReader;
 
 import junit.framework.TestCase;
 import abc.notation.Note;
 import abc.notation.Tune;
-import abc.parser.AbcHeadersParser;
+//import abc.parser.AbcHeadersParser;
+import abc.parser.TuneBookParser;
 import abc.parser.TuneParser;
 
 public class VariousTests extends TestCase {
@@ -36,26 +38,26 @@ public class VariousTests extends TestCase {
 		String abcTune = line01.concat(line02).concat(line03).concat(line04).concat(line05);
 		TuneParser tparser = new TuneParser();
 		Tune tuneResult = tparser.parse(abcTune);
-		Note firstNote = (Note)tuneResult.getMusic().getVoice(1).elementAt(1);
+		Note firstNote = (Note)tuneResult.getMusic().getFirstVoice().elementAt(1);
 		assertEquals(Note.EIGHTH, firstNote.getStrictDuration());
 		assertEquals(Note.DOTTED_EIGHTH, firstNote.getDuration());
 		assertEquals(1, firstNote.countDots());
 		
-		Note secondNote = (Note)tuneResult.getMusic().getVoice(1).elementAt(2);
+		Note secondNote = (Note)tuneResult.getMusic().getFirstVoice().elementAt(2);
 		assertEquals(Note.SIXTEENTH, secondNote.getStrictDuration());
 		assertEquals(0, secondNote.countDots());
 		
-		Note thirdNote = (Note)tuneResult.getMusic().getVoice(1).elementAt(3);
+		Note thirdNote = (Note)tuneResult.getMusic().getFirstVoice().elementAt(3);
 		assertEquals(0, thirdNote.countDots());
 		assertEquals(Note.EIGHTH, thirdNote.getStrictDuration());
 		assertEquals(Note.EIGHTH, thirdNote.getDuration());
 		
-		Note fourthNote = (Note)tuneResult.getMusic().getVoice(1).elementAt(4);
+		Note fourthNote = (Note)tuneResult.getMusic().getFirstVoice().elementAt(4);
 		assertEquals(0, fourthNote.countDots());
 		assertEquals(Note.SIXTEENTH, fourthNote.getStrictDuration());
 		assertEquals(Note.SIXTEENTH, fourthNote.getDuration());
 		
-		Note fifthNote = (Note)tuneResult.getMusic().getVoice(1).elementAt(5);
+		Note fifthNote = (Note)tuneResult.getMusic().getFirstVoice().elementAt(5);
 		assertEquals(0, fifthNote.countDots());
 		assertEquals(Note.SIXTEENTH, fifthNote.getStrictDuration());
 		assertEquals(Note.SIXTEENTH, fifthNote.getDuration());
@@ -76,18 +78,18 @@ public class VariousTests extends TestCase {
 		String abcTune = line01.concat(line02).concat(line03).concat(line04).concat(line051);
 		TuneParser tparser = new TuneParser();
 		Tune tuneResult = tparser.parse(abcTune);
-		Note firstNote = (Note)tuneResult.getMusic().getVoice(1).elementAt(1);
+		Note firstNote = (Note)tuneResult.getMusic().getFirstVoice().elementAt(1);
 		assertEquals(Note.QUARTER, firstNote.getStrictDuration());
 		assertEquals(Note.DOTTED_QUARTER, firstNote.getDuration());
 		assertEquals(1, firstNote.countDots());
 		assertEquals(true, firstNote.isTied());
 		
-		Note secondNote = (Note)tuneResult.getMusic().getVoice(1).elementAt(2);
+		Note secondNote = (Note)tuneResult.getMusic().getFirstVoice().elementAt(2);
 		assertEquals(Note.SIXTEENTH, secondNote.getStrictDuration());
 		assertEquals(0, secondNote.countDots());
 		assertEquals(true, firstNote.isTied());
 		
-		Note thirdNote = (Note)tuneResult.getMusic().getVoice(1).elementAt(3);
+		Note thirdNote = (Note)tuneResult.getMusic().getFirstVoice().elementAt(3);
 		assertEquals(Note.EIGHTH, thirdNote.getStrictDuration());
 		assertEquals(0, thirdNote.countDots());
 		assertEquals(false, thirdNote.isTied());
@@ -97,7 +99,7 @@ public class VariousTests extends TestCase {
 	public void test3(){
 		String abcTune = line01.concat(line02).concat(line03).concat(line04)
 			.concat(line052).concat(line06).concat(line07);
-		AbcHeadersParser tparser = new AbcHeadersParser();
+		TuneBookParser tparser = new TuneBookParser();
 		/*tparser.addListener(new AbcFileParserAdapter(){
 			public void lineProcessed(String line) {
 				System.out.println(line);
@@ -111,7 +113,9 @@ public class VariousTests extends TestCase {
 			}
 		}
 		);*/
-		tparser.parseFile(new StringReader(abcTune));
+		try {
+			tparser.parseHeaders(new StringReader(abcTune));
+		} catch (IOException e) {}
 	}
 	
 	/** this was crashing the parser with a null pointer position

@@ -3,7 +3,8 @@ import java.io.File;
 import junit.framework.TestCase;
 import abc.notation.Music;
 import abc.notation.Note;
-import abc.parser.TuneBook;
+import abc.notation.TuneBook;
+import abc.parser.TuneBookParser;
 
 public class SlursTest extends TestCase {
 	
@@ -23,7 +24,7 @@ public class SlursTest extends TestCase {
 	 */
 	public void test1(){
 		try {
-			TuneBook tb = new TuneBook(new File(FILE_NAME));
+			TuneBook tb = new TuneBookParser().parse(new File(FILE_NAME));
 			checkSlursInScore(tb.getTune(26).getMusic());
 /*			Note firstNote = (Note)score.elementAt(1);
 			Note secondNote = (Note)score.elementAt(2);
@@ -46,7 +47,7 @@ public class SlursTest extends TestCase {
 	 */
 	public void test2(){
 		try {
-			TuneBook tb = new TuneBook(new File(FILE_NAME));
+			TuneBook tb = new TuneBookParser().parse(new File(FILE_NAME));
 			checkSlursInScore(tb.getTune(27).getMusic());
 		}
 		catch (Exception e ) {
@@ -59,7 +60,7 @@ public class SlursTest extends TestCase {
 	 */
 	public void test3(){
 		try {
-			TuneBook tb = new TuneBook(new File(FILE_NAME));
+			TuneBook tb = new TuneBookParser().parse(new File(FILE_NAME));
 			checkSlursInScore(tb.getTune(29).getMusic());
 		}
 		catch (Exception e ) {
@@ -70,9 +71,9 @@ public class SlursTest extends TestCase {
 	private void checkSlursInScore(Music score) {
 		Note firstNote = null;
 		Note lastNote = null;
-		for (int i=0; i<score.getVoice(1).size(); i++)
-			if (score.getVoice(1).elementAt(i) instanceof Note) {
-				Note note = ((Note)score.getVoice(1).elementAt(i));
+		for (int i=0; i<score.getFirstVoice().size(); i++)
+			if (score.getFirstVoice().elementAt(i) instanceof Note) {
+				Note note = ((Note)score.getFirstVoice().elementAt(i));
 				if (firstNote==null)
 					firstNote = note;
 				lastNote = note;

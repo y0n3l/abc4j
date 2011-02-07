@@ -1,12 +1,12 @@
 import java.io.File;
 
 import junit.framework.TestCase;
-import scanner.InvalidCharacterEvent;
-import scanner.TokenEvent;
 import abc.notation.Tune;
-import abc.parser.AbcFileParserAdapter;
-import abc.parser.AbcHeadersParser;
-import abc.parser.InvalidTokenEvent;
+import abc.notation.TuneInfos;
+import abc.parser.AbcFileParserListenerInterface;
+import abc.parser.AbcNode;
+import abc.parser.AbcParserAbstract;
+import abc.parser.TuneBookParser;
 
 public class CrashTest extends TestCase {
 	
@@ -25,11 +25,11 @@ public class CrashTest extends TestCase {
 		try {
 		File f = new File(FILE_NAME);
 		System.out.println((new File(".")).getAbsolutePath());
-		AbcHeadersParser hparser = new AbcHeadersParser();
+		TuneBookParser hparser = new TuneBookParser();
 		//hparser.addListener(new ParsingDumper());
 		long headersParsingTime = 0;
 			long start = System.currentTimeMillis();
-			hparser.parseFile(f);
+			hparser.parseHeaders(f);
 			long end = System.currentTimeMillis();
 			headersParsingTime = end - start;
 			System.out.println("Headers only : " + headersParsingTime); 
@@ -45,8 +45,8 @@ public class CrashTest extends TestCase {
 	}
 	
 	
-	public class ParsingDumper extends AbcFileParserAdapter {
-		public void tuneEnd(Tune tune) {
+	public class ParsingDumper implements AbcFileParserListenerInterface {
+/*		public void tuneEnd(Tune tune) {
 			System.out.println(tune.getReferenceNumber() + " : " + tune.getTitles()[0]);
 		}
 		public void validToken(TokenEvent event) {
@@ -63,7 +63,21 @@ public class CrashTest extends TestCase {
 		
 		 public void lineProcessed(String line) {
 			 System.out.println("line processed : " + line);
-		 }
+		 }*/
+		public void fileBegin() {
+		}
+		public void fileEnd() {
+		}
+		public void noTune() {
+		}
+		public void tuneBegin() {
+		}
+		public void tuneEnd(Tune tune, AbcNode abcRoot) {
+			System.out.println(tune.getReferenceNumber() + " : " + tune.getTuneInfos().get(TuneInfos.TITLE));
+			if (abcRoot.hasError()) {
+				AbcParserAbstract.debugTree(abcRoot);
+			}
+		}
 	}
 
 }

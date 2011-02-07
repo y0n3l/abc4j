@@ -1,10 +1,9 @@
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import junit.framework.TestCase;
-import abc.parser.AbcFileParser;
-import abc.parser.AbcHeadersParser;
-import abc.parser.TuneBook;
+import abc.parser.TuneBookParser;
+import abc.notation.TuneBook;
 
 public class PerfTest extends TestCase {
 	
@@ -21,8 +20,8 @@ public class PerfTest extends TestCase {
 	public void testHeadersVswholeFile(){
 		File f = new File(ABC_FILE_REFERENCE);
 		System.out.println("Reference file for the test is " + ABC_FILE_REFERENCE);
-		AbcHeadersParser hparser = new AbcHeadersParser();
-		/*hparser.addListener(new AbcFileParserAdapter(){
+		TuneBookParser hparser = new TuneBookParser();
+		/*hparser.addListener(new AbcFiletParserAdapter(){
 			int tuneNb = 0;
 			public void tuneEnd(Tune tune) {
 				System.out.println((tuneNb++) + " " + tune.getTitles()[0]);
@@ -32,9 +31,9 @@ public class PerfTest extends TestCase {
 		//try { 
 			long start = System.currentTimeMillis();
 			try {
-				hparser.parseFile(f);
+				hparser.parseHeaders(f);
 				}
-				catch (FileNotFoundException e) {
+				catch (IOException e) {
 					throw new RuntimeException(e);
 				}
 			long end = System.currentTimeMillis();
@@ -46,9 +45,9 @@ public class PerfTest extends TestCase {
 			e.printStackTrace();
 		}*/
 		
-		AbcFileParser fparser = new AbcFileParser();
+		TuneBookParser fparser = new TuneBookParser();
 		long fileParsingTime = 0;
-		//try { 
+		try { 
 			start = System.currentTimeMillis();
 			/*fparser.addListener(new AbcFileParserAdapter(){
 				int tuneNb = 0;
@@ -57,18 +56,19 @@ public class PerfTest extends TestCase {
 				}
 			});*/
 			try {
-			fparser.parseFile(f);
+			fparser.parse(f);
 			}
-			catch (FileNotFoundException e) {
+			catch (IOException e) {
 				throw new RuntimeException(e);
 			}
 			end = System.currentTimeMillis();
 			fileParsingTime = end - start;
 			System.out.println("Headers only : " + fileParsingTime);
-		/*}
+		}
 		catch (Exception e ) {
+			System.out.println(e.getMessage());
 			e.printStackTrace();
-		}*/
+		}
 		System.out.println("=====> Headers parsing is about " + fileParsingTime / headersParsingTime + " times faster");
 		
 	}
@@ -76,16 +76,16 @@ public class PerfTest extends TestCase {
 	public void testHeadersVsTunebook(){
 		try {
 			File f = new File(ABC_FILE_REFERENCE);
-			AbcHeadersParser hparser = new AbcHeadersParser();
+			TuneBookParser hparser = new TuneBookParser();
 			long headersParsingTime = 0;
 			long start = System.currentTimeMillis();
-			hparser.parseFile(f);
+			hparser.parseHeaders(f);
 			long end = System.currentTimeMillis();
 			headersParsingTime = end - start;
 			System.out.println("Headers only : " + headersParsingTime); 
 		
 			start = System.currentTimeMillis();
-			TuneBook t = new TuneBook(f);
+			TuneBook t = new TuneBookParser().parse(f);
 			end = System.currentTimeMillis();
 			long tuneBookCreationTime = end - start;
 			System.out.println("Tune Book creation time : "+ tuneBookCreationTime);

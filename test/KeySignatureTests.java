@@ -4,7 +4,8 @@ import junit.framework.TestCase;
 import abc.notation.Accidental;
 import abc.notation.KeySignature;
 import abc.notation.Note;
-import abc.parser.TuneBook;
+import abc.notation.TuneBook;
+import abc.parser.TuneBookParser;
 
 public class KeySignatureTests extends TestCase {
 	
@@ -26,7 +27,8 @@ G
 	 */
 	public void test1(){
 		try {
-			TuneBook tb = new TuneBook(new File(FILE_NAME));
+			TuneBook tb = new TuneBookParser()
+				.parse(new File(FILE_NAME));
 			KeySignature key = tb.getTune(21).getKey();
 			// Gb {b, b, b, nat, b, b, b}
 			assertTrue(key.getAccidentalFor(Note.C).isFlat());
@@ -52,7 +54,7 @@ F
 	 */
 	public void test2(){
 		try {
-			TuneBook tb = new TuneBook(new File(FILE_NAME));
+			TuneBook tb = new TuneBookParser().parse(new File(FILE_NAME));
 			KeySignature key = tb.getTune(22).getKey();
 			// F# {#, #, #, #, #, #, nat},
 			assertTrue(key.getAccidentalFor(Note.C).isSharp());
@@ -78,7 +80,7 @@ C
 	 */
 	public void test3(){
 		try {
-			TuneBook tb = new TuneBook(new File(FILE_NAME));
+			TuneBook tb = new TuneBookParser().parse(new File(FILE_NAME));
 			KeySignature key = tb.getTune(23).getKey();
 			// Cb {b, b, b, b, b, b, b}
 			assertTrue(key.getAccidentalFor(Note.C).isFlat());
@@ -104,7 +106,7 @@ C
 	 */
 	public void test4(){
 		try {
-			TuneBook tb = new TuneBook(new File(FILE_NAME));
+			TuneBook tb = new TuneBookParser().parse(new File(FILE_NAME));
 			KeySignature key = tb.getTune(24).getKey();
 			// C# {#, #, #, #, #, #, #},
 			assertTrue(key.getAccidentalFor(Note.C).isSharp());
