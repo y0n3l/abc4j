@@ -179,7 +179,9 @@ public class TuneEditorPane extends JTextPane implements AbcTokens//, ActionList
   	/** Highlights the specified element in the abc tune notation.
   	 * @param elmnt The element to be highlighted in the abc tune notation. */
   	public void setSelectedItem(PositionableInCharStream elmnt) {
-  		CharStreamPosition pos = elmnt.getCharStreamPosition();
+  		CharStreamPosition pos = null;
+  		if (elmnt != null)
+  			pos = elmnt.getCharStreamPosition();
   		if (pos != null) {
 	  		int begin = pos.getStartIndex();
 	  		int end = pos.getEndIndex();
@@ -328,6 +330,7 @@ public class TuneEditorPane extends JTextPane implements AbcTokens//, ActionList
     private int m_idleTime = 0;
     private Object m_mutex = new Object();
     private AbcNode m_abcRoot = null;
+    private boolean isBusy = false;
 
     public ParsingRefresh(DefaultStyledDocument document, TuneParser parser)
     {
@@ -429,6 +432,10 @@ public class TuneEditorPane extends JTextPane implements AbcTokens//, ActionList
         m_idleTime=0;
       }
     }
+    
+    public boolean isBusy() {
+    	return isBusy;
+    }
 
     public void removeUpdate(DocumentEvent e)
     {
@@ -441,14 +448,17 @@ public class TuneEditorPane extends JTextPane implements AbcTokens//, ActionList
     public void tuneBegin()
     {
     	m_abcRoot = null;
+    	isBusy = true;
     }
     public void noTune()
     {
     	m_abcRoot = null;
+    	isBusy = false;
     }
 
     public void tuneEnd(Tune tune, AbcNode abcNodeRoot)
     {
+    	isBusy = false;
     	m_tune = tune;
     	m_abcRoot = abcNodeRoot;
       if (m_enableColoring)
@@ -502,7 +512,9 @@ public class TuneEditorPane extends JTextPane implements AbcTokens//, ActionList
     		else if (node.isChildOf_or_is(Barline)
     				|| node.isChildOf_or_is(NthRepeat)
     				|| node.isChildOf_or_is(EndNthRepeat)
-    				|| node.isChildOf_or_is(MeasureRepeat))
+    				|| node.isChildOf_or_is(MeasureRepeat)
+    				|| node.isChildOf_or_is(LineContinuation)
+    				|| node.isChildOf_or_is(HardLineBreak))
     			att = m_barStyle;
     		else if (node.isChildOf_or_is(Rest)
     				|| node.isChildOf_or_is(MultiMeasureRest))

@@ -20,13 +20,22 @@ import abc.notation.Tune;
 /** An empty implementation of a tune parser listener that does nothing. */
 public class TuneParserAdapter implements TuneParserListenerInterface {
 
+	private boolean isBusy = false;
+	
 	public void tuneBegin() {
+		isBusy = true;
+	}
+	
+	public boolean isBusy() {
+		return isBusy;
 	}
 
 	public void noTune() {
+		isBusy = false;
 	}
 
 	public void tuneEnd(Tune tune, AbcNode abcRoot) {
+		isBusy = false;
 	}
 
 }

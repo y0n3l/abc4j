@@ -33,6 +33,7 @@ public class LogFrame extends JFrame implements AbcFileParserListenerInterface
 {
   private static final long serialVersionUID = -1909417662191372084L;
   private JTextArea m_errorsArea = null;
+  private boolean isBusy = false;
 
   public LogFrame()
   {
@@ -45,14 +46,21 @@ public class LogFrame extends JFrame implements AbcFileParserListenerInterface
   public JTextArea getErrorsArea()
   { return m_errorsArea; }
 
+  public boolean isBusy() {
+	  return isBusy;
+  }
+  
   public void tuneBegin() {
+	  isBusy = true;
   }
   
   public void noTune() {
+	  isBusy = false;
   }
 
   public void tuneEnd(Tune tune, AbcNode abcRoot)
-  { 
+  {
+	  isBusy = false;
 	  if (abcRoot != null) {
 		  Iterator it = abcRoot.getErrors().iterator();
 		  while (it.hasNext()) {

@@ -20,17 +20,27 @@ import abc.notation.TuneBook;
 
 /** An empty implementation of a tune book parser listener that does nothing. */
 public class TuneBookParserAdapter implements TuneBookParserListenerInterface {
+	
+	private boolean isBusy = false;
 
 	public void emptyTuneBook() {
+		isBusy = false;
+	}
+	
+	public boolean isBusy() {
+		return isBusy;
 	}
 
 	public void tuneBookBegin() {
+		isBusy = true;
 	}
 
 	public void tuneBookEnd(TuneBook tuneBook, AbcNode abcRoot) {
+		isBusy = false;
 	}
 
 	public void noTune() {
+		isBusy = false;
 	}
 
 	public void tuneBegin() {

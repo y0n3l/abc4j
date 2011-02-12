@@ -23,7 +23,10 @@ import abc.notation.TuneBook;
  * 
  * It listen too for tune parser event such as
  * {@link abc.parser.TuneParserListenerInterface#tuneBegin()}, noTune(),
- * tuneEnd()
+ * tuneEnd().
+ * 
+ * @see abc.parser.TuneBookParserAdapter for a simple implementation
+ * skeleton.
  */
 public interface TuneBookParserListenerInterface extends
 		TuneParserListenerInterface {

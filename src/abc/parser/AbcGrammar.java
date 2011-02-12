@@ -24,13 +24,9 @@ public class AbcGrammar extends BaseParser implements AbcTokens {
 
 	private static AbcGrammar instance = null;
 	
-	private static final Object lock = new Object();
-	
-	protected static AbcGrammar getInstance() {
+	protected static synchronized AbcGrammar getInstance() {
 		if (instance == null) {
-			synchronized (lock) {
-				instance = new AbcGrammar();
-			}
+			instance = new AbcGrammar();
 		}
 		return instance;
 	}
@@ -1541,7 +1537,7 @@ public class AbcGrammar extends BaseParser implements AbcTokens {
 	 * unused-char ::= "#" / "$" / "*" / "+" / ";" / "?" / "@" / "`"
 	 */
 	Rule UnusedChar() {
-		return AnyOf("#$*+;?@`\\").label(UnusedChar);
+		return AnyOf("#$*+;?@`").label(UnusedChar);
 	}
 	
 	//////////////////////////////////////////////////////////////////

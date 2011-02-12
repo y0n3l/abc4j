@@ -34,6 +34,7 @@ public class ErrorsList extends JList implements TuneParserListenerInterface
   //private TuneEditorPane m_tunePane = null;
   private TuneParser m_parser = null;
   //private JList m_errorsList = null;
+  private boolean isBusy = false;
 
   public ErrorsList(TuneParser parser)
   {
@@ -74,12 +75,16 @@ public class ErrorsList extends JList implements TuneParserListenerInterface
 
   public void tuneBegin()
   {
+	  isBusy = true;
     ((ErrorsListModel)getModel()).removeAllErrors();
   }
   
-  public void noTune() {}
+  public boolean isBusy() { return isBusy; }
+  
+  public void noTune() { isBusy = false; }
 
   public void tuneEnd(Tune tune, AbcNode abcRoot) {
+	  isBusy = false;
 	  if (abcRoot != null) {
 		Iterator it = abcRoot.getErrors().iterator();
 		while (it.hasNext()) {

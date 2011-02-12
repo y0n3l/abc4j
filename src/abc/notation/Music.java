@@ -228,7 +228,7 @@ public class Music implements Cloneable, Serializable {
 						.getCharStreamPosition();
 					if (pos != null) {
 						if ((pos.getStartIndex() <= offset)
-								&& (pos.getEndIndex() >= offset))
+								&& (pos.getEndIndex() > offset))
 							return current;
 					}
 				}

@@ -33,6 +33,8 @@ import abc.ui.awt.TuneEditorArea;
 /** */
 public class AbcCheck extends Applet implements TuneParserListenerInterface {
 	
+	private boolean isBusy = false;
+	
 	private static final long serialVersionUID = -1212835148227194802L;
 
 	private TuneEditorArea m_textArea = null;
@@ -72,15 +74,20 @@ public class AbcCheck extends Applet implements TuneParserListenerInterface {
 	}
 
 	public void tuneBegin() {
+		isBusy = true;
 		System.out.println("Beginning to parse tune");
 		m_errors.clear();
 	}
+	
+	public boolean isBusy() { return isBusy; }
 
 	public void noTune() {
+		isBusy = false;
 		System.out.println("No tune found!");
 	}
 
 	public void tuneEnd(Tune tune, AbcNode abcNode) {
+		isBusy = false;
 		m_errorList.removeAll();
 		m_errors = abcNode.getErrors();
 		if (m_errors.isEmpty())

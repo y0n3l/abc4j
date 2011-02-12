@@ -34,6 +34,7 @@ public class ParsingEventsList extends JTable implements TuneParserListenerInter
   private static final long serialVersionUID = -5448619364935299044L;
   private TuneParser m_parser = null;
   private ParsingEventsTableModel m_model = null;
+  private boolean isBusy = false;
 
   public ParsingEventsList(TuneParser parser)
   {
@@ -56,16 +57,20 @@ public class ParsingEventsList extends JTable implements TuneParserListenerInter
 
   public void tuneBegin()
   {
+	  isBusy = true;
     //getSelectionModel().setLeadSelectionIndex(0);
     //getSelectionModel().setValueIsAdjusting(false);
     //System.out.println("The selection is now : " + getSelectionModel().getLeadSelectionIndex());
     ((ParsingEventsTableModel)getModel()).removeAllErrors();
   }
   
-  public void noTune() {}
+  public void noTune() { isBusy = false; }
+  
+  public boolean isBusy() { return isBusy; }
 
   public void tuneEnd(Tune tune, AbcNode abcRoot)
   {
+	isBusy = false;
     m_model.fireTableDataChanged();
     if (abcRoot != null) {
 	    Iterator it = abcRoot.getDeepestChilds().iterator();
@@ -79,13 +84,13 @@ public class ParsingEventsList extends JTable implements TuneParserListenerInter
   public class ParsingEventsTableModel extends AbstractTableModel// implements TuneBookListenerInterface
   {
     private static final long serialVersionUID = -4695151725324770777L;
-	private TuneParser m_tuneParser = null;
+	//private TuneParser m_tuneParser = null;
     private Vector m_events = null;
 
 
     public ParsingEventsTableModel(TuneParser parser)
     {
-      m_tuneParser = parser;
+      //m_tuneParser = parser;
       m_events = new Vector();
     }
 

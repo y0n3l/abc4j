@@ -20,9 +20,15 @@ import java.util.EventListener;
 import abc.notation.Tune;
 
 /** Interface that should be implemented by any object that listens to tunes
- * parsing. */
+ * parsing.
+ * 
+ * @see abc.parser.TuneParserAdapter for a simple implementation
+ * skeleton. */
 public interface TuneParserListenerInterface extends EventListener
 {
+	
+	/** Returns true if a tune is currently into parsing process */
+	public boolean isBusy();
 
 	/** Invoked when no tune was found in the stream. */
 	public void noTune();
