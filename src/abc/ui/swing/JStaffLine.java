@@ -23,6 +23,8 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import abc.notation.MusicElement;
+import abc.notation.Tablature;
+import abc.ui.scoretemplates.ScoreAttribute;
 import abc.ui.scoretemplates.ScoreElements;
 
 class JStaffLine extends JScoreElementAbstract {
@@ -34,10 +36,12 @@ class JStaffLine extends JScoreElementAbstract {
 	private double topY = -1;
 
 	protected Vector m_lyrics = null;
+	
+	private JTablature m_tablature = null;
 	//protected Vector m_beginningSlurElements = null;
 
 	public JStaffLine(Point2D base, ScoreMetrics c, Engraver e) {
-		super(c);
+		super(base, c);
 		m_engraver = e;
 		m_staffElements = new Vector();
 		m_lyrics = new Vector();
@@ -74,20 +78,39 @@ class JStaffLine extends JScoreElementAbstract {
 	}
 
 	public Point2D getBase() {
-		return ((JScoreElementAbstract)m_staffElements.elementAt(0)).getBase();
+		if (m_staffElements.size() > 0)
+			return ((JScoreElementAbstract)m_staffElements.elementAt(0)).getBase();
+		else
+			return super.getBase();
 	}
 
 	public MusicElement getMusicElement() {
 		return null;
 	}
 
+	/** voided */
 	protected void onBaseChanged() {
-
 	}
 
 	public void addElement(JScoreElementAbstract r) {
 		m_staffElements.addElement(r);
 		r.setStaffLine(this);
+	}
+	
+	/**
+	 * attaches a tablature to this staff line
+	 * @param tablature null to remove tablature
+	 */
+	protected void setTablature(Tablature tablature) {
+		if (tablature != null)
+			m_tablature = new JTablature(tablature, getBase(), getMetrics());
+		else
+			m_tablature = null;
+	}
+	/** Returns the JTablature associated to this staff, or
+	 * null if none. */
+	protected JTablature getTablature() {
+		return m_tablature;
 	}
 
 	// FIXME: lyrics should be appended score
@@ -164,10 +187,22 @@ class JStaffLine extends JScoreElementAbstract {
 		}
 		return scoreEl;
 	}
+	
+	/** Return the bottom most (Y) point, first staff line +
+	 * lyrics line + tablature + ... */
+	protected double getBottomY() {
+		//TODO add space for lyrics, low notes...
+		double ret = get1stLineY();
+		if (m_tablature != null) {
+			ret += getTemplate().getAttributeSize(ScoreAttribute.TABLATURE_SPACING);
+			ret += m_tablature.getHeight();
+		}
+		return ret;
+	}
 
 	public double render(Graphics2D g) {
 		//super.render(g);
-
+		
 		Color previousColor = g.getColor();
 		setColor(g, ScoreElements.STAFF_LINES);
 		double width = getWidth();
@@ -189,12 +224,27 @@ class JStaffLine extends JScoreElementAbstract {
 		g.fillRect((int)(getBase().getX()), (int)(getBase().getY()-m_metrics.getStaffCharBounds().getHeight()),
 				(int)getWidth(), (int)(m_metrics.getStaffCharBounds().getHeight()));
 		g.setColor(previousColor);*/
+
+		//Set base for lyrics
+		//Set base for tablature
+		if (m_tablature != null) {
+			m_tablature.setBase(new Point2D.Double(
+					getBase().getX(),
+					get1stLineY() +
+					getTemplate().getAttributeSize(
+							ScoreAttribute.TABLATURE_SPACING)));
+			m_tablature.setWidth(width);
+			m_tablature.render(g);
+		}
+		
 		JScoreElementAbstract[] elmts = toArray();
 		for (int j=0; j<elmts.length; j++) {
+			//Render all elements of this line (notes, barlines...)
+			//this will render lyrics, tablature numbers
 			elmts[j].render(g);
 		}
 		
-		// render lyrics, annotations, etc.
+		// TODO render lyrics, etc.
 		Iterator iter = m_lyrics.iterator();
 		JWords lyrics = null;
 		while (iter.hasNext()) {

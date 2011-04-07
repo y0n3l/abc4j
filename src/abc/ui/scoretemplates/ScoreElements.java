@@ -36,6 +36,7 @@ public abstract class ScoreElements {
 	public static final byte GRACENOTE = -10;
 	public static final byte ACCIDENTAL = -11;
 	public static final byte DYNAMIC = -12;
+	public static final byte TABLATURE_LINES = -13;
 	
 	/** @see #TEXT_ORIGIN */
 	public static final byte TEXT_AREA = 9;
@@ -83,6 +84,8 @@ public abstract class ScoreElements {
 	public static final byte TEMPO = 22;
 	/** Annotations arround elements */
 	public static final byte TEXT_ANNOTATIONS = 23;
+	/** Tablature finger numbers */
+	public static final byte TEXT_TABLATURE = 24;
 	
 	public static String toString(byte b) {
 		switch (b) {
@@ -106,10 +109,11 @@ public abstract class ScoreElements {
 		case TEXT_SOURCE: return "source";
 		case TEXT_SUBTITLE: return "subtitle";
 		case TEMPO: return "tempo";
+		case TEXT_TABLATURE: return "tablature";
 		case TEXT_TITLE: return "title";
 		case TEXT_TRANSCRNOTES: return "transcriber notes";
 		case TEXT_WORDS: return "words";
-		default: return "<unknown text field>";
+		default: return "<unknown text field #"+b+">";
 		}
 	}
 }

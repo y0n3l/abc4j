@@ -424,6 +424,14 @@ class JNote extends JNoteElementAbstract {
 		renderDynamic(g);
 		renderChordName(g);
 		renderAnnotations(g);
+		if (getStaffLine() != null) {
+			JTablature tab = getStaffLine().getTablature();
+			if (tab != null) {
+				tab.renderNote(g, this);
+			}
+		} else {
+			System.err.println("getStaffLine not set for "+toString());
+		}
 		
 		//renderDebugBoundingBox(g);
 		//renderDebugSlurAnchors(g);

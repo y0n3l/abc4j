@@ -445,6 +445,7 @@ public class Note extends NoteAbstract implements Cloneable
   public Note (byte heightValue, float accidentalValue)
   {
     this(heightValue, new Accidental(accidentalValue));
+	System.err.println("Note constructor using float accidentalValue is deprecated, use Accidental constant");
   }
   /** Creates an abc note with the specified heigth and accidental.
    * @param heightValue The heigth of this note as a byte that respect the scale defined by
@@ -479,6 +480,7 @@ public class Note extends NoteAbstract implements Cloneable
     this(heightValue, accidentalValue);
     setOctaveTransposition((byte)(octaveTransposition+octaveTranspositionValue));
   }
+  
   /** Creates an abc note with the specified heigth, accidental and octave
    * transposition.
    * @param heightValue The heigth of this note as a byte that respect the scale defined by
@@ -495,6 +497,20 @@ public class Note extends NoteAbstract implements Cloneable
     setOctaveTransposition((byte)(octaveTransposition+octaveTranspositionValue));
   }
   
+  /** Creates an abc note with the specified heigth and octave
+   * transposition.
+   * @param heightValue The heigth of this note as a byte that respect the scale defined by
+   * constants such as C D E F G A B c d e ..... The heigth is <TT>REST</TT> if
+   * this note is a rest.
+   * @param octaveTranspositionValue The octave transposition for this note :
+   * 1, 2 or 3 means "1, 2 or 3 octave(s) higher than the reference octave" and
+   * -1, -2 or -3 means "1, 2 or 3 octave(s) less than the reference octave".
+   */
+  public Note (byte heightValue, int octaveTranspositionValue)
+  {
+    this(heightValue, Accidental.NONE);
+    setOctaveTransposition((byte)(octaveTransposition+octaveTranspositionValue));
+  }
 	
   /**
 	 * Sets the height of this note.
@@ -913,7 +929,10 @@ public class Note extends NoteAbstract implements Cloneable
   { setAccidental(new Accidental(accidentalValue)); }
   /** Sets the accidental for this note. */
   public void setAccidental(Accidental accidental) {
-	  m_accidental = accidental;
+	  if (accidental == null)
+		  m_accidental = Accidental.NONE;
+	  else
+		  m_accidental = accidental;
   }
 
   /** Returns accidental for this note if any.

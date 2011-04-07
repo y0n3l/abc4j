@@ -50,6 +50,7 @@ import abc.notation.PartLabel;
 import abc.notation.RepeatBarLine;
 import abc.notation.SlurDefinition;
 import abc.notation.Spacer;
+import abc.notation.Tablature;
 import abc.notation.Tempo;
 import abc.notation.TieDefinition;
 import abc.notation.TimeSignature;
@@ -127,6 +128,7 @@ public class JTune extends JScoreElementAbstract {
 	private Clef currentClef = null;
 	private TimeSignature previousTime = null;
 	private TimeSignature currentTime = null;
+	private Tablature m_currentTablature = null;
 	private String m_currentVoice = "1";
 	private Point2D cursor = null;
 
@@ -454,6 +456,7 @@ public class JTune extends JScoreElementAbstract {
 		//getMusic() returns 4 lines
 		//it's ok for audio rendition, but for graphical
 		//we just need one occurence of each part.
+		//m_tune.getVoice("1").setTablature(Tablature.BOUZOUKI_GREEK_TRICHORDO);
 		m_music = m_tune.getMusicForGraphicalRendition();
 		
 		ArrayList lessThanQuarter = new ArrayList();
@@ -477,10 +480,16 @@ public class JTune extends JScoreElementAbstract {
 		currentTime = null;
 		currentStaffLineInitialized = false;
 		currentStaffLine = null;
+		m_currentTablature = null;
 		Iterator itVoices = m_music.getVoices().iterator();
 		while (itVoices.hasNext()) {
 			Voice voice = (Voice) itVoices.next();
 			m_currentVoice = voice.getVoiceName();
+			m_currentTablature = voice.getTablature();
+			//m_currentTablature = Tablature.GUITAR;
+			if (m_currentTablature != null) {
+				m_currentTablature.computeFingerings(voice);
+			}
 			int size = 0;
 		for (m_index = 0, size=voice.size(); m_index < size; m_index++) {
 			MusicElement s = (MusicElement)voice.elementAt(m_index);
@@ -645,7 +654,10 @@ public class JTune extends JScoreElementAbstract {
 			justify();
 
 		cursor.setLocation(cursor.getX(),
-				cursor.getY()+getMetrics().getStaffCharBounds().getHeight());
+			(currentStaffLine!=null
+					?currentStaffLine.getBottomY()
+					:cursor.getY())
+				+getMetrics().getStaffCharBounds().getHeight());
 
 		/*if (isShowFootNotes())*/ {
 			byte[] footerFields = getTemplate().getFooterFields();
@@ -1529,6 +1541,8 @@ public class JTune extends JScoreElementAbstract {
 
 	private JStaffLine initNewStaffLine() {
 		JStaffLine sl = new JStaffLine(cursor, getMetrics(), getEngraver());
+		if (m_currentTablature != null)
+			sl.setTablature(m_currentTablature);
 		if (m_staffLines.size() == 0) {
 			//first staff top margin
 			cursor.setLocation(
@@ -1545,7 +1559,8 @@ public class JTune extends JScoreElementAbstract {
 			//add a space between each lines
 			cursor.setLocation(
 				getBase().getX(),
-				cursor.getY() + getTemplate().getAttributeSize(
+				currentStaffLine.getBottomY()
+				/*cursor.getY()*/ + getTemplate().getAttributeSize(
 						ScoreAttribute.STAFF_LINES_SPACING));
 		}
 		//store the highest point of the staff area including
@@ -1562,7 +1577,6 @@ public class JTune extends JScoreElementAbstract {
 				cursor.getY() + getTemplate().getAttributeSize(
 						ScoreAttribute.CHORD_LINE_SPACING));
 		}
-		//TODO add space for lyrics, high and low notes
 		
 		cursor.setLocation(cursor.getX(), cursor.getY()+getMetrics().getStaffCharBounds().getHeight());
 		

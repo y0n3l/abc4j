@@ -219,6 +219,7 @@ abstract class JScoreElementAbstract implements JScoreElement {
 			m_jDecorations = new Vector();
 		}
 		if (!m_jDecorations.contains(decoration)) {
+			decoration.setStaffLine(getStaffLine());
 			m_jDecorations.add(decoration);
 		}
 	}
@@ -325,6 +326,7 @@ abstract class JScoreElementAbstract implements JScoreElement {
 			while (it.hasNext()) {
 				Annotation annot = (Annotation) it.next();
 				JAnnotation jannot = new JAnnotation(getMetrics(), annot);
+				jannot.setStaffLine(getStaffLine());
 				jannot.setBase(getBase());
 				jannot.setAttachedTo(this);
 				jannot.render(gfx);
@@ -350,6 +352,7 @@ abstract class JScoreElementAbstract implements JScoreElement {
 				displayPos = getBase();
 
 			m_jChordName = new JChordName(getMetrics(), chord);
+			m_jChordName.setStaffLine(getStaffLine());
 			Dimension dimension = m_jChordName.getDimension();
 			double y = getStaffLine().getBase().getY()/* not yet defined*/
 				//- (displayPosition.getY()%m_metrics.getStaffLinesSpacing())
@@ -377,6 +380,7 @@ abstract class JScoreElementAbstract implements JScoreElement {
 	protected void renderDynamic(Graphics2D context) {
 		if (m_jDynamic != null) {
 			m_jDynamic.setAttachedTo(this);
+			m_jDynamic.setStaffLine(getStaffLine());
 			m_jDynamic.render(context);
 		}
 	}
@@ -391,6 +395,7 @@ abstract class JScoreElementAbstract implements JScoreElement {
 			JDecoration jDeco = null;
 			for (int i = m_jDecorations.size()-1; i >= 0; i--) {
 				jDeco = (JDecoration)m_jDecorations.elementAt(i);
+				jDeco.setStaffLine(getStaffLine());
 				boolean inverted = (this instanceof JStemmableElement)
 					&& !((JStemmableElement) this).isStemUp();
 				jDeco.setInverted(inverted);

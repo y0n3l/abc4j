@@ -175,8 +175,14 @@ class JChord extends JNoteElementAbstract {
 
 	/** Sets the staff line this chord belongs to. */
 	public void setStaffLine(JStaffLine staffLine) {
-		for (int i=0; i<m_sNoteInstances.length; i++)
-			m_sNoteInstances[i].setStaffLine(staffLine);
+		if (m_normalizedChords!=null) {
+			for (int i=0; i<m_normalizedChords.length; i++) {
+				m_normalizedChords[i].setStaffLine(staffLine);
+			}
+		} else {
+			for (int i=0; i<m_sNoteInstances.length; i++)
+				m_sNoteInstances[i].setStaffLine(staffLine);
+		}
 		super.setStaffLine(staffLine);
 	}
 

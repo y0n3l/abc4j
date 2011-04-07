@@ -101,6 +101,15 @@ public class Music implements Cloneable, Serializable {
 		Iterator it = music.getVoices().iterator();
 		while (it.hasNext()) {
 			Voice v = (Voice) it.next();
+			if (!voiceExists(v.getVoiceName())) {
+				//create new voice (in getVoice)
+				//and copy v informations
+				Voice vCopy = getVoice(v.getVoiceName());
+				vCopy.setTablature(v.getTablature());
+				vCopy.setVolume(v.getVolume());
+				vCopy.setInstrument(v.getInstrument());
+				//? vCopy.setFirstBarNumber(v.getFirstBar().getBarNumber());
+			}
 			getVoice(v.getVoiceName()).addAll(v);
 		}
 	}
@@ -115,7 +124,7 @@ public class Music implements Cloneable, Serializable {
 	
 	/**
 	 * Returns the asked voice, create it if needed.
-	 * @param voiceNumber
+	 * @param voiceName
 	 */
 	public Voice getVoice(String voiceName) {
 		Iterator it = m_voices.iterator();

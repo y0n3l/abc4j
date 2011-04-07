@@ -21,6 +21,17 @@ import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.Vector;
 
+/**
+ * A Voice is a vector of {@link MusicElement music elements} (notes, bars...).
+ * 
+ * One or several voices make the {@link abc.notation.Music}. They are
+ * generally printed on separated staves, but two voices can be merged in one
+ * staff.
+ * 
+ * Voice has a sound (instrument, volume) and some related properties.
+ * 
+ * Voice can also have lyrics, a {@link abc.notation.Tablature}...
+ */
 public class Voice extends Vector implements Cloneable, Serializable {
 
 	private static final long serialVersionUID = 8131014387452835226L;
@@ -34,13 +45,15 @@ public class Voice extends Vector implements Cloneable, Serializable {
 	private short m_firstBarNumber = 1;
 
 	private byte m_instrument = 0;
-	
+
 	private String m_partLabel = " ";
+
+	private Tablature m_tablature = null;
 
 	private String m_voiceName = "1";
 
 	private byte m_volume = 64;
-	
+
 	public Voice(String voiceName) {
 		this(voiceName, (short) 1);
 	}
@@ -83,14 +96,14 @@ public class Voice extends Vector implements Cloneable, Serializable {
 						notes[i].getReference().setPart(m_partLabel);
 						notes[i].getReference().setVoice(m_voiceName);
 						notes[i].getReference().setX(x);
-						//setY is defined in MultiNote constructor
+						// setY is defined in MultiNote constructor
 					}
 				}
 			}
 			super.addElement(me);
 		}
 	}
-	
+
 	/**
 	 * Return true if the bar is empty or contains only barline and spacer(s).
 	 * False if barline contain other kind of music element
@@ -363,6 +376,14 @@ public class Voice extends Vector implements Cloneable, Serializable {
 
 	}
 
+	/**
+	 * Returns the tablature definition attached to this voice,
+	 * <code>null</code> if no tablature.
+	 */
+	public Tablature getTablature() {
+		return m_tablature;
+	}
+
 	/** Return voice number V:1 returns 1 */
 	public String getVoiceName() {
 		return m_voiceName;
@@ -442,13 +463,21 @@ public class Voice extends Vector implements Cloneable, Serializable {
 		m_partLabel = c;
 	}
 
+	/**
+	 * Attaches a tablature definition to this voice, <code>null</code> to
+	 * remove tablature.
+	 */
+	public void setTablature(Tablature tab) {
+		m_tablature = tab;
+	}
+
 	/** %%MIDI volume(?) xx */
 	public void setVolume(byte volume) {
 		this.m_volume = volume;
 	}
 
 	public String toString() {
-		return "V:"+getVoiceName();
+		return "V:" + getVoiceName();
 	}
 
 	// TODO hasLyrics...

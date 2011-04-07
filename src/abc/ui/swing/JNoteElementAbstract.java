@@ -94,6 +94,7 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 				m_jGracenotes = new JGroupOfGraceNotes(getMetrics(), base, graceNotes, clef, null);
 				//base.setLocation(base.getX()+m_jGracenotes.getWidth(),base.getY());
 			}
+			m_jGracenotes.setStaffLine(getStaffLine());
 			byte appogOrAcciac = noteValue.getGracingType();
 			boolean renderSlash = true;
 			switch (appogOrAcciac) {
@@ -134,6 +135,7 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 		if (noteValue.hasDynamic()) {
 			try {
 				m_jDynamic = new JDynamic(noteValue.getDynamic(), getMetrics());
+				m_jDynamic.setStaffLine(getStaffLine());
 			} catch (MissingGlyphException mge) {
 				//ignore
 			}
@@ -366,6 +368,7 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 	/* Render each indiviual gracenote associated with this note. */
 	protected void renderGraceNotes(Graphics2D context) {
 		if (m_jGracenotes != null) {
+			m_jGracenotes.setStaffLine(getStaffLine());
 			m_jGracenotes.render(context);
 			
 			boolean addSlur = false;

@@ -209,25 +209,58 @@ class JBar extends JScoreElementAbstract {
 	private void renderDots(Graphics2D context, double x) {
 		context.fillOval((int) x, m_topDotY, m_dotsRadius, m_dotsRadius);
 		context.fillOval((int) x, m_bottomDotY, m_dotsRadius, m_dotsRadius);
+		JTablature tab = getStaffLine().getTablature();
+		if (tab != null) {
+			int height = (int) (tab.getBottomLineY() - tab.getTopLineY());
+			int radius = (int) (m_dotsRadius*1.5);
+			context.fillOval((int) x,
+					(int)(tab.getTopLineY()+height*.35),
+					radius, radius);
+			context.fillOval((int) x,
+					(int)(tab.getTopLineY()+height*.65),
+					radius, radius);
+		}
 	}
 
 	private void renderThickLine(Graphics2D context, double x) {
 		int height = getHeight();
 		context.fillRect((int) x, (int) (getBase().getY() - height),
 				m_thickBarWidth, height);
+		
+		JTablature tab = getStaffLine().getTablature();
+		if (tab != null) {
+			height = (int) (tab.getBottomLineY() - tab.getTopLineY());
+			context.fillRect((int) x, (int) tab.getTopLineY(),
+					m_thickBarWidth, height);
+		}
 	}
 
 	private void renderDottedLine(Graphics2D context, double x) {
-		int height = getHeight();
-		int yStart = (int) (getBase().getY() - height);
-		int yEnd = (int) getBase().getY();
-		double yUnit = height / 23;
-		if (yUnit < 1) yUnit = 1;
-		int y = yStart;
-		while (y <= yEnd - (yUnit * 3)) {
-			context.fillRect((int) x, y,
-					m_thinBarWidth, (int) (yUnit * 3));
-			y += (int) (yUnit * 5);
+		for (int i = 1; i <= 2; i++) {
+			//i=1 staff
+			//i=2 tablature if any
+			JTablature tab = null;
+			if (i == 2) {
+				tab = getStaffLine().getTablature();
+				if (tab == null)
+					break;
+			}
+			int height = getHeight();
+			int yStart = (int) (getBase().getY() - height);
+			int yEnd = (int) getBase().getY();
+			if (tab != null) {
+				height = (int)(tab.getBottomLineY() - tab.getTopLineY());
+				yStart = (int)tab.getTopLineY();
+				yEnd = (int)tab.getBottomLineY();
+			}
+			double yUnit = height / 23;
+			if (yUnit < 1) yUnit = 1;
+			int y = yStart;
+			while (y <= yEnd - (yUnit * 3)) {
+				context.fillRect((int) x, y,
+						m_thinBarWidth, (int) (yUnit * 3));
+				y += (int) (yUnit * 5);
+			}
 		}
 	}
 	
@@ -239,5 +272,12 @@ class JBar extends JScoreElementAbstract {
 		int height = getHeight();
 		context.fillRect((int) x, (int) (getBase().getY() - height),
 				m_thinBarWidth, height);
+		
+		JTablature tab = getStaffLine().getTablature();
+		if (tab != null) {
+			height = (int) (tab.getBottomLineY() - tab.getTopLineY());
+			context.fillRect((int) x, (int) tab.getTopLineY(),
+					m_thinBarWidth, height);
+		}
 	}
 }

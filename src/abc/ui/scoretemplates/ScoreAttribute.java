@@ -301,6 +301,14 @@ public class ScoreAttribute implements Cloneable, Serializable {
 	public static final ScoreAttribute STEM_STROKE
 		= new ScoreAttribute("StemStroke",
 				new Size(1f/12f, SizeUnit.NOTE_WIDTH));
+
+	/** Space between the staff bottom and tablature,
+	 * expressed in px or {@link SizeUnit#STAFF_HEIGHT}.<br>
+	 * Default value: 1.25 * staff height<br>
+	 * Type: size */
+	public static final ScoreAttribute TABLATURE_SPACING
+		= new ScoreAttribute("TablatureSpacing",
+				new Size(1.25f, SizeUnit.STAFF_HEIGHT));
 	
 	/** Default text size, from which all text elements sizes
 	 * are derived, expressed in pt or percent of notation size.<br>

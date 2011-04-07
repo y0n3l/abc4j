@@ -64,6 +64,7 @@ public class DefaultScoreTemplate extends ScoreTemplate implements Cloneable {
 	private void color() {
 		setElementColor(ScoreElements._DEFAULT, Color.black);
 		setElementColor(ScoreElements.STAFF_LINES, Color.darkGray);
+		setElementColor(ScoreElements.TABLATURE_LINES, Color.darkGray);
 	}
 	
 	private void fonts() {
@@ -97,6 +98,7 @@ public class DefaultScoreTemplate extends ScoreTemplate implements Cloneable {
 		setTextSize(ScoreElements.TEXT_COMPOSER, 125, SizeUnit.PERCENT);
 		setTextSize(ScoreElements.PART_LABEL, 150, SizeUnit.PERCENT);
 		setTextSize(ScoreElements.TEXT_ANNOTATIONS, 100, SizeUnit.PERCENT);
+		setTextSize(ScoreElements.TEXT_TABLATURE, 12, SizeUnit.PT);
 		setTextSize(FOOTNOTES, 10, SizeUnit.PT);
 		
 		Hashtable urlLink = new Hashtable();

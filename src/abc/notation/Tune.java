@@ -403,6 +403,14 @@ public class Tune implements Cloneable, Serializable
   public void addWords(String words)
   { m_tuneInfos.add(TuneInfos.WORDS, words); }
   
+  /**
+   * Returns the asked voice, create it if needed.
+   * @param voiceName
+   */
+  public Voice getVoice(String voiceName) {
+	  return m_defaultPart.getMusic().getVoice(voiceName);
+  }
+  
   /** Returns the words of this tune.
    * Corresponds to the "W:" abc field. */
   public String getWords() {
