@@ -68,7 +68,8 @@ public class Chord extends Annotation implements Cloneable {
 			//handles min(or), Maj/maj(or), dim, sus, Maj7, mb5...
 			// but not #11 (may be ok for Eb7#11,
 			// but F#11 will disturb...)
-			//\u00F8 = ø, \u00D8 = Ø, \u00B0 = °
+			//\u00F8 = slashed o, \u00D8 = slashed O, \u00B0 = degree
+			//(html &oslash;, &Oslash;, &deg;)
 			//delta = Maj7, maths=\u2206, greek=\u0394
 		+"((\\/)(([ABCDEFG])([b\u266D#\u266F])?))?" // /bass
 		+"(\\)?[ \\s]*)$" //closing parenthesis, spaces

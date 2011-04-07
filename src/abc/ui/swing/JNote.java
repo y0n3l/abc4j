@@ -430,7 +430,7 @@ class JNote extends JNoteElementAbstract {
 				tab.renderNote(g, this);
 			}
 		} else {
-			System.err.println("getStaffLine not set for "+toString());
+			System.err.println("DEBUG : getStaffLine not set for "+toString());
 		}
 		
 		//renderDebugBoundingBox(g);
