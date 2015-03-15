@@ -65,12 +65,10 @@ public class BeforeAudioRendition {
 		//we may have key/clef changes
 		//repeat operation for each voice. Key is for all voices
 		//but clef can change from one voice to another
-		Iterator it = music.getVoices().iterator();
-		while (it.hasNext()) {
-			Voice voice = (Voice) it.next();
+		for (Voice voice : music.getVoices()) {
 			if (voice.hasObject(KeySignature.class)
 					&& voice.hasObject(PartLabel.class)) {
-				Hashtable partsKey = new Hashtable();
+				Hashtable<String, KeySignature> partsKey = new Hashtable<String, KeySignature>();
 				KeySignature tuneKey = null;
 				int size = voice.size();
 				int i = 0;
@@ -131,11 +129,10 @@ public class BeforeAudioRendition {
 		KeySignature tuneKey = null;
 		KeySignature currentKey = null;
 		Hashtable partsKey = new Hashtable();
-		MusicElement element;
-		Iterator itMusic = music.iterator();
-		while (itMusic.hasNext()) {
-			element = (MusicElement) itMusic.next();
-			
+		for (Voice voice : music.getVoices()) {
+			for (MusicElement element : voice) {
+				//TODO
+			}
 		}
 		return music;
 	}

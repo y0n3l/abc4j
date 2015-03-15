@@ -147,7 +147,7 @@ public class KeySignature extends MusicElement implements Cloneable
 	 *                values.
 	 */
 	public KeySignature(byte keyNoteType, Accidental keyAccidental, byte modeType) {
-		if (keyAccidental.isMicrotonal())
+		if (keyAccidental.isMicrotonal() && (modeType != OTHER))
 			throw new IllegalArgumentException(
 					"Key accidental can't be microtonal");
 		if (!(modeType == AEOLIAN || modeType == DORIAN || modeType == IONIAN
@@ -223,6 +223,28 @@ public class KeySignature extends MusicElement implements Cloneable
 	 *            or <TT>Accidental.FLAT</TT>.
 	 */
     public KeySignature (Accidental[] accidentalsDefinition) {
+    	this(Note.C, Accidental.NATURAL, accidentalsDefinition);
+    }
+
+    /**
+	 * Creates a key signature with the specified accidentals.
+	 * 
+	 * @param keyNoteType
+	 *            The note of the mode. Possible values are <TT>Note.A</TT>,
+	 *            <TT>Note.B</TT>, <TT>Note.C</TT>, <TT>Note.D</TT>,
+	 *            <TT>Note.E</TT>, <TT>Note.F</TT> or <TT>Note.G</TT>.
+	 * @param keyAccidental
+	 *            Accidental for the note mode. Possible values are <TT>Accidental.SHARP</TT>,
+	 *            <TT>Accidental.NATURAL</TT>? <TT>Accidental.NONE</TT>,
+	 *            or <TT>Accidental.FLAT</TT>.
+	 * @param accidentalsDefinition
+	 *            Accidental definition from note C to B. Possible values for
+	 *            accidentals are : <TT>Accidental.SHARP</TT>, <TT>Accidental.NATURAL</TT>
+	 *            or <TT>Accidental.FLAT</TT>.
+	 */
+    public KeySignature (byte keyNoteType, Accidental keyAccidental,
+    		Accidental[] accidentalsDefinition) {
+    	this(keyNoteType, keyAccidental, OTHER);
     	setAccidentals(accidentalsDefinition);
     }
     
@@ -441,10 +463,12 @@ public class KeySignature extends MusicElement implements Cloneable
 	 * @see #hasSharpsAndFlats()
 	 */
 	public boolean isSharpDominant() {
-		return ((keyIndex == 1 && m_keyAccidental.isSharp())
-				|| keyIndex == 2 || keyIndex == 4
-				|| (keyIndex == 6 && m_keyAccidental.isSharp())
-				|| keyIndex == 7 || keyIndex == 9 || (keyIndex == 11 && m_keyAccidental.isNatural()));
+		boolean accIsSharp = m_keyAccidental.isSharp()
+				|| m_keyAccidental.isMicrotonalSharp();
+		return ((keyIndex == 1 && accIsSharp) || keyIndex == 2 || keyIndex == 4
+				|| (keyIndex == 6 && accIsSharp) || keyIndex == 7
+				|| keyIndex == 9 || (keyIndex == 11 && m_keyAccidental
+				.isNatural()));
 	}
 	
 	/**
@@ -462,10 +486,11 @@ public class KeySignature extends MusicElement implements Cloneable
 	 * @see #hasSharpsAndFlats()
 	 */
 	public boolean isFlatDominant() {
-		return ((keyIndex == 1 && m_keyAccidental.isFlat())
+		boolean accIsFlat = m_keyAccidental.isFlat() || m_keyAccidental.isMicrotonalFlat();
+		return ((keyIndex == 1 && accIsFlat)
 				|| keyIndex == 3 || keyIndex == 5
-				|| (keyIndex == 6 && m_keyAccidental.isFlat())
-				|| keyIndex == 8 || keyIndex == 10 || (keyIndex == 11 && m_keyAccidental.isFlat()));
+				|| (keyIndex == 6 && accIsFlat)
+				|| keyIndex == 8 || keyIndex == 10 || (keyIndex == 11 && accIsFlat));
 	}
 	
     public String toLitteralNotation()

@@ -48,7 +48,7 @@ public class ScoreMetrics {
 	 * 
 	 * Avoid numerous <TT>*Bounds</TT> members for this class
 	 */
-	private Map bounds = new HashMap();
+	private Map<String, Rectangle2D> bounds = new HashMap<String, Rectangle2D>();
 
 	private Graphics2D g2 = null;
 

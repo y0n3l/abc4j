@@ -21,6 +21,8 @@ import abc.notation.Decoration;
 
 public abstract class MusicalFontAbstract implements MusicalFont, Serializable {
 
+	private static final long serialVersionUID = 939004578768924265L;
+
 	public char getDecoration(Decoration decoration) {
 		return getDecoration(decoration, false);
 	}

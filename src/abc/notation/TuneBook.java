@@ -17,7 +17,6 @@ package abc.notation;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
@@ -35,23 +34,24 @@ public class TuneBook implements Cloneable, Serializable {
 	private TuneInfos m_bookInfos = null;
 
 	/** Collection of Instruction object (Xcommand, user defined symbols) */
-	private ArrayList m_instructions = null;
+	private ArrayList<Instruction> m_instructions = null;
 
 	/**
 	 * The structure used to store the tunes. Key = Integer(ReferenceNumber)
 	 * Value = TranscribedTune instance
 	 */
-	private TreeMap m_tunes = null;
+	private TreeMap<Integer, Tune> m_tunes = null;
 
 	public TuneBook() {
-		m_tunes = new TreeMap();
+		m_tunes = new TreeMap<Integer, Tune>();
 		m_bookInfos = new TuneInfos();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public TuneBook(TuneBook tuneBook) {
-		m_tunes = (TreeMap) tuneBook.m_tunes.clone();
+		m_tunes = (TreeMap<Integer, Tune>) tuneBook.m_tunes.clone();
 		m_bookInfos = (TuneInfos) tuneBook.m_bookInfos.clone();
-		m_instructions = (ArrayList) tuneBook.getInstructions().clone();
+		m_instructions = (ArrayList<Instruction>) tuneBook.getInstructions().clone();
 	}
 
 	/**
@@ -105,11 +105,9 @@ public class TuneBook implements Cloneable, Serializable {
 	 */
 	public int getHighestReferenceNumber() {
 		int max = -1;
-		Iterator it = m_tunes.keySet().iterator();
-		while (it.hasNext()) {
-			Integer i = (Integer) it.next();
-			if (i > max)
-				max = i;
+		for (Integer i : m_tunes.keySet()) {
+			if (i.intValue() > max)
+				max = i.intValue();
 		}
 		return max;
 	}
@@ -118,9 +116,9 @@ public class TuneBook implements Cloneable, Serializable {
 	 * Returns a collection of Instruction object (Xcommand, user defined
 	 * symbols)
 	 */
-	public ArrayList getInstructions() {
+	public ArrayList<Instruction> getInstructions() {
 		if (m_instructions == null)
-			m_instructions = new ArrayList();
+			m_instructions = new ArrayList<Instruction>();
 		return m_instructions;
 	}
 
@@ -132,11 +130,10 @@ public class TuneBook implements Cloneable, Serializable {
 	 *         tunebook.
 	 */
 	public int[] getReferenceNumbers() {
-		Iterator it = m_tunes.keySet().iterator();
 		int[] refNb = new int[m_tunes.size()];
 		int index = 0;
-		while (it.hasNext()) {
-			refNb[index] = ((Integer) it.next()).intValue();
+		for (Integer i : m_tunes.keySet()) {
+			refNb[index] = i.intValue();
 			index++;
 		}
 		return refNb;
@@ -160,7 +157,7 @@ public class TuneBook implements Cloneable, Serializable {
 	/**
 	 * Returns a map of reference number => Tune
 	 */
-	public Map getTunes() {
+	public Map<Integer, Tune> getTunes() {
 		return m_tunes;
 	}
 
@@ -214,11 +211,9 @@ public class TuneBook implements Cloneable, Serializable {
 		return m_tunes.size();
 	}
 
-	public Vector toVector() {
-		Vector v = new Vector(size(), 5);
-		Iterator it = m_tunes.keySet().iterator();
-		while (it.hasNext()) {
-			Integer i = (Integer) it.next();
+	public Vector<Tune> toVector() {
+		Vector<Tune> v = new Vector<Tune>(size(), 5);
+		for (Integer i : m_tunes.keySet()) {
 			v.addElement(m_tunes.get(i));
 		}
 		return v;

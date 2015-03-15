@@ -24,12 +24,9 @@ import java.awt.font.TextAttribute;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.text.AttributedString;
-import java.text.AttributedCharacterIterator.Attribute;
-import java.util.Iterator;
 import java.util.Map;
 
 import abc.notation.Accidental;
-import abc.notation.Chord;
 import abc.notation.MusicElement;
 import abc.ui.scoretemplates.HorizontalPosition;
 import abc.ui.scoretemplates.ScoreElements;
@@ -247,40 +244,39 @@ public class JText extends JScoreElementAbstract {
 		LineMetrics lineMetrics = font.getLineMetrics(getText(), g2.getFontRenderContext());
 		float leading = (float) Math.ceil(Math.max(lineMetrics.getLeading(), lineMetrics.getDescent()));
 		//System.out.println("leading "+getText()+" = "+leading);
+		double line_height = getOneLineHeight();
 
-		//music font for sharp and flats
+		//music font for accidentals
 		Font musicFont;
 		try {
 			musicFont = getMusicalFont().getFont();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		musicFont = musicFont.deriveFont(font.getSize()*3f);
-		//sharp and natural are translated up a little :)
-		AffineTransform at = AffineTransform.getTranslateInstance(0, -font.getSize()/2.5);
-		Font musicFontSharp = musicFont.deriveFont(at);
-		at = AffineTransform.getTranslateInstance(0, -font.getSize()/3);
-		Font musicFontNatural = musicFont.deriveFont(at);
+		musicFont = musicFont.deriveFont(font.getSize()*2f);
+		//accidentals are translated up a little :)
+		Font musicFontAcc = musicFont.deriveFont(AffineTransform.getTranslateInstance(0, -line_height/6));
+		//this compensate the affine transforme after an accidental, else
+		//the text goes up
+		Font fontAfterAcc = font.deriveFont(AffineTransform.getTranslateInstance(0, line_height/6));
 		
-		char sharp = getMusicalFont().getAccidental(Accidental.SHARP);
-		char flat = getMusicalFont().getAccidental(Accidental.FLAT);
-		char natural = getMusicalFont().getAccidental(Accidental.NATURAL);
-		char double_flat = getMusicalFont().getAccidental(Accidental.DOUBLE_FLAT);
-		char double_sharp = getMusicalFont().getAccidental(Accidental.DOUBLE_SHARP);
+		Map<Accidental, Character> accid2glyph = getMusicalFont().getAccidentals();
 		
 		String[] lines = getTextLines();
-		double line_height = getOneLineHeight();
 		for (int line_count = 0; line_count < lines.length; line_count++) {
-			String text = lines[line_count].replace(Chord.UNICODE_SHARP, sharp)
-				.replace(Chord.UNICODE_FLAT, flat)
-				.replace(Chord.UNICODE_NATURAL, natural)
-				.replaceAll("\\(b\\)", flat+"")
-				.replaceAll("\\(bb\\)", double_flat+"")
-				.replaceAll("\\(#\\)", sharp+"")
-				.replaceAll("\\(##\\)", double_sharp+"")
-				.replaceAll("\\(\\=\\)", natural+"");
+			String text = lines[line_count];
 			if (text.length() == 0)
 				continue;
+			for (Accidental key : accid2glyph.keySet()) {
+				text = text.replaceAll(key.toUnicodeString(),
+						accid2glyph.get(key).toString());
+				text = text.replaceAll("\\(" + key.toString()
+						//escape = and . for regexp
+						.replaceAll("\\=", "\\=")
+						.replaceAll("\\.", "\\.")
+						+ "\\)",
+						accid2glyph.get(key).toString());
+			}
 			
 			AttributedString as = new AttributedString(text);
 			as.addAttributes(font.getAttributes(), 0, text.length());
@@ -289,28 +285,25 @@ public class JText extends JScoreElementAbstract {
 				char charAtI = text.charAt(i);
 				if (begin == -1)
 					begin = i;
-				if ((charAtI == sharp) || (charAtI == flat) || (charAtI == natural)) {
+				if (accid2glyph.containsValue(new Character(charAtI))) {
+					//is an accidental
 					if (begin != i) {
-						as.addAttribute(TextAttribute.FONT, font, begin, i);
+						as.addAttribute(TextAttribute.FONT, 
+								begin == 0 ? font : fontAfterAcc, begin, i);
 					}
 					as.addAttribute(TextAttribute.FONT,
-							charAtI==flat?musicFont
-								:(charAtI==sharp?musicFontSharp
-												:musicFontNatural),
-							i, i+1);
+							musicFontAcc, i, i+1);
 					begin = -1;
 				}
 			}
 			if (begin != -1) {
-				as.addAttributes(font.getAttributes(), begin, text.length());
+				as.addAttributes((begin == 0 ? font : fontAfterAcc).getAttributes(), begin, text.length());
 			}
 			//end of flat/sharp replacement
 
-			Map attrib = getTemplate().getTextAttributes(m_textField);
+			Map<TextAttribute, Object> attrib = getTemplate().getTextAttributes(m_textField);
 			if (attrib != null) {
-				Iterator it = attrib.keySet().iterator();
-				while (it.hasNext()) {
-					Attribute ta = (Attribute) it.next();
+				for (TextAttribute ta : attrib.keySet()) {
 					as.addAttribute(ta, attrib.get(ta));
 				}
 			}

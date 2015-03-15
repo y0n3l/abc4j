@@ -85,13 +85,13 @@ public class ParsingEventsList extends JTable implements TuneParserListenerInter
   {
     private static final long serialVersionUID = -4695151725324770777L;
 	//private TuneParser m_tuneParser = null;
-    private Vector m_events = null;
+    private Vector<Object> m_events = null;
 
 
     public ParsingEventsTableModel(TuneParser parser)
     {
       //m_tuneParser = parser;
-      m_events = new Vector();
+      m_events = new Vector<Object>();
     }
 
     public int getSize()

@@ -101,7 +101,7 @@ public class DefaultScoreTemplate extends ScoreTemplate implements Cloneable {
 		setTextSize(ScoreElements.TEXT_TABLATURE, 12, SizeUnit.PT);
 		setTextSize(FOOTNOTES, 10, SizeUnit.PT);
 		
-		Hashtable urlLink = new Hashtable();
+		Hashtable<TextAttribute, Object> urlLink = new Hashtable<TextAttribute, Object>();
 		//urlLink.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_LOW_ONE_PIXEL);
 		urlLink.put(TextAttribute.FOREGROUND, Color.BLUE);
 		setTextAttributes(ScoreElements.TEXT_FILEURL, urlLink);

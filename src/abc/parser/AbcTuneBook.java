@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import abc.notation.Tune;
 import abc.notation.TuneBook;
@@ -42,7 +41,7 @@ public class AbcTuneBook extends TuneBook {
 
 	private String m_abcHeaderString = "";
 
-	private ArrayList m_listeners = new ArrayList(2);
+	private ArrayList<TuneBookListenerInterface> m_listeners = new ArrayList<TuneBookListenerInterface>(2);
 
 	public AbcTuneBook() {
 		super();
@@ -75,9 +74,7 @@ public class AbcTuneBook extends TuneBook {
 		StringBuffer sb = new StringBuffer(getAbcHeaderString());
 		if (sb.length() > 0)
 			sb.append("\n\n");
-		Iterator it = toVector().iterator();
-		while (it.hasNext()) {
-			Tune tune = (Tune) it.next();
+		for (Tune tune : toVector()) {
 			if (tune instanceof AbcTune) {
 				sb.append(((AbcTune) tune).getAbcString().trim());
 				sb.append("\n\n");

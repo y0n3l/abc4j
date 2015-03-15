@@ -19,7 +19,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -85,7 +84,7 @@ public class Tablature implements Cloneable, Serializable {
 
 	private Note[] m_strings = null;
 	
-	private Map computedFingerings = null;
+	private Map<MusicElementReference, int[]> computedFingerings = null;
 
 	public Tablature(Note[] strings, int numberOfFret) {
 		m_strings = strings;
@@ -132,14 +131,12 @@ public class Tablature implements Cloneable, Serializable {
 	 * @param musicElements Collection of MusicElement in which notes
 	 * will be used for computation.
 	 */
-	public void computeFingerings(Collection musicElements) {
+	public void computeFingerings(Collection<MusicElement> musicElements) {
 		if (computedFingerings != null)
 			computedFingerings.clear();
 		//collect all notes
-		Collection notes = new ArrayList(musicElements.size());
-		Iterator it = musicElements.iterator();
-		while (it.hasNext()) {
-			MusicElement element = (MusicElement) it.next();
+		Collection<NoteAbstract> notes = new ArrayList<NoteAbstract>(musicElements.size());
+		for (MusicElement element : musicElements) {
 			if (element instanceof NoteAbstract) {
 				NoteAbstract[] graces = ((NoteAbstract) element).getGracingNotes();
 				if (graces != null) {
@@ -150,18 +147,14 @@ public class Tablature implements Cloneable, Serializable {
 				notes.add((NoteAbstract) element);
 			}
 		}
-		computedFingerings = new HashMap(notes.size());
+		computedFingerings = new HashMap<MusicElementReference, int[]>(notes.size());
 		
 		//TODO iterate notes collection, compute fingering
-		it = notes.iterator();
 		NoteAbstract lastNote = null;
-		while (it.hasNext()) {
-			NoteAbstract currentNote = (NoteAbstract) it.next();
+		for (NoteAbstract currentNote : notes) {
 			if (currentNote instanceof MultiNote) {
 				//we have a chord
-				Iterator it2 = (((MultiNote) currentNote).getNotesAsVector()).iterator();
-				while (it2.hasNext()) {
-					Note note = (Note) it2.next();
+				for (Note note : ((MultiNote) currentNote).getNotesAsVector()) {
 					if (note.isRest() || note.isEndingTie())
 						continue;
 					//just a random thing to put numbers on the tab :-)

@@ -16,7 +16,6 @@
 package abc.notation;
 
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Vector;
 
 /** A multi note is a group of notes that should be played together. */
@@ -25,17 +24,17 @@ public class MultiNote extends NoteAbstract implements Cloneable
   private static final long serialVersionUID = 8194309683281786117L;
   
   /** Notes contained in this multinote. */
-  private Vector m_notes;
+  private Vector<Note> m_notes;
 
 	/** Creates a new <TT>MultiNote</TT> from given notes.
 	 * @param notes A Vector containing the <TT>NoteAbstract</TT> of this
 	 * <TT>MultiNote</TT>. */
-  	public MultiNote (Vector notes) {
+  	public MultiNote (Vector<Note> notes) {
 		super();
 		m_notes = fromLowestToHighest(notes);
 		byte y = 1;
-		for (Iterator it = m_notes.iterator(); it.hasNext();) {
-			((Note) it.next()).getReference().setY(y++);
+		for (Note n : m_notes) {
+			n.getReference().setY(y++);
 		}
   	}
   	
@@ -86,8 +85,8 @@ public class MultiNote extends NoteAbstract implements Cloneable
    * is returned is no note if shorter than the given strict duration.
    * @see Note#getStrictDuration() */
   public static Note[] getNotesShorterThan(Note[] notes, int aStrictDuration) {
-	  Vector shorterNotes = new Vector();
-	  Note[] notesArray =null;
+	  Vector<Note> shorterNotes = new Vector<Note>();
+	  Note[] notesArray = null;
 	  for (int i=0; i<notes.length; i++) {
 		  if (notes[i].getStrictDuration()<aStrictDuration)
 			  shorterNotes.addElement(notes[i]);
@@ -158,10 +157,11 @@ public class MultiNote extends NoteAbstract implements Cloneable
    * returned if no note begins a tie.
    * @see Note#isBeginningTie() */
   public Note[] getNotesBeginningTie() {
-	  Vector notesBT = new Vector(m_notes.size());
-	  for (int i=0; i<m_notes.size(); i++)
-		  if (((Note)m_notes.elementAt(i)).isBeginningTie())
-			  notesBT.addElement(m_notes.elementAt(i));
+	  Vector<Note> notesBT = new Vector<Note>(m_notes.size());
+	  for (Note n : m_notes) {
+		  if (n.isBeginningTie())
+			  notesBT.addElement(n);
+	  }
 	  if (notesBT.size()>0) {
 		  Note[] notesBTasArray = new Note[notesBT.size()];
 		  notesBT.toArray(notesBTasArray);
@@ -172,7 +172,7 @@ public class MultiNote extends NoteAbstract implements Cloneable
   }
   
   public static Note[] excludeTiesEndings(Note[] notes) {
-	  Vector withoutTiesEnding = new Vector();
+	  Vector<Note> withoutTiesEnding = new Vector<Note>();
 	  Note[] withoutTiesEndingArray = null;
 	  for (int i=0; i<notes.length; i++) {
 		  if (!notes[i].isEndingTie())
@@ -219,18 +219,19 @@ public class MultiNote extends NoteAbstract implements Cloneable
    * @return The strict durations composing this multi notes. The array is sorted
    * from shortest durations to longest ones. */
   public short[] getStrictDurations() {
-	  Vector durations = new Vector();
+	  Vector<Short> durations = new Vector<Short>();
 	  short currentDuration = 0;
-	  for (int i=0; i<m_notes.size(); i++) {
-		  currentDuration = ((Note)(m_notes.elementAt(i))).getStrictDuration();
-		  if (durations.indexOf(new Short(currentDuration))==-1)
-			  durations.addElement(new Short(currentDuration));
+	  for (Note n : m_notes) {
+		  currentDuration = n.getStrictDuration();
+		  Short s = new Short(currentDuration);
+		  if (!durations.contains(s))
+			  durations.add(s);
 	  }
 	  if (durations.size()==0)
 		  return null;
 	  else {
 		  //sort the durations
-		  Vector sortedDurations = new Vector();
+		  Vector<Short> sortedDurations = new Vector<Short>();
 		  for (int i=0; i<durations.size(); i++) {
 			  int j=0;
 			  while (j<sortedDurations.size()
@@ -253,14 +254,13 @@ public class MultiNote extends NoteAbstract implements Cloneable
    * durations are sorted by ascent order.
    * @see #hasUniqueStrictDuration() */
   public MultiNote[] normalize() {
-	  Hashtable splitter = new Hashtable();
-	  for (int i=0; i<m_notes.size(); i++) {
-		  Note note = (Note)m_notes.elementAt(i);
+	  Hashtable<Short, Vector<Note>> splitter = new Hashtable<Short, Vector<Note>>();
+	  for (Note note : m_notes) {
 		  Short key = new Short(note.getStrictDuration());
 		  if (splitter.containsKey(key))
-			  ((Vector)splitter.get(key)).addElement(note);
+			  splitter.get(key).addElement(note);
 		  else {
-			  Vector v = new Vector();
+			  Vector<Note> v = new Vector<Note>();
 			  v.addElement(note);
 			  splitter.put(key, v);
 		  }
@@ -268,13 +268,13 @@ public class MultiNote extends NoteAbstract implements Cloneable
 	  short[] strictDurations = getStrictDurations();
 	  MultiNote[] normalizedChords = new MultiNote[strictDurations.length];
 	  for (int i=0; i<strictDurations.length;i++) {
-		  normalizedChords[i] = new MultiNote((Vector)splitter.get(new Short(strictDurations[i])));
+		  normalizedChords[i] = new MultiNote(splitter.get(new Short(strictDurations[i])));
 	  }
 	  return normalizedChords;
   }
   
-  private static Vector fromLowestToHighest(Vector original){
-	  Vector orderedNotes = new Vector();
+  private static Vector<Note> fromLowestToHighest(Vector<Note> original){
+	  Vector<Note> orderedNotes = new Vector<Note>();
 	  for (int i=0; i<original.size(); i++) {
 		  int j=0;
 		  while (j<orderedNotes.size()
@@ -302,8 +302,9 @@ public class MultiNote extends NoteAbstract implements Cloneable
    * @return a new vector containing all <TT>Note</TT> objects contained in
    * this multi note.
    * @see #toArray() to get an array of notes not cloned */
-  public Vector getNotesAsVector()
-  { return (Vector)m_notes.clone(); }
+  @SuppressWarnings("unchecked")
+  public Vector<Note> getNotesAsVector()
+  { return (Vector<Note>) m_notes.clone(); }
   
   /** Returns notes composing this multinote as an array of notes, sorted
    * from the lowest note to the highest one.
@@ -319,14 +320,14 @@ public class MultiNote extends NoteAbstract implements Cloneable
   }
   
 	protected void setNotes(Note[] notes) {
-		Vector v = new Vector(notes.length);
+		Vector<Note> v = new Vector<Note>(notes.length);
 		for (int i = 0; i < notes.length; i++) {
 			v.addElement(notes[i]);
 		}
 		m_notes = fromLowestToHighest(v);
 		byte y = 1;
-		for (Iterator it = m_notes.iterator(); it.hasNext();) {
-			((Note) it.next()).getReference().setY(y++);
+		for (Note n : m_notes) {
+			n.getReference().setY(y++);
 		}
 	}
 
@@ -343,10 +344,19 @@ public class MultiNote extends NoteAbstract implements Cloneable
 		return sb.toString();
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object clone() throws CloneNotSupportedException {
 		Object o = super.clone();
 		if (m_notes != null)
-		((MultiNote) o).m_notes = (Vector) m_notes.clone();
+			((MultiNote) o).m_notes = (Vector<Note>) m_notes.clone();
 		return o;
+	}
+
+	public int getBars() {
+		return 0;
+	}
+
+	public short getDuration() {
+		return getShortestNote().getDuration();
 	}
 }

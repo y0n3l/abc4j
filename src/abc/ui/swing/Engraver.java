@@ -5,7 +5,6 @@ package abc.ui.swing;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.TreeSet;
 
 import abc.notation.MultiNote;
@@ -32,19 +31,19 @@ public class Engraver implements Serializable {
 	
 	private int m_mode = DEFAULT;
 	private int m_variation = VARIATION_DEFAULT;
-	private HashMap spacesAfter;
+	private HashMap<Integer, Number> spacesAfter;
 	
 	protected Engraver() {
 		this(DEFAULT);
 	}
 	
 	protected Engraver(int mode) {
-		spacesAfter = new HashMap();
+		spacesAfter = new HashMap<Integer, Number>();
 		setMode(mode);
 	}
 
 	protected Engraver(int mode, int variation) {
-		spacesAfter = new HashMap();
+		spacesAfter = new HashMap<Integer, Number>();
 		setMode(mode, variation);
 	}
 	
@@ -75,8 +74,9 @@ public class Engraver implements Serializable {
 				? Note.SIXTEENTH
 				: */Note.SIXTEENTH;
 			if (shortestDuration > min) {
-				TreeSet set = new TreeSet(spacesAfter.keySet());
-				Object[] durations = set.toArray();
+				TreeSet<Integer> set = new TreeSet<Integer>(spacesAfter.keySet());
+				Integer[] durations = new Integer[0];
+				durations = set.toArray(durations);
 				int iMin = 0, iShortest = 0;
 				for (int i = 0; i < durations.length; i++) {
 					//System.out.println("durations["+i+"] = "+durations[i]);
@@ -114,8 +114,8 @@ public class Engraver implements Serializable {
 
 	private int[] getNearestDurations(int unknownDuration) {
 		int[] ret = {Note.DOTTED_WHOLE, Note.SIXTY_FOURTH};
-		for (Iterator it = spacesAfter.keySet().iterator(); it.hasNext();) {
-			int i = ((Integer) it.next()).intValue();
+		for (Integer I : spacesAfter.keySet()) {
+			int i = I.intValue();
 			if (i > unknownDuration && i < ret[0])
 				ret[0] = i;
 			else if (i < unknownDuration && i > ret[1])
@@ -151,8 +151,8 @@ public class Engraver implements Serializable {
 			return ((Double) spacesAfter.get(i)).doubleValue();
 		else {
 			int longest = Note.SIXTY_FOURTH, shortest = Note.LONG;
-			for (Iterator itDur = spacesAfter.keySet().iterator(); itDur.hasNext();) {
-				int dur = ((Integer) itDur.next()).intValue();
+			for (Integer iDur : spacesAfter.keySet()) {
+				int dur = iDur.intValue();
 				if (dur < shortest) shortest = dur;
 				if (dur > longest) longest = dur;
 			}

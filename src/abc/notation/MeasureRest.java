@@ -22,7 +22,7 @@ package abc.notation;
  * It inserts a long rest in the audio output, it prints a long rectangle with
  * number of repeat above of it.
  */
-public class MeasureRest extends MusicElement implements Cloneable {
+public class MeasureRest extends PositionableInTime implements Cloneable {
 
 	private static final long serialVersionUID = 1571575580427511657L;
 
@@ -38,6 +38,14 @@ public class MeasureRest extends MusicElement implements Cloneable {
 
 	public int getNumberOfRepeats() {
 		return m_numberOfRepeats;
+	}
+
+	public int getDurationInBars() {
+		return getNumberOfRepeats();
+	}
+	
+	public short getDuration() {
+		return 0;
 	}
 
 }

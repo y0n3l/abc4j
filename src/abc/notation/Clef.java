@@ -579,6 +579,7 @@ public class Clef extends MusicElement implements Cloneable {
 		else if (i > 5) i = 5;
 		m_lineNumber = i;
 		reset();
+		m_middleNote = null;
 	}
 	
 	/** Returns the number of lines in the staff
@@ -598,7 +599,7 @@ public class Clef extends MusicElement implements Cloneable {
 	
 	private void reset() {
 		m_referenceNote = null;
-		m_middleNote = null;
+		//m_middleNote = null;
 		m_lowNote = null;
 		m_highNote = null;
 	}
@@ -628,11 +629,11 @@ public class Clef extends MusicElement implements Cloneable {
 		if (m_referenceNote != null)
 		((Clef) o).m_referenceNote = (Note) m_referenceNote.clone();
 		if (m_middleNote != null)
-		((Clef) o).m_middleNote = (Note) m_referenceNote.clone();
+		((Clef) o).m_middleNote = (Note) m_middleNote.clone();
 		if (m_lowNote != null)
-		((Clef) o).m_lowNote = (Note) m_referenceNote.clone();
+		((Clef) o).m_lowNote = (Note) m_lowNote.clone();
 		if (m_highNote != null)
-		((Clef) o).m_highNote = (Note) m_referenceNote.clone();
+		((Clef) o).m_highNote = (Note) m_highNote.clone();
 		return o;
 	}
 	

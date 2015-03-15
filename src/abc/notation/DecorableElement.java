@@ -15,6 +15,7 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.notation;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -24,7 +25,7 @@ import java.util.Vector;
  * 
  * <ul>
  * <li>note and multinote
- * <li>bar line
+ * <li>barline
  * <li>spacer
  * </ul>
  */
@@ -33,27 +34,45 @@ public abstract class DecorableElement extends MusicElement implements
 
 	private static final long serialVersionUID = 6909509549064348544L;
 
-	protected Vector m_annotations = null;
+	protected Vector<Annotation> m_annotations = null;
 
 	/**
 	 * The chord name.
 	 */
-	protected Chord m_chord = null;
+	private Chord m_chord = null;
 
-	protected Decoration[] m_decorations = null;
+	private ArrayList<Decoration> m_decorations = new ArrayList<Decoration>(0);
 
-	protected Dynamic m_dynamic = null;
+	private Dynamic m_dynamic = null;
 
+	public void addAnnotation(Annotation ann) {
+		if (m_annotations == null) {
+			m_annotations = new Vector<Annotation>(2, 2);
+		}
+		m_annotations.add(ann);
+	}
+	
+	/**
+	 * Add a decoration
+	 * 
+	 * @param deco
+	 */
+	public void addDecoration(Decoration deco) {
+		if (deco != null)
+			getDecorations().add(deco);
+	}
+
+	@SuppressWarnings("unchecked")
 	public Object clone() throws CloneNotSupportedException {
-		Object o = super.clone();
+		DecorableElement o = (DecorableElement) super.clone();
 		if (m_annotations != null)
-			((DecorableElement) o).m_annotations = (Vector) m_annotations
+			o.m_annotations = (Vector<Annotation>) m_annotations
 					.clone();
-		if (m_decorations != null)
-			((DecorableElement) o).m_decorations = (Decoration[]) m_decorations
-					.clone();
+		for (Decoration deco : getDecorations()) {
+			o.addDecoration((Decoration) deco.clone());
+		}
 		if (m_dynamic != null)
-			((DecorableElement) o).m_dynamic = (Dynamic) m_dynamic.clone();
+			o.m_dynamic = (Dynamic) m_dynamic.clone();
 		return o;
 	}
 
@@ -63,7 +82,7 @@ public abstract class DecorableElement extends MusicElement implements
 	 * @return The annotationss for this element. <TT>null</TT> if it has not.
 	 * @see #hasAnnotations()
 	 */
-	public Vector getAnnotations() {
+	public Vector<Annotation> getAnnotations() {
 		return m_annotations;
 	}
 
@@ -92,7 +111,7 @@ public abstract class DecorableElement extends MusicElement implements
 	 * @return The decorations for this element. <TT>null</TT> if it has not.
 	 * @see #hasDecorations()
 	 */
-	public Decoration[] getDecorations() {
+	public ArrayList<Decoration> getDecorations() {
 		return m_decorations;
 	}
 
@@ -124,8 +143,8 @@ public abstract class DecorableElement extends MusicElement implements
 	 */
 	public boolean hasDecoration(byte decorationType) {
 		if (hasDecorations()) {
-			for (int i = 0; i < m_decorations.length; i++) {
-				if (m_decorations[i].isType(decorationType))
+			for (Decoration deco : getDecorations()) {
+				if (deco.isType(decorationType))
 					return true;
 			}
 		}
@@ -140,30 +159,20 @@ public abstract class DecorableElement extends MusicElement implements
 	 *         otherwise.
 	 */
 	public boolean hasDecorations() {
-		if (m_decorations != null && m_decorations.length > 0) {
-			for (int i = 0; i < m_decorations.length; i++) {
-				if (m_decorations[i] != null)
-					return true;
-			}
-		}
-		return false;
+		return getDecorations().size() > 0;
 	}
 
 	public boolean hasDynamic() {
 		return m_dynamic != null;
 	}
 
-	public void setAnnotations(Vector ann) {
-		m_annotations = ann;
-	}
-	
 	/**
 	 * Removes annotation(s) having the given identifier
 	 * @param annotIdentifier
 	 */
 	protected void removeAnnotation(String annotIdentifier) {
 		if (m_annotations != null) {
-			Iterator it = m_annotations.iterator();
+			Iterator<Annotation> it = m_annotations.iterator();
 			while (it.hasNext()) {
 				Annotation ann = (Annotation) it.next();
 				if (ann.getIdentifier().equals(annotIdentifier))
@@ -171,12 +180,9 @@ public abstract class DecorableElement extends MusicElement implements
 			}
 		}
 	}
-	
-	public void addAnnotation(Annotation ann) {
-		if (m_annotations == null) {
-			m_annotations = new Vector(2, 2);
-		}
-		m_annotations.add(ann);
+
+	public void setAnnotations(Vector<Annotation> ann) {
+		m_annotations = ann;
 	}
 
 	/**
@@ -199,8 +205,11 @@ public abstract class DecorableElement extends MusicElement implements
 		m_chord = new Chord(chordName);
 	}
 
+	@Deprecated
 	public void setDecorations(Decoration[] dec) {
-		m_decorations = dec;
+		for (int i = 0; i < dec.length; i++) {
+			addDecoration(dec[i]);
+		}
 	}
 
 	public void setDynamic(Dynamic dyn) {

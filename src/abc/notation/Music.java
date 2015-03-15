@@ -38,17 +38,17 @@ public class Music implements Cloneable, Serializable {
 
 	protected transient NoteAbstract lastNote = null;
 
-	private TreeMap m_bars = new TreeMap();
+	private TreeMap<Short, Bar> m_bars = new TreeMap<Short, Bar>();
 
 	private short m_firstBarNumber = 1;
 	
-	private Vector m_voices = new Vector(2, 1);
+	private Vector<Voice> m_voices = new Vector<Voice>(2, 1);
 	
 	private String m_partLabel = " ";
 
 	/** Collection of Instruction object (Xcommand, user defined symbols),
 	 * transmitted from the Tune object in {@link Tune#newMusic()} */
-	private ArrayList m_instructions = null;
+	private ArrayList<Instruction> m_instructions = null;
 
 	public Music() {
 		this((short) 1);
@@ -63,25 +63,23 @@ public class Music implements Cloneable, Serializable {
 	
 	protected void setPartLabel(String c) {
 		m_partLabel = c;
-		Iterator it = m_voices.iterator();
-		while (it.hasNext()) {
-			Voice v = (Voice) it.next();
+		for (Voice v : m_voices) {
 			v.setPartLabel(m_partLabel);
 		}
 	}
 	
-	protected void setGlobalInstructions(ArrayList al) {
+	protected void setGlobalInstructions(ArrayList<Instruction> al) {
 		m_instructions = al;
 	}
 	
-	public ArrayList getGlobalInstructions() {
+	public ArrayList<Instruction> getGlobalInstructions() {
 		return m_instructions;
 	}
 
 	/**
 	 * Returns a Collection of {@link Voice}.
 	 */
-	public Collection getVoices() {
+	public Collection<Voice> getVoices() {
 		return m_voices;
 	}
 	
@@ -93,24 +91,21 @@ public class Music implements Cloneable, Serializable {
 		//if appending a music from a part
 		//add a PartLabel to all voices
 		if (!music.m_partLabel.equals(" ")) {
-			Iterator it = m_voices.iterator();
-			while (it.hasNext()) {
-				((Voice)it.next()).addElement(new PartLabel(music.m_partLabel));
+			for (Voice v : m_voices) {
+				v.addElement(new PartLabel(music.m_partLabel));
 			}
 		}
-		Iterator it = music.getVoices().iterator();
-		while (it.hasNext()) {
-			Voice v = (Voice) it.next();
-			if (!voiceExists(v.getVoiceName())) {
+		for (Voice v : music.getVoices()) {
+			if (!voiceExists(v.getVoiceId())) {
 				//create new voice (in getVoice)
 				//and copy v informations
-				Voice vCopy = getVoice(v.getVoiceName());
+				Voice vCopy = getVoice(v.getVoiceId());
 				vCopy.setTablature(v.getTablature());
 				vCopy.setVolume(v.getVolume());
 				vCopy.setInstrument(v.getInstrument());
 				//? vCopy.setFirstBarNumber(v.getFirstBar().getBarNumber());
 			}
-			getVoice(v.getVoiceName()).addAll(v);
+			getVoice(v.getVoiceId()).addAll(v);
 		}
 	}
 	
@@ -124,16 +119,14 @@ public class Music implements Cloneable, Serializable {
 	
 	/**
 	 * Returns the asked voice, create it if needed.
-	 * @param voiceName
+	 * @param voiceId
 	 */
-	public Voice getVoice(String voiceName) {
-		Iterator it = m_voices.iterator();
-		while (it.hasNext()) {
-			Voice v = (Voice) it.next();
-			if (v.getVoiceName().equals(voiceName))
+	public Voice getVoice(String voiceId) {
+		for (Voice v : m_voices) {
+			if (v.getVoiceId().equals(voiceId))
 				return v;
 		}
-		Voice v = new Voice(voiceName, m_firstBarNumber);
+		Voice v = new Voice(voiceId, m_firstBarNumber);
 		v.setPartLabel(m_partLabel);
 		m_voices.add(v);
 		return v;
@@ -142,7 +135,7 @@ public class Music implements Cloneable, Serializable {
 	/** For compatibility, return iterator on first voice
 	 * @deprecated use {@link #getVoice(String)}.iterator() 
 	 */
-	public Iterator iterator() {
+	public Iterator<MusicElement> iterator() {
 		return getFirstVoice().iterator();
 	}
 	
@@ -155,12 +148,12 @@ public class Music implements Cloneable, Serializable {
 	 * Add an element to the specified voice.
 	 * 
 	 * This is just a shorten way to call
-	 * <code>myMusic.getVoice(voiceNumber).addElement(element)</code>
-	 * @param voiceName
+	 * <code>myMusic.getVoice(voiceId).addElement(element)</code>
+	 * @param voiceId
 	 * @param element
 	 */
-	public void addElement(String voiceName, MusicElement element) {
-		getVoice(voiceName).addElement(element);
+	public void addElement(String voiceId, MusicElement element) {
+		getVoice(voiceId).addElement(element);
 	}
 	
 	/**
@@ -170,9 +163,7 @@ public class Music implements Cloneable, Serializable {
 	 * @param element
 	 */
 	public void addToAllVoices(MusicElement element) {
-		Iterator it = m_voices.iterator();
-		while (it.hasNext()) {
-			Voice v = (Voice) it.next();
+		for (Voice v : m_voices) {
 			v.addElement(element);
 		}
 	}
@@ -184,20 +175,19 @@ public class Music implements Cloneable, Serializable {
 	 * @param bar
 	 */
 	public boolean barIsEmptyForAllVoices(Bar bar) {
-		Iterator it = m_voices.iterator();
-		while (it.hasNext()) {
-			Voice v = (Voice) it.next();
+		for (Voice v : m_voices) {
 			if (!v.barIsEmpty(bar))
 				return false;
 		}
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object clone() throws CloneNotSupportedException {
 		Object o = super.clone();
-		((Music) o).m_bars = (TreeMap) m_bars.clone();
-		((Music) o).m_voices = (Vector) m_voices.clone();
-		((Music) o).m_instructions = (ArrayList) m_instructions.clone();
+		((Music) o).m_bars = (TreeMap<Short, Bar>) m_bars.clone();
+		((Music) o).m_voices = (Vector<Voice>) m_voices.clone();
+		((Music) o).m_instructions = (ArrayList<Instruction>) m_instructions.clone();
 		return o;
 	}
 
@@ -224,10 +214,8 @@ public class Music implements Cloneable, Serializable {
 	 * than in Music object
 	 */
 	public MusicElement getElementAtStreamPosition(int offset) {
-		Iterator it = m_voices.iterator();
 		CharStreamPosition pos;
-		while (it.hasNext()) {
-			Voice v = (Voice) it.next();
+		for (Voice v : m_voices) {
 			int size = v.size();
 			MusicElement current = null;
 			for (int i = 0; i < size; i++) {
@@ -246,10 +234,9 @@ public class Music implements Cloneable, Serializable {
 		return null;
 	}
 	
-	private boolean voiceExists(String voiceName) {
-		for (Iterator it = m_voices.iterator(); it.hasNext();) {
-			Voice v = (Voice) it.next();
-			if (v.getVoiceName().equals(voiceName))
+	public boolean voiceExists(String voiceId) {
+		for (Voice v : m_voices) {
+			if (v.getVoiceId().equals(voiceId))
 				return true;
 		}
 		return false;
@@ -263,9 +250,7 @@ public class Music implements Cloneable, Serializable {
 	 */
 	public MusicElement getElementByReference(MusicElementReference ref) {
 		if (voiceExists(ref.getVoice())) {
-			Iterator it = getVoice(ref.getVoice()).iterator();
-			while (it.hasNext()) {
-				MusicElement element = (MusicElement) it.next();
+			for (MusicElement element : getVoice(ref.getVoice())) {
 				if (element.getReference().equals(ref))
 					return element;
 			}
@@ -341,7 +326,7 @@ public class Music implements Cloneable, Serializable {
 	 * @throws IllegalArgumentException
 	 * @deprecated use {@link #getVoice(String)}.{@link Voice#getNotesBetween(MusicElement, MusicElement) getNotesBetween...}
 	 */
-	public Collection getNotesBetween(MusicElement elmtBegin,
+	public Collection<NoteAbstract> getNotesBetween(MusicElement elmtBegin,
 			MusicElement elmtEnd) throws IllegalArgumentException {
 		return getFirstVoice().getNotesBetween(elmtBegin, elmtEnd);
 	}
@@ -351,9 +336,7 @@ public class Music implements Cloneable, Serializable {
 	 */
 	public Note getShortestNoteInAllVoices() throws IllegalArgumentException {
 		Note shortestNote = null;
-		Iterator it = m_voices.iterator();
-		while (it.hasNext()) {
-			Voice v = (Voice) it.next();
+		for (Voice v : m_voices) {
 			Note shortInVoice = v.getShortestNote();
 			if (shortInVoice != null) {
 				if (shortestNote == null)
@@ -374,10 +357,21 @@ public class Music implements Cloneable, Serializable {
 		return getFirstVoice().hasChordNames();
 	}
 
+	/**
+	 * Returns <TT>true</TT> if this voice contains one of the requested
+	 * decoration
+	 */
+	public boolean hasDecoration(byte[] decorations) {
+		for (Voice v : m_voices) {
+			if (v.hasDecoration(decorations))
+				return true;
+		}
+		return false;
+	}
+	
+	@SuppressWarnings("rawtypes")
 	private boolean hasObject(Class musicElementClass) {
-		Iterator it = m_voices.iterator();
-		while (it.hasNext()) {
-			Voice v = (Voice) it.next();
+		for (Voice v : m_voices) {
 			if (v.hasObject(musicElementClass))
 				return true;
 		}
@@ -390,6 +384,22 @@ public class Music implements Cloneable, Serializable {
 	 */
 	public boolean hasPartLabel() {
 		return hasObject(PartLabel.class);
+	}
+	
+	/**
+	 * Returns <TT>true</TT> if this music contains repeat sections (|1 ... :|2 ...) or jumps
+	 * like coda, segno, da capo.
+	 */
+	public boolean hasRepeatOrJumps() {
+		return hasObject(RepeatBarLine.class)
+			|| hasDecoration(new byte[]{
+					Decoration.CODA,
+					Decoration.DA_CAPO,
+					Decoration.DA_CODA,
+					Decoration.DA_SEGNO,
+					Decoration.FINE,
+					Decoration.SEGNO
+			});
 	}
 
 	/**

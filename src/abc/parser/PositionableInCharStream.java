@@ -24,6 +24,8 @@ import java.io.Serializable;
 public abstract class PositionableInCharStream implements Cloneable,
 		Serializable {
 
+	private static final long serialVersionUID = 1802076915583645078L;
+	
 	private CharStreamPosition _charStreamPosition = null;
 	
 	protected PositionableInCharStream() {

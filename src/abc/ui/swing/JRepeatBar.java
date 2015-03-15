@@ -21,6 +21,7 @@ import java.awt.geom.Point2D;
 
 import abc.notation.Annotation;
 import abc.notation.RepeatBarLine;
+import abc.ui.scoretemplates.ScoreAttribute;
 import abc.ui.scoretemplates.ScoreElements;
 
 /** This class is in charge of rendering a repeat bar. */
@@ -37,10 +38,11 @@ class JRepeatBar extends JBar{
 		double x = super.getWidth();// metrics.getNoteWidth();
 		double staffHeight = metrics.getStaffCharBounds().getHeight();
 		double staffWidth = metrics.getStaffCharBounds().getWidth();
-		double topY = getStaffLine().getTopY();
+		double topY = getStaffLine().get5thLineY() - getTemplate().getAttributeSize(
+				ScoreAttribute.REPEATS_JUMP_LINE_SPACING);
 		Point2D base = getBase();
 		//ensure that there is enough space!
-		topY = Math.min(topY, base.getY()-staffHeight*1.7);
+		//topY = Math.min(topY, base.getY()-staffHeight*1.7);
 		String chars = "";
 		byte[] numbers = ((RepeatBarLine)m_barLine).getRepeatNumbers();
 		if (numbers.length > 0) {
@@ -69,6 +71,7 @@ class JRepeatBar extends JBar{
 				(int)(base.getX()+x-1),
 				(int)topY);
 		//Horizontal line
+		//TODO look for next RepeatEnd and draw line toward its position
 		context.drawLine(
 				(int)(base.getX()+x-1),
 				(int)topY,

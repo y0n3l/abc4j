@@ -291,7 +291,7 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
 						NoteAbstract note = (NoteAbstract)elmnt;
 						System.out.println("properties for " + elmnt + " : slur?="+ note.isPartOfSlur() + " isLastOfGroup?=");
 						String test = "";
-						Vector slurs = note.getSlurDefinitions();
+						Vector<SlurDefinition> slurs = note.getSlurDefinitions();
 						int size = slurs.size();
 						test = size==0?"no slur":(size+" slur"+(size>1?"s":""));
 						int i = 0;
@@ -1078,10 +1078,10 @@ public class PlayerApp extends JFrame implements TunePlayerListenerInterface, Wi
 
 
   class JPropertyChangeHandler implements PropertyChangeListener {
-  	protected ArrayList keys = null;
+  	protected ArrayList<String> keys = null;
 
   	public JPropertyChangeHandler () {
-	  keys = new ArrayList();
+	  keys = new ArrayList<String>();
 	  keys.add(StringConstants.PROPS_KEY_LANG);
 	  keys.add(StringConstants.PROPS_KEY_SCORESIZE);
   	  keys.add(StringConstants.PROPS_KEY_DISPLAYTITLES);

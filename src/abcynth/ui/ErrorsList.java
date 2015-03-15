@@ -103,12 +103,12 @@ public class ErrorsList extends JList implements TuneParserListenerInterface
   private static class ErrorsListModel extends AbstractListModel
   {
 	private static final long serialVersionUID = 8460605907411650180L;
-	private Vector m_errors = null;
+	private Vector<Object> m_errors = null;
 
     public ErrorsListModel()
     {
       super();
-      m_errors = new Vector();
+      m_errors = new Vector<Object>();
     }
 
     public Object getElementAt(int index)

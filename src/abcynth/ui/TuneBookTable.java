@@ -58,7 +58,7 @@ public class TuneBookTable extends JTable// implements TuneBookListenerInterface
   /* Source column model identifier. */
   public static final int SOURCE_COLUMN = 9;
 
-  private Vector m_tunes = null;
+  private Vector<Tune> m_tunes = null;
   //private Vector m_columns = null;
   private PopupMenu m_popMenu = null;
   private TuneBookTableModel m_model = null;
@@ -86,7 +86,7 @@ public class TuneBookTable extends JTable// implements TuneBookListenerInterface
     }
 
     public TuneBookTableModel()
-    { m_tunes = new Vector(); }
+    { m_tunes = new Vector<Tune>(); }
 
     public void setTuneBook(AbcTuneBook tuneBook)
     {

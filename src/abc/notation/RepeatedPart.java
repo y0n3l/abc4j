@@ -36,7 +36,7 @@ public class RepeatedPart extends RepeatedPartAbstract
     return parts;
   }
   
-  public Object clone(Tune t) {
+  public RepeatedPartAbstract clone(Tune t) {
 	  //gets the instance of the clone()d part in Tune
 	  //does not create a new clone
 	  RepeatedPart rp = new RepeatedPart(t.getPart(m_part.getLabel()));

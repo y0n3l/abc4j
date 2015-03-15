@@ -22,7 +22,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.Vector;
 
 import abc.audio.BeforeAudioRendition;
@@ -61,9 +61,9 @@ public class Tune implements Cloneable, Serializable
   /** the multi parts definition of this tune if composed of several parts.
    * If this tune is a one-part tune, this attribtue is <TT>null</TT> */
   private MultiPartsDefinition m_multiPartsDef = null;
-  private ArrayList m_parts = null;
+  private ArrayList<Part> m_parts = null;
   /** Collection of Instruction object (Xcommand, user defined symbols) */
-  private ArrayList m_instructions = null;
+  private ArrayList<Instruction> m_instructions = null;
 
   /** Creates a new empty tune. */
   public Tune() {
@@ -96,10 +96,9 @@ public class Tune implements Cloneable, Serializable
 	  this.m_notes = tune.m_notes;
 	  this.m_origin = tune.m_origin;*/
 	  if (tune.m_parts != null) {
-		  this.m_parts = new ArrayList();
-		for (Iterator it = tune.m_parts.iterator(); it.hasNext();) {
-			Part value = (Part) it.next();
-			this.m_parts.add(value.clone());
+		  this.m_parts = new ArrayList<Part>();
+		  for (Part value : tune.m_parts) {
+			this.m_parts.add((Part) value.clone());
 		}
 	  }
 	  if (tune.m_multiPartsDef != null)
@@ -285,9 +284,7 @@ public class Tune implements Cloneable, Serializable
   {
     if (m_parts!=null)
     {
-    	Iterator it = m_parts.iterator();
-    	while (it.hasNext()) {
-    		Part p = (Part) it.next();
+    	for (Part p : m_parts) {
     		//if (p.getLabel().equals(partLabel)
     		//	|| p.getLabel().equals(""+partLabel.charAt(0))) {
     		if (p.getLabel().charAt(0) == partLabel.charAt(0)) {
@@ -314,7 +311,7 @@ public class Tune implements Cloneable, Serializable
 	  // empty or blank character because the blank character is
 	  // used as flag for the default part.
 	  part = new Part(this, partLabel);
-	  if (m_parts==null) m_parts = new ArrayList();
+	  if (m_parts==null) m_parts = new ArrayList<Part>();
 	  m_parts.add(part);
 	  return part;
   }
@@ -405,10 +402,17 @@ public class Tune implements Cloneable, Serializable
   
   /**
    * Returns the asked voice, create it if needed.
-   * @param voiceName
+   * @param voiceId
    */
-  public Voice getVoice(String voiceName) {
-	  return m_defaultPart.getMusic().getVoice(voiceName);
+  public Voice getVoice(String voiceId) {
+	  return m_defaultPart.getMusic().getVoice(voiceId);
+  }
+  /**
+   * Returns the collection of Voice which have been defined
+   * in ABC tune header
+   */
+  public Collection<Voice> getVoices() {
+	  return m_defaultPart.getMusic().getVoices();
   }
   
   /** Returns the words of this tune.
@@ -434,10 +438,10 @@ public class Tune implements Cloneable, Serializable
 		if (semitones == 0)
 			return ret;
 		// collect all part's music to transpose
-		Vector musics = new Vector();
+		Vector<Music> musics = new Vector<Music>();
 		musics.add(ret.m_defaultPart.getMusic());
 		if (ret.m_multiPartsDef != null) {
-			Vector alreadyAddedParts = new Vector();
+			Vector<String> alreadyAddedParts = new Vector<String>();
 			Part[] parts = ret.m_multiPartsDef.toPartsArray();
 			for (int i = 0; i < parts.length; i++) {
 				String label = parts[i].getLabel();
@@ -455,14 +459,8 @@ public class Tune implements Cloneable, Serializable
 		Note lastKeyNote = new Note(lastKey.getNote(), lastKey.getAccidental());
 		KeySignature noneTranspKey = lastKey;
 		Note noneTranspKeyNote = lastKeyNote;
-		Iterator itMusics = musics.iterator();
-		int musiccount = 0;
-		while (itMusics.hasNext()) {
-			musiccount++;
-			Music music = (Music) itMusics.next();
-			Iterator itVoices = music.getVoices().iterator();
-			while (itVoices.hasNext()) {
-				Voice voice = (Voice) itVoices.next();
+		for (Music music : musics) {
+			for (Voice voice : music.getVoices()) {
 				for (int i = 0, j = voice.size(); i<j; i++) {
 					MusicElement element = (MusicElement) voice.elementAt(i);
 					if (element instanceof KeySignature) {
@@ -509,22 +507,9 @@ public class Tune implements Cloneable, Serializable
 			Note lastKeyNote, KeySignature lastKey) {
 		NoteAbstract transp = null;
 		if (original instanceof Note) {
-			float microtonalOffset = ((Note)original).getAccidental().getMicrotonalOffset();
 			Interval interval = new Interval(noneTranspKeyNote, (Note) original,
 					noneTranspKey);
-			// Note transp = Note.transpose(original, semitones, lastKey);
-			Note transpHeight = interval.calculateSecondNote(lastKeyNote, lastKey);
-			try {
-				transp = (Note) ((Note) original).clone();
-			} catch (CloneNotSupportedException never) {
-				never.printStackTrace();
-			}
-			((Note) transp).setHeight(transpHeight.getHeight());
-			((Note) transp).setOctaveTransposition(transpHeight.getOctaveTransposition());
-			if (microtonalOffset == 0)
-				((Note) transp).setAccidental(transpHeight.getAccidental());
-			else
-				((Note) transp).setAccidental(transpHeight.getAccidental().getValue()+microtonalOffset);
+			transp = interval.calculateSecondNote(lastKeyNote, lastKey);
 		} else if (original instanceof MultiNote) {
 			try {
 				transp = (MultiNote) ((MultiNote) original).clone();
@@ -609,9 +594,7 @@ public class Tune implements Cloneable, Serializable
 			//Vector alreadyAddedParts = new Vector();
 			Music globalScore = newMusic();
 			globalScore.append(m_defaultPart.getMusic());
-			Iterator it = m_parts.iterator();
-			while (it.hasNext()) {
-				Part part = (Part) it.next();
+			for (Part part : m_parts) {
 				globalScore.append(part.getMusic());
 			}
 			return globalScore;
@@ -709,9 +692,9 @@ public class Tune implements Cloneable, Serializable
 	
 	/** Returns a collection of Instruction object
 	 * (Xcommand, user defined symbols) */
-	public ArrayList getInstructions() {
+	public ArrayList<Instruction> getInstructions() {
 		if (m_instructions == null)
-			m_instructions = new ArrayList();
+			m_instructions = new ArrayList<Instruction>();
 		return m_instructions;
 	}
 	
@@ -829,17 +812,17 @@ public class Tune implements Cloneable, Serializable
   		}
   	}
 
-  	public int getSize() {
-  		return size;
-  	}
+//	public int getSize() {
+//		return size;
+//	}
 
   	/**
   	 * Returns the byte array containing the written data. Note that this array
   	 * will almost always be larger than the amount of data actually written.
   	 */
-  	public byte[] getByteArray() {
-  		return buf;
-  	}
+//	public byte[] getByteArray() {
+//		return buf;
+//	}
 
   	public final void write(byte b[]) {
   		verifyBufferSize(size + b.length);
@@ -858,9 +841,9 @@ public class Tune implements Cloneable, Serializable
   		buf[size++] = (byte) b;
   	}
 
-  	public void reset() {
-  		size = 0;
-  	}
+//	public void reset() {
+//		size = 0;
+//	}
 
   	/** Returns a ByteArrayInputStream for reading back the written data */
   	public InputStream getInputStream() {

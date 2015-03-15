@@ -34,8 +34,8 @@ class JKeySignature extends JScoreElementAbstract {
 	private KeySignature previous_key = null;
 
 	private double m_width = -1;
-	private ArrayList chars = new ArrayList(); //ArrayList of char[]
-	private ArrayList positions = new ArrayList(); //ArrayList of Point2D
+	private ArrayList<char[]> chars = new ArrayList<char[]>(); //ArrayList of char[]
+	private ArrayList<Point2D.Double> positions = new ArrayList<Point2D.Double>(); //ArrayList of Point2D
 
 	public JKeySignature(KeySignature keyV, Point2D base, ScoreMetrics c) {
 		this(keyV, null, base, c);
@@ -80,7 +80,8 @@ class JKeySignature extends JScoreElementAbstract {
 		else if (clef.isF())
 			octaveOffset = 3.5*2;
 		//key accidentals depending on the clef octave offset = 3.5
-		octaveOffset -= clef.getOctaveTransposition()*3.5;
+		octaveOffset -= clef.getOctaveTransposition()*3.5
+					 + clef.getInvisibleOctaveTransposition()*3.5;
 		//Calculate vertical position for # and b
 		double FsharpY = baseY - (JClef.getOffset(new Note(Note.f), clef)-octaveOffset) * noteHeight;
 		double CsharpY = baseY - (JClef.getOffset(new Note(Note.c), clef)-octaveOffset) * noteHeight;
@@ -120,14 +121,11 @@ class JKeySignature extends JScoreElementAbstract {
 		if ((previous_key != null) && !previous_key.equals(key)) {
 			//Before switching to a new key, maybe we need to
 			//print naturals
-			Accidental accidental = previous_key.isSharpDominant()
-					?Accidental.SHARP:Accidental.FLAT;
-			int[] order = (accidental == Accidental.FLAT)
-					?flatOrder:sharpOrder;
+			boolean isFlat = !previous_key.isSharpDominant();
+			int[] order = isFlat ? flatOrder : sharpOrder;
 			char glyph = getMusicalFont().getAccidental(Accidental.NATURAL);
 			double glyphWidth = getMetrics().getBounds(glyph).getWidth();
-			double[] Ys = (accidental==Accidental.FLAT)
-					?flatYs:sharpYs;
+			double[] Ys = isFlat ? flatYs : sharpYs;
 			Accidental[] previous_accidentals = previous_key.getAccidentals();
 			for (int i = 0; i < order.length; i++) {
 				if (!previous_accidentals[order[i]].isNatural()
@@ -147,8 +145,8 @@ class JKeySignature extends JScoreElementAbstract {
 		
 		for (int twoPasses = 1; twoPasses <= 2; twoPasses++) {
 			Accidental accidental = twoPasses==1?firstAccidental:secondAccidental;
-			int[] order = (accidental.isFlat())?flatOrder:sharpOrder;
-			double[] Ys = (accidental.isFlat())?flatYs:sharpYs;
+			int[] order = (accidental.getValue()<0)?flatOrder:sharpOrder;
+			double[] Ys = (accidental.getValue()<0)?flatYs:sharpYs;
 			if ((twoPasses == 2) && key.hasSharpsAndFlats()) {
 				//A little space when changing accidental
 				double litSpace = getMetrics().getBounds(getMusicalFont().getAccidental(Accidental.NATURAL)).getWidth();
@@ -156,10 +154,11 @@ class JKeySignature extends JScoreElementAbstract {
 				m_width += litSpace;
 			}
 			for (int i = 0; i < order.length; i++) {
-				if (accidentals[order[i]].getNearestOccidentalValue()
-						== accidental.getNearestOccidentalValue()) {
+				if (Math.signum(accidentals[order[i]].getValue())
+						== Math.signum(accidental.getValue())) {
 					char glyph = getMusicalFont().getAccidental(accidentals[order[i]]);
-					double glyphWidth = getMetrics().getBounds(glyph).getWidth();
+					double glyphWidth = getMetrics().getBounds(glyph).getWidth()
+						+ 1;
 					chars.add(cpt, new char[]{glyph});
 					positions.add(cpt, new Point2D.Double(baseX, Ys[i]));
 					baseX += glyphWidth;

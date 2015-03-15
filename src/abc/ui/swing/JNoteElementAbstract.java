@@ -110,25 +110,20 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 		}
 
 		// add JDecorations
-		if (noteValue.hasDecorations()) {
-			Decoration[] decorations = noteValue.getDecorations();
-			for (int i=0; i<decorations.length;i++) {
-				try {
-					if ((decorations[i].getType() == Decoration.ROLL)
-							&& noteValue.hasGeneralGracing()) {
-						addDecoration(
-							new JDecoration(
-								new Decoration(Decoration.GENERAL_GRACING),
-								getMetrics()
-							));
-					} else {
-						addDecoration(
-							new JDecoration(
-								decorations[i], getMetrics()));
-					}
-				} catch (MissingGlyphException mge) {
-					//continue;
+		for (Decoration decoration : noteValue.getDecorations()) {
+			try {
+				if ((decoration.getType() == Decoration.ROLL)
+						&& noteValue.hasGeneralGracing()) {
+					addDecoration(
+						new JDecoration(
+							new Decoration(Decoration.GENERAL_GRACING), getMetrics()
+						));
+				} else {
+					addDecoration(
+						new JDecoration(decoration, getMetrics()));
 				}
+			} catch (MissingGlyphException mge) {
+				//continue;
 			}
 		}
 		
@@ -471,13 +466,13 @@ abstract class JNoteElementAbstract extends JScoreElementAbstract
 				context.drawOval((int)anchors[i].getX(), (int)anchors[i].getY(), 1, 1);
 		}
 		context.setColor(previousColor);
-		System.out.println("renderDebugSlurAnchors : "+getMusicElement());
-		System.out.println("  object : "+getClass().getSimpleName());
-		System.out.println("  - base = "+getBase());
-		System.out.println("  - above = "+getSlurAboveAnchor());
-		System.out.println("  - above out = "+getSlurAboveAnchorOutOfStem());
-		System.out.println("  - under = "+getSlurUnderAnchor());
-		System.out.println("  - under out = "+getSlurUnderAnchorOutOfStem());
+//		System.out.println("renderDebugSlurAnchors : "+getMusicElement());
+//		System.out.println("  object : "+getClass().getSimpleName());
+//		System.out.println("  - base = "+getBase());
+//		System.out.println("  - above = "+getSlurAboveAnchor());
+//		System.out.println("  - above out = "+getSlurAboveAnchorOutOfStem());
+//		System.out.println("  - under = "+getSlurUnderAnchor());
+//		System.out.println("  - under out = "+getSlurUnderAnchorOutOfStem());
 	}
 
 }

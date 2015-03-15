@@ -25,7 +25,7 @@ public class AsynchronousTuneParser extends TuneParser
 {
   private Object m_mutex = new Object();
   private Thread m_parsingThread = null;
-  private Vector m_queue = null;
+  private Vector<QueueElement> m_queue = null;
   private boolean m_isQueueManagementEnabled = true;
 
   /** Constructs a new tune parser. */
@@ -38,7 +38,7 @@ public class AsynchronousTuneParser extends TuneParser
   {
     super();
     m_isQueueManagementEnabled = isQueueManagementEnabled;
-    m_queue = new Vector();
+    m_queue = new Vector<QueueElement>();
     m_parsingThread = new Thread(new ParsingRunnable());
     m_parsingThread.start();
   }
@@ -94,7 +94,7 @@ public class AsynchronousTuneParser extends TuneParser
     return null;
   }
 
-  private Vector getQueue()
+  private Vector<QueueElement> getQueue()
   { return m_queue; }
 
   public void superParse(Reader r) throws IOException

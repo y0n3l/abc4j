@@ -26,7 +26,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
@@ -73,7 +72,7 @@ public class JScoreComponent extends JComponent
 
 	/** A vector of selected item(s) in this score. <TT>null</TT> if no
 	 * item is selected. */
-	private Collection m_selectedItems = null;
+	private Collection<JScoreElement> m_selectedItems = null;
 
 	//protected int staffLinesSpacing = -1;
 
@@ -86,6 +85,7 @@ public class JScoreComponent extends JComponent
 	}
 
 	protected void initGfx(){
+		//System.out.println(m_dimension.toString());
 		m_bufferedImage = new BufferedImage((int)m_dimension.getWidth(), (int)m_dimension.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		m_bufferedImageGfx = (Graphics2D)m_bufferedImage.createGraphics();
 		//staffLinesSpacing = (int)(m_metrics.getStaffCharBounds().getHeight()*2.5);
@@ -337,13 +337,13 @@ public class JScoreComponent extends JComponent
 	 * @see #setSelectedItem(MusicElement) */
 	public void setSelectedItem(JScoreElement elmnt){
 		if (m_selectedItems!=null) {
-			for (Iterator it = m_selectedItems.iterator(); it.hasNext();) {
-				((JScoreElement) it.next()).setColor(null);
+			for (JScoreElement jse : m_selectedItems) {
+				jse.setColor(null);
 			}
 			m_selectedItems = null;
 		}
 		if (elmnt!=null) {
-			m_selectedItems = new Vector(1, 0);
+			m_selectedItems = new Vector<JScoreElement>(1, 0);
 			m_selectedItems.add(elmnt);
 			elmnt.setColor(SELECTED_ITEM_COLOR);
 		}
@@ -356,17 +356,17 @@ public class JScoreComponent extends JComponent
 	 * score. <TT>null</TT> or empty collection can be specified to remove
 	 * highlighting.
 	 */
-	public void setSelectedItems(Collection elements) {
+	public void setSelectedItems(Collection<JScoreElement> elements) {
 		if (m_selectedItems!=null) {
-			for (Iterator it = m_selectedItems.iterator(); it.hasNext();) {
-				((JScoreElement) it.next()).setColor(null);
+			for (JScoreElement jse : m_selectedItems) {
+				jse.setColor(null);
 			}
 			m_selectedItems = null;
 		}
 		if ((elements != null) && (elements.size() > 0)) {
 			m_selectedItems = elements;
-			for (Iterator it = m_selectedItems.iterator(); it.hasNext();) {
-				((JScoreElement) it.next()).setColor(SELECTED_ITEM_COLOR);
+			for (JScoreElement jse : m_selectedItems) {
+				jse.setColor(SELECTED_ITEM_COLOR);
 			}
 		}
 	}

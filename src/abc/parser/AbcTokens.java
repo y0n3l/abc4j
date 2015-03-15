@@ -94,6 +94,7 @@ public interface AbcTokens {
 	public static final String PartsPlayOrder = "PartsPlayOrder";
 	public static final String VoiceOther = "VoiceOther";
 	public static final String Voice = "Voice";
+	public static final String VoiceNumber = "VoiceNumber";
 	public static final String VoiceName = "VoiceName";
 	public static final String VoiceSubname = "VoiceSubname";
 	public static final String VoiceTranspose = "VoiceTranspose";

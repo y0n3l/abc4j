@@ -45,5 +45,5 @@ public abstract class RepeatedPartAbstract implements Serializable
    * playing of this repeated part. */
   public abstract Part[] toPartsArray();
   
-  public abstract Object clone(Tune t);
+  public abstract RepeatedPartAbstract clone(Tune t);
 }

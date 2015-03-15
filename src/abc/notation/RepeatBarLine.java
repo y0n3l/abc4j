@@ -59,7 +59,6 @@ public class RepeatBarLine extends BarLine implements Cloneable {
 	 */
 	public RepeatBarLine(byte barline, String nthRepeatText) {
 		super(barline);
-		;
 		m_repeatNumbers = new byte[0];
 		m_repeatText = nthRepeatText;
 	}

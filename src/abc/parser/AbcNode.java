@@ -53,9 +53,9 @@ public class AbcNode extends PositionableInCharStream {
 
 	private static final AbcTextReplacements bundle = AbcTextReplacements.getInstance();
 
-	private List childs;
+	private List<AbcNode> childs;
 
-	private List errors;
+	private List<AbcParseError> errors;
 
 	private String label;
 
@@ -64,6 +64,7 @@ public class AbcNode extends PositionableInCharStream {
 	private String value;
 	
 	// @SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	protected AbcNode(Node node, InputBuffer parseInputBuffer,
 			List<ParseError> parseErrors, AbcInputBuffer abcInputBuffer) {
 		super(null);
@@ -81,19 +82,16 @@ public class AbcNode extends PositionableInCharStream {
 						sourceStartIndex,
 						sourceEndIndex
 					));
-			this.childs = new ArrayList(node.getChildren().size());
-			Iterator it = node.getChildren().iterator();
-			while (it.hasNext()) {
-				AbcNode abcn = new AbcNode((Node) it.next(), parseInputBuffer,
+			this.childs = new ArrayList<AbcNode>(node.getChildren().size());
+			for (Object n : node.getChildren()) {
+				AbcNode abcn = new AbcNode((Node) n, parseInputBuffer,
 						parseErrors, abcInputBuffer);
 				abcn.parent = this;
 				childs.add(abcn);
 			}
 			if (!hasError()/*(childs.size() == 0)*/ && node.hasError()) {
-				this.errors = new ArrayList();
-				it = parseErrors.iterator();
-				while (it.hasNext()) {
-					ParseError pe = (ParseError) it.next();
+				this.errors = new ArrayList<AbcParseError>();
+				for (ParseError pe : parseErrors) {
 					String peValue = pe.getInputBuffer().extract(
 							pe.getStartIndex(), pe.getEndIndex());
 					String peMsg = pe.getErrorMessage();
@@ -118,10 +116,10 @@ public class AbcNode extends PositionableInCharStream {
 			int nbL = parseInputBuffer.getLineCount();
 			for (int i = 1; i <= nbL; i++)
 				this.value += parseInputBuffer.extractLine(i)+"\n";
-			this.childs = new ArrayList(0);
+			this.childs = new ArrayList<AbcNode>(0);
 			setCharStreamPosition(new CharStreamPosition(1, 1, 0, 1));
 			if (parseErrors != null) {
-				this.errors = new ArrayList();
+				this.errors = new ArrayList<AbcParseError>();
 				Iterator it = parseErrors.iterator();
 				while (it.hasNext()) {
 					ParseError pe = (ParseError) it.next();
@@ -153,9 +151,7 @@ public class AbcNode extends PositionableInCharStream {
 				grandchild += generation[i];
 			}
 		}
-		Iterator it = childs.iterator();
-		while (it.hasNext()) {
-			AbcNode abcn = (AbcNode) it.next();
+		for (AbcNode abcn : childs) {
 			if (child.equals(abcn.getLabel())) {
 				if (grandchild.equals(""))
 					return abcn;
@@ -166,7 +162,7 @@ public class AbcNode extends PositionableInCharStream {
 		return null;
 	}
 	
-	public List getChilds() {
+	public List<AbcNode> getChilds() {
 		return childs;
 	}
 
@@ -177,9 +173,9 @@ public class AbcNode extends PositionableInCharStream {
 	 * titleFields.getChild("FieldTitle/TexText") returns all grandchilds
 	 * "TexText" in all "FieldTitle" childs.
 	 */
-	public List getChilds(String label) {
+	public List<AbcNode> getChilds(String label) {
 		if (label == null || label.equals(""))
-			return new ArrayList(0);
+			return new ArrayList<AbcNode>(0);
 		String[] generation = label.split("/");
 		String child = generation[0];
 		String grandchild = "";
@@ -189,10 +185,8 @@ public class AbcNode extends PositionableInCharStream {
 				grandchild += generation[i];
 			}
 		}
-		List ret = new ArrayList(childs.size());
-		Iterator it = childs.iterator();
-		while (it.hasNext()) {
-			AbcNode abcn = (AbcNode) it.next();
+		List<AbcNode> ret = new ArrayList<AbcNode>(childs.size());
+		for (AbcNode abcn : childs) {
 			if (abcn.getLabel().equals(child)) {
 				if (grandchild.equals(""))
 					ret.add(abcn);
@@ -209,13 +203,11 @@ public class AbcNode extends PositionableInCharStream {
 	 * 
 	 * @param label
 	 */
-	public List getChildsInAllGenerations(String label) {
+	public List<AbcNode> getChildsInAllGenerations(String label) {
 		if (label == null || label.equals(""))
-			return new ArrayList(0);
-		List ret = new ArrayList();
-		Iterator it = childs.iterator();
-		while (it.hasNext()) {
-			AbcNode abcn = (AbcNode) it.next();
+			return new ArrayList<AbcNode>(0);
+		List<AbcNode> ret = new ArrayList<AbcNode>();
+		for (AbcNode abcn : childs) {
 			if (abcn.getLabel().equals(label)) {
 				ret.add(abcn);
 			} else {
@@ -238,14 +230,12 @@ public class AbcNode extends PositionableInCharStream {
 	 * 
 	 * @return a List of node
 	 */
-	public List getDeepestChilds() {
+	public List<AbcNode> getDeepestChilds() {
 		if (childs.size() == 0) {
-			return new ArrayList(0);
+			return new ArrayList<AbcNode>(0);
 		}
-		List ret = new ArrayList(childs.size() * 3);
-		Iterator it = getChilds().iterator();
-		while (it.hasNext()) {
-			AbcNode child = (AbcNode) it.next();
+		List<AbcNode> ret = new ArrayList<AbcNode>(childs.size() * 3);
+		for (AbcNode child : getChilds()) {
 			if (!child.hasChilds())
 				ret.add(child);
 			else {
@@ -258,16 +248,15 @@ public class AbcNode extends PositionableInCharStream {
 	/**
 	 * Returns a List of errors in all childs, grand-childs...
 	 */
-	public List getErrors() {
+	public List<AbcParseError> getErrors() {
 		if (hasChilds()) {
-			List ret = new ArrayList(0);
-			Iterator it = getChilds().iterator();
-			while (it.hasNext()) {
-				ret.addAll(((AbcNode) it.next()).getErrors());
+			List<AbcParseError> ret = new ArrayList<AbcParseError>(0);
+			for (AbcNode abcn : getChilds()) {
+				ret.addAll(abcn.getErrors());
 			}
 			return ret;
 		} else {
-			return errors != null ? errors : new ArrayList(0);
+			return errors != null ? errors : new ArrayList<AbcParseError>(0);
 		}
 	}
 
@@ -334,7 +323,7 @@ public class AbcNode extends PositionableInCharStream {
 	public String getTexTextValue() {
 		String text = value;
 		if ((text != null) && (text.trim().length() > 0)) {
-			Enumeration e = bundle.getKeys();
+			Enumeration<String> e = bundle.getKeys();
 			while (e.hasMoreElements()) {
 				String key = (String) e.nextElement();
 				if (text.indexOf(key) != -1)
@@ -362,11 +351,11 @@ public class AbcNode extends PositionableInCharStream {
 	 * titleFields.getChild("FieldTitle/TexText") returns all grandchilds
 	 * "TexText" in all "FieldTitle" childs.
 	 */
-	public List getValuedChilds(String label) {
-		List ret = getChilds(label);
-		Iterator it = ret.iterator();
+	public List<AbcNode> getValuedChilds(String label) {
+		List<AbcNode> ret = getChilds(label);
+		Iterator<AbcNode> it = ret.iterator();
 		while (it.hasNext()) {
-			AbcNode node = (AbcNode) it.next();
+			AbcNode node = it.next();
 			if (node.hasError()
 				|| (node.getValue() == null)
 				|| (node.getValue().length() == 0))
@@ -394,9 +383,8 @@ public class AbcNode extends PositionableInCharStream {
 
 	public boolean hasError() {
 		if (hasChilds()) {
-			Iterator it = getChilds().iterator();
-			while (it.hasNext()) {
-				if (((AbcNode) it.next()).hasError())
+			for (AbcNode abcn : getChilds()) {
+				if (abcn.hasError())
 					return true;
 			}
 			return false;

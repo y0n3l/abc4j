@@ -16,7 +16,7 @@
 package abc.notation;
 
 /** This class defines bar lines. */
-public class BarLine extends DecorableElement implements Cloneable
+public class BarLine extends PositionableInTime implements Cloneable
 {
   private static final long serialVersionUID = -1007382315266780584L;
   
@@ -153,4 +153,12 @@ public class BarLine extends DecorableElement implements Cloneable
 	  default: return null;
 	  }
   }
+
+	public int getDurationInBars() {
+		return 1;
+	}
+
+	public short getDuration() {
+		return 0;
+	}
 }

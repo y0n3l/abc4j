@@ -17,14 +17,18 @@ package abc.notation;
 
 import java.io.Serializable;
 
-/** A tagging abstract class (was: interface) for all elements composing a tune's music that are
- * releated to the way this music is rendered graphicaly on a score for instance. */
-public abstract class MusicPresentationElement extends MusicElement implements Cloneable, Serializable
-{
-	
+/**
+ * A tagging abstract class (was: interface) for all elements composing a tune's
+ * music that are releated to the way this music is rendered graphicaly on a
+ * score for instance.
+ */
+public abstract class MusicPresentationElement extends MusicElement implements
+		Cloneable, Serializable {
+
+	private static final long serialVersionUID = -6942876809517226228L;
+
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
-	
-}
 
+}

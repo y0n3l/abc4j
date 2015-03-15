@@ -15,8 +15,6 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abcynth;
 
-import java.util.Iterator;
-
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -62,9 +60,7 @@ public class LogFrame extends JFrame implements AbcFileParserListenerInterface
   {
 	  isBusy = false;
 	  if (abcRoot != null) {
-		  Iterator it = abcRoot.getErrors().iterator();
-		  while (it.hasNext()) {
-			  AbcParseError ape = (AbcParseError) it.next();
+		  for (AbcParseError ape : abcRoot.getErrors()) {
 			  CharStreamPosition csp = ape.getCharStreamPosition();
 			  m_errorsArea.append(ape.getErrorMessage() + " at line " + csp.getLine()+", column "+ csp.getColumn()+"\n");
 		  }

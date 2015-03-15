@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Iterator;
 
 /**
  * A convenient class to ease the parsing of a tune book. The result of the
@@ -82,11 +81,9 @@ public class TuneBookParser extends AbcParserAbstract {
 	private AbcTuneBook parse0(AbcNode abcRoot) {
 		notifyListenersForTuneBookBegin();
 		if (abcRoot != null) {
-			AbcNode tuneBookHeader = abcRoot.getChild("AbcTuneBookHeader");
+			AbcNode tuneBookHeader = abcRoot.getChild(AbcTuneBookHeader);
 			m_tuneBook = parseTuneBookHeader(tuneBookHeader);
-			Iterator it = abcRoot.getChilds("AbcTune").iterator();
-			while (it.hasNext()) {
-				AbcNode abcTuneNode = (AbcNode) it.next();
+			for (AbcNode abcTuneNode : abcRoot.getChilds(AbcTune)) {
 				m_tuneBook.putTune(parseAbcTune(abcTuneNode));
 			}
 		} else {
@@ -141,11 +138,9 @@ public class TuneBookParser extends AbcParserAbstract {
 	private AbcTuneBook parseHeaders0(AbcNode abcRoot) {
 		notifyListenersForTuneBookBegin();
 		if (abcRoot != null) {
-			AbcNode tuneBookHeader = abcRoot.getChild("AbcTuneBookHeader");
+			AbcNode tuneBookHeader = abcRoot.getChild(AbcTuneBookHeader);
 			AbcTuneBook tuneBook = parseTuneBookHeader(tuneBookHeader);
-			Iterator it = abcRoot.getChilds("AbcTune").iterator();
-			while (it.hasNext()) {
-				AbcNode abcTuneNode = (AbcNode) it.next();
+			for (AbcNode abcTuneNode : abcRoot.getChilds(AbcTune)) {
 				initNewTune();
 				notifyListenersForTuneBegin();
 				AbcNode abcHeaderNode = null;

@@ -15,7 +15,6 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.midi;
 
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -83,12 +82,12 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
   			boolean inWrongEnding = false;
   			KeySignature tuneKey = null;
   			KeySignature currentKey = null;
-  			Hashtable partsKey = new Hashtable();
+  			//Hashtable partsKey = new Hashtable();
   			
 			long elapsedTime = 0;
 			NoteAbstract[] graceNotes = null;
 			Music staff = tune.getMusicForAudioRendition();
-			Iterator it = staff.getVoices().iterator();
+			Iterator<Voice> it = staff.getVoices().iterator();
 			while (it.hasNext()) {
 				Voice voice = (Voice) it.next();
 				int i = 0;// StaffItem iterator
@@ -128,11 +127,10 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 						Note note = (Note)voice.elementAt(i);
 						long noteDuration;
 						boolean fermata = false;
-						Vector decorationNotes = new Vector();
+						Vector<Note> decorationNotes = new Vector<Note>();
 						if (note.hasGeneralGracing() || note.hasDecorations()) {
-							Decoration[] d = note.getDecorations();
-							for (int j = 0; j < d.length; j++) {
-								switch (d[j].getType()) {
+							for (Decoration d : note.getDecorations()) {
+								switch (d.getType()) {
 								case Decoration.FERMATA:
 								case Decoration.FERMATA_INVERTED:
 									fermata = true; break;
@@ -161,7 +159,7 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 									n.setStrictDuration(Note.THIRTY_SECOND);
 									m.setStrictDuration(Note.THIRTY_SECOND);
 									o.setStrictDuration(Note.THIRTY_SECOND);
-									switch (d[j].getType()) {
+									switch (d.getType()) {
 									case Decoration.DOUBLE_LOWER_MORDANT:
 										decorationNotes.add(n);
 										decorationNotes.add(m);
@@ -329,7 +327,7 @@ public abstract class MidiConverterAbstract implements MidiConverterInterface {
 
   protected void playMultiNote(MultiNote multiNote, int indexInScore, KeySignature currentKey, long reference, Track track, Music staff) throws InvalidMidiDataException
   {
-    Vector notesVector = multiNote.getNotesAsVector();
+    Vector<Note> notesVector = multiNote.getNotesAsVector();
     for (int j=0; j<notesVector.size(); j++)
     {
       Note note = (Note)(notesVector.elementAt(j));

@@ -19,6 +19,7 @@ import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
 
+@SuppressWarnings("rawtypes")
 @BuildParseTree
 public class AbcGrammar extends BaseParser implements AbcTokens {
 
@@ -802,7 +803,7 @@ public class AbcGrammar extends BaseParser implements AbcTokens {
 	 */
 	Rule Voice() {
 		return Sequence(
-			ALPHASandDIGITS().label("VoiceNumber"),
+			ALPHASandDIGITS().label(VoiceNumber),
 			ZeroOrMoreS(
 				SequenceS(suppr(WSPS()),
 					FirstOfS(VoiceName(), VoiceSubname(),

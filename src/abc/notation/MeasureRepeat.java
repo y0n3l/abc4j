@@ -19,7 +19,7 @@ package abc.notation;
  * A (multi) measure repeat is a symbol which tells the musician to replay the
  * last one or last two measures.
  */
-public class MeasureRepeat extends DecorableElement implements Cloneable {
+public class MeasureRepeat extends PositionableInTime implements Cloneable {
 
 	private static final long serialVersionUID = 804979956263621851L;
 
@@ -40,6 +40,14 @@ public class MeasureRepeat extends DecorableElement implements Cloneable {
 	/** Returns the number of measure to repeat, 1 or 2 */
 	public int getNumberOfMeasure() {
 		return m_numberOfMeasure;
+	}
+
+	public int getDurationInBars() {
+		return getNumberOfMeasure();
+	}
+
+	public short getDuration() {
+		return 0;
 	}
 
 }

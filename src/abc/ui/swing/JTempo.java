@@ -24,6 +24,7 @@ import java.awt.geom.Rectangle2D;
 import abc.notation.MusicElement;
 import abc.notation.Note;
 import abc.notation.Tempo;
+import abc.ui.scoretemplates.ScoreAttribute;
 import abc.ui.scoretemplates.ScoreElements;
 
 public class JTempo extends JText {
@@ -100,8 +101,10 @@ public class JTempo extends JText {
 	
 	public void onBaseChanged() {
 		if (getStaffLine() != null) {
-			m_y = getStaffLine().getTopY() - m_noteHeadBounds.getHeight();
-			//TODO add more space on top of the staff line
+			m_y = getStaffLine().get5thLineY()
+			- getTemplate().getAttributeSize(ScoreAttribute.TEMPO_LINE_SPACING)
+			+ getHeight()
+			- m_noteHeadBounds.getHeight();
 		} else
 			m_y = getBase().getY();
 	}

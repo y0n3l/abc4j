@@ -17,7 +17,6 @@ package abc.notation;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.Vector;
 
@@ -32,13 +31,27 @@ import java.util.Vector;
  * 
  * Voice can also have lyrics, a {@link abc.notation.Tablature}...
  */
-public class Voice extends Vector implements Cloneable, Serializable {
+public class Voice extends Vector<MusicElement> implements Cloneable, Serializable {
 
 	private static final long serialVersionUID = 8131014387452835226L;
 
 	protected transient NoteAbstract lastNote = null;
-
-	private TreeMap m_bars = new TreeMap();
+	
+	private transient PositionableInTime m_lastPosInTime = null;
+	
+	private transient short m_ReferenceNoteLength = Note.EIGHTH;
+	
+	/**
+	 * For each note that will be added after setting this, the reference
+	 * note length is transmitted
+	 * 
+	 * @param s
+	 */
+	public void setReferenceNoteLength(short s) {
+		m_ReferenceNoteLength = s;
+	}
+	
+	private TreeMap<Short, Bar> m_bars = new TreeMap<Short, Bar>();
 
 	private short m_currentBar = 1;
 
@@ -46,32 +59,39 @@ public class Voice extends Vector implements Cloneable, Serializable {
 
 	private byte m_instrument = 0;
 
+	private String m_name = "";
+
 	private String m_partLabel = " ";
 
+	private byte m_stemPolicy = StemPolicy.STEMS_AUTO;
+	
+	private String m_subname = "";
+	
 	private Tablature m_tablature = null;
-
-	private String m_voiceName = "1";
-
+	
+	private String m_voiceId = "1";
+	
 	private byte m_volume = 64;
-
+	
 	public Voice(String voiceName) {
 		this(voiceName, (short) 1);
 	}
-
-	public Voice(String voiceName, short firstBarNo) {
+	
+	public Voice(String voiceId, short firstBarNo) {
 		super();
-		m_voiceName = voiceName;
+		m_voiceId = voiceId;
 		setFirstBarNumber(firstBarNo);
 		m_bars.put(new Short((short) m_firstBarNumber), new Bar(
 				(short) m_firstBarNumber, 0));
 	}
-
+	
 	public void addElement(MusicElement element) {
 		addElement0(element);
 	}
-
+	
 	private synchronized void addElement0(MusicElement me) {
-		if (me == null)
+  		//CD EF | CD/E/ F2 | (3CDE F2
+  		if (me == null)
 			System.err.println(toString() + " addElement0 null");
 		else {
 			if (me instanceof NoteAbstract) {
@@ -86,24 +106,31 @@ public class Voice extends Vector implements Cloneable, Serializable {
 						size()));
 			}
 			short x = (short) size();
-			me.getReference().setPart(m_partLabel);
-			me.getReference().setVoice(m_voiceName);
-			me.getReference().setX(x);
+			MusicElementReference ref = me.getReference();
+			ref.setPart(m_partLabel);
+			ref.setVoice(m_voiceId);
+			ref.setX(x);
 			if (me instanceof MultiNote) {
 				Note[] notes = ((MultiNote) me).toArray();
 				if (notes != null) {
 					for (int i = 0; i < notes.length; i++) {
 						notes[i].getReference().setPart(m_partLabel);
-						notes[i].getReference().setVoice(m_voiceName);
+						notes[i].getReference().setVoice(m_voiceId);
 						notes[i].getReference().setX(x);
 						// setY is defined in MultiNote constructor
 					}
 				}
 			}
+			if (me instanceof PositionableInTime) {
+				PositionableInTime pit = (PositionableInTime) me;
+				pit.setPreviousElement(m_lastPosInTime);
+				pit.setReferenceNoteLength(m_ReferenceNoteLength);
+				m_lastPosInTime = pit;
+			}
 			super.addElement(me);
 		}
 	}
-
+	
 	/**
 	 * Return true if the bar is empty or contains only barline and spacer(s).
 	 * False if barline contain other kind of music element
@@ -111,29 +138,27 @@ public class Voice extends Vector implements Cloneable, Serializable {
 	 * @param bar
 	 */
 	public boolean barIsEmpty(Bar bar) {
-		Iterator it = getBarContent(bar).iterator();
-		while (it.hasNext()) {
-			MusicElement me = (MusicElement) it.next();
+		for (MusicElement me : getBarContent(bar)) {
 			if (!(me instanceof BarLine) && !(me instanceof Spacer))
 				return false;
 		}
 		return true;
 	}
-
+	
 	public Object clone() {
 		return super.clone();
 	}
 
-	public Collection getBarContent(Bar bar) {
+	public Collection<MusicElement> getBarContent(Bar bar) {
 		int from = bar.getPosInMusic();
 		int to = size() - 1;
 		Bar next = getNextBar(bar.getBarNumber());
 		if (next != null) {
 			to = next.getPosInMusic() - 1;/* exclude barline */
 		}
-		Collection ret = new Vector(to - from + 1);
+		Collection<MusicElement> ret = new Vector<MusicElement>(to - from + 1);
 		for (int i = from; i <= to; i++) {
-			ret.add(elementData[i]);
+			ret.add((MusicElement) elementData[i]);
 		}
 		return ret;
 	}
@@ -156,7 +181,7 @@ public class Voice extends Vector implements Cloneable, Serializable {
 	 *         if no note has been found between the two music elements.
 	 * @throws IllegalArgumentException
 	 *             Thrown if one of the music elements hasn't been found in the
-	 *             music or if the <TT>elmtEnd</TT> param is located before
+	 *             voice or if the <TT>elmtEnd</TT> param is located before
 	 *             the <TT>elmntBegin</TT> param in the music.
 	 */
 	public NoteAbstract getHighestNoteBewteen(MusicElement elmtBegin,
@@ -175,13 +200,13 @@ public class Voice extends Vector implements Cloneable, Serializable {
 		int idxEnd = indexOf(elmtEnd);
 		if (idxBegin == -1)
 			throw new IllegalArgumentException("Note " + elmtBegin
-					+ " hasn't been found in tune");
+					+ " hasn't been found in voice "+getVoiceId());
 		if (idxEnd == -1)
 			throw new IllegalArgumentException("Note " + elmtEnd
-					+ " hasn't been found in tune");
+					+ " hasn't been found in voice "+getVoiceId());
 		if (idxBegin > idxEnd)
 			throw new IllegalArgumentException("Note " + elmtBegin
-					+ " is located after " + elmtEnd + " in the score");
+					+ " is located after " + elmtEnd + " in voice "+getVoiceId());
 		MusicElement currentScoreEl;
 		int currentNoteHeight;
 		for (int i = idxBegin + 1; i <= idxEnd; i++) {
@@ -249,6 +274,9 @@ public class Voice extends Vector implements Cloneable, Serializable {
 	 *         if found. <TT>null</TT> if no note has been found between the
 	 *         two music elements.
 	 * @throws IllegalArgumentException
+	 *             Thrown if one of the music elements hasn't been found in the
+	 *             voice or if the <TT>elmtEnd</TT> param is located before
+	 *             the <TT>elmntBegin</TT> param in the music.
 	 */
 	public NoteAbstract getLowestNoteBewteen(MusicElement elmtBegin,
 			MusicElement elmtEnd) throws IllegalArgumentException {
@@ -266,13 +294,13 @@ public class Voice extends Vector implements Cloneable, Serializable {
 		int idxEnd = indexOf(elmtEnd);
 		if (idxBegin == -1)
 			throw new IllegalArgumentException("Note " + elmtBegin
-					+ " hasn't been found in tune");
+					+ " hasn't been found in voice "+getVoiceId());
 		if (idxEnd == -1)
 			throw new IllegalArgumentException("Note " + elmtEnd
-					+ " hasn't been found in tune");
+					+ " hasn't been found in voice "+getVoiceId());
 		if (idxBegin > idxEnd)
 			throw new IllegalArgumentException("Note " + elmtBegin
-					+ " is located after " + elmtEnd + " in the score");
+					+ " is located after " + elmtEnd + " in voice "+getVoiceId());
 		MusicElement currentScoreEl;
 		int currentNoteHeight;
 		for (int i = idxBegin + 1; i <= idxEnd; i++) {
@@ -290,6 +318,16 @@ public class Voice extends Vector implements Cloneable, Serializable {
 		}
 		return lowestNote;
 
+	}
+
+	/**
+	 * Returns the name which is printed on the left of first staff
+	 */
+	public String getName() {
+		if (m_name.equals(""))
+			return m_voiceId;
+		else
+			return m_name;
 	}
 
 	public Bar getNextBar() {
@@ -315,21 +353,24 @@ public class Voice extends Vector implements Cloneable, Serializable {
 	 * @param elmtEnd
 	 * @return a Collection of NoteAbstract (Note or MultiNote)
 	 * @throws IllegalArgumentException
+	 *             Thrown if one of the music elements hasn't been found in the
+	 *             voice or if the <TT>elmtEnd</TT> param is located before
+	 *             the <TT>elmntBegin</TT> param in the music.
 	 */
-	public Collection getNotesBetween(MusicElement elmtBegin,
+	public Collection<NoteAbstract> getNotesBetween(MusicElement elmtBegin,
 			MusicElement elmtEnd) throws IllegalArgumentException {
 		int idxBegin = indexOf(elmtBegin);
 		int idxEnd = this.indexOf(elmtEnd);
 		if (idxBegin == -1)
 			throw new IllegalArgumentException("Note " + elmtBegin
-					+ " hasn't been found in tune");
+					+ " hasn't been found in voice "+getVoiceId());
 		if (idxEnd == -1)
 			throw new IllegalArgumentException("Note " + elmtEnd
-					+ " hasn't been found in tune");
+					+ " hasn't been found in voice "+getVoiceId());
 		if (idxBegin > idxEnd)
 			throw new IllegalArgumentException("Note " + elmtBegin
-					+ " is located after " + elmtEnd + " in the score");
-		Collection ret = new Vector();
+					+ " is located after " + elmtEnd + " in voice "+getVoiceId());
+		Collection<NoteAbstract> ret = new Vector<NoteAbstract>();
 		MusicElement currentScoreEl;
 		for (int i = idxBegin; i <= idxEnd; i++) {
 			currentScoreEl = (MusicElement) elementAt(i);
@@ -337,6 +378,7 @@ public class Voice extends Vector implements Cloneable, Serializable {
 				ret.add((NoteAbstract) currentScoreEl);
 		}
 		return ret;
+		
 	}
 
 	public Bar getPreviousBar() {
@@ -354,10 +396,7 @@ public class Voice extends Vector implements Cloneable, Serializable {
 	public Note getShortestNote() throws IllegalArgumentException {
 		Note shortestNote = null;
 		// init
-		MusicElement currentScoreEl;
-		Iterator it = iterator();
-		while (it.hasNext()) {
-			currentScoreEl = (MusicElement) it.next();
+		for (MusicElement currentScoreEl : this) {
 			if (currentScoreEl instanceof Note) {
 				if (shortestNote == null)
 					shortestNote = (Note) currentScoreEl;
@@ -377,6 +416,21 @@ public class Voice extends Vector implements Cloneable, Serializable {
 	}
 
 	/**
+	 * Returns stem policy, one of {@link StemPolicy} constants.
+	 */
+	public byte getStemPolicy() {
+		return m_stemPolicy;
+	}
+
+	/**
+	 * Returns the shorted name to print on all staves excepted
+	 * the first where the whole name is printed
+	 */
+	public String getSubname() {
+		return m_subname;
+	}
+
+	/**
 	 * Returns the tablature definition attached to this voice,
 	 * <code>null</code> if no tablature.
 	 */
@@ -384,9 +438,9 @@ public class Voice extends Vector implements Cloneable, Serializable {
 		return m_tablature;
 	}
 
-	/** Return voice number V:1 returns 1 */
-	public String getVoiceName() {
-		return m_voiceName;
+	/** Return voice identifier V:1 returns "1", V:RH returns "RH" */
+	public String getVoiceId() {
+		return m_voiceId;
 	}
 
 	/** %%MIDI volume(?) xx */
@@ -399,10 +453,7 @@ public class Voice extends Vector implements Cloneable, Serializable {
 	 * otherwise.
 	 */
 	public boolean hasChordNames() {
-		MusicElement currentScoreEl;
-		Iterator it = iterator();
-		while (it.hasNext()) {
-			currentScoreEl = (MusicElement) it.next();
+		for (MusicElement currentScoreEl : this) {
 			if (currentScoreEl instanceof NoteAbstract) {
 				if (((NoteAbstract) currentScoreEl).getChordName() != null)
 					return true;
@@ -411,15 +462,32 @@ public class Voice extends Vector implements Cloneable, Serializable {
 		return false;
 	}
 
+	/**
+	 * Returns <TT>true</TT> if this voice contains one of the requested
+	 * decoration
+	 */
+	public boolean hasDecoration(byte[] decorations) {
+		for (MusicElement currentScoreEl : this) {
+			if (currentScoreEl instanceof DecorableElement) {
+				for (Decoration d : ((DecorableElement) currentScoreEl)
+						.getDecorations()) {
+					for (int i = 0; i < decorations.length; i++) {
+						if (d.isType(decorations[i]))
+							return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 	public boolean hasNextBar() {
 		return getNextBar() != null;
 	}
-
+	
+	@SuppressWarnings("rawtypes")
 	public boolean hasObject(Class musicElementClass) {
-		MusicElement currentScoreEl;
-		Iterator it = iterator();
-		while (it.hasNext()) {
-			currentScoreEl = (MusicElement) it.next();
+		for (MusicElement currentScoreEl : this) {
 			if ((currentScoreEl != null)
 					&& currentScoreEl.getClass().equals(musicElementClass)) {
 				return true;
@@ -459,8 +527,33 @@ public class Voice extends Vector implements Cloneable, Serializable {
 		this.m_instrument = instrument;
 	}
 
+	/**
+	 * Defines the name which is printed on the left of first staff
+	 */
+	public void setName(String name) {
+		m_name = name;
+	}
+
 	protected void setPartLabel(String c) {
 		m_partLabel = c;
+	}
+
+	/**
+	 * Sets the stem policy
+	 * 
+	 * @param policy
+	 *            one of {@link StemPolicy} constants.
+	 */
+	public void setStemPolicy(byte policy) {
+		m_stemPolicy = StemPolicy.ensureCorrectPolicy(policy);
+	}
+
+	/**
+	 * Defines the shorted name to print on all staves excepted
+	 * the first where the whole name is printed
+	 */
+	public void setSubname(String subname) {
+		m_subname = subname;
 	}
 
 	/**
@@ -477,7 +570,7 @@ public class Voice extends Vector implements Cloneable, Serializable {
 	}
 
 	public String toString() {
-		return "V:" + getVoiceName();
+		return "V:" + getVoiceId();
 	}
 
 	// TODO hasLyrics...

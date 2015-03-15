@@ -25,7 +25,7 @@ public class Tuplet extends MusicElement implements Cloneable, Serializable
   private static final long serialVersionUID = -800634088496917971L;
   
   /** Notes composing the tuplet. */
-  private Vector m_notes = new Vector(4, 2);
+  private Vector<NoteAbstract> m_notes = new Vector<NoteAbstract>(4, 2);
   private short m_totalRelativeLength = -1;
   private short m_totalDuration = -1;
   private short m_tupletNumber = -1;
@@ -40,7 +40,7 @@ public class Tuplet extends MusicElement implements Cloneable, Serializable
    * of this tuplet.
    * @deprecated
    */
-  public Tuplet(Vector notes, short totalRelativeLength, short defaultNoteLength) {
+  public Tuplet(Vector<NoteAbstract> notes, short totalRelativeLength, short defaultNoteLength) {
   	this((short)notes.size(), notes, totalRelativeLength, defaultNoteLength);
   }
 
@@ -53,7 +53,7 @@ public class Tuplet extends MusicElement implements Cloneable, Serializable
    * @param totalRelativeLength The total relative length of this tuplet
    * multiplied by the default relative length gives the total absolute length
    * of this tuplet. */
-  public Tuplet(int tupletNumber, Collection notes, short totalRelativeLength, short defaultNoteLength)
+  public Tuplet(int tupletNumber, Collection<NoteAbstract> notes, short totalRelativeLength, short defaultNoteLength)
   {
 	m_tupletNumber = (short)tupletNumber;
     m_notes.addAll(notes);
@@ -100,13 +100,15 @@ public class Tuplet extends MusicElement implements Cloneable, Serializable
 
   /** Returns a new vector containing all notes of this multi note.
    * @return A new vector containing all notes of this multi note. */
-  public Vector getNotesAsVector()
-  { return (Vector)m_notes.clone(); }
+  @SuppressWarnings("unchecked")
+public Vector<NoteAbstract> getNotesAsVector()
+  { return (Vector<NoteAbstract>) m_notes.clone(); }
 
+  @SuppressWarnings("unchecked")
   public Object clone() throws CloneNotSupportedException {
 		Object o = super.clone();
 		if (m_notes != null)
-			((Tuplet) o).m_notes = (Vector) m_notes.clone();
+			((Tuplet) o).m_notes = (Vector<NoteAbstract>) m_notes.clone();
 		return o;
 	}
 }

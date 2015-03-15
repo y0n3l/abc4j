@@ -31,14 +31,14 @@ public class PopupMenu extends JPopupMenu implements ActionListener
 {
   private static final long serialVersionUID = 7057939431750016753L;
   private JTable m_table = null;
-  private Vector m_columns = null;
-  private Vector m_buttons =null;
+  private Vector<TableColumn> m_columns = null;
+  private Vector<JCheckBoxMenuItem> m_buttons =null;
 
     public PopupMenu(JTable table)
     {
       m_table = table;
-      m_columns = new Vector();
-      m_buttons = new Vector();
+      m_columns = new Vector<TableColumn>();
+      m_buttons = new Vector<JCheckBoxMenuItem>();
       for (int i=0; i<table.getColumnModel().getColumnCount(); i++)
         m_columns.addElement(table.getColumnModel().getColumn(i));
 

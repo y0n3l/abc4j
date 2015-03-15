@@ -57,6 +57,7 @@ import abc.notation.RepeatedPart;
 import abc.notation.RepeatedPartAbstract;
 import abc.notation.SlurDefinition;
 import abc.notation.Spacer;
+import abc.notation.StemPolicy;
 import abc.notation.SymbolElement;
 import abc.notation.Tempo;
 import abc.notation.TieDefinition;
@@ -64,6 +65,7 @@ import abc.notation.TimeSignature;
 import abc.notation.Tune;
 import abc.notation.TuneBook;
 import abc.notation.Tuplet;
+import abc.notation.Voice;
 
 public abstract class AbcParserAbstract implements AbcTokens {
 
@@ -103,15 +105,15 @@ public abstract class AbcParserAbstract implements AbcTokens {
 		}
 		sb.append(v.replaceAll("\n", "<LF>").replaceAll("\r", "<CR>"));
 		sb.append("' (" + node.getCharStreamPosition().toString() + ")");
-		System.out.println(sb.toString());
-		Iterator it = node.getChilds().iterator();
+		if (DEBUG)
+			System.out.println(sb.toString());
 		level++;
-		while (it.hasNext()) {
-			debugTree((AbcNode) it.next(), level);
+		for (AbcNode abcn : node.getChilds()) {
+			debugTree(abcn, level);
 		}
 	}
 	
-	private List m_annotations = new ArrayList();
+	private List<Annotation> m_annotations = new ArrayList<Annotation>();
 
 	/** The number of dots inherited from the previous note broken rythm. */
 	private byte m_brknRthmDotsCorrection = 0;
@@ -122,7 +124,7 @@ public abstract class AbcParserAbstract implements AbcTokens {
 	private short m_defaultNoteLength = Note.EIGHTH;
 
 	/** Graces notes to add to next NoteAbstract */
-	private List m_graceNotes = new ArrayList();
+	private List<NoteAbstract> m_graceNotes = new ArrayList<NoteAbstract>();
 	
 	private byte m_graceNotesType = GracingType.APPOGGIATURA;
 	
@@ -136,16 +138,16 @@ public abstract class AbcParserAbstract implements AbcTokens {
 	private NoteAbstract m_lastParsedNote = null;
 
 	/** Listeners of this parser. */
-	private ArrayList m_listeners = new ArrayList(3);
+	private ArrayList<EventListener> m_listeners = new ArrayList<EventListener>(3);
 
 	/** The music of the current tune. */
 	private Music m_music = null;
 
-	private List m_notesStartingTies = new ArrayList();
+	private List<Note> m_notesStartingTies = new ArrayList<Note>();
 
-	private List m_slursDefinitionStack = new ArrayList();
+	private List<SlurDefinition> m_slursDefinitionStack = new ArrayList<SlurDefinition>();
 
-	private List m_symbols = new ArrayList();
+	private List<SymbolElement> m_symbols = new ArrayList<SymbolElement>();
 
 	private TimeSignature m_timeSignature = null;
 
@@ -154,7 +156,7 @@ public abstract class AbcParserAbstract implements AbcTokens {
 
 	private int m_tupletInTimeOf = -1;
 
-	private List m_tupletNotes = new ArrayList();
+	private List<NoteAbstract> m_tupletNotes = new ArrayList<NoteAbstract>();
 
 	private int m_tupletNumber = -1;
 
@@ -199,31 +201,29 @@ public abstract class AbcParserAbstract implements AbcTokens {
 			if ((m_tupletNumberOfNotes != -1)
 				&& (me instanceof NoteAbstract)) {
 				//we are filling a tuplet
-				m_tupletNotes.add(me);
+				m_tupletNotes.add((NoteAbstract) me);
 				if (m_tupletNotes.size() == m_tupletNumberOfNotes)
 					closeTuplet();
 			}
-			m_music.getVoice(m_currentVoice).addElement(me);
+			Voice v = m_music.getVoice(m_currentVoice);
+			v.setReferenceNoteLength(m_defaultNoteLength);
+			v.addElement(me);
 		}
 	}
 
 	private void applyBrokenRhythmToNote(NoteAbstract note) {
 		if ((note != null) && (m_brknRthmDotsCorrection != 0)) {
-			List notes = new ArrayList();
+			List<Note> notes = new ArrayList<Note>();
 			if (note instanceof Note)
-				notes.add(note);
+				notes.add((Note) note);
 			else { //MultiNote
 				short shortest = ((MultiNote) note).getShortestNote().getDuration();
-				Iterator it = ((MultiNote) note).getNotesAsVector().iterator();
-				while (it.hasNext()) {
-					Note note2 = (Note) it.next();
+				for (Note note2 : ((MultiNote) note).getNotesAsVector()) {
 					if (note2.getDuration() == shortest)
 						notes.add(note2);
 				}
 			}
-			Iterator it = notes.iterator();
-			while (it.hasNext()) {
-				Note n = (Note) it.next();
+			for (Note n : notes) {
 				if (m_brknRthmDotsCorrection > 0) {
 					n.setDotted(m_brknRthmDotsCorrection);
 				} else {
@@ -246,12 +246,12 @@ public abstract class AbcParserAbstract implements AbcTokens {
 		if (m_symbols.isEmpty() && m_annotations.isEmpty())
 			return;
 		Dynamic dynamic = null;
-		Iterator it = m_symbols.iterator();
-		while (it.hasNext()) {
-			SymbolElement symbol = (SymbolElement) it.next();
+		Iterator<SymbolElement> itSymb = m_symbols.iterator();
+		while (itSymb.hasNext()) {
+			SymbolElement symbol = itSymb.next();
 			if (symbol instanceof Dynamic) {
 				dynamic = (Dynamic) symbol;
-				it.remove();
+				itSymb.remove();
 			}
 		}
 		if (dynamic != null)
@@ -261,12 +261,12 @@ public abstract class AbcParserAbstract implements AbcTokens {
 				.toArray(new Decoration[0]));
 		
 		Chord chord = null;
-		it = m_annotations.iterator();
-		while (it.hasNext()) {
-			Annotation ann = (Annotation) it.next();
+		Iterator<Annotation> itAnnot = m_annotations.iterator();
+		while (itAnnot.hasNext()) {
+			Annotation ann = itAnnot.next();
 			if (ann instanceof Chord) {
 				chord = (Chord) ann;
-				it.remove();
+				itAnnot.remove();
 			} else
 				decorable.addAnnotation(ann);
 		}
@@ -535,10 +535,8 @@ public abstract class AbcParserAbstract implements AbcTokens {
 	}
 	
 	private void parseAbcLine(AbcNode abcLine) {
-		Iterator it = abcLine.getChilds().iterator();
 		String label;
-		while (it.hasNext()) {
-			AbcNode node = (AbcNode) it.next();
+		for (AbcNode node : abcLine.getChilds()) {
 			label = node.getLabel();
 			if (label.equals(Element))
 				parseElement(node);
@@ -551,10 +549,8 @@ public abstract class AbcParserAbstract implements AbcTokens {
 	}
 	
 	private void parseAbcMusic(AbcNode abcMusic) {
-		Iterator it = abcMusic.getChilds().iterator();
 		String label;
-		while (it.hasNext()) {
-			AbcNode node = (AbcNode) it.next();
+		for (AbcNode node : abcMusic.getChilds()) {
 			label = node.getLabel();
 			if (label.equals(AbcLine)) {
 				parseAbcLine(node);
@@ -581,6 +577,10 @@ public abstract class AbcParserAbstract implements AbcTokens {
 			if (abcMusic != null)
 				parseAbcMusic(abcMusic);
 		}
+		//TODO alter position of PositionableInCharStream of all elements
+		//set AbcTune positionable.
+		//new pos of elemets = their pos - tune pos.row
+		//the same for start index and end index
 		notifyListenersForTuneEnd(m_tune, abcTune);
 		return m_tune;
 	}
@@ -594,15 +594,13 @@ public abstract class AbcParserAbstract implements AbcTokens {
 	
 	private void parseAnnotationsOrChord(AbcNode chordOrText) {
 		if (chordOrText != null) {
-			Iterator it = chordOrText.getChilds().iterator();
-			while (it.hasNext()) {
-				AbcNode node = (AbcNode) it.next();
+			for (AbcNode node : chordOrText.getChilds()) {
 				String label = node.getLabel();
 				if ((label.equals(Chord)
 						|| label.equals(TextExpression))
 					&& (node.getValue().length() > 0)) {
 					//Chord pc = parseChord(node);
-					Chord pc = new Chord(node.getValue());
+					Chord pc = new Chord(node.getTexTextValue());
 					if (pc.isChord()) {
 						m_annotations.add(pc);
 						pc.setCharStreamPosition(node.getCharStreamPosition());
@@ -647,7 +645,7 @@ public abstract class AbcParserAbstract implements AbcTokens {
 			}
 			AbcNode nthRepeatNum = barlineOrNthRepeat.getChild(NthRepeatNum);
 			if (nthRepeatNum != null) {
-				List digits = nthRepeatNum.getValuedChilds(DIGITS);
+				List<AbcNode> digits = nthRepeatNum.getValuedChilds(DIGITS);
 				if (digits.size() > 0) {
 					byte[] nums = new byte[digits.size()];
 					for (int i = 0; i < nums.length; i++) {
@@ -714,7 +712,7 @@ public abstract class AbcParserAbstract implements AbcTokens {
 			Clef ret = Clef.convertFromNameOrNote(clefName, clefNote);
 			ret.setCharStreamPosition(clef.getCharStreamPosition());
 			int clefLine = -1;
-			if ((node = clef.getChild("ClefLine")) != null) {
+			if ((node = clef.getChild(ClefLine)) != null) {
 				clefLine = Integer.parseInt(node.getValue());
 				ret.setLineNumber((byte) clefLine);
 			}
@@ -1006,13 +1004,11 @@ public abstract class AbcParserAbstract implements AbcTokens {
 		if (fieldParts != null) {
 			AbcNode partsPlayOrder = fieldParts.getChild(PartsPlayOrder);
 			if (partsPlayOrder != null) {
-				Stack lifo = new Stack();
-				Iterator it = partsPlayOrder.getChilds().iterator();
+				Stack<RepeatedPartAbstract> lifo = new Stack<RepeatedPartAbstract>();
 				RepeatedPartAbstract last = new MultiPartsDefinition();
 				lifo.push(last);
 				String label;
-				while (it.hasNext()) {
-					AbcNode node = (AbcNode) it.next();
+				for (AbcNode node : partsPlayOrder.getChilds()) {
 					label = node.getLabel();
 					//here we will find "(", ")", ALPHA or DIGITS
 					if (label.equals("(")) {
@@ -1108,6 +1104,41 @@ public abstract class AbcParserAbstract implements AbcTokens {
 		}
 	}
 	
+	private void parseFieldVoice(AbcNode fieldVoice) {
+		if (fieldVoice != null && fieldVoice.hasChild(Voice)) {
+			String number = fieldVoice.getChild(Voice+"/"+VoiceNumber).getValue();
+			//in header:
+			//K:Cm
+			//V:Soprano
+			//V:Alto
+			//copy key Cm (V:1 default voice) to newly created voice
+			boolean exists = m_tune.getMusic().voiceExists(number);
+			Voice v = m_tune.getVoice(number);
+			if (!exists) {
+				try {
+					v.addElement((KeySignature) m_tune.getKey().clone());
+				} catch (CloneNotSupportedException cnse) {
+					//never
+				}
+				AbcNode voice = fieldVoice.getChild(Voice);
+				if (voice.hasChild(VoiceName))
+					v.setName(voice.getChild(VoiceName).getValue());
+				if (voice.hasChild(VoiceSubname))
+					v.setSubname(voice.getChild(VoiceSubname).getValue());
+				if (voice.hasChild(VoiceStems)) {
+					String value = voice.getChild(VoiceStems).getValue();//getFirstChild().getLabel();
+					if (value.equals("up"))
+						v.setStemPolicy(StemPolicy.STEMS_UP);
+					else if (value.equals("down"))
+						v.setStemPolicy(StemPolicy.STEMS_DOWN);
+					//else auto
+				}
+				v.getKey().setClef(parseClef(voice));
+			}
+			m_currentVoice = v.getVoiceId();
+		}
+	}
+	
 	private void parseFieldWords(AbcNode fieldWords) {
 		if (fieldWords != null) {
 			m_tune.addWords(parseTexText(fieldWords.getChild(TexText)));
@@ -1116,10 +1147,8 @@ public abstract class AbcParserAbstract implements AbcTokens {
 	
 	private MultiNote parseGraceMultiNote(AbcNode graceMultiNote) {
 		if (graceMultiNote != null) {
-			Vector notes = new Vector(graceMultiNote.getChilds().size(), 1);
-			Iterator it = graceMultiNote.getChilds(GraceNote).iterator();
-			while (it.hasNext()) {
-				AbcNode node = (AbcNode) it.next();
+			Vector<Note> notes = new Vector<Note>(graceMultiNote.getChilds().size(), 1);
+			for (AbcNode node : graceMultiNote.getChilds(GraceNote)) {
 				notes.add(parseGraceNote(node));
 			}
 			return new MultiNote(notes);
@@ -1161,9 +1190,7 @@ public abstract class AbcParserAbstract implements AbcTokens {
 			m_graceNotes.clear();
 			m_graceNotesType = graceNotes.hasChild(Acciaccatura)
 				? GracingType.ACCIACCATURA : GracingType.APPOGGIATURA;
-			Iterator it = graceNotes.getChilds(GraceNoteStem).iterator();
-			while (it.hasNext()) {
-				AbcNode gnStem = (AbcNode) it.next();
+			for (AbcNode gnStem : graceNotes.getChilds(GraceNoteStem)) {
 				AbcNode firstChild = gnStem.getFirstChild();
 				NoteAbstract note;
 				if (firstChild.is(GraceNote))
@@ -1244,9 +1271,7 @@ public abstract class AbcParserAbstract implements AbcTokens {
 		keySig.setCharStreamPosition(keyDef.getCharStreamPosition());
 		
 		//*[accidental base-note]
-		Iterator globalAccIt = keyDef.getChilds(GlobalAccidental).iterator();
-		while (globalAccIt.hasNext()) {
-			AbcNode globalAccidental = (AbcNode) globalAccIt.next();
+		for (AbcNode globalAccidental : keyDef.getChilds(GlobalAccidental)) {
 			Accidental gaAcc = parseAccidental(globalAccidental.getChild(_Accidental));
 			byte gaBaseNote = Note.getStrictHeight(
 					parseBaseNote(globalAccidental.getChild(BaseNote))
@@ -1283,10 +1308,8 @@ public abstract class AbcParserAbstract implements AbcTokens {
 		if (multiNote != null) {
 			AbcNode multiNoteTie = multiNote.getChild(Tie);
 			AbcNode multiNoteLength = multiNote.getChild(NoteLength);
-			Vector notes = new Vector(multiNote.getChilds().size(), 1);
-			Iterator it = multiNote.getChilds(_Note).iterator();
-			while (it.hasNext()) {
-				AbcNode node = (AbcNode) it.next();
+			Vector<Note> notes = new Vector<Note>(multiNote.getChilds().size(), 1);
+			for (AbcNode node : multiNote.getChilds(_Note)) {
 				notes.add(parseNote(node, multiNoteLength, multiNoteTie));
 			}
 			//somtimes a single note is writed like a multinote
@@ -1418,74 +1441,69 @@ public abstract class AbcParserAbstract implements AbcTokens {
 		if (otherFields == null)
 			return;
 		// A: area
-		// FIXME v2 A: lyricist ?
 		parseFieldArea(otherFields.getChild(FieldArea));
 		// B: book
-		Iterator it = otherFields.getChilds(FieldBook).iterator();
-		while (it.hasNext()) {
-			parseFieldBook((AbcNode) it.next());
+		for (AbcNode node : otherFields.getChilds(FieldBook)) {
+			parseFieldBook(node);
 		}
 		// C: composer
-		it = otherFields.getChilds(FieldComposer).iterator();
-		while (it.hasNext()) {
-			parseFieldComposer((AbcNode) it.next());
+		for (AbcNode node : otherFields.getChilds(FieldComposer)) {
+			parseFieldComposer(node);
 		}
 		// D: discography
-		it = otherFields.getChilds(FieldDiscography).iterator();
-		while (it.hasNext()) {
-			parseFieldDiscography((AbcNode) it.next());
+		for (AbcNode node : otherFields.getChilds(FieldDiscography)) {
+			parseFieldDiscography(node);
 		}
 		// F: file
 		parseFieldFile(otherFields.getChild(FieldFile));
 		// G: group
-		it = otherFields.getChilds(FieldGroup).iterator();
-		while (it.hasNext()) {
-			parseFieldGroup((AbcNode) it.next());
+		for (AbcNode node : otherFields.getChilds(FieldGroup)) {
+			parseFieldGroup(node);
 		}
 		// H: history
-		it = otherFields.getChilds(FieldHistory).iterator();
-		while (it.hasNext()) {
-			parseFieldHistory((AbcNode) it.next());
+		for (AbcNode node : otherFields.getChilds(FieldHistory)) {
+			parseFieldHistory(node);
 		}
 		// N: notes
-		it = otherFields.getChilds(FieldNotes).iterator();
-		while (it.hasNext()) {
-			parseFieldNotes((AbcNode) it.next());
+		for (AbcNode node : otherFields.getChilds(FieldNotes)) {
+			parseFieldNotes(node);
 		}
 		// O: origin
 		parseFieldOrigin(otherFields.getChild(FieldOrigin));
 		// R: rhythm
 		parseFieldRhythm(otherFields.getChild(FieldRhythm));
 		// S: source
-		it = otherFields.getChilds(FieldSource).iterator();
-		while (it.hasNext()) {
-			parseFieldSource((AbcNode) it.next());
+		for (AbcNode node : otherFields.getChilds(FieldSource)) {
+			parseFieldSource(node);
 		}
 		// Z: transcription
-		it = otherFields.getChilds(FieldTranscription).iterator();
-		while (it.hasNext()) {
-			parseFieldTranscription((AbcNode) it.next());
+		for (AbcNode node : otherFields.getChilds(FieldTranscription)) {
+			parseFieldTranscription(node);
 		}
 		// W: words
-		it = otherFields.getChilds(FieldWords).iterator();
-		while (it.hasNext()) {
-			parseFieldWords((AbcNode) it.next());
+		for (AbcNode node : otherFields.getChilds(FieldWords)) {
+			parseFieldWords(node);
 		}
 
 		// TODO I: instructions
 		// TODO U: FieldUserdefPrint
 		// TODO u: FieldUserdefPlay
-		// TODO V: voice
+		
+		// V: voice
+		for (AbcNode node : otherFields.getChilds(FieldVoice)) {
+			parseFieldVoice(node);
+		}
+		
 		// TODO m: macro
 
 		// M: meter
 		parseFieldMeter(otherFields.getChild(FieldMeter));
 		// L: length
 		parseFieldLength(otherFields.getChild(FieldLength));
-		//Q: tempo
+		// Q: tempo
 		parseFieldTempo(otherFields.getChild(FieldTempo));
 
-		//P: parts
+		// P: parts
 		parseFieldParts(otherFields.getChild(FieldParts));
 
 	}
@@ -1611,10 +1629,8 @@ public abstract class AbcParserAbstract implements AbcTokens {
 	
 	private void parseTitleFields(AbcNode titleFields) {
 		if (titleFields != null) {
-			List fieldTitle = titleFields.getChilds(FieldTitle);
-			Iterator it = fieldTitle.iterator();
-			while (it.hasNext()) {
-				parseFieldTitle((AbcNode) it.next());
+			for (AbcNode node : titleFields.getChilds(FieldTitle)) {
+				parseFieldTitle(node);
 			}
 		}
 	}
@@ -1637,7 +1653,7 @@ public abstract class AbcParserAbstract implements AbcTokens {
 		else if (label.endsWith("Tempo"))
 			parseFieldTempo(firstChild);
 		else if (label.endsWith("Voice")) {
-			//TODO parseFieldVoice(firstChild);
+			parseFieldVoice(firstChild);
 		}
 		else if (label.endsWith("Lyrics")) {
 			//TODO parseFieldLyrics(firstChild);
@@ -1682,9 +1698,7 @@ public abstract class AbcParserAbstract implements AbcTokens {
 			//init a new tune to put header informations
 			//and instruction into
 			initNewTune();
-			Iterator it = tbHeader.getChilds().iterator();
-			while (it.hasNext()) {
-				AbcNode node = (AbcNode) it.next();
+			for (AbcNode node : tbHeader.getChilds()) {
 				String label = node.getLabel();
 				if (label.equals(FileField))
 					parseTuneAndInlineFields(node);
@@ -1700,18 +1714,16 @@ public abstract class AbcParserAbstract implements AbcTokens {
 	private void parseTuplet(AbcNode tuplet) {
 		if (tuplet != null) {
 			m_tupletPosition = tuplet.getCharStreamPosition();
-			Iterator it = tuplet.getChilds().iterator();
 			int i = 1;
-			while (it.hasNext()) {
-				AbcNode node = (AbcNode) it.next();
+			for (AbcNode node : tuplet.getChilds()) {
 				if (node.is(":"))
 					i++;
 				else if (node.getValue().length() > 0){
 					int digits = node.getIntValue();
 					switch(i) {
-					case 1: m_tupletNumber = digits;break;
-					case 2: m_tupletInTimeOf = digits;break;
-					case 3: m_tupletNumberOfNotes = digits;break;
+					case 1: m_tupletNumber = digits; break;
+					case 2: m_tupletInTimeOf = digits; break;
+					case 3: m_tupletNumberOfNotes = digits; break;
 					}
 				}
 			}

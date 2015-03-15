@@ -31,7 +31,7 @@ public class AbcTextReplacements extends ResourceBundle {
 
 	private static AbcTextReplacements instance = null;
 	
-	static final Map map = new HashMap();
+	static final Map<String, String> map = new HashMap<String, String>();
 
 	public static AbcTextReplacements getInstance() {
 		if (instance == null)
@@ -237,8 +237,8 @@ public class AbcTextReplacements extends ResourceBundle {
 		map.put("\\vu", "\u01D4");//u-caron
 		map.put("\\=G", "\u01E4");//G-stroke
 		map.put("\\=g", "\u01E5");//g-stroke
-		map.put("\\uG", "\u01E6");//G-breve
-		map.put("\\ug", "\u01E7");//g-breve
+		map.put("\\vG", "\u01E6");//G-caron
+		map.put("\\vg", "\u01E7");//g-caron
 		map.put("\\uK", "\u01E8");//K-breve
 		map.put("\\uk", "\u01E9");//k-breve
 		map.put("\\,O", "\u01EA");//O-cedilla
@@ -257,16 +257,16 @@ public class AbcTextReplacements extends ResourceBundle {
 		map.put("\\=y", "\u0233");//y-macron
 	}
 
-	public Enumeration getKeys() {
+	public Enumeration<String> getKeys() {
 		//return Collections.enumeration(map.keySet());
-		return new Enumeration() {
-			private final Iterator i = map.keySet().iterator();
+		return new Enumeration<String>() {
+			private final Iterator<String> i = map.keySet().iterator();
 			public boolean hasMoreElements() { return i.hasNext(); }
-			public Object nextElement() { return i.next(); }
+			public String nextElement() { return i.next(); }
 		};
 	}
 	
-	public Collection values() {
+	public Collection<String> values() {
 		return map.values();
 	}
 

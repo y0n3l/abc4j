@@ -18,6 +18,7 @@ package abc.ui.scoretemplates;
 import java.awt.Color;
 import java.io.Serializable;
 
+import abc.notation.StemPolicy;
 import abc.ui.fonts.MusicalFont;
 import abc.ui.fonts.SonoraFont;
 import abc.ui.swing.Engraver;
@@ -34,11 +35,45 @@ public class ScoreAttribute implements Cloneable, Serializable {
 
 	static public class Size implements Cloneable, Serializable {
 		private static final long serialVersionUID = 242654766042695139L;
+		private transient float m_max = Float.NaN;
+		private transient float m_min = Float.NaN;
 		private float m_size = -1;
 		private SizeUnit m_unit = null;
+		/**
+		 * Construct a new Size taking unit, min and max values of s.
+		 * @param size
+		 * @param s
+		 */
+		public Size(float size, Size s) {
+			this(size, s.getUnit(), s.m_min, s.m_max);
+		}
+		/**
+		 * Construct a Size using a value and a size unit
+		 * @param size
+		 * @param u
+		 */
 		public Size(float size, SizeUnit u) {
 			m_size = size;
 			m_unit = u;
+		}
+		private Size(float size, SizeUnit u, float min, float max) {
+			m_size = size;
+			m_unit = u;
+			m_min = min;
+			m_max = max;
+			if (m_min != Float.NaN && m_size < m_min)
+				m_size = m_min;
+			if (m_max != Float.NaN && m_size > m_max)
+				m_size = m_max;
+		}
+		/**
+		 * Construct a new Size taking min and max values of s.
+		 * @param size
+		 * @param u
+		 * @param s
+		 */
+		public Size(float size, SizeUnit u, Size s) {
+			this(size, u, s.m_min, s.m_max);
 		}
 		public Object clone() { return new Size(m_size, (SizeUnit) m_unit.clone()); }
 		public float getSize() { return m_size; }
@@ -76,7 +111,7 @@ public class ScoreAttribute implements Cloneable, Serializable {
 	 * Type: size */
 	public static final ScoreAttribute ACCIDENTAL_SPACE
 		= new ScoreAttribute("AccidentalSpace",
-				new Size(.3f, SizeUnit.NOTE_WIDTH));
+				new Size(.3f, SizeUnit.NOTE_WIDTH, .1f, Float.NaN));
 	
 	/** Add a slash to appoggiaturas.<br>
 	 * Default value: true (in theory, should be false)<br>
@@ -107,7 +142,7 @@ public class ScoreAttribute implements Cloneable, Serializable {
 	public static final ScoreAttribute DYNAMIC_HORIZONTAL_OFFSET
 		= new ScoreAttribute("DynamicHoriontalOffset",
 				new Size(-1f, SizeUnit.NOTE_WIDTH));
-
+	
 	/** Vertical position for dynamics, from the bottom of the
 	 * staff line, expressed in {@link SizeUnit#NOTE_HEIGHT}.<br>
 	 * Default value: -6 * note height (above the staff)<br>
@@ -123,7 +158,7 @@ public class ScoreAttribute implements Cloneable, Serializable {
 	public static final ScoreAttribute ENGRAVER_MODE
 		= new ScoreAttribute("EngraverMode",
 				new Integer(Engraver.DEFAULT));
-	
+
 	/** Engraver variation, value is a number between
 	 * {@link Engraver#VARIATION_MIN} and
 	 * {@link Engraver#VARIATION_MAX}.<br>
@@ -139,7 +174,7 @@ public class ScoreAttribute implements Cloneable, Serializable {
 	 * Type: size */
 	public static final ScoreAttribute FIRST_STAFF_LEFT_MARGIN
 		= new ScoreAttribute("FirstStaffLeftMargin",
-				new Size(0, SizeUnit.STAFF_WIDTH));
+				new Size(0, SizeUnit.STAFF_WIDTH, 0, Float.NaN));
 	
 	/** Top margin for first staff, just below the headers,
 	 * expressed in px or {@link SizeUnit#STAFF_HEIGHT}.<br>
@@ -147,7 +182,7 @@ public class ScoreAttribute implements Cloneable, Serializable {
 	 * Type: size */
 	public static final ScoreAttribute FIRST_STAFF_TOP_MARGIN
 		= new ScoreAttribute("FirstStaffTopMargin",
-				new Size(.75f, SizeUnit.STAFF_HEIGHT));
+				new Size(.75f, SizeUnit.STAFF_HEIGHT, 0, Float.NaN));
 	
 	/** Thickness of gracenote link.<br>
 	 * Default value: 1/2 * gracenote height<br>
@@ -161,7 +196,7 @@ public class ScoreAttribute implements Cloneable, Serializable {
 	 * Type: size */
 	public static final ScoreAttribute GRACENOTE_SPACING
 		= new ScoreAttribute("GracenoteSpacing",
-				new Size(1f, SizeUnit.GRACENOTE_WIDTH));
+				new Size(1f, SizeUnit.GRACENOTE_WIDTH, .1f, Float.NaN));
 	
 	/** Gracenote stem length<br>
 	 * Default value: 3 * gracenote height<br>
@@ -176,7 +211,7 @@ public class ScoreAttribute implements Cloneable, Serializable {
 	 * Type: number (byte) */
 	public static final ScoreAttribute GRACENOTE_STEM_POLICY
 		= new ScoreAttribute("GracenoteStemPolicy",
-				new Byte(JTune.STEMS_UP));
+				new Byte(StemPolicy.STEMS_UP));
 	
 	/** Justify staff lines<br>
 	 * Default value: true<br>
@@ -190,72 +225,72 @@ public class ScoreAttribute implements Cloneable, Serializable {
 	 * Type: size */
 	public static final ScoreAttribute MARGIN_BOTTOM
 		= new ScoreAttribute("MarginBottom",
-				new Size(0f, SizeUnit.PX));
+				new Size(0f, SizeUnit.PX, 0, Float.NaN));
 	
 	/** Left margin.<br>
 	 * Default value: 0px<br>
 	 * Type: size */
 	public static final ScoreAttribute MARGIN_LEFT
 		= new ScoreAttribute("MarginLeft",
-				new Size(0f, SizeUnit.PX));
+				new Size(0f, SizeUnit.PX, 0, Float.NaN));
 	
 	/** Right margin.<br>
 	 * Default value: 0px<br>
 	 * Type: size */
 	public static final ScoreAttribute MARGIN_RIGHT
 		= new ScoreAttribute("MarginRight",
-				new Size(0f, SizeUnit.PX));
+				new Size(0f, SizeUnit.PX, 0, Float.NaN));
 	
 	/** Top margin.<br>
 	 * Default value: 0px<br>
 	 * Type: size */
 	public static final ScoreAttribute MARGIN_TOP
 		= new ScoreAttribute("MarginTop",
-				new Size(0f, SizeUnit.PX));
+				new Size(0f, SizeUnit.PX, 0, Float.NaN));
 	
 	/** Musical font, value is a {@link MusicalFont} object.<br>
 	 * Default value: {@link SonoraFont}<br>
 	 * Type: object (MusicalFont) */
 	public static final ScoreAttribute NOTATION_FONT
 		= new ScoreAttribute("MusicalFont", new SonoraFont());
-
+	
 	/** Gracenotes font size, expressed in pt or percent
 	 * of notation size.<br>
 	 * Default value: 60% (of notation font size)<br>
 	 * Type: size */
 	public static final ScoreAttribute NOTATION_GRACENOTE_SIZE
 		= new ScoreAttribute("GracenoteSize",
-				new Size(60, SizeUnit.PERCENT));
+				new Size(60, SizeUnit.PERCENT, 20, 100));
 	
 	/** Notation font size, expressed in pt.<br>
-	 * Default value: 45pt<br>
+	 * Default value: 39pt<br>
 	 * Type: size */
 	public static final ScoreAttribute NOTATION_SIZE
 		= new ScoreAttribute("NotationSize",
-				new Size(39, SizeUnit.PT));
-	
+				new Size(39, SizeUnit.PT, 11, Float.NaN));
+
 	/** Tempo indicator font size, expressed in pt or percent
 	 * of notation size.<br>
 	 * Default value: 75% (of notation font size)<br>
 	 * Type: size */
 	public static final ScoreAttribute NOTATION_TEMPO_SIZE
 		= new ScoreAttribute("TempoSize",
-				new Size(75, SizeUnit.PERCENT));
-
+				new Size(75, SizeUnit.PERCENT, 25, Float.NaN));
+	
 	/** Thickness of note link.<br>
 	 * Default value: 1/3 * note height<br>
 	 * Type: size */
 	public static final ScoreAttribute NOTE_LINK_STROKE
 		= new ScoreAttribute("NoteLinkStroke",
 				new Size(1f/2f, SizeUnit.NOTE_HEIGHT));
-
+	
 	/** Default note spacing, in note width, or px.<br>
 	 * Default value: 1.5 * note width<br>
 	 * Type: size */
 	public static final ScoreAttribute NOTE_SPACING
 		= new ScoreAttribute("NoteSpacing",
-				new Size(1.5f, SizeUnit.NOTE_WIDTH));
-	
+				new Size(1.5f, SizeUnit.NOTE_WIDTH, .1f, Float.NaN));
+
 	/** Note stem length<br>
 	 * Default value: 3 * note height<br>
 	 * Type: size */
@@ -269,7 +304,15 @@ public class ScoreAttribute implements Cloneable, Serializable {
 	 * Type: number (byte) */
 	public static final ScoreAttribute NOTE_STEM_POLICY
 		= new ScoreAttribute("NoteStemPolicy",
-				new Byte(JTune.STEMS_AUTO));
+				new Byte(StemPolicy.STEMS_AUTO));
+	
+	/** Space between the staff top and repeats numbers/jumps line,
+	 * expressed in px or {@link SizeUnit#STAFF_HEIGHT}.<br>
+	 * Default value: 1.7 * staff height<br>
+	 * Type: size */
+	public static final ScoreAttribute REPEATS_JUMP_LINE_SPACING
+		= new ScoreAttribute("RepeatsJumpLineSpacing",
+				new Size(1.7f, SizeUnit.STAFF_HEIGHT));
 
 	private static final long serialVersionUID = 4720580138163902559L;
 
@@ -279,7 +322,7 @@ public class ScoreAttribute implements Cloneable, Serializable {
 	public static final ScoreAttribute SLUR_ANCHOR_Y_OFFSET
 		= new ScoreAttribute("SlurAnchorYOffset",
 				new Size(1f/3f, SizeUnit.NOTE_HEIGHT));
-	
+
 	/** Slur thickness, in note height or px.<br>
 	 * Default value: 1/7 * note height<br>
 	 * Type: size */
@@ -289,11 +332,11 @@ public class ScoreAttribute implements Cloneable, Serializable {
 	
 	/** Space between two staves, expressed in px or
 	 * {@link SizeUnit#STAFF_HEIGHT}.<br>
-	 * Default value: 1.5 * staff height<br>
+	 * Default value: 1 * staff height<br>
 	 * Type: size */
 	public static final ScoreAttribute STAFF_LINES_SPACING
 		= new ScoreAttribute("StaffLinesSpacing",
-				new Size(1.5f, SizeUnit.STAFF_HEIGHT));
+				new Size(1f, SizeUnit.STAFF_HEIGHT));
 	
 	/** Stem thickness.
 	 * Default value: 1/12 * note width<br>
@@ -301,7 +344,15 @@ public class ScoreAttribute implements Cloneable, Serializable {
 	public static final ScoreAttribute STEM_STROKE
 		= new ScoreAttribute("StemStroke",
 				new Size(1f/12f, SizeUnit.NOTE_WIDTH));
-
+	
+	/** Space between two system of staves, expressed in px or
+	 * {@link SizeUnit#STAFF_HEIGHT}.<br>
+	 * Default value: 2.5 * staff height<br>
+	 * Type: size */
+	public static final ScoreAttribute SYSTEM_SPACING
+		= new ScoreAttribute("SystemSpacing",
+				new Size(2.5f, SizeUnit.STAFF_HEIGHT));
+	
 	/** Space between the staff bottom and tablature,
 	 * expressed in px or {@link SizeUnit#STAFF_HEIGHT}.<br>
 	 * Default value: 1.25 * staff height<br>
@@ -310,9 +361,17 @@ public class ScoreAttribute implements Cloneable, Serializable {
 		= new ScoreAttribute("TablatureSpacing",
 				new Size(1.25f, SizeUnit.STAFF_HEIGHT));
 	
+	/** Space between the staff top and tempo line,
+	 * expressed in px or {@link SizeUnit#STAFF_HEIGHT}.<br>
+	 * Default value: 2 * staff height<br>
+	 * Type: size */
+	public static final ScoreAttribute TEMPO_LINE_SPACING
+		= new ScoreAttribute("TempoLineSpacing",
+				new Size(2f, SizeUnit.STAFF_HEIGHT));
+	
 	/** Default text size, from which all text elements sizes
 	 * are derived, expressed in pt or percent of notation size.<br>
-	 * Default value: 25% of notation size<br>
+	 * Default value: 33% of notation size<br>
 	 * Type: size */
 	public static final ScoreAttribute TEXT_DEFAULT_SIZE
 		= new ScoreAttribute("TextDefaultSize",

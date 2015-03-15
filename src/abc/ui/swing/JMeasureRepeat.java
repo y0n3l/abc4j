@@ -68,8 +68,7 @@ public class JMeasureRepeat extends JScoreElementAbstract {
 		if (m_measureRepeat.getNumberOfMeasure() == 1) {
 			float ratio = (float) (getWidth() / getMetrics().getNoteWidth());
 			Spacer spacer = new Spacer(ratio);
-			spacer.setDecorations(new Decoration[]
-					{ new Decoration(Decoration.REPEAT_LAST_BAR) });
+			spacer.addDecoration(new Decoration(Decoration.REPEAT_LAST_BAR));
 			spacer.setDynamic(m_measureRepeat.getDynamic());
 			spacer.setAnnotations(m_measureRepeat.getAnnotations());
 			spacer.setChord(m_measureRepeat.getChord());
@@ -85,8 +84,7 @@ public class JMeasureRepeat extends JScoreElementAbstract {
 			setBase(new Point2D.Double(getBase().getX()+w,
 					getBase().getY()));
 			BarLine barline = new BarLine(BarLine.SIMPLE);
-			barline.setDecorations(new Decoration[]
-					{ new Decoration(Decoration.REPEAT_LAST_TWO_BARS) });
+			barline.addDecoration(new Decoration(Decoration.REPEAT_LAST_TWO_BARS));
 			barline.setDynamic(m_measureRepeat.getDynamic());
 			barline.setAnnotations(m_measureRepeat.getAnnotations());
 			barline.setChord(m_measureRepeat.getChord());

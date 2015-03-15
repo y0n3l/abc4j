@@ -17,6 +17,7 @@ package abc.ui.fonts;
 
 import java.awt.Font;
 import java.io.Serializable;
+import java.util.Map;
 
 import abc.notation.Accidental;
 import abc.notation.Clef;
@@ -34,6 +35,9 @@ public interface MusicalFont extends Cloneable, Serializable {
 	
 	/** Returns the glyph for an {@link abc.notation.Accidental} */
 	public char getAccidental(Accidental acc);
+	
+	/** Returns all glyphs for {@link abc.notation.Accidental}s */
+	public Map<Accidental, Character> getAccidentals();
 
 	/** Returns the glyph for {@link abc.notation.BarLine} */
 	public char getBarLine(byte barLine);

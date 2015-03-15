@@ -22,7 +22,6 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Vector;
 
 import abc.notation.Annotation;
@@ -56,11 +55,11 @@ abstract class JScoreElementAbstract implements JScoreElement {
 	private Point2D m_base = null;
 	
 	/** vector of JDecoration instances for this element. */
-	protected Vector m_jDecorations = null;
+	protected Vector<JDecoration> m_jDecorations = null;
 	
 	/** used in {@link #renderAnnotations(Graphics2D)}
 	 * and {@link #getScoreElementAt(Point)} */
-	private Vector m_jAnnotations = null;
+	private Vector<JAnnotation> m_jAnnotations = null;
 	/** used in {@link #renderChordName(Graphics2D)}
 	 * and {@link #getScoreElementAt(Point)} */
 	private JChordName m_jChordName = null;
@@ -159,8 +158,7 @@ abstract class JScoreElementAbstract implements JScoreElement {
 			return this;
 		else {
 			if (m_jAnnotations != null) {
-				for (Iterator it = m_jAnnotations.iterator(); it.hasNext();) {
-					JAnnotation ja = (JAnnotation) it.next();
+				for (JAnnotation ja : m_jAnnotations) {
 					if (ja.getBoundingBox().contains(location))
 						return ja;
 				}
@@ -170,8 +168,7 @@ abstract class JScoreElementAbstract implements JScoreElement {
 					return m_jChordName;
 			}
 			if (m_jDecorations != null) {
-				for (Iterator it = m_jDecorations.iterator(); it.hasNext();) {
-					JDecoration jd = (JDecoration) it.next();
+				for (JDecoration jd : m_jDecorations) {
 					if (jd.getBoundingBox().contains(location))
 						return jd;
 				}
@@ -201,22 +198,15 @@ abstract class JScoreElementAbstract implements JScoreElement {
 	}
 	
 	protected void addDecorations(DecorableElement decorable) {
-		if (decorable.hasDecorations()) {
-			Decoration[] decorations = decorable.getDecorations();
-			for (int i = 0; i < decorations.length; i++) {
-				if (decorations[i] != null) {
-					addDecoration(
-						new JDecoration(
-							decorations[i], getMetrics()));
-				}
-			}
+		for (Decoration decoration : decorable.getDecorations()) {
+			addDecoration(new JDecoration(decoration, getMetrics()));
 		}
 	}
 	
 	/** Add decoration if it hasn't been added previously */
 	protected void addDecoration (JDecoration decoration) {
 		if (m_jDecorations == null) {
-			m_jDecorations = new Vector();
+			m_jDecorations = new Vector<JDecoration>();
 		}
 		if (!m_jDecorations.contains(decoration)) {
 			decoration.setStaffLine(getStaffLine());
@@ -316,15 +306,13 @@ abstract class JScoreElementAbstract implements JScoreElement {
 	
 	protected void renderAnnotations(Graphics2D gfx) {
 		MusicElement me = getMusicElement();
-		Collection annots = null;
+		Collection<Annotation> annots = null;
 		m_jAnnotations = null;
 		if (me instanceof DecorableElement)
 			annots = ((DecorableElement) me).getAnnotations();
 		if (annots != null) {
-			m_jAnnotations = new Vector(annots.size());
-			Iterator it = annots.iterator();
-			while (it.hasNext()) {
-				Annotation annot = (Annotation) it.next();
+			m_jAnnotations = new Vector<JAnnotation>(annots.size());
+			for (Annotation annot : annots) {
 				JAnnotation jannot = new JAnnotation(getMetrics(), annot);
 				jannot.setStaffLine(getStaffLine());
 				jannot.setBase(getBase());

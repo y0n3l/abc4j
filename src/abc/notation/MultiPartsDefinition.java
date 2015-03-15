@@ -15,7 +15,6 @@
 // along with abc4j.  If not, see <http://www.gnu.org/licenses/>.
 package abc.notation;
 
-import java.util.Iterator;
 import java.util.Vector;
 
 /** This class describes the way a multipart music tune is defined. */
@@ -23,17 +22,17 @@ public class MultiPartsDefinition extends RepeatedPartAbstract implements Clonea
 {
   private static final long serialVersionUID = 7800603529025920851L;
   
-  private Vector m_parts = new Vector(3, 3);
+  private Vector<RepeatedPartAbstract> m_parts = new Vector<RepeatedPartAbstract>(3, 3);
 
   /** Creates a new multi part definition. */
-  public MultiPartsDefinition() { 
-	  new Vector();
+  public MultiPartsDefinition() {
   }
   
   /** Copy constructor 
    */
+  @SuppressWarnings("unchecked")
   public MultiPartsDefinition(MultiPartsDefinition root) { 
-	  m_parts = (Vector)root.m_parts.clone();
+	  m_parts = (Vector<RepeatedPartAbstract>)root.m_parts.clone();
   }
 
   /** Adds a new part to this multi part.
@@ -49,17 +48,17 @@ public class MultiPartsDefinition extends RepeatedPartAbstract implements Clonea
    * playing of this multipart. */
   public Part[] toPartsArray()
   {
-    Vector parts = getPartsAsRepeatedOnceVector();
+    Vector<Part> parts = getPartsAsRepeatedOnceVector();
     Part[] partsArray = new Part[parts.size()];
     for (int i=0; i<parts.size(); i++)
       partsArray[i] = (Part)parts.elementAt(i);
     return partsArray;
   }
 
-  public  Vector getPartsAsRepeatedOnceVector()
+  public Vector<Part> getPartsAsRepeatedOnceVector()
   {
     //int repeatNumber = getNumberOfRepeats();
-    Vector parts = new Vector();
+    Vector<Part> parts = new Vector<Part>();
     //Part currentPart = null;
     RepeatedPartAbstract c = null;
     for (int i=0; i<getNumberOfRepeats(); i++)
@@ -75,10 +74,9 @@ public class MultiPartsDefinition extends RepeatedPartAbstract implements Clonea
     return parts;
   }
   
-  	public Object clone(Tune t) {
+  	public RepeatedPartAbstract clone(Tune t) {
   		MultiPartsDefinition mpd = new MultiPartsDefinition();
-  		for (Iterator it = m_parts.iterator(); it.hasNext();) {
-  			RepeatedPartAbstract rpa = (RepeatedPartAbstract) it.next();
+  		for (RepeatedPartAbstract rpa : m_parts) {
   			mpd.m_parts.addElement(rpa.clone(t));
 		}
   		mpd.setNumberOfRepeats(getNumberOfRepeats());

@@ -25,7 +25,6 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.Iterator;
 
 import javax.swing.JComponent;
 import javax.swing.JTextPane;
@@ -483,9 +482,7 @@ public class TuneEditorPane extends JTextPane implements AbcTokens//, ActionList
 		m_document.setCharacterAttributes(0, m_document.getLength(), m_defaultStyle, true);
 		
 		int maxStart = 0;
-    	Iterator it = m_abcRoot.getDeepestChilds().iterator();
-    	while (it.hasNext()) {
-    		AbcNode node = (AbcNode) it.next();
+		for (AbcNode node : m_abcRoot.getDeepestChilds()) {
     		String value = node.getValue();
     		int length = value.length();
     		int start = node.getCharStreamPosition().getStartIndex();

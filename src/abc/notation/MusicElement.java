@@ -27,6 +27,8 @@ public abstract class MusicElement
 		extends PositionableInCharStream
 		implements Cloneable, Serializable {
 
+	private static final long serialVersionUID = 5212380635873905052L;
+	
 	private MusicElementReference _reference = new MusicElementReference();
 
 	/**

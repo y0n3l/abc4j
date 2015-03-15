@@ -27,6 +27,8 @@ import abc.notation.SymbolElement;
  */
 public abstract class UserDefinedSymbol extends MusicElement implements Cloneable {
 
+	private static final long serialVersionUID = 487311425430335556L;
+
 	private char m_symbol;
 	
 	private SymbolElement m_element;

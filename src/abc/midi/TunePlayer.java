@@ -37,7 +37,7 @@ public class TunePlayer implements MetaEventListener
   private Sequencer seq = null;
   //private Synthesizer synth = null;
   private boolean m_isStarted = false;
-  private Vector m_listeners = null;
+  private Vector<TunePlayerListenerInterface> m_listeners = null;
   private int m_tempo = 180;
   private MidiConverterInterface m_converter = null;
 
@@ -48,14 +48,14 @@ public class TunePlayer implements MetaEventListener
   public TunePlayer()
   {
     m_converter = new BasicPositionableMidiConverter();
-    m_listeners = new Vector();
+    m_listeners = new Vector<TunePlayerListenerInterface>();
   }
 
   /** Constructs a tune player with the specified midi converter. */
   public TunePlayer(MidiConverterInterface converter)
   {
     m_converter = converter;
-    m_listeners = new Vector();
+    m_listeners = new Vector<TunePlayerListenerInterface>();
   }
 
   /** Adds a listener to this tune player.

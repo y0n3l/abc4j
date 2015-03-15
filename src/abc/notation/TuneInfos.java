@@ -19,7 +19,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 
 /**
  * TuneInfos is a convenient way to store textual informations about a tune or a
@@ -101,11 +100,11 @@ public class TuneInfos implements Cloneable, Serializable {
 	
 	private static final char lineSeparator = '\n';
 
-	private static Collection arrayToCollection(String[] s) {
+	private static Collection<String> arrayToCollection(String[] s) {
 		if (s == null)
-			return new ArrayList(1);
+			return new ArrayList<String>(1);
 		else {
-			ArrayList list = new ArrayList(s.length);
+			ArrayList<String> list = new ArrayList<String>(s.length);
 			for (int i = 0; i < s.length; i++) {
 				list.add(s[i]);
 			}
@@ -117,19 +116,17 @@ public class TuneInfos implements Cloneable, Serializable {
 	 * @see #get(byte) */
 	private TuneInfos m_bookInfos = null;
 
-	private HashMap m_infos = null;
+	private HashMap<Byte, String> m_infos = null;
 	
 	protected TuneInfos() {
-		m_infos = new HashMap();
+		m_infos = new HashMap<Byte, String>();
 	}
 
 	/** Add each element of collection c as new lines in field b */
-	public void add(byte b, Collection c) {
+	public void add(byte b, Collection<String> c) {
 		if ((c != null) && (c.size() > 0)) {
 			String s2 = get(b);
-			Iterator it = c.iterator();
-			while (it.hasNext()) {
-				String s = (String) it.next();
+			for (String s : c) {
 				if (s2 == null)
 					s2 = s;
 				else
@@ -156,10 +153,11 @@ public class TuneInfos implements Cloneable, Serializable {
 		add(b, arrayToCollection(s));
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object clone() {
 		try {
 			Object o = super.clone();
-			((TuneInfos)o).m_infos = (HashMap) m_infos.clone();
+			((TuneInfos)o).m_infos = (HashMap<Byte, String>) m_infos.clone();
 			return o;
 		} catch (CloneNotSupportedException cnse) {
 			throw new InternalError();
@@ -199,10 +197,10 @@ public class TuneInfos implements Cloneable, Serializable {
 	 * @param b
 	 * @return
 	 */
-	public Collection getAsCollection(byte b) {
+	public Collection<String> getAsCollection(byte b) {
 		String[] lines = getAsStringArray(b);
 		if (lines == null)
-			return new ArrayList();
+			return new ArrayList<String>();
 		else
 			return arrayToCollection(lines);
 	}
@@ -224,7 +222,7 @@ public class TuneInfos implements Cloneable, Serializable {
 		return get(b) != null;
 	}
 
-	private Object key(byte b) {
+	private Byte key(byte b) {
 		return new Byte(b);
 	}
 
@@ -240,7 +238,7 @@ public class TuneInfos implements Cloneable, Serializable {
 	 * @param s
 	 */
 	public void remove(byte b, String s) {
-		Collection c = getAsCollection(b);
+		Collection<String> c = getAsCollection(b);
 		c.remove(s);
 		set(b, c);
 	}
@@ -252,15 +250,13 @@ public class TuneInfos implements Cloneable, Serializable {
 	 * @param b
 	 * @param c
 	 */
-	public void set(byte b, Collection c) {
+	public void set(byte b, Collection<String> c) {
 		if ((c != null) && (c.size() > 0)) {
 			StringBuffer sb = new StringBuffer();
-			Iterator it = c.iterator();
-			while (it.hasNext()) {
-				String s = (String) it.next();
-				sb.append(s);
-				if (it.hasNext())
+			for (String s : c) {
+				if (sb.length() > 0)
 					sb.append(lineSeparator);
+				sb.append(s);
 			}
 			set(b, sb.toString());
 		} else

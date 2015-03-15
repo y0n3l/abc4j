@@ -15,7 +15,7 @@ public final class PropertyManager {
   private Properties defaultProps = new Properties();
   private Properties appProps = null;
 
-  private Hashtable listeners = null;
+  private Hashtable<String, ArrayList<PropertyChangeListener>> listeners = null;
 
 
   private static Object lock = new Object();
@@ -88,21 +88,16 @@ public final class PropertyManager {
    * Sets Application/User String properties; default property values cannot be set.
    */
   public void setProperty(String key, String val) {
-
-	ArrayList list  = null;
 	Object oldValue = null;
-
 	oldValue = getProperty(key);
 
 	appProps.setProperty(key, val);
 	if (listeners.containsKey(key)) {
-	  list = (ArrayList)listeners.get(key);
-	  int len = list.size();
-	  if (len > 0) {
+	  ArrayList<PropertyChangeListener> list = listeners.get(key);
+	  if (list.size() > 0) {
 		PropertyChangeEvent evt = new PropertyChangeEvent(this, key, oldValue, val);
-		for (int i=0; i < len; i++) {
-		  if (list.get(i) instanceof PropertyChangeListener)
-			((PropertyChangeListener)list.get(i)).propertyChange(evt);
+		for (PropertyChangeListener pcl : list) {
+			pcl.propertyChange(evt);
 		}
 	  }
 	}
@@ -111,16 +106,16 @@ public final class PropertyManager {
 
   public boolean addListener (String key, PropertyChangeListener listener) {
 	boolean added = false;
-	ArrayList list = null;
+	ArrayList<PropertyChangeListener> list = null;
 	if (listeners == null)
-		listeners = new Hashtable();
+		listeners = new Hashtable<String, ArrayList<PropertyChangeListener>>();
 
 	if (!listeners.contains(key)) {
-		list = new ArrayList();
+		list = new ArrayList<PropertyChangeListener>();
 		added = list.add(listener);
 		listeners.put(key, list);
     } else {
-		list = (ArrayList)listeners.get(key);
+		list = listeners.get(key);
 		added = list.add(listener);
 	}
 	return (added);

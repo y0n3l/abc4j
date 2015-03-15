@@ -19,7 +19,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
-import java.util.Iterator;
 import java.util.Vector;
 
 import abc.notation.MusicElement;
@@ -29,23 +28,31 @@ import abc.ui.scoretemplates.ScoreElements;
 
 class JStaffLine extends JScoreElementAbstract {
 
-	protected Vector m_staffElements = null;
+	protected Vector<JScoreElementAbstract> m_staffElements = null;
 	
 	private Engraver m_engraver;
 	
 	private double topY = -1;
 
-	protected Vector m_lyrics = null;
+	protected Vector<JWords> m_lyrics = null;
+	
+	private String m_voiceId = null;
 	
 	private JTablature m_tablature = null;
 	//protected Vector m_beginningSlurElements = null;
 
-	public JStaffLine(Point2D base, ScoreMetrics c, Engraver e) {
+	public JStaffLine(Point2D base, ScoreMetrics c, Engraver e,
+			String voiceId) {
 		super(base, c);
 		m_engraver = e;
-		m_staffElements = new Vector();
-		m_lyrics = new Vector();
+		m_staffElements = new Vector<JScoreElementAbstract>();
+		m_lyrics = new Vector<JWords>();
+		m_voiceId = voiceId;
 		//m_beginningSlurElements = new Vector();
+	}
+	
+	protected String getVoiceId() {
+		return m_voiceId;
 	}
 	
 	/**
@@ -68,10 +75,12 @@ class JStaffLine extends JScoreElementAbstract {
 	protected double get5thLineY() {
 		return getBase().getY() - getMetrics().getStaffCharBounds().getHeight();
 	}
+	
 	/** Return the y coordinate of the 1st (from low to high) line */
 	protected double get1stLineY() {
 		return getBase().getY();
 	}
+	
 	/** Returns height between 1st and 5th line */
 	protected double getHeight() {
 		return getMetrics().getStaffCharBounds().getHeight();
@@ -107,6 +116,7 @@ class JStaffLine extends JScoreElementAbstract {
 		else
 			m_tablature = null;
 	}
+	
 	/** Returns the JTablature associated to this staff, or
 	 * null if none. */
 	protected JTablature getTablature() {
@@ -130,8 +140,7 @@ class JStaffLine extends JScoreElementAbstract {
 	 * @return
 	 */
 	public boolean hasNotes() {
-		for (Iterator it = m_staffElements.iterator(); it.hasNext();) {
-			JScoreElement element = (JScoreElement) it.next();
+		for (JScoreElement element : m_staffElements) {
 			if ((element instanceof JNoteElementAbstract)
 					|| (element instanceof JGroupOfNotes))
 				return true;
@@ -174,7 +183,7 @@ class JStaffLine extends JScoreElementAbstract {
 	/**
 	 * Returns the Vector of elements
 	 */
-	protected Vector getStaffElements() {
+	protected Vector<JScoreElementAbstract> getStaffElements() {
 		return m_staffElements;
 	}
 		
@@ -245,10 +254,7 @@ class JStaffLine extends JScoreElementAbstract {
 		}
 		
 		// TODO render lyrics, etc.
-		Iterator iter = m_lyrics.iterator();
-		JWords lyrics = null;
-		while (iter.hasNext()) {
-			lyrics = (JWords)iter.next();
+		for (JWords lyrics : m_lyrics) {
 			lyrics.render(g);
 		}
 		

@@ -21,6 +21,8 @@ package abc.notation;
  */
 public abstract class SymbolElement extends MusicElement implements Cloneable {
 
+	private static final long serialVersionUID = 5462782928473360696L;
+
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}

@@ -19,9 +19,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
+import java.awt.font.TextAttribute;
 import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Vector;
 
 import java.io.ByteArrayInputStream;
@@ -71,12 +71,13 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 		int m_fontStyle = Font.PLAIN;
 		String m_prefix = null;
 		String m_suffix = null;
-		Hashtable m_textAttributes = null;
+		Hashtable<TextAttribute, Object> m_textAttributes = null;
 		byte m_textField;
 		boolean m_visible = true;
 		FieldInfos(byte textField) {
 			m_textField = textField;
 		}
+		@SuppressWarnings("unchecked")
 		public Object clone() throws CloneNotSupportedException {
 			FieldInfos ret = new FieldInfos(m_textField);
 			ret.m_fontFamilyNames = (String[]) m_fontFamilyNames.clone();
@@ -86,7 +87,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 			ret.m_prefix = m_prefix;
 			ret.m_suffix = m_suffix;
 			if (m_textAttributes != null)
-				ret.m_textAttributes = (Hashtable) m_textAttributes.clone();
+				ret.m_textAttributes = (Hashtable<TextAttribute, Object>) m_textAttributes.clone();
 			ret.m_textField = m_textField;
 			ret.m_visible = m_visible;
 			return ret;
@@ -119,11 +120,9 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 			ret.append("\tsuffix: "+m_suffix+";\n");
 			if (m_textAttributes != null) {
 				ret.append("\ttext attributes {\n");
-				Iterator it = m_textAttributes.keySet().iterator();
-				while (it.hasNext()) {
-					Object k = it.next();
-					Object v = m_textAttributes.get(k);
-					ret.append("\t"+k+": "+v+";\n");
+				for (TextAttribute ta : m_textAttributes.keySet()) {
+					Object v = m_textAttributes.get(ta);
+					ret.append("\t"+ta+": "+v+";\n");
 				}
 				ret.append("\t}\n");
 			}
@@ -182,30 +181,30 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 		}
 	}
 
-	private Hashtable m_attributes = new Hashtable();
+	private Hashtable<String, Object> m_attributes = new Hashtable<String, Object>();
 	
 	private String[] m_defaultTextFontFamilyNames = { "Dialog", "Arial" };
 
 	private transient Engraver m_engraver = null;
 
 	/** Map of Byte(TextField.xxx) => FieldInfos */
-	private Hashtable m_fields = new Hashtable();
+	private Hashtable<Byte, FieldInfos> m_fields = new Hashtable<Byte, FieldInfos>();
 
 	/** Map of Position => Vector of TextField.xxx */
-	private Hashtable m_fieldsPosition = new Hashtable();
+	private Hashtable<Position, Vector<Byte>> m_fieldsPosition = new Hashtable<Position, Vector<Byte>>();
 
 	/** Map of font names => boolean */
-	private transient Hashtable m_fontAvailability = null;
+	private transient Hashtable<String, Boolean> m_fontAvailability = null;
 
 	private transient Graphics2D m_graphics = null;
 	
-	private transient Vector m_listeners = null;
+	private transient Vector<ScoreTemplateChangeListener> m_listeners = null;
 
 	private transient ScoreMetrics m_metrics = null;
 	
-	private Vector getListeners() {
+	private Vector<ScoreTemplateChangeListener> getListeners() {
 		if (m_listeners == null)
-			m_listeners = new Vector(2, 2);
+			m_listeners = new Vector<ScoreTemplateChangeListener>(2, 2);
 		return m_listeners;
 	}
 	
@@ -309,7 +308,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 		return s.getSize();
 	}
 	
-	public Hashtable getAttributes() {
+	public Hashtable<String, Object> getAttributes() {
 		return m_attributes;
 	}
 	
@@ -433,8 +432,8 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	public byte[] getFieldsAtPosition(byte vert, byte horiz) {
 		Position p = new Position(vert, horiz);
 		if (m_fieldsPosition.get(p) != null) {
-			Vector v = (Vector) m_fieldsPosition.get(p);
-			Vector ret = new Vector(v.size());
+			Vector<Byte> v = m_fieldsPosition.get(p);
+			Vector<Byte> ret = new Vector<Byte>(v.size());
 			for (int i = 0; i < v.size(); i++) {
 				byte field = ((Byte) v.get(i)).byteValue();
 				if (isVisible(field))
@@ -513,11 +512,9 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 *         <TT>null</TT> if position has not been defined
 	 */
 	public byte[] getPosition(byte field) {
-		Iterator it = m_fieldsPosition.keySet().iterator();
 		Byte B = new Byte(field);
-		while (it.hasNext()) {
-			Position p = (Position) it.next();
-			if (((Vector) m_fieldsPosition.get(p)).contains(B)) {
+		for (Position p : m_fieldsPosition.keySet()) {
+			if (m_fieldsPosition.get(p).contains(B)) {
 				return new byte[] { p.m_vertical, p.m_horizontal };
 			}
 		}
@@ -570,7 +567,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 *            Map of attributes, <TT>null</TT> possible
 	 * @see java.awt.font.TextAttribute
 	 */
-	public Hashtable getTextAttributes(byte field) {
+	public Hashtable<TextAttribute, Object> getTextAttributes(byte field) {
 		return getFieldInfos(field).m_textAttributes;
 	}
 
@@ -581,20 +578,18 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 */
 	public Font getTextFont(byte field) {
 		FieldInfos fi = getFieldInfos(field);
-		Vector v = new Vector(m_defaultTextFontFamilyNames.length+fi.m_fontFamilyNames.length);
+		Vector<String> v = new Vector<String>(m_defaultTextFontFamilyNames.length+fi.m_fontFamilyNames.length);
 		for (int i = 0; i < fi.m_fontFamilyNames.length; i++) {
 			v.add(fi.m_fontFamilyNames[i]);
 		}
 		for (int i = 0; i < m_defaultTextFontFamilyNames.length; i++) {
 			v.add(m_defaultTextFontFamilyNames[i]);
 		}
-		Iterator it = v.iterator();
 		Font font = null;
 		String s = "";
 		int style = getTextStyle(field);
 		int size = (int) getTextSize(field);
-		while (it.hasNext()) {
-			String fontName = (String) it.next();
+		for (String fontName : v) {
 			if (s.length() > 0)
 				s += ", ";
 			s += fontName;
@@ -667,7 +662,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 
 	private boolean isFontAvailable(String fontName) {
 		if (m_fontAvailability == null)
-			m_fontAvailability = new Hashtable();
+			m_fontAvailability = new Hashtable<String, Boolean>();
 		if (m_fontAvailability.get(fontName) == null) {
 			boolean b = false;
 			String[] availableFamily = GraphicsEnvironment.getLocalGraphicsEnvironment()
@@ -711,9 +706,8 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 				);
 		}
 		//notify all listeners for change
-		Iterator it = getListeners().iterator();
-		while (it.hasNext()) {
-			((ScoreTemplateChangeListener) it.next()).onTemplateChange();
+		for (ScoreTemplateChangeListener stcl : getListeners()) {
+			stcl.onTemplateChange();
 		}
 	}
 
@@ -744,7 +738,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 */
 	public void setAttributeSize(ScoreAttribute sa, float size) {
 		m_attributes.put(sa.getName(), new ScoreAttribute.Size(size,
-			((ScoreAttribute.Size) sa.getDefaultValue()).getUnit()));
+			(ScoreAttribute.Size) sa.getDefaultValue()));
 		notifyListeners();
 	}
 
@@ -760,7 +754,8 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 		if (!(sa.getDefaultValue() instanceof ScoreAttribute.Size))
 			throw new RuntimeException(sa.toString()
 					+ " is not a size attribute");
-		m_attributes.put(sa.getName(), new ScoreAttribute.Size(size, unit));
+		m_attributes.put(sa.getName(), new ScoreAttribute.Size(size, unit,
+				(ScoreAttribute.Size) sa.getDefaultValue()));
 		notifyListeners();
 	}
 
@@ -859,17 +854,15 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 			setVisible(fields[i], true);
 			Position p = new Position(vert, horiz);
 			if (!p.equals(getPosition(fields[i]))) {
-				Iterator it = m_fieldsPosition.values().iterator();
 				Byte B = new Byte(fields[i]);
-				while (it.hasNext()) {
-					Vector v = (Vector) it.next();
+				for (Vector<Byte> v : m_fieldsPosition.values()) { 
 					if (v.contains(B))
 						v.remove(B);
 				}
 				//don't know why get(p) doesn't work, p.toString() is ok
 				if (m_fieldsPosition.get(p) == null)
-					m_fieldsPosition.put(p, new Vector());
-				Vector v = (Vector) m_fieldsPosition.get(p);
+					m_fieldsPosition.put(p, new Vector<Byte>());
+				Vector<Byte> v = m_fieldsPosition.get(p);
 				v.add(B);
 			}
 		}
@@ -885,7 +878,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 *            Map of attributes
 	 * @see java.awt.font.TextAttribute
 	 */
-	public void setTextAttributes(byte field, Hashtable attrib) {
+	public void setTextAttributes(byte field, Hashtable<TextAttribute, Object> attrib) {
 		getFieldInfos(field).m_textAttributes = attrib;
 		notifyListeners();
 	}
@@ -899,7 +892,7 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 	 *            Map of attributes
 	 * @see java.awt.font.TextAttribute
 	 */
-	public void setTextAttributes(byte[] fields, Hashtable attrib) {
+	public void setTextAttributes(byte[] fields, Hashtable<TextAttribute, Object> attrib) {
 		for (int i = 0; i < fields.length; i++) {
 			getFieldInfos(fields[i]).m_textAttributes = attrib;
 		}
@@ -1070,24 +1063,17 @@ public abstract class ScoreTemplate implements Cloneable, Serializable {
 		ret.append("\tdefault text font face: "+Arrays.toString(m_defaultTextFontFamilyNames)+";\n");
 		ret.append("\tdefault text size: "+getDefaultTextSize()+"pt;\n");
 		ret.append("\n");
-		Iterator it = m_attributes.keySet().iterator();
 		ret.append("\tattributes {\n");
-		while (it.hasNext()) {
-			//ScoreAttribute sa = (ScoreAttribute) it.next();
-			String attribName = (String) it.next();
+		for (String attribName : m_attributes.keySet()) {
 			ret.append("\t\t"+ attribName+": "
 					+m_attributes.get(attribName).toString()+";\n");
 		}
 		ret.append("\t}\n");
 		ret.append("\n");
-		/*Iterator*/ it = m_fieldsPosition.keySet().iterator();
-		while (it.hasNext()) {
-			Position p = (Position) it.next();
+		for (Position p : m_fieldsPosition.keySet()) {
 			ret.append("\t"+p.toString()+" {\n");
-			Vector v = (Vector) m_fieldsPosition.get(p);
-			Iterator it2 = v.iterator();
-			while (it2.hasNext()) {
-				byte field = ((Byte) it2.next()).byteValue();
+			for (Byte b : m_fieldsPosition.get(p)) {
+				byte field = b.byteValue();
 				FieldInfos fi = getFieldInfos(field);
 				ret.append("\t\t"+fi.toString().replace("\n", "\n\t\t")+"\n");
 			}
