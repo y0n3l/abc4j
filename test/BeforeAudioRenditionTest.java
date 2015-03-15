@@ -16,19 +16,20 @@ public class BeforeAudioRenditionTest extends TestCase {
 	
 	/** */
 	public void test1correctPartsKeys() {
+		try {
 		String tuneAsString = "X:1\n" +
 				"T:test parts keys\n" +
-				"P:ABCBAC" +
+				"P:ABCBAC\n" +
 				"K:A\n" +
 				"P:A\nA\n" +
-				"K:Ab\n_A" +
+				"K:Ab\n_A\\\n" +
 				"P:B\nK:B\nB\n" +
 				"P:C\nc\nK:C\nC\n";
 		Tune tune = new TuneParser().parse(tuneAsString);
 		Voice voice = tune.getMusicForAudioRendition().getFirstVoice();
-		//for (int i = 0, j = voice.size(); i < j; i++) {
-		//	System.out.println(i+" : "+voice.elementAt(i).getClass()+" "+voice.elementAt(i));
-		//}
+		for (int i = 0, j = voice.size(); i < j; i++) {
+			System.out.println(i+" : "+voice.elementAt(i).getClass()+" "+voice.elementAt(i));
+		}
 		//should be expanded as
 		//K:A, P:A, A, K:Ab, _A
 		//P:B, K:B, B
@@ -40,8 +41,8 @@ public class BeforeAudioRenditionTest extends TestCase {
 		//go to C... c is starting with B key (from part B)
 		//K:B, P:C, C', K:C, C
 //		0 : class abc.notation.KeySignature KeySignature: Amaj (#, =, =, #, #, =, =}
-		assertTrue(voice.elementAt(0) instanceof KeySignature
-				&& ((KeySignature)voice.elementAt(0)).equals(new KeySignature(Note.A, KeySignature.MAJOR)));
+		KeySignature keyAmaj = (KeySignature)voice.elementAt(0);
+		assertTrue(keyAmaj.equals(new KeySignature(Note.A, KeySignature.MAJOR)));
 //		1 : class abc.notation.PartLabel abc.notation.PartLabel@aa9835
 		assertTrue(voice.elementAt(1) instanceof PartLabel
 				&& ((PartLabel)voice.elementAt(1)).getLabel().equals("A"));
@@ -120,7 +121,10 @@ public class BeforeAudioRenditionTest extends TestCase {
 		assertTrue(voice.elementAt(31) instanceof Note);
 //		32 : class abc.notation.EndOfStaffLine abc.notation.EndOfStaffLine@53ba3d
 		assertTrue(voice.elementAt(32) instanceof EndOfStaffLine);
-
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
 	}
 	
 }

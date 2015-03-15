@@ -78,6 +78,9 @@ public class CrashTest extends TestCase {
 				AbcParserAbstract.debugTree(abcRoot);
 			}
 		}
+		public boolean isBusy() {
+			return false;
+		}
 	}
 
 }

@@ -21,14 +21,15 @@ public class GracingsTest extends TestCase {
 		Note secondNote = (Note)tune.getMusic().getFirstVoice().elementAt(2);
 		Note thirdNote = (Note)tune.getMusic().getFirstVoice().elementAt(3);
 		//why 5? I can't explain, 5 gets the _D (4th) note
-		Note fourthNote = (Note)tune.getMusic().getFirstVoice().elementAt(5);
+		Note fourthNote = (Note)tune.getMusic().getFirstVoice().elementAt(4);
 		assertTrue(firstNote.hasGracingNotes());
 		assertEquals(firstNote.getGracingNotes().length, 1);
 		//2nd note has 2 gracings and one decoration
 		assertTrue(secondNote.hasGracingNotes());
 		assertEquals(secondNote.getGracingNotes().length, 2);
 		//3rd note is bad writted (gracings must be before decorations)
-		assertFalse(thirdNote.hasGracingNotes());
+		//assertFalse with old version, assertTrue now :)
+		assertTrue(thirdNote.hasGracingNotes());
 		
 		//Make sure accidentals works
 		assertTrue(fourthNote.hasGracingNotes());

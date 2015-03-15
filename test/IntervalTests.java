@@ -10,8 +10,26 @@ public class IntervalTests extends TestCase {
 		super(name);
 	}
 	
+	private boolean areSimilar(Note n1, Note n2) {
+		boolean ret = (n1.getStrictHeight() == n2.getStrictHeight())
+			&& (n1.getOctaveTransposition() == n2.getOctaveTransposition())
+			&& (n1.getAccidental().equals(n2.getAccidental()));
+		if (!ret) {
+			System.err.println(n1 + " and " + n2 + " are not similar, test will fail");
+		}
+		return ret;
+	}
+	
+	private void assertEquals(String s, Note n) {
+		assertEquals(s, n.toString());
+	}
+	
 	protected void setUp() throws Exception {
 		super.setUp();
+	}
+	
+	protected void tearDown() throws Exception {
+		super.tearDown();
 	}
 	
 	public void test1() {
@@ -182,6 +200,13 @@ public class IntervalTests extends TestCase {
 		assertEquals(Interval.AUGMENTED, augOct.getQuality());
 		assertEquals(13, augOct.getSemitones());
 		
+		Interval rev2ndDim = new Interval(
+				new Note(Note.B, Accidental.FLAT),
+				new Note(Note.A, Accidental.SHARP),
+				null);
+		assertEquals(Interval.SECOND, rev2ndDim.getLabel());
+		assertEquals(Interval.DIMINISHED, rev2ndDim.getQuality());
+		assertTrue(rev2ndDim.isDownward());
 	}
 	
 	public void test3renverse() {
@@ -229,7 +254,7 @@ public class IntervalTests extends TestCase {
 		assertEquals(Interval.QUADRUPLE_DIMINISHED, invFifthQuadAug.getQuality());
 		assertEquals(1, invFifthQuadAug.getSemitones());
 	}
-	
+
 	public void test5compound() {
 		assertFalse(Interval.PERFECT_FOURTH.isCompound());
 		assertFalse(Interval.PERFECT_OCTAVE.isCompound());
@@ -246,16 +271,6 @@ public class IntervalTests extends TestCase {
 		assertTrue(compound.isCompound());
 		assertEquals(3, compound.getOctaveNumber());
 
-	}
-	
-	private boolean areSimilar(Note n1, Note n2) {
-		boolean ret = (n1.getStrictHeight() == n2.getStrictHeight())
-			&& (n1.getOctaveTransposition() == n2.getOctaveTransposition())
-			&& (n1.getAccidental().equals(n2.getAccidental()));
-		if (!ret) {
-			System.err.println(n1 + " and " + n2 + " are not similar, test will fail");
-		}
-		return ret;
 	}
 	
 	public void test6calculateSecondNote() {
@@ -646,12 +661,12 @@ public class IntervalTests extends TestCase {
 		assertTrue(areSimilar(Gss, fifthAug2.calculateSecondNote(C)));
 		assertTrue(areSimilar(gs, fifthAug2.calculateSecondNote(B)));
 		assertTrue(areSimilar(Bs, fifthAug2.calculateSecondNote(Ds)));
-		assertTrue(areSimilar(c, fifthAug2.calculateSecondNote(Eb)));
+		assertTrue(areSimilar(Bs, fifthAug2.calculateSecondNote(Eb)));
 		Interval revFifthAug2 = Interval.reverseOrder(fifthAug2);
 		//would prefer Fbb... but it's rare...
-		assertTrue(areSimilar(Eb, revFifthAug2.calculateSecondNote(c)));
+		assertTrue(areSimilar(Fbb, revFifthAug2.calculateSecondNote(c)));
 		assertTrue(areSimilar(Ebb, revFifthAug2.calculateSecondNote(B)));
-		assertTrue(areSimilar(Fs, revFifthAug2.calculateSecondNote(ds)));
+		assertTrue(areSimilar(Gb, revFifthAug2.calculateSecondNote(ds)));
 		assertTrue(areSimilar(Gb, revFifthAug2.calculateSecondNote(eb)));
 		
 		//triple augmented
@@ -659,11 +674,11 @@ public class IntervalTests extends TestCase {
 		assertTrue(areSimilar(As, fifthAug3.calculateSecondNote(C)));
 		assertTrue(areSimilar(gss, fifthAug3.calculateSecondNote(B)));
 		assertTrue(areSimilar(Bss, fifthAug3.calculateSecondNote(Ds)));
-		assertTrue(areSimilar(cs, fifthAug3.calculateSecondNote(Eb)));
+		assertTrue(areSimilar(Bss, fifthAug3.calculateSecondNote(Eb)));
 		Interval revFifthAug3 = Interval.reverseOrder(fifthAug3);
 		assertTrue(areSimilar(Ebb, revFifthAug3.calculateSecondNote(c)));
 		assertTrue(areSimilar(Db, revFifthAug3.calculateSecondNote(B)));
-		assertTrue(areSimilar(F, revFifthAug3.calculateSecondNote(ds)));
+		assertTrue(areSimilar(Gbb, revFifthAug3.calculateSecondNote(ds)));
 		assertTrue(areSimilar(Gbb, revFifthAug3.calculateSecondNote(eb)));
 	
 		//quadruple augmented
@@ -671,11 +686,11 @@ public class IntervalTests extends TestCase {
 		assertTrue(areSimilar(Ass, fifthAug4.calculateSecondNote(C)));
 		assertTrue(areSimilar(as, fifthAug4.calculateSecondNote(B)));
 		assertTrue(areSimilar(css, fifthAug4.calculateSecondNote(Ds)));
-		assertTrue(areSimilar(d, fifthAug4.calculateSecondNote(Eb)));
+		assertTrue(areSimilar(css, fifthAug4.calculateSecondNote(Eb)));
 		Interval revFifthAug4 = Interval.reverseOrder(fifthAug4);
 		assertTrue(areSimilar(Db, revFifthAug4.calculateSecondNote(c)));
 		assertTrue(areSimilar(Dbb, revFifthAug4.calculateSecondNote(B)));
-		assertTrue(areSimilar(E, revFifthAug4.calculateSecondNote(ds)));
+		assertTrue(areSimilar(Fb, revFifthAug4.calculateSecondNote(ds)));
 		assertTrue(areSimilar(Fb, revFifthAug4.calculateSecondNote(eb)));
 		
 		//with key signature
@@ -692,8 +707,801 @@ public class IntervalTests extends TestCase {
 		
 	}
 	
-	protected void tearDown() throws Exception {
-		super.tearDown();
+	public void test7GetSemiQuarterAndCents() {
+		
+		//
+		//unison
+		//
+		test7helper(
+				new Interval(Interval.UNISON, Interval.QUADRUPLE_DIMINISHED),
+				-4, -8, -400);
+		test7helper(new Interval(Interval.UNISON,
+				Interval.SUPER_TRIPLE_DIMINISHED), -4, -7, -350);
+		test7helper(new Interval(Interval.UNISON, Interval.TRIPLE_DIMINISHED),
+				-3, -6, -300);
+		test7helper(new Interval(Interval.UNISON,
+				Interval.SUPER_DOUBLE_DIMINISHED), -3, -5, -250);
+		test7helper(new Interval(Interval.UNISON, Interval.DOUBLE_DIMINISHED),
+				-2, -4, -200);
+		test7helper(new Interval(Interval.UNISON, Interval.SUPER_DIMINISHED),
+				-2, -3, -150);
+		try {
+			new Interval(Interval.UNISON, Interval.SUBMINOR);
+			fail("Subminor not possible for unison");
+		} catch (Exception ok) {
+		}
+		test7helper(Interval.DIMINISHED_UNISON, -1, -2, -100);
+		test7helper(new Interval(Interval.UNISON, Interval.SUB), -1, -1, -50);
+		test7helper(Interval.PERFECT_UNISON, 0, 0, 0);
+		test7helper(new Interval(Interval.UNISON, Interval.SUPER), 1, 1, 50);
+		test7helper(Interval.AUGMENTED_UNISON, 1, 2, 100);
+		test7helper(new Interval(Interval.UNISON, Interval.SUPER_AUGMENTED), 2,
+				3, 150);
+		test7helper(new Interval(Interval.UNISON, Interval.DOUBLE_AUGMENTED),
+				2, 4, 200);
+		test7helper(new Interval(Interval.UNISON,
+				Interval.SUPER_DOUBLE_AUGMENTED), 3, 5, 250);
+		test7helper(new Interval(Interval.UNISON, Interval.TRIPLE_AUGMENTED),
+				3, 6, 300);
+		test7helper(new Interval(Interval.UNISON,
+				Interval.SUPER_TRIPLE_AUGMENTED), 4, 7, 350);
+		test7helper(
+				new Interval(Interval.UNISON, Interval.QUADRUPLE_AUGMENTED), 4,
+				8, 400);
+
+		//
+		//second
+		//
+		try {
+			new Interval(Interval.SECOND, Interval.QUADRUPLE_DIMINISHED);
+		} catch (Exception ok) {
+		}
+		try {
+			new Interval(Interval.SECOND, Interval.SUPER_TRIPLE_DIMINISHED);
+		} catch (Exception ok) {
+		}
+		test7helper(new Interval(Interval.SECOND, Interval.TRIPLE_DIMINISHED),
+				-2, -4, -200);
+		test7helper(new Interval(Interval.SECOND,
+				Interval.SUPER_DOUBLE_DIMINISHED), -2, -3, -150);
+		test7helper(new Interval(Interval.SECOND, Interval.DOUBLE_DIMINISHED),
+				-1, -2, -100);
+		test7helper(new Interval(Interval.SECOND, Interval.SUPER_DIMINISHED),
+				-1, -1, -50);
+		test7helper(Interval.DIMINISHED_SECOND, 0, 0, 0);
+		test7helper(new Interval(Interval.SECOND, Interval.SUBMINOR), 0, 1, 50);
+		test7helper(Interval.MINOR_SECOND, 1, 2, 100);
+		test7helper(new Interval(Interval.SECOND, Interval.NEUTRAL), 1, 3, 150);
+		try {
+			new Interval(Interval.SECOND, Interval.PERFECT);
+		} catch (Exception ok) {
+		}
+		test7helper(Interval.MAJOR_SECOND, 2, 4, 200);
+		test7helper(new Interval(Interval.SECOND, Interval.SUPER_MAJOR), 3, 5,
+				250);
+		test7helper(Interval.AUGMENTED_SECOND, 3, 6, 300);
+		test7helper(new Interval(Interval.SECOND, Interval.SUPER_AUGMENTED), 4,
+				7, 350);
+		test7helper(new Interval(Interval.SECOND, Interval.DOUBLE_AUGMENTED),
+				4, 8, 400);
+		test7helper(new Interval(Interval.SECOND,
+				Interval.SUPER_DOUBLE_AUGMENTED), 5, 9, 450);
+		test7helper(new Interval(Interval.SECOND, Interval.TRIPLE_AUGMENTED),
+				5, 10, 500);
+		test7helper(new Interval(Interval.SECOND,
+				Interval.SUPER_TRIPLE_AUGMENTED), 6, 11, 550);
+		test7helper(
+				new Interval(Interval.SECOND, Interval.QUADRUPLE_AUGMENTED), 6,
+				12, 600);
+
+		//
+		//third
+		//
+		try {
+			new Interval(Interval.THIRD, Interval.QUADRUPLE_DIMINISHED);
+		} catch (Exception ok) {
+		}
+		try {
+			new Interval(Interval.THIRD, Interval.SUPER_TRIPLE_DIMINISHED);
+		} catch (Exception ok) {
+		}
+		test7helper(new Interval(Interval.THIRD, Interval.TRIPLE_DIMINISHED),
+				0, 0, 0);
+		test7helper(new Interval(Interval.THIRD,
+				Interval.SUPER_DOUBLE_DIMINISHED), 0, 1, 50);
+		test7helper(new Interval(Interval.THIRD, Interval.DOUBLE_DIMINISHED),
+				1, 2, 100);
+		test7helper(new Interval(Interval.THIRD, Interval.SUPER_DIMINISHED), 1,
+				3, 150);
+		test7helper(Interval.DIMINISHED_THIRD, 2, 4, 200);
+		test7helper(new Interval(Interval.THIRD, Interval.SUBMINOR), 2, 5, 250);
+		test7helper(Interval.MINOR_THIRD, 3, 6, 300);
+		test7helper(new Interval(Interval.THIRD, Interval.NEUTRAL), 3, 7, 350);
+		try {
+			new Interval(Interval.THIRD, Interval.PERFECT);
+		} catch (Exception ok) {
+		}
+		test7helper(Interval.MAJOR_THIRD, 4, 8, 400);
+		test7helper(new Interval(Interval.THIRD, Interval.SUPER_MAJOR), 5, 9,
+				450);
+		test7helper(Interval.AUGMENTED_THIRD, 5, 10, 500);
+		test7helper(new Interval(Interval.THIRD, Interval.SUPER_AUGMENTED), 6,
+				11, 550);
+		test7helper(new Interval(Interval.THIRD, Interval.DOUBLE_AUGMENTED), 6,
+				12, 600);
+		test7helper(new Interval(Interval.THIRD,
+				Interval.SUPER_DOUBLE_AUGMENTED), 7, 13, 650);
+		test7helper(new Interval(Interval.THIRD, Interval.TRIPLE_AUGMENTED), 7,
+				14, 700);
+		test7helper(new Interval(Interval.THIRD,
+				Interval.SUPER_TRIPLE_AUGMENTED), 8, 15, 750);
+		test7helper(new Interval(Interval.THIRD, Interval.QUADRUPLE_AUGMENTED),
+				8, 16, 800);
+
+		//
+		//fourth
+		//
+		test7helper(
+				new Interval(Interval.FOURTH, Interval.QUADRUPLE_DIMINISHED),
+				1, 2, 100);
+		test7helper(new Interval(Interval.FOURTH,
+				Interval.SUPER_TRIPLE_DIMINISHED), 1, 3, 150);
+		test7helper(new Interval(Interval.FOURTH, Interval.TRIPLE_DIMINISHED),
+				2, 4, 200);
+		test7helper(new Interval(Interval.FOURTH,
+				Interval.SUPER_DOUBLE_DIMINISHED), 2, 5, 250);
+		test7helper(new Interval(Interval.FOURTH, Interval.DOUBLE_DIMINISHED),
+				3, 6, 300);
+		test7helper(new Interval(Interval.FOURTH, Interval.SUPER_DIMINISHED),
+				3, 7, 350);
+		try {
+			new Interval(Interval.FOURTH, Interval.SUBMINOR);
+			fail("Subminor not possible for FOURTH");
+		} catch (Exception ok) {
+		}
+		test7helper(Interval.DIMINISHED_FOURTH, 4, 8, 400);
+		test7helper(new Interval(Interval.FOURTH, Interval.SUB), 4, 9, 450);
+		test7helper(Interval.PERFECT_FOURTH, 5, 10, 500);
+		test7helper(new Interval(Interval.FOURTH, Interval.SUPER), 6, 11, 550);
+		test7helper(Interval.AUGMENTED_FOURTH, 6, 12, 600);
+		test7helper(new Interval(Interval.FOURTH, Interval.SUPER_AUGMENTED), 7,
+				13, 650);
+		test7helper(new Interval(Interval.FOURTH, Interval.DOUBLE_AUGMENTED),
+				7, 14, 700);
+		test7helper(new Interval(Interval.FOURTH,
+				Interval.SUPER_DOUBLE_AUGMENTED), 8, 15, 750);
+		test7helper(new Interval(Interval.FOURTH, Interval.TRIPLE_AUGMENTED),
+				8, 16, 800);
+		test7helper(new Interval(Interval.FOURTH,
+				Interval.SUPER_TRIPLE_AUGMENTED), 9, 17, 850);
+		test7helper(
+				new Interval(Interval.FOURTH, Interval.QUADRUPLE_AUGMENTED), 9,
+				18, 900);
+
+		//
+		//fifth
+		//
+		test7helper(
+				new Interval(Interval.FIFTH, Interval.QUADRUPLE_DIMINISHED), 3,
+				6, 300);
+		test7helper(new Interval(Interval.FIFTH,
+				Interval.SUPER_TRIPLE_DIMINISHED), 3, 7, 350);
+		test7helper(new Interval(Interval.FIFTH, Interval.TRIPLE_DIMINISHED),
+				4, 8, 400);
+		test7helper(new Interval(Interval.FIFTH,
+				Interval.SUPER_DOUBLE_DIMINISHED), 4, 9, 450);
+		test7helper(new Interval(Interval.FIFTH, Interval.DOUBLE_DIMINISHED),
+				5, 10, 500);
+		test7helper(new Interval(Interval.FIFTH, Interval.SUPER_DIMINISHED), 5,
+				11, 550);
+		try {
+			new Interval(Interval.FIFTH, Interval.SUBMINOR);
+			fail("Subminor not possible for FOURTH");
+		} catch (Exception ok) {
+		}
+		test7helper(Interval.DIMINISHED_FIFTH, 6, 12, 600);
+		test7helper(new Interval(Interval.FIFTH, Interval.SUB), 6, 13, 650);
+		test7helper(Interval.PERFECT_FIFTH, 7, 14, 700);
+		test7helper(new Interval(Interval.FIFTH, Interval.SUPER), 8, 15, 750);
+		test7helper(Interval.AUGMENTED_FIFTH, 8, 16, 800);
+		test7helper(new Interval(Interval.FIFTH, Interval.SUPER_AUGMENTED), 9,
+				17, 850);
+		test7helper(new Interval(Interval.FIFTH, Interval.DOUBLE_AUGMENTED), 9,
+				18, 900);
+		test7helper(new Interval(Interval.FIFTH,
+				Interval.SUPER_DOUBLE_AUGMENTED), 10, 19, 950);
+		test7helper(new Interval(Interval.FIFTH, Interval.TRIPLE_AUGMENTED),
+				10, 20, 1000);
+		test7helper(new Interval(Interval.FIFTH,
+				Interval.SUPER_TRIPLE_AUGMENTED), 11, 21, 1050);
+		test7helper(new Interval(Interval.FIFTH, Interval.QUADRUPLE_AUGMENTED),
+				11, 22, 1100);
+
+		//
+		//sixth
+		//
+		try {
+			new Interval(Interval.SIXTH, Interval.QUADRUPLE_DIMINISHED);
+		} catch (Exception ok) {
+		}
+		try {
+			new Interval(Interval.SIXTH, Interval.SUPER_TRIPLE_DIMINISHED);
+		} catch (Exception ok) {
+		}
+		test7helper(new Interval(Interval.SIXTH, Interval.TRIPLE_DIMINISHED),
+				5, 10, 500);
+		test7helper(new Interval(Interval.SIXTH,
+				Interval.SUPER_DOUBLE_DIMINISHED), 5, 11, 550);
+		test7helper(new Interval(Interval.SIXTH, Interval.DOUBLE_DIMINISHED),
+				6, 12, 600);
+		test7helper(new Interval(Interval.SIXTH, Interval.SUPER_DIMINISHED), 6,
+				13, 650);
+		test7helper(Interval.DIMINISHED_SIXTH, 7, 14, 700);
+		test7helper(new Interval(Interval.SIXTH, Interval.SUBMINOR), 7, 15, 750);
+		test7helper(Interval.MINOR_SIXTH, 8, 16, 800);
+		test7helper(new Interval(Interval.SIXTH, Interval.NEUTRAL), 8, 17, 850);
+		try {
+			new Interval(Interval.SIXTH, Interval.PERFECT);
+		} catch (Exception ok) {
+		}
+		test7helper(Interval.MAJOR_SIXTH, 9, 18, 900);
+		test7helper(new Interval(Interval.SIXTH, Interval.SUPER_MAJOR), 10, 19,
+				950);
+		test7helper(Interval.AUGMENTED_SIXTH, 10, 20, 1000);
+		test7helper(new Interval(Interval.SIXTH, Interval.SUPER_AUGMENTED), 11,
+				21, 1050);
+		test7helper(new Interval(Interval.SIXTH, Interval.DOUBLE_AUGMENTED),
+				11, 22, 1100);
+		test7helper(new Interval(Interval.SIXTH,
+				Interval.SUPER_DOUBLE_AUGMENTED), 12, 23, 1150);
+		test7helper(new Interval(Interval.SIXTH, Interval.TRIPLE_AUGMENTED),
+				12, 24, 1200);
+		test7helper(new Interval(Interval.SIXTH,
+				Interval.SUPER_TRIPLE_AUGMENTED), 13, 25, 1250);
+		test7helper(new Interval(Interval.SIXTH, Interval.QUADRUPLE_AUGMENTED),
+				13, 26, 1300);
+
+		//
+		//seventh
+		//
+		try {
+			new Interval(Interval.SEVENTH, Interval.QUADRUPLE_DIMINISHED);
+		} catch (Exception ok) {
+		}
+		try {
+			new Interval(Interval.SEVENTH, Interval.SUPER_TRIPLE_DIMINISHED);
+		} catch (Exception ok) {
+		}
+		test7helper(new Interval(Interval.SEVENTH, Interval.TRIPLE_DIMINISHED),
+				7, 14, 700);
+		test7helper(new Interval(Interval.SEVENTH,
+				Interval.SUPER_DOUBLE_DIMINISHED), 7, 15, 750);
+		test7helper(new Interval(Interval.SEVENTH, Interval.DOUBLE_DIMINISHED),
+				8, 16, 800);
+		test7helper(new Interval(Interval.SEVENTH, Interval.SUPER_DIMINISHED),
+				8, 17, 850);
+		test7helper(Interval.DIMINISHED_SEVENTH, 9, 18, 900);
+		test7helper(new Interval(Interval.SEVENTH, Interval.SUBMINOR), 9, 19,
+				950);
+		test7helper(Interval.MINOR_SEVENTH, 10, 20, 1000);
+		test7helper(new Interval(Interval.SEVENTH, Interval.NEUTRAL), 10, 21,
+				1050);
+		try {
+			new Interval(Interval.SEVENTH, Interval.PERFECT);
+		} catch (Exception ok) {
+		}
+		test7helper(Interval.MAJOR_SEVENTH, 11, 22, 1100);
+		test7helper(new Interval(Interval.SEVENTH, Interval.SUPER_MAJOR), 12,
+				23, 1150);
+		test7helper(Interval.AUGMENTED_SEVENTH, 12, 24, 1200);
+		test7helper(new Interval(Interval.SEVENTH, Interval.SUPER_AUGMENTED),
+				13, 25, 1250);
+		test7helper(new Interval(Interval.SEVENTH, Interval.DOUBLE_AUGMENTED),
+				13, 26, 1300);
+		test7helper(new Interval(Interval.SEVENTH,
+				Interval.SUPER_DOUBLE_AUGMENTED), 14, 27, 1350);
+		test7helper(new Interval(Interval.SEVENTH, Interval.TRIPLE_AUGMENTED),
+				14, 28, 1400);
+		test7helper(new Interval(Interval.SEVENTH,
+				Interval.SUPER_TRIPLE_AUGMENTED), 15, 29, 1450);
+		test7helper(
+				new Interval(Interval.SEVENTH, Interval.QUADRUPLE_AUGMENTED),
+				15, 30, 1500);
+
+		//
+		//octave
+		//
+		test7helper(
+				new Interval(Interval.OCTAVE, Interval.QUADRUPLE_DIMINISHED),
+				8, 16, 800);
+		test7helper(new Interval(Interval.OCTAVE,
+				Interval.SUPER_TRIPLE_DIMINISHED), 8, 17, 850);
+		test7helper(new Interval(Interval.OCTAVE, Interval.TRIPLE_DIMINISHED),
+				9, 18, 900);
+		test7helper(new Interval(Interval.OCTAVE,
+				Interval.SUPER_DOUBLE_DIMINISHED), 9, 19, 950);
+		test7helper(new Interval(Interval.OCTAVE, Interval.DOUBLE_DIMINISHED),
+				10, 20, 1000);
+		test7helper(new Interval(Interval.OCTAVE, Interval.SUPER_DIMINISHED),
+				10, 21, 1050);
+		try {
+			new Interval(Interval.OCTAVE, Interval.SUBMINOR);
+			fail("Subminor not possible for OCTAVE");
+		} catch (Exception ok) {
+		}
+		test7helper(Interval.DIMINISHED_OCTAVE, 11, 22, 1100);
+		test7helper(new Interval(Interval.OCTAVE, Interval.SUB), 11, 23, 1150);
+		test7helper(Interval.PERFECT_OCTAVE, 12, 24, 1200);
+		test7helper(new Interval(Interval.OCTAVE, Interval.SUPER), 13, 25, 1250);
+		test7helper(Interval.AUGMENTED_OCTAVE, 13, 26, 1300);
+		test7helper(new Interval(Interval.OCTAVE, Interval.SUPER_AUGMENTED),
+				14, 27, 1350);
+		test7helper(new Interval(Interval.OCTAVE, Interval.DOUBLE_AUGMENTED),
+				14, 28, 1400);
+		test7helper(new Interval(Interval.OCTAVE,
+				Interval.SUPER_DOUBLE_AUGMENTED), 15, 29, 1450);
+		test7helper(new Interval(Interval.OCTAVE, Interval.TRIPLE_AUGMENTED),
+				15, 30, 1500);
+		test7helper(new Interval(Interval.OCTAVE,
+				Interval.SUPER_TRIPLE_AUGMENTED), 16, 31, 1550);
+		test7helper(
+				new Interval(Interval.OCTAVE, Interval.QUADRUPLE_AUGMENTED),
+				16, 32, 1600);
+
+	}
+	
+	private void test7helper(Interval i, int semi, int quarter, int cents) {
+		assertEquals(semi+" semitones", semi, i.getSemitones());
+		assertEquals(quarter+" quarter", quarter, i.getQuartertones());
+		assertEquals(cents+" cents", cents, i.getCents());
+	}
+	
+	public void test8QuarterTone() {
+		//
+		//Create note and check their properties
+		//
+		Note C2b = new Note(Note.C, Accidental.DOUBLE_FLAT);
+		assertEquals(-2, C2b.getMidiLikeHeight());
+		assertEquals(-2f, C2b.getMidiLikeMicrotonalHeight());
+		assertEquals(0.0f, C2b.getAccidental().getMicrotonalOffset());
+		Note C1_5b = new Note(Note.C, Accidental.FLAT_AND_A_HALF);
+		assertEquals(-1, C1_5b.getMidiLikeHeight());
+		assertEquals(-1.5f, C1_5b.getMidiLikeMicrotonalHeight());
+		assertEquals(-0.5f, C1_5b.getAccidental().getMicrotonalOffset());
+		Note Cb = new Note(Note.C, Accidental.FLAT);
+		assertEquals(-1, Cb.getMidiLikeHeight());
+		assertEquals(-1f, Cb.getMidiLikeMicrotonalHeight());
+		assertEquals(0.0f, Cb.getAccidental().getMicrotonalOffset());
+		Note C0_5b = new Note(Note.C, Accidental.HALF_FLAT);
+		assertEquals(0, C0_5b.getMidiLikeHeight());
+		assertEquals(-0.5f, C0_5b.getMidiLikeMicrotonalHeight());
+		assertEquals(-0.5f, C0_5b.getAccidental().getMicrotonalOffset());
+		Note C = new Note(Note.C, Accidental.NATURAL);
+		assertEquals(0, C.getMidiLikeHeight());
+		assertEquals(0.0f, C.getMidiLikeMicrotonalHeight());
+		assertEquals(0.0f, C.getAccidental().getMicrotonalOffset());
+		Note C0_5s = new Note(Note.C, Accidental.HALF_SHARP);
+		assertEquals(0, C0_5s.getMidiLikeHeight());
+		assertEquals(0.5f, C0_5s.getMidiLikeMicrotonalHeight());
+		assertEquals(0.5f, C0_5s.getAccidental().getMicrotonalOffset());
+		Note Cs = new Note(Note.C, Accidental.SHARP);
+		assertEquals(1, Cs.getMidiLikeHeight());
+		assertEquals(1.0f, Cs.getMidiLikeMicrotonalHeight());
+		assertEquals(0.0f, Cs.getAccidental().getMicrotonalOffset());
+		Note C1_5s = new Note(Note.C, Accidental.SHARP_AND_A_HALF);
+		assertEquals(1, C1_5s.getMidiLikeHeight());
+		assertEquals(1.5f, C1_5s.getMidiLikeMicrotonalHeight());
+		assertEquals(0.5f, C1_5s.getAccidental().getMicrotonalOffset());
+		Note C2s = new Note(Note.C, Accidental.DOUBLE_SHARP);
+		assertEquals(2, C2s.getMidiLikeHeight());
+		assertEquals(2f, C2s.getMidiLikeMicrotonalHeight());
+		assertEquals(0.0f, C2s.getAccidental().getMicrotonalOffset());
+		
+		Note D = new Note(Note.D, Accidental.NATURAL);
+		assertEquals(2, D.getMidiLikeHeight());
+		assertEquals(2.0f, D.getMidiLikeMicrotonalHeight());
+		assertEquals(0.0f, D.getAccidental().getMicrotonalOffset());
+		Note E2b = new Note(Note.E, Accidental.DOUBLE_FLAT);
+		assertEquals(2, E2b.getMidiLikeHeight());
+		assertEquals(2.0f, E2b.getMidiLikeMicrotonalHeight());
+		assertEquals(0.0f, E2b.getAccidental().getMicrotonalOffset());
+		Note E1_5b = new Note(Note.E, Accidental.FLAT_AND_A_HALF);
+		assertEquals(3, E1_5b.getMidiLikeHeight());
+		assertEquals(2.5f, E1_5b.getMidiLikeMicrotonalHeight());
+		assertEquals(-0.5f, E1_5b.getAccidental().getMicrotonalOffset());
+		Note Eb = new Note(Note.E, Accidental.FLAT);
+		assertEquals(3, Eb.getMidiLikeHeight());
+		assertEquals(3.0f, Eb.getMidiLikeMicrotonalHeight());
+		assertEquals(0.0f, Eb.getAccidental().getMicrotonalOffset());
+		Note E0_5b = new Note(Note.E, Accidental.HALF_FLAT);
+		assertEquals(4, E0_5b.getMidiLikeHeight());
+		assertEquals(3.5f, E0_5b.getMidiLikeMicrotonalHeight());
+		assertEquals(-0.5f, E0_5b.getAccidental().getMicrotonalOffset());
+		Note E = new Note(Note.E, Accidental.NATURAL);
+		assertEquals(4, E.getMidiLikeHeight());
+		assertEquals(4.0f, E.getMidiLikeMicrotonalHeight());
+		assertEquals(0.0f, E.getAccidental().getMicrotonalOffset());
+		Note E0_5s = new Note(Note.E, Accidental.HALF_SHARP);
+		assertEquals(4, E0_5s.getMidiLikeHeight());
+		assertEquals(4.5f, E0_5s.getMidiLikeMicrotonalHeight());
+		assertEquals(0.5f, E0_5s.getAccidental().getMicrotonalOffset());
+		Note Es = new Note(Note.E, Accidental.SHARP);
+		assertEquals(5, Es.getMidiLikeHeight());
+		assertEquals(5.0f, Es.getMidiLikeMicrotonalHeight());
+		assertEquals(0.0f, Es.getAccidental().getMicrotonalOffset());
+		Note E1_5s = new Note(Note.E, Accidental.SHARP_AND_A_HALF);
+		assertEquals(5, E1_5s.getMidiLikeHeight());
+		assertEquals(5.5f, E1_5s.getMidiLikeMicrotonalHeight());
+		assertEquals(0.5f, E1_5s.getAccidental().getMicrotonalOffset());
+		Note E2s = new Note(Note.E, Accidental.DOUBLE_SHARP);
+		assertEquals(6, E2s.getMidiLikeHeight());
+		assertEquals(6.0f, E2s.getMidiLikeMicrotonalHeight());
+		assertEquals(0.0f, E2s.getAccidental().getMicrotonalOffset());
+
+		//
+		//Create intervals and check their properties
+		//
+		//Ebb = D
+		Interval intervC_E2b = new Interval(C, E2b, null);
+		assertEquals(2, intervC_E2b.getSemitones());
+		assertEquals(4, intervC_E2b.getQuartertones());
+		assertEquals(Interval.THIRD, intervC_E2b.getLabel());
+		assertEquals(0.0f, intervC_E2b.getMicrotonalOffset());
+		//E flat and half stay in flat, not D half flat
+		Interval intervC_E1_5b = new Interval(C, E1_5b, null);
+		assertEquals(2, intervC_E1_5b.getSemitones());
+		assertEquals(5, intervC_E1_5b.getQuartertones());
+		assertEquals(Interval.THIRD, intervC_E1_5b.getLabel());
+		assertEquals(-0.5f, intervC_E1_5b.getMicrotonalOffset());
+		//E flat
+		Interval intervC_Eb = new Interval(C, Eb, null);
+		assertEquals(3, intervC_Eb.getSemitones());
+		assertEquals(6, intervC_Eb.getQuartertones());
+		assertEquals(Interval.THIRD, intervC_Eb.getLabel());
+		assertEquals(0.0f, intervC_Eb.getMicrotonalOffset());
+		//E half flat
+		Interval intervC_E0_5b = new Interval(C, E0_5b, null);
+		assertEquals(3, intervC_E0_5b.getSemitones());
+		assertEquals(7, intervC_E0_5b.getQuartertones());
+		assertEquals(Interval.THIRD, intervC_E0_5b.getLabel());
+		assertEquals(-0.5f, intervC_E0_5b.getMicrotonalOffset());
+		
+		Interval intervC_E = new Interval(C, E, null);
+		assertEquals(4, intervC_E.getSemitones());
+		assertEquals(8, intervC_E.getQuartertones());
+		assertEquals(Interval.THIRD, intervC_E.getLabel());
+		assertEquals(0.0f, intervC_E.getMicrotonalOffset());
+		
+		//E half sharp stay a sharp, not F half flat
+		Interval intervC_E0_5s = new Interval(C, E0_5s, null);
+		assertEquals(5, intervC_E0_5s.getSemitones());
+		assertEquals(9, intervC_E0_5s.getQuartertones());
+		assertEquals(Interval.THIRD, intervC_E0_5s.getLabel());
+		assertEquals(0.5f, intervC_E0_5s.getMicrotonalOffset());
+		//E sharp = F
+		Interval intervC_Es = new Interval(C, Es, null);
+		assertEquals(5, intervC_Es.getSemitones());
+		assertEquals(10, intervC_Es.getQuartertones());
+		assertEquals(Interval.THIRD, intervC_Es.getLabel());
+		assertEquals(0.0f, intervC_Es.getMicrotonalOffset());
+		//E sharp and half = F half sharp, not F#
+		Interval intervC_E1_5s = new Interval(C, E1_5s, null);
+		assertEquals(6, intervC_E1_5s.getSemitones());
+		assertEquals(11, intervC_E1_5s.getQuartertones());
+		assertEquals(Interval.THIRD, intervC_E1_5s.getLabel());
+		assertEquals(0.5f, intervC_E1_5s.getMicrotonalOffset());
+		//E## = F#
+		Interval intervC_E2s = new Interval(C, E2s, null);
+		assertEquals(6, intervC_E2s.getSemitones());
+		assertEquals(12, intervC_E2s.getQuartertones());
+		assertEquals(Interval.THIRD, intervC_E2s.getLabel());
+		assertEquals(0.0f, intervC_E2s.getMicrotonalOffset());
+		
+		//
+		//Create downward intervals and check their properties
+		//
+		//Ebb = D
+		Interval intervE2b_C = new Interval(E2b, C, null);
+		assertEquals(2, intervE2b_C.getSemitones());
+		assertEquals(4, intervE2b_C.getQuartertones());
+		assertEquals(Interval.THIRD, intervE2b_C.getLabel());
+		assertEquals(0.0f, intervE2b_C.getMicrotonalOffset());
+		//E flat and half stay in flat, not D half flat
+		Interval intervE1_5b_C = new Interval(E1_5b, C, null);
+		assertEquals(2, intervE1_5b_C.getSemitones());
+		assertEquals(5, intervE1_5b_C.getQuartertones());
+		assertEquals(Interval.THIRD, intervE1_5b_C.getLabel());
+		assertEquals(-0.5f, intervE1_5b_C.getMicrotonalOffset());
+		//E flat
+		Interval intervEb_C = new Interval(Eb, C, null);
+		assertEquals(3, intervEb_C.getSemitones());
+		assertEquals(6, intervEb_C.getQuartertones());
+		assertEquals(Interval.THIRD, intervEb_C.getLabel());
+		assertEquals(0.0f, intervEb_C.getMicrotonalOffset());
+		//E half flat
+		Interval intervE0_5b_C = new Interval(E0_5b, C, null);
+		assertEquals(3, intervE0_5b_C.getSemitones());
+		assertEquals(7, intervE0_5b_C.getQuartertones());
+		assertEquals(Interval.THIRD, intervE0_5b_C.getLabel());
+		assertEquals(-0.5f, intervE0_5b_C.getMicrotonalOffset());
+		
+		Interval intervE_C = new Interval(E, C, null);
+		assertEquals(4, intervE_C.getSemitones());
+		assertEquals(8, intervE_C.getQuartertones());
+		assertEquals(Interval.THIRD, intervE_C.getLabel());
+		assertEquals(0.0f, intervE_C.getMicrotonalOffset());
+		
+		//E half sharp stay a sharp, not F half flat
+		Interval intervE0_5s_C = new Interval(E0_5s, C, null);
+		assertEquals(5, intervE0_5s_C.getSemitones());
+		assertEquals(9, intervE0_5s_C.getQuartertones());
+		assertEquals(Interval.THIRD, intervE0_5s_C.getLabel());
+		assertEquals(0.5f, intervE0_5s_C.getMicrotonalOffset());
+		//E sharp = F
+		Interval intervEs_C = new Interval(Es, C, null);
+		assertEquals(5, intervEs_C.getSemitones());
+		assertEquals(10, intervEs_C.getQuartertones());
+		assertEquals(Interval.THIRD, intervEs_C.getLabel());
+		assertEquals(0.0f, intervEs_C.getMicrotonalOffset());
+		//E sharp and half = F half sharp, not F#
+		Interval intervE1_5s_C = new Interval(E1_5s, C, null);
+		assertEquals(6, intervE1_5s_C.getSemitones());
+		assertEquals(11, intervE1_5s_C.getQuartertones());
+		assertEquals(Interval.THIRD, intervE1_5s_C.getLabel());
+		assertEquals(0.5f, intervE1_5s_C.getMicrotonalOffset());
+		//E## = F#
+		Interval intervE2s_C = new Interval(E2s, C, null);
+		assertEquals(6, intervE2s_C.getSemitones());
+		assertEquals(12, intervE2s_C.getQuartertones());
+		assertEquals(Interval.THIRD, intervE2s_C.getLabel());
+		assertEquals(0.0f, intervE2s_C.getMicrotonalOffset());
+		
+		
+		//
+		//Test interval transposition
+		//
+		//diminished
+		assertEquals("Dbb", intervC_E2b.calculateSecondNote(C2b));
+		assertEquals("D1.5b", intervC_E2b.calculateSecondNote(C1_5b));
+		assertEquals("Db", intervC_E2b.calculateSecondNote(Cb));
+		assertEquals("D0.5b", intervC_E2b.calculateSecondNote(C0_5b));
+		assertEquals("Ebb", intervC_E2b.calculateSecondNote(C));
+		assertEquals("E1.5b", intervC_E2b.calculateSecondNote(C0_5s));
+		assertEquals("Eb", intervC_E2b.calculateSecondNote(Cs));
+		assertEquals("E0.5b", intervC_E2b.calculateSecondNote(C1_5s));
+		assertEquals("E=", intervC_E2b.calculateSecondNote(C2s));
+		
+		//subminor
+		assertEquals("D1.5b", intervC_E1_5b.calculateSecondNote(C2b));
+		assertEquals("Db", intervC_E1_5b.calculateSecondNote(C1_5b));
+		assertEquals("D0.5b", intervC_E1_5b.calculateSecondNote(Cb));
+		assertEquals("Ebb", intervC_E1_5b.calculateSecondNote(C0_5b));
+		assertEquals("E1.5b", intervC_E1_5b.calculateSecondNote(C));
+		assertEquals("Eb", intervC_E1_5b.calculateSecondNote(C0_5s));
+		assertEquals("E0.5b", intervC_E1_5b.calculateSecondNote(Cs));
+		assertEquals("E=", intervC_E1_5b.calculateSecondNote(C1_5s));
+		assertEquals("E0.5#", intervC_E1_5b.calculateSecondNote(C2s));
+
+		//minor
+		assertEquals("Db", intervC_Eb.calculateSecondNote(C2b));
+		assertEquals("D0.5b", intervC_Eb.calculateSecondNote(C1_5b));
+		assertEquals("Ebb", intervC_Eb.calculateSecondNote(Cb));
+		assertEquals("E1.5b", intervC_Eb.calculateSecondNote(C0_5b));
+		assertEquals("Eb", intervC_Eb.calculateSecondNote(C));
+		assertEquals("E0.5b", intervC_Eb.calculateSecondNote(C0_5s));
+		assertEquals("E=", intervC_Eb.calculateSecondNote(Cs));
+		assertEquals("E0.5#", intervC_Eb.calculateSecondNote(C1_5s));
+		assertEquals("E#", intervC_Eb.calculateSecondNote(C2s));
+		
+		//neutral
+		assertEquals("D0.5b", intervC_E0_5b.calculateSecondNote(C2b));
+		assertEquals("Ebb", intervC_E0_5b.calculateSecondNote(C1_5b));
+		assertEquals("E1.5b", intervC_E0_5b.calculateSecondNote(Cb));
+		assertEquals("Eb", intervC_E0_5b.calculateSecondNote(C0_5b));
+		assertEquals("E0.5b", intervC_E0_5b.calculateSecondNote(C));
+		assertEquals("E=", intervC_E0_5b.calculateSecondNote(C0_5s));
+		assertEquals("E0.5#", intervC_E0_5b.calculateSecondNote(Cs));
+		assertEquals("E#", intervC_E0_5b.calculateSecondNote(C1_5s));
+		assertEquals("E1.5#", intervC_E0_5b.calculateSecondNote(C2s));
+
+		//major
+		assertEquals("Ebb", intervC_E.calculateSecondNote(C2b));
+		assertEquals("E1.5b", intervC_E.calculateSecondNote(C1_5b));
+		assertEquals("Eb", intervC_E.calculateSecondNote(Cb));
+		assertEquals("E0.5b", intervC_E.calculateSecondNote(C0_5b));
+		assertEquals("E=", intervC_E.calculateSecondNote(C));
+		assertEquals("E0.5#", intervC_E.calculateSecondNote(C0_5s));
+		assertEquals("E#", intervC_E.calculateSecondNote(Cs));
+		assertEquals("E1.5#", intervC_E.calculateSecondNote(C1_5s));
+		assertEquals("E##", intervC_E.calculateSecondNote(C2s));
+
+		//super major
+		assertEquals("E1.5b", intervC_E0_5s.calculateSecondNote(C2b));
+		assertEquals("Eb", intervC_E0_5s.calculateSecondNote(C1_5b));
+		assertEquals("E0.5b", intervC_E0_5s.calculateSecondNote(Cb));
+		assertEquals("E=", intervC_E0_5s.calculateSecondNote(C0_5b));
+		assertEquals("E0.5#", intervC_E0_5s.calculateSecondNote(C));
+		assertEquals("E#", intervC_E0_5s.calculateSecondNote(C0_5s));
+		assertEquals("E1.5#", intervC_E0_5s.calculateSecondNote(Cs));
+		assertEquals("E##", intervC_E0_5s.calculateSecondNote(C1_5s));
+		assertEquals("F1.5#", intervC_E0_5s.calculateSecondNote(C2s));
+
+		//augmented
+		assertEquals("Eb", intervC_Es.calculateSecondNote(C2b));
+		assertEquals("E0.5b", intervC_Es.calculateSecondNote(C1_5b));
+		assertEquals("E=", intervC_Es.calculateSecondNote(Cb));
+		assertEquals("E0.5#", intervC_Es.calculateSecondNote(C0_5b));
+		assertEquals("E#", intervC_Es.calculateSecondNote(C));
+		assertEquals("E1.5#", intervC_Es.calculateSecondNote(C0_5s));
+		assertEquals("E##", intervC_Es.calculateSecondNote(Cs));
+		assertEquals("F1.5#", intervC_Es.calculateSecondNote(C1_5s));
+		assertEquals("F##", intervC_Es.calculateSecondNote(C2s));
+
+		//super augmented
+		assertEquals("E0.5b", intervC_E1_5s.calculateSecondNote(C2b));
+		assertEquals("E=", intervC_E1_5s.calculateSecondNote(C1_5b));
+		assertEquals("E0.5#", intervC_E1_5s.calculateSecondNote(Cb));
+		assertEquals("E#", intervC_E1_5s.calculateSecondNote(C0_5b));
+		assertEquals("E1.5#", intervC_E1_5s.calculateSecondNote(C));
+		assertEquals("E##", intervC_E1_5s.calculateSecondNote(C0_5s));
+		assertEquals("F1.5#", intervC_E1_5s.calculateSecondNote(Cs));
+		assertEquals("F##", intervC_E1_5s.calculateSecondNote(C1_5s));
+		assertEquals("G0.5#", intervC_E1_5s.calculateSecondNote(C2s));
+
+		//double augmented
+		assertEquals("E=", intervC_E2s.calculateSecondNote(C2b));
+		assertEquals("E0.5#", intervC_E2s.calculateSecondNote(C1_5b));
+		assertEquals("E#", intervC_E2s.calculateSecondNote(Cb));
+		assertEquals("E1.5#", intervC_E2s.calculateSecondNote(C0_5b));
+		assertEquals("E##", intervC_E2s.calculateSecondNote(C));
+		assertEquals("F1.5#", intervC_E2s.calculateSecondNote(C0_5s));
+		assertEquals("F##", intervC_E2s.calculateSecondNote(Cs));
+		assertEquals("G0.5#", intervC_E2s.calculateSecondNote(C1_5s));
+		assertEquals("G#", intervC_E2s.calculateSecondNote(C2s));
+		
+		//Downward
+		Note c2b = new Note(Note.c, Accidental.DOUBLE_FLAT);
+		Note c1_5b = new Note(Note.c, Accidental.FLAT_AND_A_HALF);
+		Note cb = new Note(Note.c, Accidental.FLAT);
+		Note c0_5b = new Note(Note.c, Accidental.HALF_FLAT);
+		Note c = new Note(Note.c, Accidental.NATURAL);
+		Note c0_5s = new Note(Note.c, Accidental.HALF_SHARP);
+		Note cs = new Note(Note.c, Accidental.SHARP);
+		Note c1_5s = new Note(Note.c, Accidental.SHARP_AND_A_HALF);
+		Note c2s = new Note(Note.c, Accidental.DOUBLE_SHARP);
+
+		//diminished
+		assertEquals("Ab", intervE2b_C.calculateSecondNote(c2b));
+		assertEquals("A0.5b", intervE2b_C.calculateSecondNote(c1_5b));
+		assertEquals("A=", intervE2b_C.calculateSecondNote(cb));
+		assertEquals("A0.5#", intervE2b_C.calculateSecondNote(c0_5b));
+		assertEquals("A#", intervE2b_C.calculateSecondNote(c));
+		assertEquals("A1.5#", intervE2b_C.calculateSecondNote(c0_5s));
+		assertEquals("A##", intervE2b_C.calculateSecondNote(cs));
+		assertEquals("B0.5#", intervE2b_C.calculateSecondNote(c1_5s));
+		assertEquals("B#", intervE2b_C.calculateSecondNote(c2s));
+		
+		//subminor
+		assertEquals("A1.5b", intervE1_5b_C.calculateSecondNote(c2b));
+		assertEquals("Ab", intervE1_5b_C.calculateSecondNote(c1_5b));
+		assertEquals("A0.5b", intervE1_5b_C.calculateSecondNote(cb));
+		assertEquals("A=", intervE1_5b_C.calculateSecondNote(c0_5b));
+		assertEquals("A0.5#", intervE1_5b_C.calculateSecondNote(c));
+		assertEquals("A#", intervE1_5b_C.calculateSecondNote(c0_5s));
+		assertEquals("A1.5#", intervE1_5b_C.calculateSecondNote(cs));
+		assertEquals("A##", intervE1_5b_C.calculateSecondNote(c1_5s));
+		assertEquals("B0.5#", intervE1_5b_C.calculateSecondNote(c2s));
+
+		//minor
+		assertEquals("Abb", intervEb_C.calculateSecondNote(c2b));
+		assertEquals("A1.5b", intervEb_C.calculateSecondNote(c1_5b));
+		assertEquals("Ab", intervEb_C.calculateSecondNote(cb));
+		assertEquals("A0.5b", intervEb_C.calculateSecondNote(c0_5b));
+		assertEquals("A=", intervEb_C.calculateSecondNote(c));
+		assertEquals("A0.5#", intervEb_C.calculateSecondNote(c0_5s));
+		assertEquals("A#", intervEb_C.calculateSecondNote(cs));
+		assertEquals("A1.5#", intervEb_C.calculateSecondNote(c1_5s));
+		assertEquals("A##", intervEb_C.calculateSecondNote(c2s));
+		
+		//neutral
+		assertEquals("G0.5b", intervE0_5b_C.calculateSecondNote(c2b));
+		assertEquals("Abb", intervE0_5b_C.calculateSecondNote(c1_5b));
+		assertEquals("A1.5b", intervE0_5b_C.calculateSecondNote(cb));
+		assertEquals("Ab", intervE0_5b_C.calculateSecondNote(c0_5b));
+		assertEquals("A0.5b", intervE0_5b_C.calculateSecondNote(c));
+		assertEquals("A=", intervE0_5b_C.calculateSecondNote(c0_5s));
+		assertEquals("A0.5#", intervE0_5b_C.calculateSecondNote(cs));
+		assertEquals("A#", intervE0_5b_C.calculateSecondNote(c1_5s));
+		assertEquals("A1.5#", intervE0_5b_C.calculateSecondNote(c2s));
+		
+		//major
+		assertEquals("Gb", intervE_C.calculateSecondNote(c2b));
+		assertEquals("G0.5b", intervE_C.calculateSecondNote(c1_5b));
+		assertEquals("Abb", intervE_C.calculateSecondNote(cb));
+		assertEquals("A1.5b", intervE_C.calculateSecondNote(c0_5b));
+		assertEquals("Ab", intervE_C.calculateSecondNote(c));
+		assertEquals("A0.5b", intervE_C.calculateSecondNote(c0_5s));
+		assertEquals("A=", intervE_C.calculateSecondNote(cs));
+		assertEquals("A0.5#", intervE_C.calculateSecondNote(c1_5s));
+		assertEquals("A#", intervE_C.calculateSecondNote(c2s));
+		
+		//super major
+		assertEquals("G1.5b", intervE0_5s_C.calculateSecondNote(c2b));
+		assertEquals("Gb", intervE0_5s_C.calculateSecondNote(c1_5b));
+		assertEquals("G0.5b", intervE0_5s_C.calculateSecondNote(cb));
+		assertEquals("Abb", intervE0_5s_C.calculateSecondNote(c0_5b));
+		assertEquals("A1.5b", intervE0_5s_C.calculateSecondNote(c));
+		assertEquals("Ab", intervE0_5s_C.calculateSecondNote(c0_5s));
+		assertEquals("A0.5b", intervE0_5s_C.calculateSecondNote(cs));
+		assertEquals("A=", intervE0_5s_C.calculateSecondNote(c1_5s));
+		assertEquals("A0.5#", intervE0_5s_C.calculateSecondNote(c2s));
+		
+		//augmented
+		assertEquals("Gbb", intervEs_C.calculateSecondNote(c2b));
+		assertEquals("G1.5b", intervEs_C.calculateSecondNote(c1_5b));
+		assertEquals("Gb", intervEs_C.calculateSecondNote(cb));
+		assertEquals("G0.5b", intervEs_C.calculateSecondNote(c0_5b));
+		assertEquals("Abb", intervEs_C.calculateSecondNote(c));
+		assertEquals("A1.5b", intervEs_C.calculateSecondNote(c0_5s));
+		assertEquals("Ab", intervEs_C.calculateSecondNote(cs));
+		assertEquals("A0.5b", intervEs_C.calculateSecondNote(c1_5s));
+		assertEquals("A=", intervEs_C.calculateSecondNote(c2s));
+		
+		//super augmented
+		assertEquals("F0.5b", intervE1_5s_C.calculateSecondNote(c2b));
+		assertEquals("Gbb", intervE1_5s_C.calculateSecondNote(c1_5b));
+		assertEquals("G1.5b", intervE1_5s_C.calculateSecondNote(cb));
+		assertEquals("Gb", intervE1_5s_C.calculateSecondNote(c0_5b));
+		assertEquals("G0.5b", intervE1_5s_C.calculateSecondNote(c));
+		assertEquals("Abb", intervE1_5s_C.calculateSecondNote(c0_5s));
+		assertEquals("A1.5b", intervE1_5s_C.calculateSecondNote(cs));
+		assertEquals("Ab", intervE1_5s_C.calculateSecondNote(c1_5s));
+		assertEquals("A0.5b", intervE1_5s_C.calculateSecondNote(c2s));
+		
+		//double augmented
+		assertEquals("Fb", intervE2s_C.calculateSecondNote(c2b));
+		assertEquals("F0.5b", intervE2s_C.calculateSecondNote(c1_5b));
+		assertEquals("Gbb", intervE2s_C.calculateSecondNote(cb));
+		assertEquals("G1.5b", intervE2s_C.calculateSecondNote(c0_5b));
+		assertEquals("Gb", intervE2s_C.calculateSecondNote(c));
+		assertEquals("G0.5b", intervE2s_C.calculateSecondNote(c0_5s));
+		assertEquals("Abb", intervE2s_C.calculateSecondNote(cs));
+		assertEquals("A1.5b", intervE2s_C.calculateSecondNote(c1_5s));
+		assertEquals("Ab", intervE2s_C.calculateSecondNote(c2s));
+		
+		
+		Note rEb = intervC_Eb.calculateSecondNote(C);
+		assertTrue(Accidental.FLAT.equals(rEb.getAccidental()));
+		Note rE0_5b = intervC_E0_5b.calculateSecondNote(C);
+		assertTrue(Accidental.HALF_FLAT.equals(rE0_5b.getAccidental()));
+		Note rE = intervC_E.calculateSecondNote(C);
+		assertTrue(Accidental.NATURAL.equals(rE.getAccidental()));
+		Note rE0_5s = intervC_E0_5s.calculateSecondNote(C);
+		assertTrue(Accidental.HALF_SHARP.equals(rE0_5s.getAccidental()));
+		Note rEs = intervC_Es.calculateSecondNote(C);
+		assertTrue(Accidental.SHARP.equals(rEs.getAccidental()));
+		Note rE1_5s = intervC_E1_5s.calculateSecondNote(C);
+		assertTrue(Accidental.SHARP_AND_A_HALF.equals(rE1_5s.getAccidental()));
+		Note rE2s = intervC_E2s.calculateSecondNote(C);
+		assertTrue(Accidental.DOUBLE_SHARP.equals(rE2s.getAccidental()));
+		
+		//...
+		
+		Interval intervC0_5sE = new Interval(C0_5s, E, null);
+		assertEquals(3, intervC0_5sE.getSemitones());
+		assertEquals(7, intervC0_5sE.getQuartertones());
+		assertEquals(Interval.THIRD, intervC0_5sE.getLabel());
+		assertEquals(-0.5f, intervC0_5sE.getMicrotonalOffset());
+		rE0_5b = intervC0_5sE.calculateSecondNote(C);
+		assertEquals(Note.E, rE0_5b.getHeight());
+		assertTrue(Accidental.HALF_FLAT.equals(rE0_5b.getAccidental()));
+		rE = intervC0_5sE.calculateSecondNote(C0_5s);
+		assertEquals(Note.E, rE.getHeight());
+		assertTrue(Accidental.NATURAL.equals(rE.getAccidental()));
+		rE0_5s = intervC0_5sE.calculateSecondNote(Cs);
+		assertEquals(Note.E, rE0_5s.getHeight());
+		assertTrue(Accidental.HALF_SHARP.equals(rE0_5s.getAccidental()));
+		
 	}
 
 

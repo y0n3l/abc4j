@@ -134,24 +134,24 @@ public class HeightTest extends TestCase {
 		String tuneAsString = "X:1\nT:test\nM:4/4\nL:1/4\nK:C\n[aAa']\n";
 		Tune tune = new TuneParser().parse(tuneAsString);
 		MultiNote n = (MultiNote)tune.getMusic().getFirstVoice().elementAt(2);
-		Vector v = n.getNotesAsVector();
-		assertEquals(((Note)v.elementAt(0)).getHeight(), Note.A);
-		assertEquals(((Note)v.elementAt(1)).getHeight(), Note.a);
-		assertEquals(((Note)v.elementAt(2)).getStrictHeight(), Note.A);
-		assertEquals(((Note)v.elementAt(2)).getOctaveTransposition(), 2);
+		Vector<Note> v = n.getNotesAsVector();
+		assertEquals(v.elementAt(0).getHeight(), Note.A);
+		assertEquals(v.elementAt(1).getHeight(), Note.a);
+		assertEquals(v.elementAt(2).getStrictHeight(), Note.A);
+		assertEquals(v.elementAt(2).getOctaveTransposition(), 2);
 	}
 	
 	public void test7() {
 		String tuneAsString = "X:1\nT:test\nM:4/4\nL:1/4\nK:C\n[a'AaA,]\n";
 		Tune tune = new TuneParser().parse(tuneAsString);
 		MultiNote n = (MultiNote)tune.getMusic().getFirstVoice().elementAt(2);
-		Vector v = n.getNotesAsVector();
-		assertEquals(((Note)v.elementAt(0)).getStrictHeight(), Note.A);
-		assertEquals(((Note)v.elementAt(0)).getOctaveTransposition(), -1);
-		assertEquals(((Note)v.elementAt(1)).getHeight(), Note.A);
-		assertEquals(((Note)v.elementAt(2)).getHeight(), Note.a);
-		assertEquals(((Note)v.elementAt(3)).getStrictHeight(), Note.A);
-		assertEquals(((Note)v.elementAt(3)).getOctaveTransposition(), 2);
+		Vector<Note> v = n.getNotesAsVector();
+		assertEquals(v.elementAt(0).getStrictHeight(), Note.A);
+		assertEquals(v.elementAt(0).getOctaveTransposition(), -1);
+		assertEquals(v.elementAt(1).getHeight(), Note.A);
+		assertEquals(v.elementAt(2).getHeight(), Note.a);
+		assertEquals(v.elementAt(3).getStrictHeight(), Note.A);
+		assertEquals(v.elementAt(3).getOctaveTransposition(), 2);
 	}
 	
 	public void test8transposeAndEnharmonics() {
@@ -353,48 +353,6 @@ public class HeightTest extends TestCase {
 		assertEquals(eb1.getMidiLikeHeight(), 15);
 		assertEquals(eb1.getStrictHeight(), Note.D);
 		assertTrue(eb1.getAccidental().isSharp());
-	}
-	
-	public void testAtransposeMicrotonal() {
-		//B half flat,
-		//nearest not microtonal = B flat
-		Note Bd = new Note(Note.B, Accidental.HALF_FLAT);
-		assertEquals(Bd.getMidiLikeHeight(),
-			new Note(Note.B, Accidental.FLAT).getMidiLikeHeight());
-		assertEquals(Bd.getStrictHeight(), Note.B);
-		assertTrue(Bd.getAccidental().isMicrotonal());
-		assertEquals(Bd.getOctaveTransposition(), 0);
-
-		//add 1 semitone -> c half flat, or B half sharp
-		//nearest not microtonal = c flat
-		Note B1_2s = Note.transpose(Bd, 1);
-		assertEquals(B1_2s.getMidiLikeHeight(),
-			new Note(Note.c, Accidental.NATURAL).getMidiLikeHeight()
-				);
-		assertEquals(B1_2s.getMidiLikeHeight(),
-				new Note(Note.B, Accidental.SHARP).getMidiLikeHeight()
-					);
-		assertEquals(B1_2s.getStrictHeight(), Note.B);
-		assertTrue(B1_2s.getAccidental().isMicrotonal());
-		assertEquals(B1_2s.getOctaveTransposition(), 0);
-		assertTrue(1 == B1_2s.getMidiLikeMicrotonalHeight()-Bd.getMidiLikeMicrotonalHeight());
-		
-		//Bd + 2 semitones = c half sharp, or B 3/2 sharp
-		Note c1_2s = Note.transpose(Bd, 2);
-		assertEquals(c1_2s.getMidiLikeHeight(),
-				new Note(Note.c, Accidental.SHARP).getMidiLikeHeight()
-					);
-		assertEquals(c1_2s.getStrictHeight(), Note.C);
-		assertTrue(c1_2s.getAccidental().isMicrotonal());
-		assertEquals(c1_2s.getOctaveTransposition(), 1);
-		assertTrue(2 == c1_2s.getMidiLikeMicrotonalHeight()-Bd.getMidiLikeMicrotonalHeight());
-		assertTrue(1 == c1_2s.getMidiLikeMicrotonalHeight()-B1_2s.getMidiLikeMicrotonalHeight());
-		
-		Note B3_2s = new Note(Note.B, Accidental.SHARP_AND_A_HALF);
-		assertTrue(
-			B3_2s.getMidiLikeMicrotonalHeight()
-			== c1_2s.getMidiLikeMicrotonalHeight()
-		);
 	}
 	
 	protected void tearDown() throws Exception {

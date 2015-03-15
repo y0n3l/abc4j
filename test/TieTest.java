@@ -11,6 +11,7 @@ import abc.parser.TuneParser;
 
 public class TieTest extends TestCase {
 	
+	//TODO parser crash after error and doesn't parse next tunes, #13 or #14 should have problem
 	private static final String FILE_NAME = "../ressources/crash.abc";
 	
 	public TieTest(String name) {
